@@ -1,0 +1,16 @@
+TREES:
+  name: All Trees
+  description: |
+    Requires all Ancestral Trees to be activated before finishing the game
+WISPS:
+  name: All Wisps
+  description: |
+    Requires all Wisps to be collected before finishing the game
+QUESTS:
+  name: All Quests
+  description: |
+    Requires all Quests to be completed before finishing the game
+RELICS:
+  name: World Tour
+  description: |
+    Spreads special relic pickups throughout certain zones. All relics must be collected before finishing the game

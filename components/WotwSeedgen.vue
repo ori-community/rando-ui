@@ -177,7 +177,7 @@
     }),
     computed: {
       loadedServerConfig() {
-        return !!this.availableHeaders
+        return !!this.availableHeaders && !!this.availablePresets
       },
     },
     watch: {

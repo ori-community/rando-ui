@@ -10,6 +10,10 @@ on:
       - main
       - master
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   ci:
     runs-on: ${{ matrix.os }}
@@ -48,6 +52,24 @@ jobs:
       - name: Run linter 👀
         run: yarn lint
 
+      - name: Log in to the Container registry
+        uses: docker/login-action@v1.10.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v3.4.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}{% raw %}
+
       - name: Build and push Docker images
         uses: docker/build-push-action@v2.6.1
+        with:
+          context: .
+          push: true
+          tags: { % raw % }${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 

@@ -6,8 +6,8 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - ori-rando-ui',
-    title: 'ori-rando-ui',
+    titleTemplate: '%s - Ori Randomizer',
+    title: 'Ori Randomizer',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -48,7 +48,7 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: 'http://localhost:8081/api'
+    baseURL: process.env.API_BASE_URL || 'http://localhost:8081/api'
   },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa

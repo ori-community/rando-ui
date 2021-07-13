@@ -33,6 +33,10 @@
         type: Array,
         required: true,
       },
+      value: {
+        type: Array,
+        required: true,
+      },
     },
     data: vm => ({
       headerStates: {},
@@ -51,11 +55,23 @@
           this.$emit('input', value)
         },
       },
+      value: {
+        deep: true,
+        handler(value) {
+          this.inputValue = value
+          this.updateStates()
+        },
+      },
     },
     created() {
-      for (const header of this.headers) {
-        this.$set(this.headerStates, header.headerName, this.inputValue.includes(header.headerName))
-      }
+      this.updateStates()
+    },
+    methods: {
+      updateStates() {
+        for (const header of this.headers) {
+          this.$set(this.headerStates, header.headerName, this.inputValue.includes(header.headerName))
+        }
+      },
     },
   }
 </script>

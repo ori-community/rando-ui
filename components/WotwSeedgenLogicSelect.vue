@@ -32,6 +32,10 @@
         type: Object,
         required: true,
       },
+      value: {
+        type: Array,
+        required: true,
+      },
     },
     data: vm => ({
       logicStates: {},
@@ -50,11 +54,23 @@
           this.$emit('input', value)
         },
       },
+      value: {
+        deep: true,
+        handler(value) {
+          this.inputValue = value
+          this.updateStates()
+        },
+      },
     },
     created() {
-      for (const id of Object.keys(this.logicSets)) {
-        this.$set(this.logicStates, id, this.inputValue.includes(id))
-      }
+      this.updateStates()
+    },
+    methods: {
+      updateStates() {
+        for (const id of Object.keys(this.logicSets)) {
+          this.$set(this.logicStates, id, this.inputValue.includes(id))
+        }
+      },
     },
   }
 </script>

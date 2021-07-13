@@ -13,8 +13,8 @@
           class='text-none mr-1 mb-1'
           :color='goalStates[id] ? "secondary" : "background lighten-2"'
           depressed
-          v-on='on'
           v-bind='$attrs'
+          v-on='on'
           @click='goalStates[id] = !goalStates[id]'
         >
           {{ goal.name }}
@@ -31,6 +31,10 @@
     props: {
       goals: {
         type: Object,
+        required: true,
+      },
+      value: {
+        type: Array,
         required: true,
       },
     },
@@ -51,11 +55,23 @@
           this.$emit('input', value)
         },
       },
+      value: {
+        deep: true,
+        handler(value) {
+          this.inputValue = value
+          this.updateStates()
+        },
+      }
     },
     created() {
-      for (const id of Object.keys(this.goals)) {
-        this.$set(this.goalStates, id, this.inputValue.includes(id))
-      }
+      this.updateStates()
+    },
+    methods: {
+      updateStates() {
+        for (const id of Object.keys(this.goals)) {
+          this.$set(this.goalStates, id, this.inputValue.includes(id))
+        }
+      },
     },
   }
 </script>

@@ -48,3 +48,6 @@ jobs:
       - name: Run linter 👀
         run: yarn lint
 
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v2.6.1
+

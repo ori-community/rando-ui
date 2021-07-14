@@ -18,7 +18,7 @@
     <div v-if='result.gameId !== null' class='mt-6'>
       <h3>Game</h3>
 
-      <v-btn :href='`/game/${result.gameId}`' color='primary' text outlined>Go to game</v-btn>
+      <v-btn :href='`/game/${result.gameId}`' target='_blank' color='primary' text outlined>Go to game</v-btn>
     </div>
   </v-card>
 </template>

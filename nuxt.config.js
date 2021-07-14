@@ -48,7 +48,7 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: process.env.API_BASE_URL || 'http://localhost:8081/api'
+    baseURL: process.env.API_BASE_URL || 'https://wotw.orirando.com/api'
   },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa

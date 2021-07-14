@@ -136,7 +136,7 @@
       </v-btn>
     </div>
 
-    <v-dialog v-model='showResultDialog' max-width='400'>
+    <v-dialog v-model='showResultDialog' persistent max-width='400'>
       <div class='relative'>
         <v-btn class='close-button' color='background lighten-5' icon @click='$router.push({query: {result: undefined}})'>
           <v-icon>mdi-close</v-icon>

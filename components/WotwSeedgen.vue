@@ -186,21 +186,13 @@
           this.createOnlineGame = 'multi'
         }
       },
-      '$route.query.result': {
-        immediate: true,
-        handler(result) {
-          if (result) {
-            this.seedgenResult = JSON.parse(result)
-            this.showResultDialog = true
-          } else {
-            this.seedgenResult = null
-            this.showResultDialog = false
-          }
-        }
+      '$route.query.result'() {
+        this.updateSeedgenResultDialogState()
       },
     },
     mounted() {
       this.fetchServerConfig()
+      this.updateSeedgenResultDialogState()
     },
     methods: {
       async fetchServerConfig() {
@@ -311,6 +303,15 @@
         this.seedgenConfig.goals = Array.from(goals)
         this.seedgenConfig.flags = Array.from(flags)
       },
+      updateSeedgenResultDialogState() {
+        if (this.$route.query.result) {
+          this.seedgenResult = JSON.parse(String(this.$route.query.result))
+          this.showResultDialog = true
+        } else {
+          this.seedgenResult = null
+          this.showResultDialog = false
+        }
+      }
     },
   }
 </script>

@@ -54,10 +54,16 @@
     mounted() {
       window.addEventListener('keydown', this.onKeyDown)
       window.addEventListener('keyup', this.onKeyUp)
+      window.addEventListener('blur', this.onWindowBlur)
+      window.addEventListener('mousemove', this.onMouseMove)
+      window.addEventListener('mouseout', this.onMouseLeave)
     },
     beforeDestroy() {
       window.removeEventListener('keydown', this.onKeyDown)
       window.removeEventListener('keyup', this.onKeyUp)
+      window.removeEventListener('blur', this.onWindowBlur)
+      window.removeEventListener('mousemove', this.onMouseMove)
+      window.removeEventListener('mouseout', this.onMouseLeave)
     },
     methods: {
       resetPresetStates() {
@@ -77,7 +83,20 @@
           this.mergeSettings = false
         }
       },
-      onApplyPresetsButtonClick() {
+      onMouseMove(event) {
+        this.mergeSettings = event.ctrlKey
+      },
+      onMouseLeave() {
+        this.mergeSettings = false
+      },
+      onWindowBlur() {
+        this.mergeSettings = false
+      },
+      onApplyPresetsButtonClick(event) {
+        if (event.ctrlKey) {
+          this.mergeSettings = true
+        }
+
         const selectedPresets = []
         for (const preset of this.presets) {
           if (this.presetStates[preset.name]) {

@@ -220,7 +220,7 @@
           } else if (this.createOnlineGame === 'coop') {
             additionalParameters.isCoop = true
           } else if (this.createOnlineGame === 'multi') {
-            additionalParameters.isCoop = true
+            additionalParameters.isMulti = true
           }
 
           const result = await this.$axios.$post('/seeds', {

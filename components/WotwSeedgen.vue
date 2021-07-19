@@ -256,6 +256,11 @@
           // and show the download dialog otherwise
           if (result.gameId === null && result.playerList.length === 0) {
             saveAs(`${this.$axios.defaults.baseURL}/seeds/${result.seedId}`, `seed_${result.seedId}.wotwr`)
+            confettiFromElement(this.$refs.generateButton.$el, {
+              disableForReducedMotion: true,
+              zIndex: 100000,
+            })
+
           } else {
             this.showResultDialog = true
             await this.$router.replace({query: {result: JSON.stringify(result)}})

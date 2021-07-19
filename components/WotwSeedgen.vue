@@ -31,7 +31,6 @@
             <p>
               If you're getting started with the Randomizer, select some presets and apply the seedgen settings.
               You can also add your own presets soon™.
-              settings.
             </p>
 
             <wotw-seedgen-preset-select :presets='availablePresets' @apply='applyPresets' />

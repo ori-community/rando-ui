@@ -160,6 +160,7 @@
     goals: [],
     multiNames: [],
     seed: null,
+    spawn: 'MarshSpawn.Main',
   })
 
   export default {
@@ -260,18 +261,21 @@
         const goals = new Set(this.seedgenConfig.goals)
         const playerNames = new Set(this.seedgenConfig.multiNames)
         const flags = new Set(this.seedgenConfig.flags)
+        let spawn = this.seedgenConfig.spawn
 
         for (const preset of presets) {
           preset.pathsets.forEach(p => paths.add(p))
           preset.headerList.forEach(h => headers.add(h))
           preset.goalmodes.forEach(g => goals.add(g))
           preset.players.forEach(p => playerNames.add(p))
+          spawn = preset.spawnLoc
         }
 
         const maxWorlds = presets.reduce((acc, value) => Math.max(acc, value), 0)
         const disableSpoilers = presets.some(p => !p.spoilers)
         const enableHardMode = presets.some(p => p.hard)
         const enableNetcode = presets.some(p => p.webConn)
+        const randomSpawn = presets.some(p => p.spawnLoc === 'random')
 
         // Generate multiworld names if not given
         // e.g. if the preset requests 3 worlds but only has one player name given,
@@ -298,10 +302,15 @@
           flags.add('--multiplayer')
         }
 
+        if (randomSpawn) {
+          spawn = 'random'
+        }
+
         this.seedgenConfig.logic = Array.from(paths)
         this.seedgenConfig.headers = Array.from(headers)
         this.seedgenConfig.goals = Array.from(goals)
         this.seedgenConfig.flags = Array.from(flags)
+        this.seedgenConfig.spawn = spawn
       },
       updateSeedgenResultDialogState() {
         if (this.$route.query.result) {

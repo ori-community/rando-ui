@@ -1,0 +1,34 @@
+- name: Midnight Burrows
+  id: MidnightBurrows.Teleporter
+- name: Inkwater Marsh
+  id: MarshSpawn.Main
+- name: Howl's Den
+  id: HowlsDen.Teleporter
+- name: Kwolok's Hollow
+  id: EastHollow.Teleporter
+- name: Wellspring Glades
+  id: GladesTown.Teleporter
+- name: Wellspring
+  id: InnerWellspring.Teleporter
+- name: Silent Woods (West)
+  id: WoodsEntry.Teleporter
+- name: Silent Woods (East)
+  id: WoodsMain.Teleporter
+- name: Baur's Reach
+  id: LowerReach.Teleporter
+- name: Mouldwood Depths
+  id: UpperDepths.Teleporter
+- name: Luma Pools (East)
+  id: EastPools.Teleporter
+- name: Luma Pools (West)
+  id: WestPools
+- name: Windswept Wastes (West)
+  id: LowerWastes.WestTP
+- name: Windswept Wastes (East)
+  id: LowerWastes.EastTP
+- name: Outer Windtorn Ruins
+  id: UpperWastes.NorthTP
+- name: Windtorn Ruins
+  id: WindtornRuins.RuinsTP
+- name: Willow's End
+  id: WillowsEnd.InnerTP

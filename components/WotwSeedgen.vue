@@ -37,9 +37,16 @@
           </v-tab-item>
           <v-tab-item class='pa-4'>
             <p>
-              Select which paths should be required to complete the seed.
+              Select which paths should be required to complete the seed and where you would like to spawn.
             </p>
-            <wotw-seedgen-logic-select v-model='seedgenConfig.logic' :logic-sets='availableLogicSets' />
+            <wotw-seedgen-logic-select v-model='seedgenConfig.logic' class='mb-6' :logic-sets='availableLogicSets' />
+
+            <v-select v-model='seedgenConfig.spawn' :items='availableSpawns' label='Spawn'>
+              <template #item='{item}'>
+                <v-icon v-if='!!item.icon' left>{{ item.icon }}</v-icon>
+                <span>{{ item.text }}</span>
+              </template>
+            </v-select>
           </v-tab-item>
           <v-tab-item class='pa-4'>
             <p>
@@ -150,6 +157,7 @@
   import { saveAs } from 'file-saver'
   import logicSets from '~/assets/seedgen/logic.yaml'
   import goals from '~/assets/seedgen/goals.yaml'
+  import spawns from '~/assets/seedgen/spawns.yaml'
   import { confettiFromElement } from '~/assets/lib/confettiFromElement'
 
   const generateNewSeedgenConfig = () => ({
@@ -179,6 +187,20 @@
       loadedServerConfig() {
         return !!this.availableHeaders && !!this.availablePresets
       },
+      availableSpawns() {
+        const availableSpawns = [{
+            text: 'Random',
+            value: 'random',
+            icon: 'mdi-shuffle',
+        }]
+
+        availableSpawns.push(...spawns.map(s => ({
+          text: s.name,
+          value: s.id,
+        })))
+
+        return availableSpawns
+      }
     },
     watch: {
       'seedgenConfig.multiNames'(multiNames) {

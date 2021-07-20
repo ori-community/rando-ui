@@ -29,7 +29,7 @@
           </v-tab>
           <v-tab-item class='pa-4'>
             <p>
-              If you're getting started with the Randomizer, select some presets and apply the seedgen settings.
+              If you're just getting started with the Randomizer, select the Moki preset and click "Apply Presets" button.
               You can also add your own presets soon™.
             </p>
 

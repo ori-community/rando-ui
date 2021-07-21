@@ -8,9 +8,9 @@
       <v-btn
         depressed
         :color='value ? "secondary" : "background lighten-2"'
+        class='text-none'
         v-on='on'
         @click='onButtonClick'
-        class='text-none'
       >
         {{ presetName }}
       </v-btn>

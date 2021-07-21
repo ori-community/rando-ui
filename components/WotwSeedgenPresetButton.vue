@@ -1,14 +1,27 @@
 <template>
-  <v-btn
-    depressed
-    :color='value ? "secondary" : "background lighten-2"'
-    @click='onButtonClick'
+  <v-tooltip
+    top
+    :disabled='!presetDescription'
+    open-delay='500'
   >
-    {{ preset.name }}
-  </v-btn>
+    <template #activator='{on}'>
+      <v-btn
+        depressed
+        :color='value ? "secondary" : "background lighten-2"'
+        v-on='on'
+        @click='onButtonClick'
+        class='text-none'
+      >
+        {{ presetName }}
+      </v-btn>
+    </template>
+    <span>{{ presetDescription }}</span>
+  </v-tooltip>
 </template>
 
 <script>
+  import presetMeta from '@/assets/seedgen/presets.yaml'
+
   export default {
     name: 'WotwSeedgenPresetButton',
     props: {
@@ -20,6 +33,14 @@
         type: Boolean,
         required: true,
       }
+    },
+    computed: {
+      presetName() {
+        return presetMeta[this.preset.name]?.name ?? this.preset.name
+      },
+      presetDescription() {
+        return presetMeta[this.preset.name]?.description ?? null
+      },
     },
     methods: {
       onButtonClick(event) {

@@ -1,13 +1,16 @@
 <template>
   <div>
     <div>
-      <wotw-seedgen-preset-button
-        v-for='preset in presets'
+      <div
+        v-for='preset in sortedPresets'
         :key='preset.name'
-        v-model='presetStates[preset.name]'
-        :preset='preset'
-        class='mr-1 mb-1'
-      />
+        class='d-inline-block mr-1 mb-1'
+      >
+        <wotw-seedgen-preset-button
+          v-model='presetStates[preset.name]'
+          :preset='preset'
+        />
+      </div>
     </div>
     <div v-if='anyPresetSelected' class='mt-2'>
       <v-tooltip bottom :disabled='mergeSettings'>
@@ -30,6 +33,8 @@
 </template>
 
 <script>
+  import presetMeta from '@/assets/seedgen/presets.yaml'
+
   export default {
     name: 'WotwSeedgenPresetSelect',
     props: {
@@ -46,7 +51,11 @@
     computed: {
       anyPresetSelected() {
         return Object.values(this.presetStates).some(s => s)
-      }
+      },
+      sortedPresets() {
+        const keys = Object.keys(presetMeta)
+        return [...this.presets].sort((a, b) => keys.indexOf(a.name) - keys.indexOf(b.name))
+      },
     },
     created() {
       this.resetPresetStates()
@@ -104,10 +113,10 @@
           }
         }
 
-        this.$emit('apply', {presets: selectedPresets, merge: this.mergeSettings})
+        this.$emit('apply', { presets: selectedPresets, merge: this.mergeSettings })
         this.resetPresetStates()
         this.settingsApplied = true
-      }
+      },
     },
   }
 </script>

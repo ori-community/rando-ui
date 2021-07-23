@@ -5,3 +5,13 @@
     <wotw-seedgen />
   </div>
 </template>
+
+<script>
+  export default {
+    head() {
+      return {
+        title: 'Seed Generator',
+      }
+    },
+  }
+</script>

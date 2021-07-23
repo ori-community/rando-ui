@@ -9,10 +9,19 @@ export default {
     titleTemplate: '%s - Ori Randomizer',
     title: 'Ori Randomizer',
     meta: [
-      { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '' },
-      { name: 'format-detection', content: 'telephone=no' }
+      {charset: 'utf-8'},
+      {name: 'viewport', content: 'width=device-width, initial-scale=1'},
+      {hid: 'description', name: 'description', content: 'Ori and the Will of the Wisps Randomizer'},
+      {
+        hid: 'og:description',
+        property: 'og:description',
+        content: 'Ori and the Will of the Wisps Randomizer'
+      },
+      {hid: 'og:type', property: 'og:type', content: 'website'},
+      {hid: 'og:url', property: 'og:url', content: 'https://wotw.orirando.com'},
+      {hid: 'og:site_name', property: 'og:site_name', content: 'Ori Randomizer'},
+      {hid: 'og:image', property: 'og:image', content: 'https://wotw.orirando.com/icon.png'},
+      {hid: 'apple-mobile-web-app-title', property: 'apple-mobile-web-app-title', content: 'Ori Randomizer'},
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }

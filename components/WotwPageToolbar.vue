@@ -1,6 +1,6 @@
 <template>
-  <v-toolbar color='transparent' elevation='0'>
-    <v-toolbar-items v-if='isLoggedIn'>
+  <div class='d-flex align-center my-4'>
+    <template v-if='isLoggedIn'>
       <v-menu offset-y>
         <template #activator='{on}'>
           <v-btn depressed text v-on='on'>
@@ -17,7 +17,7 @@
           <v-list-item>Multiworld</v-list-item>
         </v-list>
       </v-menu>
-    </v-toolbar-items>
+    </template>
     <v-spacer />
     <template v-if='isLoggedIn'>
       <div class='mr-4'>
@@ -25,7 +25,7 @@
       </div>
       <v-menu offset-y>
         <template #activator='{on}'>
-          <v-btn class='mr-1' icon v-on='on'>
+          <v-btn x-large class='ma-0 mr-1' icon v-on='on'>
             <v-avatar color='accent'>
               <v-img v-if='discordAvatarUrl !== null' :src='discordAvatarUrl' />
               <v-icon v-else>mdi-account</v-icon>
@@ -41,14 +41,12 @@
       </v-menu>
     </template>
     <template v-else>
-      <v-toolbar-items>
-        <v-btn depressed text @click='login'>
-          <v-icon left>mdi-login-variant</v-icon>
-          Log in
-        </v-btn>
-      </v-toolbar-items>
+      <v-btn x-large depressed text @click='login'>
+        <v-icon left>mdi-login-variant</v-icon>
+        Log in
+      </v-btn>
     </template>
-  </v-toolbar>
+  </div>
 </template>
 
 <script>

@@ -3,7 +3,7 @@
     <template v-if='isLoggedIn'>
       <v-menu offset-y>
         <template #activator='{on}'>
-          <v-btn depressed text v-on='on'>
+          <v-btn x-large depressed text v-on='on'>
             <v-icon left>mdi-plus</v-icon>
             New Game
           </v-btn>

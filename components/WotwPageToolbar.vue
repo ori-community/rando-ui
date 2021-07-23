@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar v-if='!!$route.query.toolbar' color='background lighten-1' rounded>
+  <v-toolbar v-show='!!$route.query.toolbar' color='background lighten-1' rounded>
     <v-toolbar-items v-if='isLoggedIn'>
       <v-menu offset-y>
         <template #activator='{on}'>

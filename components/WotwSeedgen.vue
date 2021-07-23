@@ -29,11 +29,16 @@
           </v-tab>
           <v-tab-item class='pa-4'>
             <p>
-              If you're just getting started with the Randomizer, select the Moki preset and click "Apply Presets" button.
+              If you're just getting started with the Randomizer, select the Moki preset and click "Apply Presets"
+              button.
               You can also add your own presets soon™.
             </p>
 
-            <wotw-seedgen-preset-select :presets='availablePresets' @apply='applyPresets' @any-preset-selected='v => anyPresetSelected = v' />
+            <wotw-seedgen-preset-select
+              :presets='availablePresets'
+              @apply='applyPresets'
+              @any-preset-selected='v => anyPresetSelected = v'
+            />
           </v-tab-item>
           <v-tab-item class='pa-4'>
             <p>
@@ -63,7 +68,12 @@
           <v-tab-item class='pa-4'>
             <v-row>
               <v-col cols='12' md='6'>
-                <v-text-field v-model='seedgenConfig.seed' label='Seed' persistent-placeholder placeholder='leave empty for random seed' />
+                <v-text-field
+                  v-model='seedgenConfig.seed'
+                  label='Seed'
+                  persistent-placeholder
+                  placeholder='leave empty for random seed'
+                />
                 <wotw-seedgen-flag-checkbox
                   v-model='seedgenConfig.flags'
                   flag='--hard'
@@ -140,7 +150,14 @@
       <v-tooltip :disabled='!anyPresetSelected' bottom>
         <template #activator='{on}'>
           <div v-on='on'>
-            <v-btn ref='generateButton' :disabled='anyPresetSelected' :loading='loading' color='accent' x-large @click='generateSeed'>
+            <v-btn
+              ref='generateButton'
+              :disabled='anyPresetSelected'
+              :loading='loading'
+              color='accent'
+              x-large
+              @click='generateSeed'
+            >
               Generate
             </v-btn>
           </div>
@@ -151,7 +168,12 @@
 
     <v-dialog v-model='showResultDialog' persistent max-width='400'>
       <div class='relative'>
-        <v-btn class='close-button' color='background lighten-5' icon @click='$router.push({query: {result: undefined}})'>
+        <v-btn
+          class='close-button'
+          color='background lighten-5'
+          icon
+          @click='$router.push({query: {result: undefined}})'
+        >
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <wotw-seedgen-result-view v-if='!!seedgenResult' ref='resultView' :result='seedgenResult' />
@@ -197,9 +219,9 @@
       },
       availableSpawns() {
         const availableSpawns = [{
-            text: 'Random',
-            value: 'random',
-            icon: 'mdi-shuffle',
+          text: 'Random',
+          value: 'random',
+          icon: 'mdi-shuffle',
         }]
 
         availableSpawns.push(...spawns.map(s => ({
@@ -208,7 +230,7 @@
         })))
 
         return availableSpawns
-      }
+      },
     },
     watch: {
       'seedgenConfig.multiNames'(multiNames) {
@@ -271,7 +293,7 @@
 
           } else {
             this.showResultDialog = true
-            await this.$router.replace({query: {result: JSON.stringify(result)}})
+            await this.$router.replace({ query: { result: JSON.stringify(result) } })
 
             await this.$nextTick()
             confettiFromElement(this.$refs.resultView.$el, {
@@ -354,7 +376,7 @@
           this.seedgenResult = null
           this.showResultDialog = false
         }
-      }
+      },
     },
   }
 </script>

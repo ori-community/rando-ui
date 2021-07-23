@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar v-show='!!$route.query.toolbar' color='background lighten-1' rounded>
+  <v-toolbar color='transparent' elevation='0'>
     <v-toolbar-items v-if='isLoggedIn'>
       <v-menu offset-y>
         <template #activator='{on}'>
@@ -8,7 +8,8 @@
             New Game
           </v-btn>
         </template>
-        <v-list>
+        <v-list disabled>
+          <v-list-item>Menu under construction™</v-list-item>
           <v-list-item>Bingo</v-list-item>
           <v-list-item>Discovery Bingo</v-list-item>
           <v-list-item>Lockout Bingo</v-list-item>

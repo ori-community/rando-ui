@@ -19,6 +19,7 @@ export default {
       },
       {hid: 'og:type', property: 'og:type', content: 'website'},
       {hid: 'og:url', property: 'og:url', content: 'https://wotw.orirando.com'},
+      {hid: 'og:title', property: 'og:title', content: 'Ori Randomizer'},
       {hid: 'og:site_name', property: 'og:site_name', content: 'Ori Randomizer'},
       {hid: 'og:image', property: 'og:image', content: 'https://wotw.orirando.com/icon.png'},
       {hid: 'apple-mobile-web-app-title', property: 'apple-mobile-web-app-title', content: 'Ori Randomizer'},

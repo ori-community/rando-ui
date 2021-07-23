@@ -33,7 +33,7 @@
               You can also add your own presets soon™.
             </p>
 
-            <wotw-seedgen-preset-select :presets='availablePresets' @apply='applyPresets' />
+            <wotw-seedgen-preset-select :presets='availablePresets' @apply='applyPresets' @any-preset-selected='v => anyPresetSelected = v' />
           </v-tab-item>
           <v-tab-item class='pa-4'>
             <p>
@@ -137,9 +137,16 @@
     </throttled-spinner>
 
     <div class='text-center'>
-      <v-btn ref='generateButton' :loading='loading' color='accent' x-large @click='generateSeed'>
-        Generate
-      </v-btn>
+      <v-tooltip :disabled='!anyPresetSelected' bottom>
+        <template #activator='{on}'>
+          <div v-on='on'>
+            <v-btn ref='generateButton' :disabled='anyPresetSelected' :loading='loading' color='accent' x-large @click='generateSeed'>
+              Generate
+            </v-btn>
+          </div>
+        </template>
+        <span>Apply or deselect selected presets first</span>
+      </v-tooltip>
     </div>
 
     <v-dialog v-model='showResultDialog' persistent max-width='400'>
@@ -182,6 +189,7 @@
       loading: false,
       showResultDialog: false,
       seedgenResult: null,
+      anyPresetSelected: false,
     }),
     computed: {
       loadedServerConfig() {

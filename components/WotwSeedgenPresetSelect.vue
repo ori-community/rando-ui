@@ -57,6 +57,14 @@
         return [...this.presets].sort((a, b) => keys.indexOf(a.name) - keys.indexOf(b.name))
       },
     },
+    watch: {
+      presetStates: {
+        deep: true,
+        handler() {
+          this.$emit('any-preset-selected', this.anyPresetSelected)
+        },
+      }
+    },
     created() {
       this.resetPresetStates()
     },

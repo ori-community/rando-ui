@@ -63,7 +63,7 @@
           <v-tab-item class='pa-4'>
             <v-row>
               <v-col cols='12' md='6'>
-                <v-text-field label='Seed' persistent-placeholder placeholder='leave empty for random seed' />
+                <v-text-field v-model='seedgenConfig.seed' label='Seed' persistent-placeholder placeholder='leave empty for random seed' />
                 <wotw-seedgen-flag-checkbox
                   v-model='seedgenConfig.flags'
                   flag='--hard'

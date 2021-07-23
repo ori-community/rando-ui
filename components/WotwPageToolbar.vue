@@ -56,12 +56,8 @@
   export default {
     name: 'WotwPageToolbar',
     computed: {
-      ...mapGetters({
-        isLoggedIn: 'user/isLoggedIn',
-      }),
-      ...mapState({
-        user: 'user/user',
-      }),
+      ...mapGetters('user', ['isLoggedIn']),
+      ...mapState('user', ['user']),
       discordAvatarUrl() {
         if (!this.isLoggedIn || !this.user.avatarId) {
           return null

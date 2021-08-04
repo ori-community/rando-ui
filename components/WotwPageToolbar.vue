@@ -70,7 +70,7 @@
         window.location.href = `${this.$axios.defaults.baseURL}/login?redir=${window.location.pathname}`
       },
       logout() {
-        window.location.href = `${this.$axios.defaults.baseURL}/logout?redir=${window.location.pathname}`
+        window.location.href = `${this.$axios.defaults.baseURL}/logout/?redir=${window.location.pathname}`
       },
     },
   }

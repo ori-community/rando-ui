@@ -2,7 +2,7 @@
   <v-card class='team-view'>
     <v-card-title>{{ team.name }}</v-card-title>
     <v-card-text>
-      <wotw-player-view v-for='player in team.members' :key='player.id' class='mb-2' :user='player' />
+      <wotw-player-view v-for='player in team.members' :key='player.id' class='mb-1' :user='player' />
     </v-card-text>
     <v-btn v-if='canJoin' :disabled='disabled' block color='accent' tile @click='$emit("join")'>
       Join

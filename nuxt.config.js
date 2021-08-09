@@ -3,6 +3,7 @@ import colors from 'vuetify/es5/util/colors'
 export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
+  ssr: false,
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -58,7 +59,7 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: process.env.API_BASE_URL || 'https://wotw.orirando.com/api'
+    baseURL: process.env.API_BASE_URL || 'https://wotw.orirando.com/api',
   },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa

@@ -26,10 +26,7 @@
       <v-menu offset-y>
         <template #activator='{on}'>
           <v-btn x-large class='ma-0 mr-1' icon v-on='on'>
-            <v-avatar color='accent'>
-              <v-img v-if='discordAvatarUrl !== null' :src='discordAvatarUrl' />
-              <v-icon v-else>mdi-account</v-icon>
-            </v-avatar>
+            <discord-avatar :user='user' size='48' />
           </v-btn>
         </template>
         <v-list v-if='isLoggedIn'>
@@ -57,13 +54,6 @@
     computed: {
       ...mapGetters('user', ['isLoggedIn']),
       ...mapState('user', ['user']),
-      discordAvatarUrl() {
-        if (!this.isLoggedIn || !this.user.avatarId) {
-          return null
-        }
-
-        return `https://cdn.discordapp.com/avatars/${this.user.id}/${this.user.avatarId}.png`
-      },
     },
     methods: {
       login() {

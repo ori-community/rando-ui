@@ -1,6 +1,6 @@
 <template>
   <div class='player-view'>
-    <discord-avatar :user='user' />
+    <discord-avatar :user='user' class='mr-1' />
     {{ user.name }}
   </div>
 </template>

@@ -37,7 +37,7 @@
           root: [
             [/!![^ ]+/, 'header-command'],
             [/^[0-9]+\|[0-9]+/, 'header-location'],
-            [/(?=^.+\|.+\|)[0-9]+\|[0-9]+/, 'header-uber-id'],
+            [/(?=^.+\|.+\|)([0-9]+\|)+[0-9]+/, 'header-uber-id'],
             [/.+:/, 'header-setting'],
             [/\/\/.*/, 'header-comment'],
             [/(bool|int|float)/, 'header-type'],

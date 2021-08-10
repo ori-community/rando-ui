@@ -64,6 +64,9 @@
               Headers let you customize the seed further.
             </p>
             <wotw-seedgen-header-select v-model='seedgenConfig.headers' :headers='availableHeaders' />
+
+            <h3 class='mt-5 mb-2'>Custom headers</h3>
+            <wotw-seedgen-custom-header-select v-model='seedgenConfig.customHeaders' />
           </v-tab-item>
           <v-tab-item class='pa-4'>
             <v-row>
@@ -188,10 +191,12 @@
   import goals from '~/assets/seedgen/goals.yaml'
   import spawns from '~/assets/seedgen/spawns.yaml'
   import { confettiFromElement } from '~/assets/lib/confettiFromElement'
+  import { db } from '~/assets/db/database'
 
   const generateNewSeedgenConfig = () => ({
     flags: [],
     headers: [],
+    customHeaders: [],
     logic: [],
     goals: [],
     multiNames: [],
@@ -274,6 +279,10 @@
           } else if (this.createOnlineGame === 'multi') {
             additionalParameters.isMulti = true
           }
+
+          // Fetch custom headers from IndexedDB
+          additionalParameters.customHeaders = (await db.customHeaders.bulkGet(this.seedgenConfig.customHeaders))
+            .map(h => h.content)
 
           const result = await this.$axios.$post('/seeds', {
             ...this.seedgenConfig,

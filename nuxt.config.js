@@ -1,4 +1,5 @@
 import colors from 'vuetify/es5/util/colors'
+import MonacoEditorWebpackPlugin from 'monaco-editor-webpack-plugin'
 
 export default {
   // Target: https://go.nuxtjs.dev/config-target
@@ -96,6 +97,11 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    plugins: [
+      new MonacoEditorWebpackPlugin({
+        languages: [],
+      })
+    ],
     extend(config, ctx) {
       config.module.rules.push({
         test: /\.ya?ml$/,

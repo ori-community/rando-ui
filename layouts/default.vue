@@ -38,6 +38,10 @@
   ::-webkit-scrollbar-thumb {
     background-color: var(--color-background-light);
   }
+
+  .inherit--text {
+    color: inherit !important;
+  }
 </style>
 
 <style lang='scss' scoped>

@@ -93,7 +93,6 @@
                 const uberState = uberStates.find(s => String(s.uberId) === match.uberId && String(s.groupId) === match.groupId)
 
                 if (uberState) {
-
                   let displayName = uberState.id
 
                   if (uberState.groupName && uberState.name) {
@@ -114,6 +113,27 @@
           return null
         },
       })
+
+      monaco.languages.registerCompletionItemProvider('ori-wotw-rando-header', {
+        provideCompletionItems(model, position) {
+          // find out if we are completing a property in the 'dependencies' object.
+          const word = model.getWordUntilPosition(position);
+          const range = {
+            startLineNumber: position.lineNumber,
+            endLineNumber: position.lineNumber,
+            startColumn: word.startColumn,
+            endColumn: word.endColumn
+          };
+          return {
+            suggestions: uberStates.map(s => ({
+              label: s.id,
+              kind: monaco.languages.CompletionItemKind.Constant,
+              insertText: `${s.groupId}|${s.uberId}|`,
+              range,
+            }))
+          };
+        }
+      });
 
       monaco.editor.defineTheme('ori-wotw-rando', {
         base: 'vs-dark',

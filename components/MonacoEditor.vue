@@ -4,7 +4,7 @@
 
 <script>
   import * as monaco from 'monaco-editor'
-  import {uberStates} from '~/assets/seedgen/gameIds.yaml'
+  import { uberStates } from '~/assets/seedgen/gameIds.yaml'
 
   export default {
     name: 'MonacoEditor',
@@ -37,8 +37,8 @@
         tokenizer: {
           root: [
             [/!![^ ]+/, 'header-command'],
-            [/^!?[0-9]+\|[0-9]+/, 'header-location'],
-            [/([0-9]+\|)+[0-9]+/, 'header-uber-id'],
+            [/^!?[0-9]+\|[0-9=]+/, 'header-location'],
+            [/([0-9]+\|)+[0-9=]+/, 'header-uber-id'],
             [/^.+:/, 'header-setting'],
             [/\/\/.*/, 'header-comment'],
             [/(bool|int|float|byte)/, 'header-type'],
@@ -89,17 +89,21 @@
 
             switch (hoverToken.type) {
               case 'header-location.ori-wotw-rando-header': {
-                const match = tokenContent.match(/(?<groupId>[0-9]+)\|(?<uberId>[0-9]+)/).groups
-                const uberId = Number(match.uberId)
-                const groupId = Number(match.groupId)
-
-                const uberState = uberStates.find(s => s.uberId === uberId && s.groupId === groupId)
+                const match = tokenContent.match(/(?<groupId>[0-9]+)\|(?<uberId>[0-9=]+)/).groups
+                const uberState = uberStates.find(s => String(s.uberId) === match.uberId && String(s.groupId) === match.groupId)
 
                 if (uberState) {
+
+                  let displayName = uberState.id
+
+                  if (uberState.groupName && uberState.name) {
+                    displayName += ` (${uberState.groupName}.${uberState.name})`
+                  }
+
                   return {
                     range,
                     contents: [
-                      { value: `${uberState.id} (${uberState.groupName}.${uberState.name})` },
+                      { value: displayName },
                     ],
                   }
                 }

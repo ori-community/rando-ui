@@ -1,23 +1,9 @@
 <template>
-  <div class='d-flex align-center my-4'>
-    <template v-if='isLoggedIn'>
-      <v-menu offset-y>
-        <template #activator='{on}'>
-          <v-btn x-large depressed text v-on='on'>
-            <v-icon left>mdi-plus</v-icon>
-            New Game
-          </v-btn>
-        </template>
-        <v-list disabled>
-          <v-list-item>Menu under construction™</v-list-item>
-          <v-list-item>Bingo</v-list-item>
-          <v-list-item>Discovery Bingo</v-list-item>
-          <v-list-item>Lockout Bingo</v-list-item>
-          <v-list-item>Co-op</v-list-item>
-          <v-list-item>Multiworld</v-list-item>
-        </v-list>
-      </v-menu>
-    </template>
+  <div class='page-toolbar d-flex align-center my-4'>
+    <v-btn x-large depressed text to='/seedgen'>
+      <v-icon left>mdi-dice-multiple</v-icon>
+      Seed generator
+    </v-btn>
     <v-spacer />
     <template v-if='isLoggedIn'>
       <div class='mr-4'>
@@ -66,6 +52,8 @@
   }
 </script>
 
-<style scoped>
-
+<style lang='scss' scoped>
+  .page-toolbar {
+    gap: 0.2em
+  }
 </style>

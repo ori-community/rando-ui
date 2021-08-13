@@ -6,8 +6,8 @@ ENV API_BASE_URL=/api
 WORKDIR /app
 COPY . /app
 RUN yarn install \
- && yarn build \
- && yarn generate
+ && API_BASE=wotw.orirando.com API_SECURE=true yarn build \
+ && API_BASE=wotw.orirando.com API_SECURE=true yarn generate
 
 # Stage 2
 FROM nginx:1.19-alpine

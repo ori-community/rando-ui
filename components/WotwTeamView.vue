@@ -1,5 +1,6 @@
 <template>
   <v-card class='team-view'>
+    <v-sheet :color='color' height='0.5em' />
     <v-card-title>{{ team.name }}</v-card-title>
     <v-card-text>
       <wotw-player-view v-for='player in team.members' :key='player.id' class='mb-1' :user='player' />
@@ -24,6 +25,10 @@
         type: Boolean,
         default: false,
       },
+      color: {
+        type: String,
+        default: '',
+      }
     },
     computed: {
       ...mapState('user', ['user']),

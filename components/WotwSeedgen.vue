@@ -288,22 +288,24 @@
             ...additionalParameters,
           })
 
-          switch (this.createOnlineGame) {
-            case 'coop':
-              result.gameId = await this.$axios.$post('/games', {isCoop: true})
-              break
-            case 'multi':
-              result.gameId = await this.$axios.$post('/games', {isMulti: true})
-              break
-            case 'bingo':
-              result.gameId = await this.$axios.$post('/bingo')
-              break
-            case 'discovery_bingo':
-              result.gameId = await this.$axios.$post('/bingo', {discovery: 2})
-              break
-            case 'lockout_bingo':
-              result.gameId = await this.$axios.$post('/bingo', {lockout: true})
-              break
+          if (this.seedgenConfig.flags.includes('--multiplayer')) {
+            switch (this.createOnlineGame) {
+              case 'coop':
+                result.gameId = await this.$axios.$post('/games', {isCoop: true})
+                break
+              case 'multi':
+                result.gameId = await this.$axios.$post('/games', {isMulti: true})
+                break
+              case 'bingo':
+                result.gameId = await this.$axios.$post('/bingo')
+                break
+              case 'discovery_bingo':
+                result.gameId = await this.$axios.$post('/bingo', {discovery: 2})
+                break
+              case 'lockout_bingo':
+                result.gameId = await this.$axios.$post('/bingo', {lockout: true})
+                break
+            }
           }
 
           this.seedgenResult = result

@@ -96,50 +96,53 @@
                 <wotw-seedgen-flag-checkbox
                   v-model='seedgenConfig.flags'
                   flag='--multiplayer'
-                  hint='Enable Netcode if you want to play with friends (Co-op, Multiworld) or Bingo'
-                  label='Enable Netcode'
+                  hint='Enable this if you want to play with friends (Co-op, Multiworld) or Bingo and select the appropriate game type below'
+                  label='Multiplayer / Bingo'
                   persistent-hint
                 />
                 <v-expand-transition>
                   <div v-if='seedgenConfig.flags.includes("--multiplayer")'>
-                    <div class='mb-3'>
-                      <v-combobox
-                        v-model='seedgenConfig.multiNames'
-                        :items='[]'
-                        hint='If you specify player names here, this seed will be a multiworld seed. Press Enter to add players.'
-                        label='Multiworld player names'
-                        multiple
-                        persistent-hint
-                      >
-                        <template #selection='data'>
-                          <v-chip
-                            :key='JSON.stringify(data.item)'
-                            v-bind='data.attrs'
-                            :disabled='data.disabled'
-                            :input-value='data.selected'
-                            @click:close='data.parent.selectItem(data.item)'
-                          >
-                            <v-avatar
-                              class='accent white--text'
-                              left
-                              v-text='data.item.slice(0, 1).toUpperCase()'
-                            ></v-avatar>
-                            {{ data.item }}
-                          </v-chip>
-                        </template>
-                      </v-combobox>
+                    <div class='mt-4'>
+                      <v-select
+                        v-model='createOnlineGame'
+                          :items="[
+                            {text: 'None', value: 'none'},
+                            {text: 'Co-op', value: 'coop'},
+                            {text: 'Multiworld', value: 'multi'},
+                            {text: 'Bingo', value: 'bingo'},
+                            {text: 'Discovery Bingo', value: 'discovery_bingo'},
+                            {text: 'Lockout Bingo', value: 'lockout_bingo'},
+                          ]"
+                        hide-details
+                        label='Automatically create online game'
+                      />
                     </div>
 
-                    <v-select
-                      v-model='createOnlineGame'
-                      :items="[
-                        {text: 'None', value: 'none'},
-                        {text: 'Co-op', value: 'coop'},
-                        {text: 'Multiworld', value: 'multi'},
-                        {text: 'Bingo (soon™)', value: 'bingo', disabled: true},
-                      ]"
-                      label='Automatically create online game'
-                    />
+                    <v-combobox
+                      v-model='seedgenConfig.multiNames'
+                      :items='[]'
+                      hint='If you specify player names here, this seed will be a multiworld seed. Press Enter to add players.'
+                      label='Multiworld player names'
+                      multiple
+                      persistent-hint
+                    >
+                      <template #selection='data'>
+                        <v-chip
+                          :key='JSON.stringify(data.item)'
+                          v-bind='data.attrs'
+                          :disabled='data.disabled'
+                          :input-value='data.selected'
+                          @click:close='data.parent.selectItem(data.item)'
+                        >
+                          <v-avatar
+                            class='accent white--text'
+                            left
+                            v-text='data.item.slice(0, 1).toUpperCase()'
+                          ></v-avatar>
+                          {{ data.item }}
+                        </v-chip>
+                      </template>
+                    </v-combobox>
                   </div>
                 </v-expand-transition>
               </v-col>
@@ -274,10 +277,6 @@
           // Remove multiNames if netcode is disabled
           if (!this.seedgenConfig.flags.includes('--multiplayer')) {
             this.seedgenConfig.multiNames = []
-          } else if (this.createOnlineGame === 'coop') {
-            additionalParameters.isCoop = true
-          } else if (this.createOnlineGame === 'multi') {
-            additionalParameters.isMulti = true
           }
 
           // Fetch custom headers from IndexedDB
@@ -289,11 +288,29 @@
             ...additionalParameters,
           })
 
+          switch (this.createOnlineGame) {
+            case 'coop':
+              result.gameId = await this.$axios.$post('/games', {isCoop: true})
+              break
+            case 'multi':
+              result.gameId = await this.$axios.$post('/games', {isMulti: true})
+              break
+            case 'bingo':
+              result.gameId = await this.$axios.$post('/bingo')
+              break
+            case 'discovery_bingo':
+              result.gameId = await this.$axios.$post('/bingo', {discovery: 2})
+              break
+            case 'lockout_bingo':
+              result.gameId = await this.$axios.$post('/bingo', {lockout: true})
+              break
+          }
+
           this.seedgenResult = result
 
           // Download the seed instantly for single player, non-networked games
           // and show the download dialog otherwise
-          if (result.gameId === null && result.playerList.length === 0) {
+          if (this.seedgenResult.gameId === null && result.playerList.length === 0) {
             saveAs(`${this.$axios.defaults.baseURL}/seeds/${result.seedId}`, `seed_${result.seedId}.wotwr`)
             confettiFromElement(this.$refs.generateButton.$el, {
               disableForReducedMotion: true,
@@ -301,7 +318,6 @@
             })
 
           } else {
-            this.showResultDialog = true
             await this.$router.replace({ query: { result: JSON.stringify(result) } })
 
             await this.$nextTick()

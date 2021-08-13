@@ -1,13 +1,17 @@
 # Stage 1
 FROM node:alpine as build
 
-ENV API_BASE_URL=/api
+ARG API_HOST=wotw.orirando.com
+ARG API_SECURE=true
+
+ENV API_HOST=$API_HOST
+ENV API_SECURE=$API_SECURE
 
 WORKDIR /app
 COPY . /app
 RUN yarn install \
- && API_BASE=wotw.orirando.com API_SECURE=true yarn build \
- && API_BASE=wotw.orirando.com API_SECURE=true yarn generate
+ && yarn build \
+ && yarn generate
 
 # Stage 2
 FROM nginx:1.19-alpine

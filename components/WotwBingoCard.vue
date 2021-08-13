@@ -81,9 +81,15 @@
         if (this.attentionEffectActive) {
           this.attentionEffectActive = false
           await this.$nextTick()
+          await this.$nextTick()
         }
 
         this.attentionEffectActive = true
+
+        // TODO: Do this properly
+        setTimeout(() => {
+          this.attentionEffectActive = false
+        }, 2000)
       }
     }
   }
@@ -191,7 +197,7 @@
           pointer-events: none;
 
           &.active {
-            animation: attention-effect 500ms forwards ease-out;
+            animation: attention-effect 500ms ease-out;
           }
         }
       }

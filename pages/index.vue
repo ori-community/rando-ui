@@ -37,7 +37,7 @@
               Create lobby
             </v-btn>
           </template>
-          <v-list disabled>
+          <v-list>
             <v-list-item @click='createNewGame("bingo")'>Bingo</v-list-item>
             <v-list-item @click='createNewGame("discovery_bingo")'>Discovery Bingo</v-list-item>
             <v-list-item @click='createNewGame("lockout_bingo")'>Lockout Bingo</v-list-item>

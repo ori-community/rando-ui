@@ -79,6 +79,8 @@ export const actions = {
             commit('setTeams', {gameId, teams: packet.teams})
           }
         })
+      } else {
+        resolve()
       }
     }))
   },

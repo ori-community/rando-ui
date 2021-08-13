@@ -1,7 +1,9 @@
 <template>
   <v-fade-transition mode='out-in'>
-    <slot v-if='!!$slots.default' />
-    <div v-else-if="show" class='text-center ma-8'>
+    <div v-if='!!$slots.default' key='content'>
+      <slot />
+    </div>
+    <div v-else-if="show" key='progress' class='text-center ma-8'>
       <v-progress-circular indeterminate v-bind="$attrs" />
     </div>
   </v-fade-transition>

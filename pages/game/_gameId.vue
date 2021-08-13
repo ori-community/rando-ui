@@ -47,6 +47,11 @@
           </div>
         </template>
       </div>
+      <div v-if='!isLoggedIn && userLoaded' class='text-center'>
+        <v-alert class='d-inline-block' color='error darken-3'>
+          You need to be logged in to view this game.
+        </v-alert>
+      </div>
     </throttled-spinner>
   </div>
 </template>
@@ -64,7 +69,7 @@
     }),
     computed: {
       ...mapGetters('user', ['isLoggedIn']),
-      ...mapState('user', ['user']),
+      ...mapState('user', ['user', 'userLoaded']),
       ...mapState('gameState', ['games']),
       gameId() {
         return this.$route.params.gameId

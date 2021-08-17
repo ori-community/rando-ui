@@ -18,10 +18,19 @@
           </div>
 
           <div class='text-center mt-4'>
-            <v-btn large text :disabled='loading' @click='createTeam'>
-              <v-icon left>mdi-plus</v-icon>
-              New team
-            </v-btn>
+            <v-tooltip bottom :disabled='canCreateTeam'>
+              <span>
+                Bingo games currently don't support more than 8 teams.
+              </span>
+              <template #activator='{on}'>
+                <div class='d-inline-block' v-on='on'>
+                  <v-btn large text :disabled='loading || !canCreateTeam' @click='createTeam'>
+                    <v-icon left>mdi-plus</v-icon>
+                    New team
+                  </v-btn>
+                </div>
+              </template>
+            </v-tooltip>
           </div>
         </div>
         <div v-if='!isLoggedIn && userLoaded' class='text-center'>
@@ -136,7 +145,11 @@
           return []
         }
 
-        return [...this.game.bingoTeams].sort((a, b) => {
+        // Only return bingo teams for which we have a team
+        const teams = this.game.teams
+        return [
+          ...this.game.bingoTeams.filter(b => teams.some(t => t.id === b.teamId))
+        ].sort((a, b) => {
           return b.squares - a.squares
         })
       },
@@ -163,6 +176,9 @@
         }
 
         return teamColors
+      },
+      canCreateTeam() {
+        return this.sortedBingoTeams.length < 8
       }
     },
     watch: {
@@ -184,6 +200,9 @@
         handler(boardSettings) {
           window.localStorage.setItem('boardSettings', JSON.stringify(boardSettings))
         },
+      },
+      'game.teams'() { // TODO: Temporary workaround for orirando/wotw-server#5
+        this.$store.dispatch('gameState/fetchBingoBoard', this.gameId)
       }
     },
     mounted() {

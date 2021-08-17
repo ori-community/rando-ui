@@ -75,13 +75,13 @@
       },
       stateHash() {
         return [
-          this.square?.goals.map(g => g.completed).join(),
+          this.square?.goals.map(g => g.completed ? '+' : '-').join(),
           this.square?.goals.map(g => g.text).join(),
         ].join()
       }
     },
     watch: {
-      async stateHash() {
+      async stateHash(value, oldValue) {
         if (this.attentionEffectActive) {
           this.attentionEffectActive = false
           await this.$nextTick()

@@ -154,7 +154,13 @@
         return [
           ...this.game.bingoTeams.filter(b => teams.some(t => t.id === b.teamId))
         ].sort((a, b) => {
-          return b.squares - a.squares
+          const squareCountDifference = b.squares - a.squares
+
+          if (squareCountDifference === 0) {
+            return b.teamId - a.teamId
+          }
+
+          return squareCountDifference
         })
       },
       teamColors() {

@@ -1,6 +1,18 @@
 <template>
   <div class='bingo-grid py-1' :style='gridStyle'>
+    <template v-if='edgeLabels'>
+      <div></div>
+      <div v-for='x in game.bingoBoard.size' :key='`${x}-top`' class='edge-label'>
+        {{ alphabet[x - 1] }}
+      </div>
+      <div></div>
+    </template>
+
     <template v-for='y in game.bingoBoard.size'>
+      <div v-if='edgeLabels' :key='`${y}-left`' class='edge-label'>
+        {{ y }}
+      </div>
+
       <template v-for='x in game.bingoBoard.size'>
         <wotw-bingo-card
           :key='`${x}${y}`'
@@ -9,6 +21,18 @@
           :team-colors='teamColors'
         />
       </template>
+
+      <div v-if='edgeLabels' :key='`${y}-right`' class='edge-label'>
+        {{ y }}
+      </div>
+    </template>
+
+    <template v-if='edgeLabels'>
+      <div></div>
+      <div v-for='x in game.bingoBoard.size' :key='`${x}-bottom`' class='edge-label'>
+        {{ alphabet[x - 1] }}
+      </div>
+      <div></div>
     </template>
   </div>
 </template>
@@ -26,16 +50,30 @@
       teamColors: {
         type: Object,
         required: true,
+      },
+      edgeLabels: {
+        type: Boolean,
+        default: false,
       }
     },
     data: () => ({
       unveilProgress: 0,
     }),
     computed: {
+      alphabet() {
+        return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+      },
       gridStyle() {
-        return {
-          gridTemplateColumns: `repeat(${this.game.bingoBoard.size}, minmax(0, 1fr))`,
-          gridTemplateRows: `repeat(${this.game.bingoBoard.size}, minmax(0, 1fr))`,
+        if (this.edgeLabels) {
+          return {
+            gridTemplateColumns: `auto repeat(${this.game.bingoBoard.size}, minmax(0, 1fr)) auto`,
+            gridTemplateRows: `auto repeat(${this.game.bingoBoard.size}, minmax(0, 1fr)) auto`,
+          }
+        } else {
+          return {
+            gridTemplateColumns: `repeat(${this.game.bingoBoard.size}, minmax(0, 1fr))`,
+            gridTemplateRows: `repeat(${this.game.bingoBoard.size}, minmax(0, 1fr))`,
+          }
         }
       },
       squaresByPosition() { // 2D array of squares by [x][y]
@@ -74,5 +112,12 @@
     display: grid;
     flex-grow: 1;
     grid-gap: 0.4em;
+
+    .edge-label {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      line-height: 1;
+    }
   }
 </style>

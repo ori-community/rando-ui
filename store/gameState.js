@@ -15,6 +15,7 @@ const ensureGameExists = (state, gameId) => {
     Vue.set(state.games, gameId, {
       teams: [],
       bingoBoard: null,
+      bingoTeams: [],
     })
   }
 }
@@ -30,6 +31,10 @@ export const mutations = {
     ensureGameExists(state, gameId)
     state.games[gameId].teams = teams
   },
+  setBingoTeams(state, {gameId, bingoTeams}) {
+    ensureGameExists(state, gameId)
+    state.games[gameId].bingoTeams = bingoTeams
+  },
 }
 
 export const actions = {
@@ -42,9 +47,12 @@ export const actions = {
   },
   async fetchBingoBoard({ commit }, gameId) {
     let board = null
+    let bingoTeams = []
 
     try {
-      board = (await this.$axios.$get(`/bingo/${gameId}`)).board
+      const response = await this.$axios.$get(`/bingo/${gameId}`)
+      board = response.board
+      bingoTeams = response.teams ?? []
     } catch (e) {
       if (e.response.status !== 404) {
         console.error(e)
@@ -54,11 +62,17 @@ export const actions = {
     }
 
     commit('setBingoBoard', {gameId, board})
+    commit('setBingoTeams', {gameId, bingoTeams})
   },
-  connectGame({ commit }, { userId, gameId }) {
+  connectGame({ commit, dispatch }, { userId, gameId, retries = 0 }) {
     let ws = webSockets[gameId] ?? null
 
     return new Promise(((resolve, reject) => {
+      if (retries >= 5) {
+        reject(new Error('Max number of retries exceeded'))
+        return
+      }
+
       if (ws?.readyState !== WebSocket.OPEN && ws?.readyState !== WebSocket.CONNECTING) {
         ws?.close()
         webSockets[gameId] = new WebSocket(`${process.env.WS_BASE_URL}/observers/${gameId}`)
@@ -68,15 +82,24 @@ export const actions = {
             playerId: userId,
           }))
 
+          retries = 0
           resolve()
         })
-        ws.addEventListener('close', reject)
+        ws.addEventListener('close', () => {
+          setTimeout(() => {
+            dispatch('connectGame', {userId, gameId, retries: retries + 1})
+              .catch(reject)
+          }, 1000 * retries)
+        })
         ws.addEventListener('message', async event => {
           const packet = await decodePacket(event.data)
+          console.log(packet)
           if (packet instanceof RandoProto.SyncBoardMessage) {
             commit('setBingoBoard', {gameId, board: packet.board})
           } else if (packet instanceof RandoProto.GameInfo) {
             commit('setTeams', {gameId, teams: packet.teams})
+          } else if (packet instanceof RandoProto.SyncBingoPlayersMessage) { // TODO: Refactor players → teams
+            commit('setBingoTeams', {gameId, bingoTeams: packet.players})
           }
         })
       } else {

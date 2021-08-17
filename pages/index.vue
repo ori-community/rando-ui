@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container>
     <div class='text-center'>
       <h1 class='mt-12 mb-6'>Ori and the Will of the Wisps Randomizer</h1>
 
@@ -47,7 +47,7 @@
         </v-menu>
       </div>
     </div>
-  </div>
+  </v-container>
 </template>
 
 <script>

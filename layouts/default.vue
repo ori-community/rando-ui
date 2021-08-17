@@ -3,9 +3,9 @@
     <v-main class='main'>
       <v-container>
         <wotw-page-toolbar />
-
-        <Nuxt />
       </v-container>
+
+      <Nuxt />
     </v-main>
 
     <footer>
@@ -41,6 +41,11 @@
 
   .inherit--text {
     color: inherit !important;
+  }
+
+  .list-move {
+    transition: 400ms;
+    z-index: 1;
   }
 </style>
 

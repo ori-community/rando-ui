@@ -21,3 +21,4 @@ services:
     - traefik.http.routers.api.service=api
     - traefik.http.services.api.loadbalancer.server.url=http://127.0.0.1:8080
     - traefik.http.services.api.loadbalancer.server.port=8080
+    - traefik.http.services.api.loadbalancer.passhostheader=false

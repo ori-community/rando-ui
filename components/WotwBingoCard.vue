@@ -4,14 +4,16 @@
       <v-card class='front' :style='cardStyle' color='background lighten-1'>
         <div class='content d-flex flex-column'>
           <template v-if='!!square'>
-            <div class='square-text pa-2'>{{ square.text }}</div>
-            <v-spacer />
-            <div class='px-2 pt-1 pb-2 square-goals' :class='{"bigger-text": goalsShouldBeLarge}'>
-              <div v-for='goal in square.goals' :key='goal.text' class='goal' :class='{completed: goal.completed}'>
-                {{ goal.text }}
+            <div class='square-text pa-2' :class='{expand: !hasGoals}'>{{ square.text }}</div>
+            <template v-if='hasGoals'>
+              <v-spacer />
+              <div class='px-2 pt-1 pb-2 square-goals' :class='{"bigger-text": goalsShouldBeLarge}'>
+                <div v-for='goal in square.goals' :key='goal.text' class='goal' :class='{completed: goal.completed}'>
+                  {{ goal.text }}
+                </div>
               </div>
-            </div>
-            <v-spacer />
+              <v-spacer />
+            </template>
           </template>
         </div>
         <div class='attention-effect' :class='{active: attentionEffectActive}'></div>
@@ -50,6 +52,9 @@
       goalsShouldBeLarge() {
         return this.square.goals.length === 1 && this.square.goals[0].text.length <= 16
       },
+      hasGoals() {
+        return this.square.goals.length !== 0
+      },
       cardStyle() {
         if (this.square === null || this.square.completedBy.length === 0) {
           return {}
@@ -70,7 +75,6 @@
       },
       stateHash() {
         return [
-          this.square?.completedBy.map(t => t.id).join(),
           this.square?.goals.map(g => g.completed).join(),
           this.square?.goals.map(g => g.text).join(),
         ].join()
@@ -155,6 +159,17 @@
             bottom: 0;
             background-color: white;
             opacity: 0.15;
+          }
+
+          &.expand {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            font-size: 1.2em;
+
+            &::before {
+              display: none;
+            }
           }
         }
 

@@ -41,6 +41,10 @@
         type: Object,
         required: true,
       },
+      hiddenTeams: {
+        type: Array,
+        default: () => ([]),
+      },
     },
     data: () => ({
       attentionEffectActive: false,
@@ -60,7 +64,9 @@
           return {}
         }
 
-        const colors = this.square.completedBy.map(team => this.teamColors[team.id])
+        const colors = this.square.completedBy
+          .filter(team => !this.hiddenTeams.includes(team.id))
+          .map(team => this.teamColors[team.id])
         const stops = []
 
         for (let i = 0; i < colors.length; i++) {
@@ -69,8 +75,12 @@
           stops.push(`${colors[i]} ${stopStart}% ${stopEnd}%`)
         }
 
+        if (stops.length === 0) {
+          return {}
+        }
+
         return {
-          background: `linear-gradient(to bottom left, ${stops.join(', ')})`
+          background: `linear-gradient(to bottom left, ${stops.join(', ')})`,
         }
       },
       stateHash() {

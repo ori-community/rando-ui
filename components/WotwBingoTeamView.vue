@@ -1,5 +1,5 @@
 <template>
-  <v-card class='team-view'>
+  <v-card class='team-view' @click='$emit("click")'>
     <v-sheet :color='color' class='color-stripe'>
       <div v-if='!!bingoTeam' class='squares px-2'>
         {{ bingoTeam.squares }}

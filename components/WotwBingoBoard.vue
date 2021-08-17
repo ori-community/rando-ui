@@ -19,6 +19,7 @@
           :force-flip='x + y > unveilProgress'
           :square='hasSquare(x, y) ? squaresByPosition[x][y].square : null'
           :team-colors='teamColors'
+          :hidden-teams='hiddenTeams'
         />
       </template>
 
@@ -50,6 +51,10 @@
       teamColors: {
         type: Object,
         required: true,
+      },
+      hiddenTeams: {
+        type: Array,
+        default: () => ([]),
       },
       edgeLabels: {
         type: Boolean,

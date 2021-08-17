@@ -70,6 +70,7 @@
             :game='games[gameId]'
             :team-colors='teamColors'
             :edge-labels='boardSettings.edgeLabels'
+            :hidden-teams='hiddenTeams'
           />
           <div class='sidebar px-5'>
             <transition-group name='list' class='bingo-teams'>
@@ -80,9 +81,10 @@
                 :style='{zIndex: sortedBingoTeams.length - index}'
               >
                 <wotw-bingo-team-view
-                  :color='teamColors[bingoTeam.teamId]'
+                  :color='hiddenTeams.includes(bingoTeam.teamId) ? "" : teamColors[bingoTeam.teamId]'
                   :team='games[gameId].teams.find(t => t.id === bingoTeam.teamId)'
                   :bingo-team='bingoTeam'
+                  @click='toggleTeamVisibility(bingoTeam.teamId)'
                 />
               </div>
             </transition-group>
@@ -125,6 +127,7 @@
       loading: false,
       gameReady: false,
       showBoard: false,
+      hiddenTeams: [], // Array of team IDs
       boardSettingsOpen: false,
       boardSettings: {
         edgeLabels: false,
@@ -228,7 +231,14 @@
           block: 'start'
         })
         this.showBoard = true
-      }
+      },
+      toggleTeamVisibility(teamId) {
+        if (this.hiddenTeams.includes(teamId)) {
+          this.hiddenTeams = this.hiddenTeams.filter(t => t !== teamId)
+        } else {
+          this.hiddenTeams.push(teamId)
+        }
+      },
     },
   }
 </script>

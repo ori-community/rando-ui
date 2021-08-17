@@ -85,6 +85,7 @@
                   :team-hidden='hiddenTeams.includes(bingoTeam.teamId)'
                   :team='games[gameId].teams.find(t => t.id === bingoTeam.teamId)'
                   :bingo-team='bingoTeam'
+                  @click.native.ctrl.capture.stop='toggleTeamVisibility(bingoTeam.teamId, true)'
                   @click='toggleTeamVisibility(bingoTeam.teamId)'
                 />
               </div>
@@ -152,7 +153,7 @@
         // Only return bingo teams for which we have a team
         const teams = this.game.teams
         return [
-          ...this.game.bingoTeams.filter(b => teams.some(t => t.id === b.teamId))
+          ...this.game.bingoTeams.filter(b => teams.some(t => t.id === b.teamId)),
         ].sort((a, b) => {
           const squareCountDifference = b.squares - a.squares
 
@@ -189,7 +190,7 @@
       },
       canCreateTeam() {
         return this.sortedBingoTeams.length < 8
-      }
+      },
     },
     watch: {
       isLoggedIn: {
@@ -213,7 +214,7 @@
       },
       'game.teams'() { // TODO: Temporary workaround for orirando/wotw-server#5
         this.$store.dispatch('gameState/fetchBingoBoard', this.gameId)
-      }
+      },
     },
     mounted() {
       try {
@@ -235,12 +236,18 @@
       centerBoard() {
         this.$refs.boardContainer.scrollIntoView({
           behavior: this.showBoard ? 'smooth' : 'auto',
-          block: 'start'
+          block: 'start',
         })
         this.showBoard = true
       },
-      toggleTeamVisibility(teamId) {
-        if (this.hiddenTeams.includes(teamId)) {
+      toggleTeamVisibility(teamId, exclusive = false) {
+        if (exclusive) {
+          if (this.hiddenTeams.length === this.sortedBingoTeams.length - 1 && !this.hiddenTeams.includes(teamId)) {
+            this.hiddenTeams = []
+          } else {
+            this.hiddenTeams = this.sortedBingoTeams.map(t => t.teamId).filter(t => t !== teamId)
+          }
+        } else if (this.hiddenTeams.includes(teamId)) {
           this.hiddenTeams = this.hiddenTeams.filter(t => t !== teamId)
         } else {
           this.hiddenTeams.push(teamId)

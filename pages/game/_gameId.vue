@@ -81,7 +81,8 @@
                 :style='{zIndex: sortedBingoTeams.length - index}'
               >
                 <wotw-bingo-team-view
-                  :color='hiddenTeams.includes(bingoTeam.teamId) ? "" : teamColors[bingoTeam.teamId]'
+                  :color='teamColors[bingoTeam.teamId]'
+                  :team-hidden='hiddenTeams.includes(bingoTeam.teamId)'
                   :team='games[gameId].teams.find(t => t.id === bingoTeam.teamId)'
                   :bingo-team='bingoTeam'
                   @click='toggleTeamVisibility(bingoTeam.teamId)'

@@ -1,6 +1,6 @@
 <template>
-  <v-card class='team-view' @click='$emit("click")'>
-    <v-sheet :color='color' class='color-stripe'>
+  <v-card class='team-view' :class='{"team-hidden": teamHidden}' @click='$emit("click")'>
+    <v-sheet :color='teamHidden ? "" : color' class='color-stripe'>
       <div v-if='!!bingoTeam' class='squares px-2'>
         {{ bingoTeam.squares }}
       </div>
@@ -40,6 +40,10 @@
         type: String,
         default: '',
       },
+      teamHidden: {
+        type: Boolean,
+        default: false,
+      }
     },
     computed: {
       ...mapState('user', ['user']),
@@ -53,6 +57,12 @@
     display: flex;
     flex-direction: row;
     position: relative;
+
+    &.team-hidden {
+      .squares {
+        opacity: 0.5;
+      }
+    }
 
     .color-stripe {
       border-radius: 0 !important;

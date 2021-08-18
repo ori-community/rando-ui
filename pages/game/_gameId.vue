@@ -2,7 +2,6 @@
   <div>
     <v-container>
       <h1 class='text-center mt-12 mb-6'>Game <small>#</small>{{ gameId }}</h1>
-
       <throttled-spinner>
         <div v-if='isLoggedIn && gameReady'>
           <div class='teams'>
@@ -36,12 +35,17 @@
         <div v-if='!isLoggedIn && userLoaded' class='text-center'>
           <v-alert class='d-inline-block' color='error darken-3'>
             You need to be logged in to view this game.
+            <template v-if='isOBS'>
+              <br>
+              <br>
+              Log in by right clicking the Browser Source and click 'Interact'.
+            </template>
           </v-alert>
         </div>
       </throttled-spinner>
     </v-container>
 
-    <template v-if='isLoggedIn && gameReady && !!games[gameId].bingoBoard'>
+    <template v-if='isLoggedIn && gameReady && !!game.bingoBoard'>
       <v-container>
         <h2 class='text-center mb-3 mt-8'>Bingo board</h2>
 
@@ -63,7 +67,7 @@
         </div>
       </v-container>
 
-      <div ref='boardContainer' class='board-container px-1'>
+      <div ref='boardContainer' class='board-container' :class='{"px-1": !boardSettings.obsMode}'>
         <template v-if='showBoard'>
           <wotw-bingo-board
             class='board'
@@ -113,6 +117,9 @@
             hint='Show coordinates around the board'
             persistent-hint
           />
+
+          To have Bingo Boards in OBS, just add this page as a Browser source
+          and follow the instructions.
         </v-card>
       </v-dialog>
     </template>
@@ -122,6 +129,18 @@
 <script>
   import { mapGetters, mapState } from 'vuex'
   import { colors } from 'vuetify/lib'
+
+  const isOBS = () => !!window?.obsstudio?.pluginVersion
+
+  const obsModeStyle = `
+  html {
+    overflow: hidden; /* doesn't work sometimes for reasons */
+  }
+
+  .v-application {
+    background-color: transparent !important;
+  }
+  `
 
   export default {
     name: 'GamePage',
@@ -139,6 +158,9 @@
       ...mapGetters('user', ['isLoggedIn']),
       ...mapState('user', ['user', 'userLoaded']),
       ...mapState('gameState', ['games']),
+      isOBS() {
+        return isOBS()
+      },
       gameId() {
         return this.$route.params.gameId
       },
@@ -214,6 +236,23 @@
       },
       'game.teams'() { // TODO: Temporary workaround for orirando/wotw-server#5
         this.$store.dispatch('gameState/fetchBingoBoard', this.gameId)
+      },
+      gameReady: {
+        immediate: true,
+        handler(gameReady) {
+          if (gameReady && this.game.bingoBoard) {
+            this.$nextTick(() => {
+              if (isOBS()) {
+                const styleElement = document.createElement('style')
+                styleElement.innerHTML = obsModeStyle
+                styleElement.id = 'obs-mode-style'
+                document.head.appendChild(styleElement)
+
+                this.centerBoard()
+              }
+            })
+          }
+        }
       },
     },
     mounted() {

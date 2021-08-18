@@ -235,7 +235,9 @@
         },
       },
       'game.teams'() { // TODO: Temporary workaround for orirando/wotw-server#5
-        this.$store.dispatch('gameState/fetchBingoBoard', this.gameId)
+        if (this.game.bingoBoard) {
+          this.$store.dispatch('gameState/fetchBingoBoard', this.gameId)
+        }
       },
       gameReady: {
         immediate: true,

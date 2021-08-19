@@ -7,18 +7,18 @@
       </v-btn>
     </div>
 
-    <h3>Seeds</h3>
+    <div v-if='result.gameId !== null' class='mt-6'>
+      <h3>1. Join the game</h3>
+
+      <v-btn :href='`/game/${result.gameId}`' target='_blank' color='primary' text outlined>Go to game</v-btn>
+    </div>
+
+    <h3><template v-if='result.gameId !== null'>2. </template>Download your seed</h3>
     <div>
       <v-btn v-for='seed in seedsToDisplay' :key='seed.url' color='primary' text outlined class='mb-1 mr-1' @click='downloadSeed(seed)'>
         <v-icon left>mdi-download-outline</v-icon>
         {{ seed.label }}
       </v-btn>
-    </div>
-
-    <div v-if='result.gameId !== null' class='mt-6'>
-      <h3>Game</h3>
-
-      <v-btn :href='`/game/${result.gameId}`' target='_blank' color='primary' text outlined>Go to game</v-btn>
     </div>
   </v-card>
 </template>

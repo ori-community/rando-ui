@@ -45,6 +45,10 @@
         type: Array,
         default: () => ([]),
       },
+      highlightTeam: {
+        type: Number,
+        default: null,
+      }
     },
     data: () => ({
       attentionEffectActive: false,
@@ -64,15 +68,32 @@
           return {}
         }
 
-        const colors = this.square.completedBy
-          .filter(team => !this.hiddenTeams.includes(team.id))
+        const highlightSplitPercentage = 40
+
+        const nonHighlightedColors = this.square.completedBy
+          .filter(team => !this.hiddenTeams.includes(team.id) && team.id !== this.highlightTeam)
+          .sort((a, b) => b.id - a.id)
           .map(team => this.teamColors[team.id])
         const stops = []
 
-        for (let i = 0; i < colors.length; i++) {
-          const stopStart = (i / colors.length) * 100
-          const stopEnd = ((i + 1) / colors.length) * 100
-          stops.push(`${colors[i]} ${stopStart}% ${stopEnd}%`)
+        const shouldHighlight = !!this.highlightTeam && !this.hiddenTeams.includes(this.highlightTeam)
+
+        for (let i = 0; i < nonHighlightedColors.length; i++) {
+          const stopStart = (i / nonHighlightedColors.length) * (shouldHighlight ? highlightSplitPercentage : 100)
+          const stopEnd = ((i + 1) / nonHighlightedColors.length) * (shouldHighlight ? highlightSplitPercentage : 100)
+          stops.push(`${nonHighlightedColors[i]} ${stopStart}% ${stopEnd}%`)
+        }
+
+        if (stops.length === 0) {
+          stops.push(`transparent 0% ${highlightSplitPercentage}%`)
+        }
+
+        if (this.highlightTeam) {
+          if (shouldHighlight && this.square.completedBy.includes(this.highlightTeam)) {
+            stops.push(`${this.teamColors[this.highlightTeam]} ${highlightSplitPercentage}% 100%`)
+          } else {
+            stops.push(`transparent ${highlightSplitPercentage}% 100%`)
+          }
         }
 
         if (stops.length === 0) {

@@ -75,6 +75,7 @@
             :team-colors='teamColors'
             :edge-labels='boardSettings.edgeLabels'
             :hidden-teams='hiddenTeams'
+            :highlight-team='highlightedTeamId'
           />
           <div class='sidebar px-5'>
             <transition-group name='list' class='bingo-teams'>
@@ -118,8 +119,17 @@
             persistent-hint
           />
 
-          To have Bingo Boards in OBS, just add this page as a Browser source
-          and follow the instructions.
+          <v-checkbox
+            v-model='boardSettings.highlightOwnTeam'
+            label='Highlight own team'
+            hint='Reserve bottom left parts of bingo squares for your team. Greatly improves overview of your progress.'
+            persistent-hint
+          />
+
+          <div class='mt-3'>
+            To have Bingo Boards in OBS, just add this page as a Browser source
+            and follow the instructions.
+          </div>
         </v-card>
       </v-dialog>
     </template>
@@ -152,6 +162,7 @@
       boardSettingsOpen: false,
       boardSettings: {
         edgeLabels: false,
+        highlightOwnTeam: true,
       },
     }),
     computed: {
@@ -212,6 +223,23 @@
       },
       canCreateTeam() {
         return this.sortedBingoTeams.length < 8
+      },
+      ownTeam() {
+        return this.game.teams.find(
+          team => team.members.find(
+            player => player.id === this.user?.id
+          )
+        )
+      },
+      ownTeamId() {
+        return this.ownTeam?.id
+      },
+      highlightedTeamId() {
+        if (!this.boardSettings.highlightOwnTeam) {
+          return null
+        }
+
+        return this.ownTeamId
       },
     },
     watch: {

@@ -20,6 +20,7 @@
           :square='hasSquare(x, y) ? squaresByPosition[x][y].square : null'
           :team-colors='teamColors'
           :hidden-teams='hiddenTeams'
+          :highlight-team='highlightTeam'
         />
       </template>
 
@@ -59,7 +60,11 @@
       edgeLabels: {
         type: Boolean,
         default: false,
-      }
+      },
+      highlightTeam: {
+        type: Number,
+        default: null,
+      },
     },
     data: () => ({
       unveilProgress: 0,

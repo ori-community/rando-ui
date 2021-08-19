@@ -180,7 +180,7 @@
           const squareCountDifference = b.squares - a.squares
 
           if (squareCountDifference === 0) {
-            return b.teamId - a.teamId
+            return a.teamId - b.teamId
           }
 
           return squareCountDifference

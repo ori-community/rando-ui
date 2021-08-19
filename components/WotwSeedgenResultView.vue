@@ -7,7 +7,7 @@
       </v-btn>
     </div>
 
-    <div v-if='result.gameId !== null' class='mt-6'>
+    <div v-if='result.gameId !== null' class='mb-6'>
       <h3>1. Join the game</h3>
 
       <v-btn :href='`/game/${result.gameId}`' target='_blank' color='primary' text outlined>Go to game</v-btn>

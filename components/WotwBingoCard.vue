@@ -68,7 +68,7 @@
           return {}
         }
 
-        const highlightSplitPercentage = 40
+        const highlightSplitPercentage = 33
 
         const nonHighlightedColors = this.square.completedBy
           .filter(team => !this.hiddenTeams.includes(team.id) && team.id !== this.highlightTeam)

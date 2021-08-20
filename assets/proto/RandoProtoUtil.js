@@ -13,7 +13,7 @@ const getPacketId = (content) => {
 }
 
 export const blobToArray = async (blob) => {
-  return new Uint8Array(await blob.arrayBuffer())
+  return new Uint8Array(await new Response(blob).arrayBuffer())
 }
 
 export const decodePacket = async (blob) => {

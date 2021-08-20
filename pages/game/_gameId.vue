@@ -150,6 +150,10 @@
   .v-application {
     background-color: transparent !important;
   }
+
+  footer {
+    display: none;
+  }
   `
 
   export default {
@@ -227,8 +231,8 @@
       ownTeam() {
         return this.game.teams.find(
           team => team.members.find(
-            player => player.id === this.user?.id
-          )
+            player => player.id === this.user?.id,
+          ),
         )
       },
       ownTeamId() {
@@ -282,7 +286,7 @@
               }
             })
           }
-        }
+        },
       },
     },
     mounted() {

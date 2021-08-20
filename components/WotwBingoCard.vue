@@ -89,7 +89,7 @@
         }
 
         if (this.highlightTeam) {
-          if (shouldHighlight && this.square.completedBy.includes(this.highlightTeam)) {
+          if (shouldHighlight && this.square.completedBy.some(t => t.id === this.highlightTeam)) {
             stops.push(`${this.teamColors[this.highlightTeam]} ${highlightSplitPercentage}% 100%`)
           } else {
             stops.push(`transparent ${highlightSplitPercentage}% 100%`)

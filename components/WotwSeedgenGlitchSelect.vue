@@ -1,34 +1,34 @@
 <template>
   <div>
     <v-tooltip
-      v-for='(logic, id) in logicSets'
+      v-for='(glitch, id) in glitches'
       :key='id'
       top
-      :disabled='!logic.description'
+      :disabled='!glitch.description'
       open-delay='500'
     >
       <template #activator='{on}'>
         <v-btn
           :value='true'
           class='text-none mr-1 mb-1'
-          :color='logicStates[id] ? "secondary" : "background lighten-2"'
+          :color='glitchStates[id] ? "secondary" : "background lighten-2"'
           depressed
           v-on='on'
-          @click='logicStates[id] = !logicStates[id]'
+          @click='glitchStates[id] = !glitchStates[id]'
         >
-          {{ logic.name }}
+          {{ glitch.name }}
         </v-btn>
       </template>
-      <span>{{ logic.description }}</span>
+      <span>{{ glitch.description }}</span>
     </v-tooltip>
   </div>
 </template>
 
 <script>
   export default {
-    name: 'WotwSeedgenLogicSelect',
+    name: 'WotwSeedgenGlitchSelect',
     props: {
-      logicSets: {
+      glitches: {
         type: Object,
         required: true,
       },
@@ -38,14 +38,14 @@
       },
     },
     data: vm => ({
-      logicStates: {},
+      glitchStates: {},
       inputValue: vm.value ?? [],
     }),
     watch: {
-      logicStates: {
+      glitchStates: {
         deep: true,
         handler(value) {
-          this.inputValue = Object.keys(value).filter(p => !!this.logicStates[p])
+          this.inputValue = Object.keys(value).filter(p => !!this.glitchStates[p])
         },
       },
       inputValue: {
@@ -67,8 +67,8 @@
     },
     methods: {
       updateStates() {
-        for (const id of Object.keys(this.logicSets)) {
-          this.$set(this.logicStates, id, this.inputValue.includes(id))
+        for (const id of Object.keys(this.glitches)) {
+          this.$set(this.glitchStates, id, this.inputValue.includes(id))
         }
       },
     },

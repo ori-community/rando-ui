@@ -1,21 +1,3 @@
-MOKI:
-  name: Moki
-  description: |
-    The default game paths
-GORLEK:
-  name: Gorlek
-  description: |
-    Hard game paths
-GLITCH:
-  name: Glitched
-  description: |
-    Paths that require glitches
-UNSAFE:
-  name: Unsafe
-  description: |
-SJUMP:
-  name: Sentry Jump
-  description: |
 SWORDSENTRYJUMP:
   name: Sword Sentry Jump
   description: |
@@ -24,6 +6,15 @@ HAMMERSENTRYJUMP:
   description: |
 SHURIKENBREAK:
   name: Shuriken Break
+  description: |
+SENTRYBREAK:
+  name: Sentry Break
+  description: |
+SPEARBREAK:
+  name: Spear Break
+  description: |
+HAMMERBREAK:
+  name: Hammer Break
   description: |
 SENTRYBURN:
   name: Sentry Burn

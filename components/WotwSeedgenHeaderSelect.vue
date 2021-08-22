@@ -1,27 +1,39 @@
 <template>
   <div>
-    <v-tooltip
+    <v-card
       v-for='header in headers'
       :key='header.headerName'
-      top
-      :disabled='!header.description'
-      max-width='300'
-      open-delay='500'
+      class='d-inline-flex align-center mr-1 mb-1'
+      color='background lighten-3'
+      elevation='0'
     >
-      <template #activator='{on}'>
-        <v-btn
-          :value='true'
-          class='text-none mr-1 mb-1'
-          :color='headerStates[header.headerName] ? "secondary" : "background lighten-2"'
-          depressed
-          v-on='on'
-          @click='headerStates[header.headerName] = !headerStates[header.headerName]'
-        >
-          {{ header.name }}
-        </v-btn>
-      </template>
-      <span class='text-pre-wrap'>{{ header.description.join('\n') }}</span>
-    </v-tooltip>
+      <v-tooltip
+        top
+        :disabled='!header.description'
+        max-width='300'
+        open-delay='500'
+      >
+        <template #activator='{on}'>
+          <v-btn
+            :value='true'
+            class='text-none'
+            :color='headerStates[header.headerName] ? "secondary" : "background lighten-2"'
+            depressed
+            v-on='on'
+            @click='headerStates[header.headerName] = !headerStates[header.headerName]'
+          >
+            {{ header.name }}
+          </v-btn>
+        </template>
+        <span class='text-pre-wrap'>{{ header.description.join('\n') }}</span>
+      </v-tooltip>
+
+<!--      <v-badge overlap offset-x='16' content='2' color='accent lighten-1'>-->
+<!--        <v-btn icon small class='mx-2'>-->
+<!--          <v-icon>mdi-tune</v-icon>-->
+<!--        </v-btn>-->
+<!--      </v-badge>-->
+    </v-card>
   </div>
 </template>
 

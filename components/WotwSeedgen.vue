@@ -6,12 +6,11 @@
           <v-tab>
             <v-icon left>mdi-star-outline</v-icon>
             Presets
-            <v-chip class='ml-1' x-small>{{ seedgenConfig.logic.length }}</v-chip>
           </v-tab>
           <v-tab>
             <v-icon left>mdi-map-marker-path</v-icon>
             Paths
-            <v-chip class='ml-1' x-small>{{ seedgenConfig.logic.length }}</v-chip>
+            <v-chip class='ml-1' x-small>{{ seedgenConfig.glitches.length }}</v-chip>
           </v-tab>
           <v-tab>
             <v-icon left>mdi-flag-checkered</v-icon>
@@ -41,10 +40,18 @@
             />
           </v-tab-item>
           <v-tab-item class='pa-4'>
+            <v-select
+              v-model='seedgenConfig.difficulty'
+              :items='availableDifficultiesArray'
+              label='Difficulty'
+              item-text='name'
+              item-value='id'
+            />
+
             <p>
-              Select which paths should be required to complete the seed and where you would like to spawn.
+              Select which glitches should be required to complete the seed and where you would like to spawn.
             </p>
-            <wotw-seedgen-logic-select v-model='seedgenConfig.logic' class='mb-6' :logic-sets='availableLogicSets' />
+            <wotw-seedgen-glitch-select v-model='seedgenConfig.glitches' class='mb-6' :glitches='availableGlitches' />
 
             <v-select v-model='seedgenConfig.spawn' :items='availableSpawns' label='Spawn'>
               <template #item='{item}'>
@@ -190,9 +197,10 @@
 
 <script>
   import { saveAs } from 'file-saver'
-  import logicSets from '~/assets/seedgen/logic.yaml'
+  import glitches from '~/assets/seedgen/glitches.yaml'
   import goals from '~/assets/seedgen/goals.yaml'
   import spawns from '~/assets/seedgen/spawns.yaml'
+  import difficulties from '~/assets/seedgen/difficulties.yaml'
   import { confettiFromElement } from '~/assets/lib/confettiFromElement'
   import { db } from '~/assets/db/database'
 
@@ -200,10 +208,12 @@
     flags: [],
     headers: [],
     customHeaders: [],
-    logic: [],
+    glitches: [],
+    difficulty: 'moki',
     goals: [],
     multiNames: [],
     seed: null,
+    headerArgs: [],
     spawn: 'MarshSpawn.Main',
   })
 
@@ -211,8 +221,9 @@
     name: 'WotwSeedgen',
     data: () => ({
       seedgenConfig: generateNewSeedgenConfig(),
-      availableLogicSets: logicSets,
+      availableGlitches: glitches,
       availableGoals: goals,
+      availableDifficulties: difficulties,
       availableHeaders: null, // Fetched from server
       availablePresets: null, // Fetched from server
       createOnlineGame: 'coop',
@@ -239,6 +250,13 @@
 
         return availableSpawns
       },
+      availableDifficultiesArray() {
+        // Flatten Object and map object keys to id
+        return Object.entries(difficulties).map(d => ({
+          id: d[0].toLowerCase(),
+          ...d[1],
+        }))
+      }
     },
     watch: {
       'seedgenConfig.multiNames'(multiNames) {
@@ -339,7 +357,7 @@
           this.seedgenConfig = generateNewSeedgenConfig()
         }
 
-        const paths = new Set(this.seedgenConfig.logic)
+        const glitches = new Set(this.seedgenConfig.glitches)
         const headers = new Set(this.seedgenConfig.headers)
         const goals = new Set(this.seedgenConfig.goals)
         const playerNames = new Set(this.seedgenConfig.multiNames)
@@ -347,7 +365,7 @@
         let spawn = this.seedgenConfig.spawn
 
         for (const preset of presets) {
-          preset.pathsets.forEach(p => paths.add(p))
+          preset.glitches.forEach(p => glitches.add(p))
           preset.headerList.forEach(h => headers.add(h))
           preset.goalmodes.forEach(g => goals.add(g))
           preset.players.forEach(p => playerNames.add(p))
@@ -389,7 +407,16 @@
           spawn = 'random'
         }
 
-        this.seedgenConfig.logic = Array.from(paths)
+        for (const preset of presets) {
+          const currentDifficultyLevel = difficulties[this.seedgenConfig.difficulty.toUpperCase()].level
+          const presetDifficultyLevel = difficulties[preset.difficulty.toUpperCase()].level
+
+          if (presetDifficultyLevel > currentDifficultyLevel) {
+            this.seedgenConfig.difficulty = preset.difficulty.toLowerCase()
+          }
+        }
+
+        this.seedgenConfig.glitches = Array.from(glitches)
         this.seedgenConfig.headers = Array.from(headers)
         this.seedgenConfig.goals = Array.from(goals)
         this.seedgenConfig.flags = Array.from(flags)

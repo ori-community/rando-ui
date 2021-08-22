@@ -1,5 +1,5 @@
 # Optional preset display names and descriptions
-# TODO: should probably be moves to the preset json files
+# TODO: should probably be moved to the preset json files
 
 moki:
   name: Moki
@@ -7,9 +7,9 @@ moki:
 gorlek:
   name: Gorlek
   description: For advanced players, requires some hard paths
-gorlek_glitch:
-  name: Gorlek (glitched)
-  description: Same as Gorlek, but with Sentry Jumps
+glitches:
+  name: Glitches
+  description: Require glitches
 hints:
   name: Hints
   description: Enable skill and zone hints

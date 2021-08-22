@@ -1,0 +1,15 @@
+MOKI:
+  name: Moki (Easy)
+  level: 1
+  description: |
+    The default game paths
+GORLEK:
+  name: Gorlek (Hard)
+  level: 2
+  description: |
+    Hard game paths
+UNSAFE:
+  name: Unsafe (Don't try at home)
+  level: 3
+  description: |
+    Very hard game paths

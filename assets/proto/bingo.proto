@@ -48,8 +48,8 @@ message BingoTeamInfo {
   int32 lines = 6;
 }
 
-message SyncBingoPlayersMessage {
-  repeated BingoTeamInfo players = 1;
+message SyncBingoTeamsMessage {
+  repeated BingoTeamInfo teams = 1;
 }
 
 message Position {

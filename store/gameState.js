@@ -97,9 +97,9 @@ export const actions = {
           if (packet instanceof RandoProto.SyncBoardMessage) {
             commit('setBingoBoard', {gameId, board: packet.board})
           } else if (packet instanceof RandoProto.GameInfo) {
-            commit('setTeams', {gameId, teams: packet.teams})
-          } else if (packet instanceof RandoProto.SyncBingoPlayersMessage) { // TODO: Refactor players → teams
-            commit('setBingoTeams', {gameId, bingoTeams: packet.players})
+            commit('setTeams', { gameId, teams: packet.teams })
+          } else if (packet instanceof RandoProto.SyncBingoTeamsMessage) {
+            commit('setBingoTeams', { gameId, bingoTeams: packet.teams })
           }
         })
       } else {

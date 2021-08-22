@@ -2075,25 +2075,25 @@ export const RandoProto = $root.RandoProto = (() => {
         return BingoTeamInfo;
     })();
 
-    RandoProto.SyncBingoPlayersMessage = (function() {
+    RandoProto.SyncBingoTeamsMessage = (function() {
 
         /**
-         * Properties of a SyncBingoPlayersMessage.
+         * Properties of a SyncBingoTeamsMessage.
          * @memberof RandoProto
-         * @interface ISyncBingoPlayersMessage
-         * @property {Array.<RandoProto.IBingoTeamInfo>|null} [players] SyncBingoPlayersMessage players
+         * @interface ISyncBingoTeamsMessage
+         * @property {Array.<RandoProto.IBingoTeamInfo>|null} [teams] SyncBingoTeamsMessage teams
          */
 
         /**
-         * Constructs a new SyncBingoPlayersMessage.
+         * Constructs a new SyncBingoTeamsMessage.
          * @memberof RandoProto
-         * @classdesc Represents a SyncBingoPlayersMessage.
-         * @implements ISyncBingoPlayersMessage
+         * @classdesc Represents a SyncBingoTeamsMessage.
+         * @implements ISyncBingoTeamsMessage
          * @constructor
-         * @param {RandoProto.ISyncBingoPlayersMessage=} [properties] Properties to set
+         * @param {RandoProto.ISyncBingoTeamsMessage=} [properties] Properties to set
          */
-        function SyncBingoPlayersMessage(properties) {
-            this.players = [];
+        function SyncBingoTeamsMessage(properties) {
+            this.teams = [];
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -2101,78 +2101,78 @@ export const RandoProto = $root.RandoProto = (() => {
         }
 
         /**
-         * SyncBingoPlayersMessage players.
-         * @member {Array.<RandoProto.IBingoTeamInfo>} players
-         * @memberof RandoProto.SyncBingoPlayersMessage
+         * SyncBingoTeamsMessage teams.
+         * @member {Array.<RandoProto.IBingoTeamInfo>} teams
+         * @memberof RandoProto.SyncBingoTeamsMessage
          * @instance
          */
-        SyncBingoPlayersMessage.prototype.players = $util.emptyArray;
+        SyncBingoTeamsMessage.prototype.teams = $util.emptyArray;
 
         /**
-         * Creates a new SyncBingoPlayersMessage instance using the specified properties.
+         * Creates a new SyncBingoTeamsMessage instance using the specified properties.
          * @function create
-         * @memberof RandoProto.SyncBingoPlayersMessage
+         * @memberof RandoProto.SyncBingoTeamsMessage
          * @static
-         * @param {RandoProto.ISyncBingoPlayersMessage=} [properties] Properties to set
-         * @returns {RandoProto.SyncBingoPlayersMessage} SyncBingoPlayersMessage instance
+         * @param {RandoProto.ISyncBingoTeamsMessage=} [properties] Properties to set
+         * @returns {RandoProto.SyncBingoTeamsMessage} SyncBingoTeamsMessage instance
          */
-        SyncBingoPlayersMessage.create = function create(properties) {
-            return new SyncBingoPlayersMessage(properties);
+        SyncBingoTeamsMessage.create = function create(properties) {
+            return new SyncBingoTeamsMessage(properties);
         };
 
         /**
-         * Encodes the specified SyncBingoPlayersMessage message. Does not implicitly {@link RandoProto.SyncBingoPlayersMessage.verify|verify} messages.
+         * Encodes the specified SyncBingoTeamsMessage message. Does not implicitly {@link RandoProto.SyncBingoTeamsMessage.verify|verify} messages.
          * @function encode
-         * @memberof RandoProto.SyncBingoPlayersMessage
+         * @memberof RandoProto.SyncBingoTeamsMessage
          * @static
-         * @param {RandoProto.ISyncBingoPlayersMessage} message SyncBingoPlayersMessage message or plain object to encode
+         * @param {RandoProto.ISyncBingoTeamsMessage} message SyncBingoTeamsMessage message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        SyncBingoPlayersMessage.encode = function encode(message, writer) {
+        SyncBingoTeamsMessage.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.players != null && message.players.length)
-                for (let i = 0; i < message.players.length; ++i)
-                    $root.RandoProto.BingoTeamInfo.encode(message.players[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.teams != null && message.teams.length)
+                for (let i = 0; i < message.teams.length; ++i)
+                    $root.RandoProto.BingoTeamInfo.encode(message.teams[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             return writer;
         };
 
         /**
-         * Encodes the specified SyncBingoPlayersMessage message, length delimited. Does not implicitly {@link RandoProto.SyncBingoPlayersMessage.verify|verify} messages.
+         * Encodes the specified SyncBingoTeamsMessage message, length delimited. Does not implicitly {@link RandoProto.SyncBingoTeamsMessage.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof RandoProto.SyncBingoPlayersMessage
+         * @memberof RandoProto.SyncBingoTeamsMessage
          * @static
-         * @param {RandoProto.ISyncBingoPlayersMessage} message SyncBingoPlayersMessage message or plain object to encode
+         * @param {RandoProto.ISyncBingoTeamsMessage} message SyncBingoTeamsMessage message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        SyncBingoPlayersMessage.encodeDelimited = function encodeDelimited(message, writer) {
+        SyncBingoTeamsMessage.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes a SyncBingoPlayersMessage message from the specified reader or buffer.
+         * Decodes a SyncBingoTeamsMessage message from the specified reader or buffer.
          * @function decode
-         * @memberof RandoProto.SyncBingoPlayersMessage
+         * @memberof RandoProto.SyncBingoTeamsMessage
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {RandoProto.SyncBingoPlayersMessage} SyncBingoPlayersMessage
+         * @returns {RandoProto.SyncBingoTeamsMessage} SyncBingoTeamsMessage
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        SyncBingoPlayersMessage.decode = function decode(reader, length) {
+        SyncBingoTeamsMessage.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.RandoProto.SyncBingoPlayersMessage();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.RandoProto.SyncBingoTeamsMessage();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    if (!(message.players && message.players.length))
-                        message.players = [];
-                    message.players.push($root.RandoProto.BingoTeamInfo.decode(reader, reader.uint32()));
+                    if (!(message.teams && message.teams.length))
+                        message.teams = [];
+                    message.teams.push($root.RandoProto.BingoTeamInfo.decode(reader, reader.uint32()));
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -2183,115 +2183,115 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Decodes a SyncBingoPlayersMessage message from the specified reader or buffer, length delimited.
+         * Decodes a SyncBingoTeamsMessage message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof RandoProto.SyncBingoPlayersMessage
+         * @memberof RandoProto.SyncBingoTeamsMessage
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {RandoProto.SyncBingoPlayersMessage} SyncBingoPlayersMessage
+         * @returns {RandoProto.SyncBingoTeamsMessage} SyncBingoTeamsMessage
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        SyncBingoPlayersMessage.decodeDelimited = function decodeDelimited(reader) {
+        SyncBingoTeamsMessage.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies a SyncBingoPlayersMessage message.
+         * Verifies a SyncBingoTeamsMessage message.
          * @function verify
-         * @memberof RandoProto.SyncBingoPlayersMessage
+         * @memberof RandoProto.SyncBingoTeamsMessage
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        SyncBingoPlayersMessage.verify = function verify(message) {
+        SyncBingoTeamsMessage.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.players != null && message.hasOwnProperty("players")) {
-                if (!Array.isArray(message.players))
-                    return "players: array expected";
-                for (let i = 0; i < message.players.length; ++i) {
-                    let error = $root.RandoProto.BingoTeamInfo.verify(message.players[i]);
+            if (message.teams != null && message.hasOwnProperty("teams")) {
+                if (!Array.isArray(message.teams))
+                    return "teams: array expected";
+                for (let i = 0; i < message.teams.length; ++i) {
+                    let error = $root.RandoProto.BingoTeamInfo.verify(message.teams[i]);
                     if (error)
-                        return "players." + error;
+                        return "teams." + error;
                 }
             }
             return null;
         };
 
         /**
-         * Creates a SyncBingoPlayersMessage message from a plain object. Also converts values to their respective internal types.
+         * Creates a SyncBingoTeamsMessage message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof RandoProto.SyncBingoPlayersMessage
+         * @memberof RandoProto.SyncBingoTeamsMessage
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {RandoProto.SyncBingoPlayersMessage} SyncBingoPlayersMessage
+         * @returns {RandoProto.SyncBingoTeamsMessage} SyncBingoTeamsMessage
          */
-        SyncBingoPlayersMessage.fromObject = function fromObject(object) {
-            if (object instanceof $root.RandoProto.SyncBingoPlayersMessage)
+        SyncBingoTeamsMessage.fromObject = function fromObject(object) {
+            if (object instanceof $root.RandoProto.SyncBingoTeamsMessage)
                 return object;
-            let message = new $root.RandoProto.SyncBingoPlayersMessage();
-            if (object.players) {
-                if (!Array.isArray(object.players))
-                    throw TypeError(".RandoProto.SyncBingoPlayersMessage.players: array expected");
-                message.players = [];
-                for (let i = 0; i < object.players.length; ++i) {
-                    if (typeof object.players[i] !== "object")
-                        throw TypeError(".RandoProto.SyncBingoPlayersMessage.players: object expected");
-                    message.players[i] = $root.RandoProto.BingoTeamInfo.fromObject(object.players[i]);
+            let message = new $root.RandoProto.SyncBingoTeamsMessage();
+            if (object.teams) {
+                if (!Array.isArray(object.teams))
+                    throw TypeError(".RandoProto.SyncBingoTeamsMessage.teams: array expected");
+                message.teams = [];
+                for (let i = 0; i < object.teams.length; ++i) {
+                    if (typeof object.teams[i] !== "object")
+                        throw TypeError(".RandoProto.SyncBingoTeamsMessage.teams: object expected");
+                    message.teams[i] = $root.RandoProto.BingoTeamInfo.fromObject(object.teams[i]);
                 }
             }
             return message;
         };
 
         /**
-         * Creates a plain object from a SyncBingoPlayersMessage message. Also converts values to other types if specified.
+         * Creates a plain object from a SyncBingoTeamsMessage message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof RandoProto.SyncBingoPlayersMessage
+         * @memberof RandoProto.SyncBingoTeamsMessage
          * @static
-         * @param {RandoProto.SyncBingoPlayersMessage} message SyncBingoPlayersMessage
+         * @param {RandoProto.SyncBingoTeamsMessage} message SyncBingoTeamsMessage
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        SyncBingoPlayersMessage.toObject = function toObject(message, options) {
+        SyncBingoTeamsMessage.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.arrays || options.defaults)
-                object.players = [];
-            if (message.players && message.players.length) {
-                object.players = [];
-                for (let j = 0; j < message.players.length; ++j)
-                    object.players[j] = $root.RandoProto.BingoTeamInfo.toObject(message.players[j], options);
+                object.teams = [];
+            if (message.teams && message.teams.length) {
+                object.teams = [];
+                for (let j = 0; j < message.teams.length; ++j)
+                    object.teams[j] = $root.RandoProto.BingoTeamInfo.toObject(message.teams[j], options);
             }
             return object;
         };
 
         /**
-         * Converts this SyncBingoPlayersMessage to JSON.
+         * Converts this SyncBingoTeamsMessage to JSON.
          * @function toJSON
-         * @memberof RandoProto.SyncBingoPlayersMessage
+         * @memberof RandoProto.SyncBingoTeamsMessage
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        SyncBingoPlayersMessage.prototype.toJSON = function toJSON() {
+        SyncBingoTeamsMessage.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
         /**
-         * Gets the default type url for SyncBingoPlayersMessage
+         * Gets the default type url for SyncBingoTeamsMessage
          * @function getTypeUrl
-         * @memberof RandoProto.SyncBingoPlayersMessage
+         * @memberof RandoProto.SyncBingoTeamsMessage
          * @static
          * @returns {string} The default type url
          */
-        SyncBingoPlayersMessage.getTypeUrl = function getTypeUrl() {
-            return "type.googleapis.com/RandoProto.SyncBingoPlayersMessage";
+        SyncBingoTeamsMessage.getTypeUrl = function getTypeUrl() {
+            return "type.googleapis.com/RandoProto.SyncBingoTeamsMessage";
         };
 
-        return SyncBingoPlayersMessage;
+        return SyncBingoTeamsMessage;
     })();
 
     RandoProto.Position = (function() {

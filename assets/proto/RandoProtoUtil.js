@@ -4,7 +4,7 @@ import { hasOwnProperty } from '~/assets/lib/hasOwnProperty'
 const packetTypes = {
   1: RandoProto.SyncBoardMessage,
   2: RandoProto.RequestUpdatesMessage,
-  4: RandoProto.SyncBingoPlayersMessage,
+  4: RandoProto.SyncBingoTeamsMessage,
   8: RandoProto.GameInfo,
 }
 

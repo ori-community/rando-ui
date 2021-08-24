@@ -44,9 +44,16 @@
               v-model='seedgenConfig.difficulty'
               :items='availableDifficultiesArray'
               label='Difficulty'
-              item-text='name'
               item-value='id'
-            />
+              item-text='name'
+            >
+              <template #item='{item}'>
+                <div>
+                  <v-list-item-title>{{ item.name }}</v-list-item-title>
+                  <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle>
+                </div>
+              </template>
+            </v-select>
 
             <p>
               Select which glitches should be required to complete the seed and where you would like to spawn.

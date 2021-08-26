@@ -1,15 +1,15 @@
 MOKI:
-  name: Moki
+  name: Default
   level: 1
   description: |
     The default game paths, designed for players who have finished the game at least once
 GORLEK:
-  name: Gorlek
+  name: Advanced
   level: 2
   description: |
-    Hard game paths for more advanced players. More precise utilisation of skills is required
+    Harder game paths for more advanced players. More precise utilisation of skills is required
 UNSAFE:
   name: Unsafe
   level: 3
   description: |
-    Very hard game paths, don't try at home
+    Super hard game paths, don't try at home

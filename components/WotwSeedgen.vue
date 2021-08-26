@@ -28,9 +28,11 @@
           </v-tab>
           <v-tab-item class='pa-4'>
             <p>
-              If you're just getting started with the Randomizer, select the Moki preset and click "Apply Presets"
-              button.
-              You can also add your own presets soon™.
+              These presets are collections of <b>recommended randomizer options</b>.
+              First, select a base preset and choose additional options as you like,
+              apply them and hit "Generate".<br>
+              If you want more granular control of your seed's settings, take a look
+              at the other tabs.
             </p>
 
             <wotw-seedgen-preset-select
@@ -182,7 +184,7 @@
             </v-btn>
           </div>
         </template>
-        <span>Apply or deselect selected presets first</span>
+        <span>Apply or unselect selected presets first</span>
       </v-tooltip>
     </div>
 

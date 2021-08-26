@@ -3,10 +3,13 @@
 
 moki:
   name: Moki
-  description: Default game paths only, best choice for beginners
+  description: Default game paths and always spawn with sword, best choice for beginners
 gorlek:
   name: Gorlek
-  description: For advanced players, requires some hard paths
+  description: For advanced players, requires some hard paths and doesn't spawn with sword
+
+# Moki and Gorlek presets are handled separately!!
+
 glitches:
   name: Glitches
   description: Require glitches

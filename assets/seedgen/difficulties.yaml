@@ -1,10 +1,10 @@
 MOKI:
-  name: Default
+  name: Moki
   level: 1
   description: |
     The default game paths, designed for players who have finished the game at least once
 GORLEK:
-  name: Advanced
+  name: Gorlek
   level: 2
   description: |
     Harder game paths for more advanced players. More precise utilisation of skills is required

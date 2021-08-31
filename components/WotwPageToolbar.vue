@@ -42,11 +42,15 @@
       ...mapState('user', ['user']),
     },
     methods: {
+      buildAbsoluteUrl(relativeUrl) {
+        const port = window.location.port ? `:${window.location.port}` : ``
+        return `${window.location.protocol}//${window.location.hostname}${port}${relativeUrl}`
+      },
       login() {
-        window.location.href = `${this.$axios.defaults.baseURL}/login?redir=${window.location.pathname}`
+        window.location.href = `${this.$axios.defaults.baseURL}/login?redir=${this.buildAbsoluteUrl('/auth/callback')}`
       },
       logout() {
-        window.location.href = `${this.$axios.defaults.baseURL}/logout/?redir=${window.location.pathname}`
+        window.location.href = `${this.$axios.defaults.baseURL}/logout/?redir=${this.buildAbsoluteUrl(window.location.pathname)}`
       },
     },
   }

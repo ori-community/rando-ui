@@ -1020,6 +1020,7 @@ export const RandoProto = $root.RandoProto = (() => {
          * @property {number|Long|null} [id] GameInfo id
          * @property {Array.<RandoProto.ITeamInfo>|null} [teams] GameInfo teams
          * @property {boolean|null} [hasBingoBoard] GameInfo hasBingoBoard
+         * @property {Array.<RandoProto.IUserInfo>|null} [spectators] GameInfo spectators
          */
 
         /**
@@ -1032,6 +1033,7 @@ export const RandoProto = $root.RandoProto = (() => {
          */
         function GameInfo(properties) {
             this.teams = [];
+            this.spectators = [];
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -1061,6 +1063,14 @@ export const RandoProto = $root.RandoProto = (() => {
          * @instance
          */
         GameInfo.prototype.hasBingoBoard = false;
+
+        /**
+         * GameInfo spectators.
+         * @member {Array.<RandoProto.IUserInfo>} spectators
+         * @memberof RandoProto.GameInfo
+         * @instance
+         */
+        GameInfo.prototype.spectators = $util.emptyArray;
 
         /**
          * Creates a new GameInfo instance using the specified properties.
@@ -1093,6 +1103,9 @@ export const RandoProto = $root.RandoProto = (() => {
                     $root.RandoProto.TeamInfo.encode(message.teams[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.hasBingoBoard != null && Object.hasOwnProperty.call(message, "hasBingoBoard"))
                 writer.uint32(/* id 3, wireType 0 =*/24).bool(message.hasBingoBoard);
+            if (message.spectators != null && message.spectators.length)
+                for (let i = 0; i < message.spectators.length; ++i)
+                    $root.RandoProto.UserInfo.encode(message.spectators[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             return writer;
         };
 
@@ -1137,6 +1150,11 @@ export const RandoProto = $root.RandoProto = (() => {
                     break;
                 case 3:
                     message.hasBingoBoard = reader.bool();
+                    break;
+                case 4:
+                    if (!(message.spectators && message.spectators.length))
+                        message.spectators = [];
+                    message.spectators.push($root.RandoProto.UserInfo.decode(reader, reader.uint32()));
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -1188,6 +1206,15 @@ export const RandoProto = $root.RandoProto = (() => {
             if (message.hasBingoBoard != null && message.hasOwnProperty("hasBingoBoard"))
                 if (typeof message.hasBingoBoard !== "boolean")
                     return "hasBingoBoard: boolean expected";
+            if (message.spectators != null && message.hasOwnProperty("spectators")) {
+                if (!Array.isArray(message.spectators))
+                    return "spectators: array expected";
+                for (let i = 0; i < message.spectators.length; ++i) {
+                    let error = $root.RandoProto.UserInfo.verify(message.spectators[i]);
+                    if (error)
+                        return "spectators." + error;
+                }
+            }
             return null;
         };
 
@@ -1224,6 +1251,16 @@ export const RandoProto = $root.RandoProto = (() => {
             }
             if (object.hasBingoBoard != null)
                 message.hasBingoBoard = Boolean(object.hasBingoBoard);
+            if (object.spectators) {
+                if (!Array.isArray(object.spectators))
+                    throw TypeError(".RandoProto.GameInfo.spectators: array expected");
+                message.spectators = [];
+                for (let i = 0; i < object.spectators.length; ++i) {
+                    if (typeof object.spectators[i] !== "object")
+                        throw TypeError(".RandoProto.GameInfo.spectators: object expected");
+                    message.spectators[i] = $root.RandoProto.UserInfo.fromObject(object.spectators[i]);
+                }
+            }
             return message;
         };
 
@@ -1240,8 +1277,10 @@ export const RandoProto = $root.RandoProto = (() => {
             if (!options)
                 options = {};
             let object = {};
-            if (options.arrays || options.defaults)
+            if (options.arrays || options.defaults) {
                 object.teams = [];
+                object.spectators = [];
+            }
             if (options.defaults) {
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
@@ -1262,6 +1301,11 @@ export const RandoProto = $root.RandoProto = (() => {
             }
             if (message.hasBingoBoard != null && message.hasOwnProperty("hasBingoBoard"))
                 object.hasBingoBoard = message.hasBingoBoard;
+            if (message.spectators && message.spectators.length) {
+                object.spectators = [];
+                for (let j = 0; j < message.spectators.length; ++j)
+                    object.spectators[j] = $root.RandoProto.UserInfo.toObject(message.spectators[j], options);
+            }
             return object;
         };
 
@@ -3212,6 +3256,204 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         return SyncBoardMessage;
+    })();
+
+    RandoProto.Authenticate = (function() {
+
+        /**
+         * Properties of an Authenticate.
+         * @memberof RandoProto
+         * @interface IAuthenticate
+         * @property {string|null} [jwt] Authenticate jwt
+         */
+
+        /**
+         * Constructs a new Authenticate.
+         * @memberof RandoProto
+         * @classdesc Represents an Authenticate.
+         * @implements IAuthenticate
+         * @constructor
+         * @param {RandoProto.IAuthenticate=} [properties] Properties to set
+         */
+        function Authenticate(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Authenticate jwt.
+         * @member {string} jwt
+         * @memberof RandoProto.Authenticate
+         * @instance
+         */
+        Authenticate.prototype.jwt = "";
+
+        /**
+         * Creates a new Authenticate instance using the specified properties.
+         * @function create
+         * @memberof RandoProto.Authenticate
+         * @static
+         * @param {RandoProto.IAuthenticate=} [properties] Properties to set
+         * @returns {RandoProto.Authenticate} Authenticate instance
+         */
+        Authenticate.create = function create(properties) {
+            return new Authenticate(properties);
+        };
+
+        /**
+         * Encodes the specified Authenticate message. Does not implicitly {@link RandoProto.Authenticate.verify|verify} messages.
+         * @function encode
+         * @memberof RandoProto.Authenticate
+         * @static
+         * @param {RandoProto.IAuthenticate} message Authenticate message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Authenticate.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.jwt != null && Object.hasOwnProperty.call(message, "jwt"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.jwt);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified Authenticate message, length delimited. Does not implicitly {@link RandoProto.Authenticate.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof RandoProto.Authenticate
+         * @static
+         * @param {RandoProto.IAuthenticate} message Authenticate message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Authenticate.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an Authenticate message from the specified reader or buffer.
+         * @function decode
+         * @memberof RandoProto.Authenticate
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {RandoProto.Authenticate} Authenticate
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Authenticate.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.RandoProto.Authenticate();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.jwt = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an Authenticate message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof RandoProto.Authenticate
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {RandoProto.Authenticate} Authenticate
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Authenticate.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an Authenticate message.
+         * @function verify
+         * @memberof RandoProto.Authenticate
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        Authenticate.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.jwt != null && message.hasOwnProperty("jwt"))
+                if (!$util.isString(message.jwt))
+                    return "jwt: string expected";
+            return null;
+        };
+
+        /**
+         * Creates an Authenticate message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof RandoProto.Authenticate
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {RandoProto.Authenticate} Authenticate
+         */
+        Authenticate.fromObject = function fromObject(object) {
+            if (object instanceof $root.RandoProto.Authenticate)
+                return object;
+            let message = new $root.RandoProto.Authenticate();
+            if (object.jwt != null)
+                message.jwt = String(object.jwt);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an Authenticate message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof RandoProto.Authenticate
+         * @static
+         * @param {RandoProto.Authenticate} message Authenticate
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        Authenticate.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults)
+                object.jwt = "";
+            if (message.jwt != null && message.hasOwnProperty("jwt"))
+                object.jwt = message.jwt;
+            return object;
+        };
+
+        /**
+         * Converts this Authenticate to JSON.
+         * @function toJSON
+         * @memberof RandoProto.Authenticate
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        Authenticate.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for Authenticate
+         * @function getTypeUrl
+         * @memberof RandoProto.Authenticate
+         * @static
+         * @returns {string} The default type url
+         */
+        Authenticate.getTypeUrl = function getTypeUrl() {
+            return "type.googleapis.com/RandoProto.Authenticate";
+        };
+
+        return Authenticate;
     })();
 
     return RandoProto;

@@ -7,10 +7,19 @@
 <script>
   export default {
     name: 'Callback',
-    async middleware({ app }) {
-      // TODO: exchange short-lived JWT to long-lived JWT
+    async middleware({ app, route }) {
+      const authJwt = route.query.jwt
 
-      await app.router.replace(app.store.state['auth/redirectRoute'] ?? {name: 'index'})
+      // Exchange short lived token with a long lived one
+      if (authJwt) {
+        app.$axios.setToken(authJwt, 'Bearer')
+        const token = await app.$axios.$post('/tokens/', {
+          scopes: ['*'],
+        })
+        app.store.commit('auth/setJwt', token)
+      }
+
+      await app.router.replace(app.store.state.auth.redirectPath ?? {name: 'index'})
     },
   }
 </script>

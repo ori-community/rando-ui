@@ -2,7 +2,7 @@ import colors from 'vuetify/es5/util/colors'
 import MonacoEditorWebpackPlugin from 'monaco-editor-webpack-plugin'
 
 const env = {
-  API_HOST: process.env.API_HOST || 'ori-rando.localhost',
+  API_HOST: process.env.API_HOST || '127.0.0.1:8081',
   API_SECURE: process.env.API_SECURE === 'true',
 }
 
@@ -47,7 +47,9 @@ export default {
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [],
+  plugins: [
+    '~/plugins/restoreAuthState.js'
+  ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,

@@ -34,11 +34,11 @@
         </div>
         <div v-if='!isLoggedIn && userLoaded' class='text-center'>
           <v-alert class='d-inline-block' color='error darken-3'>
-            You need to be logged in to view this game.
             <template v-if='isOBS'>
-              <br>
-              <br>
-              Log in by right clicking the Browser Source and click 'Interact'.
+              <b>DO NOT</b> add this page to OBS directly. Please use the "Embed" feature above the board.
+            </template>
+            <template v-else>
+              You need to be logged in to view this game.
             </template>
           </v-alert>
         </div>
@@ -63,6 +63,21 @@
           <v-btn text @click='boardSettingsOpen = true'>
             <v-icon left>mdi-cog-outline</v-icon>
             Settings
+          </v-btn>
+          <v-btn
+            text
+            :loading='embedUrlLoading'
+            :disabled='embedUrlCopied'
+            @click='createEmbedUrl'
+          >
+            <template v-if='embedUrlCopied'>
+              <v-icon left>mdi-check</v-icon>
+              URL Copied
+            </template>
+            <template v-else>
+              <v-icon left>mdi-semantic-web</v-icon>
+              Embed (OBS)
+            </template>
           </v-btn>
         </div>
       </v-container>
@@ -160,6 +175,8 @@
     name: 'GamePage',
     data: () => ({
       loading: false,
+      embedUrlLoading: false,
+      embedUrlCopied: false,
       gameReady: false,
       showBoard: false,
       hiddenTeams: [], // Array of team IDs
@@ -325,6 +342,28 @@
         } else {
           this.hiddenTeams.push(teamId)
         }
+      },
+      async createEmbedUrl() {
+        this.embedUrlLoading = true
+
+        const token = await this.$axios.$post('/tokens/', {
+          scopes: ['*'],
+        })
+
+        const targetRoute = this.$router.resolve({
+          name: 'game-gameId',
+          params: {
+            gameId: this.gameId,
+          },
+          query: {
+            jwt: token,
+          }
+        })
+        await window.navigator.clipboard.writeText(window.location.origin + targetRoute.href)
+
+        this.embedUrlLoading = false
+
+        this.embedUrlCopied = true
       },
     },
   }

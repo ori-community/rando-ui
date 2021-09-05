@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { RandoProto } from '~/assets/proto/RandoProto'
 import { decodePacket, makePacket } from '~/assets/proto/RandoProtoUtil'
 import { hasOwnProperty } from '~/assets/lib/hasOwnProperty'
+import { WebSocketFactory } from '~/assets/lib/WebSocketFactory'
 
 /** @type Object<Number, WebSocket> */
 const webSockets = {} // gameId → ws
@@ -64,47 +65,41 @@ export const actions = {
     commit('setBingoBoard', {gameId, board})
     commit('setBingoTeams', {gameId, bingoTeams})
   },
-  connectGame({ commit, dispatch }, { userId, gameId, retries = 0 }) {
+  async connectGame({ commit, dispatch, getters }, { userId, gameId, retries = 0 }) {
     let ws = webSockets[gameId] ?? null
 
-    return new Promise(((resolve, reject) => {
-      if (retries >= 5) {
-        reject(new Error('Max number of retries exceeded'))
-        return
-      }
+    if (retries >= 5) {
+      throw new Error('Max number of retries exceeded')
+    }
 
-      if (ws?.readyState !== WebSocket.OPEN && ws?.readyState !== WebSocket.CONNECTING) {
-        ws?.close()
-        webSockets[gameId] = new WebSocket(`${process.env.WS_BASE_URL}/observers/${gameId}`)
-        ws = webSockets[gameId]
-        ws.addEventListener('open', () => {
-          ws.send(makePacket(RandoProto.RequestUpdatesMessage, {
-            playerId: userId,
-          }))
+    if (ws?.readyState !== WebSocket.OPEN && ws?.readyState !== WebSocket.CONNECTING) {
+      ws?.close()
+      webSockets[gameId] = await WebSocketFactory.create(`/observers/${gameId}`)
+      ws = webSockets[gameId]
 
-          retries = 0
-          resolve()
-        })
-        ws.addEventListener('close', () => {
-          setTimeout(() => {
-            dispatch('connectGame', {userId, gameId, retries: retries + 1})
-              .catch(reject)
-          }, 1000 * retries)
-        })
-        ws.addEventListener('message', async event => {
-          const packet = await decodePacket(event.data)
-          console.log(packet)
-          if (packet instanceof RandoProto.SyncBoardMessage) {
-            commit('setBingoBoard', {gameId, board: packet.board})
-          } else if (packet instanceof RandoProto.GameInfo) {
-            commit('setTeams', { gameId, teams: packet.teams })
-          } else if (packet instanceof RandoProto.SyncBingoTeamsMessage) {
-            commit('setBingoTeams', { gameId, bingoTeams: packet.teams })
-          }
-        })
-      } else {
-        resolve()
-      }
-    }))
+      ws.send(makePacket(RandoProto.RequestUpdatesMessage, {
+        playerId: userId,
+      }))
+
+      retries = 0
+
+      ws.addEventListener('close', () => {
+        setTimeout(() => {
+          dispatch('connectGame', {userId, gameId, retries: retries + 1})
+            .catch(error => { throw error })
+        }, 1000 * (retries + 1))
+      })
+      ws.addEventListener('message', async event => {
+        const packet = await decodePacket(event.data)
+        console.log(packet)
+        if (packet instanceof RandoProto.SyncBoardMessage) {
+          commit('setBingoBoard', {gameId, board: packet.board})
+        } else if (packet instanceof RandoProto.GameInfo) {
+          commit('setTeams', { gameId, teams: packet.teams })
+        } else if (packet instanceof RandoProto.SyncBingoTeamsMessage) {
+          commit('setBingoTeams', { gameId, bingoTeams: packet.teams })
+        }
+      })
+    }
   },
 }

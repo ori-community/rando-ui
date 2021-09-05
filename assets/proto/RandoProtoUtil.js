@@ -6,6 +6,7 @@ const packetTypes = {
   2: RandoProto.RequestUpdatesMessage,
   4: RandoProto.SyncBingoTeamsMessage,
   8: RandoProto.GameInfo,
+  9: RandoProto.Authenticate,
 }
 
 const getPacketId = (content) => {

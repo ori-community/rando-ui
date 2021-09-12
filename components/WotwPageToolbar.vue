@@ -46,11 +46,16 @@
       ...mapState('user', ['user']),
     },
     methods: {
+      buildAbsoluteUrl(relativeUrl) {
+        return `${window.location.origin}${relativeUrl}`
+      },
       login() {
-        window.location.href = `${this.$axios.defaults.baseURL}/login?redir=${window.location.pathname}`
+        this.$store.commit('auth/setRedirectPath', this.$router.resolve(this.$route).href)
+        window.location.href = `${this.$axios.defaults.baseURL}/login?redir=${this.buildAbsoluteUrl('/auth/callback')}`
       },
       logout() {
-        window.location.href = `${this.$axios.defaults.baseURL}/logout/?redir=${window.location.pathname}`
+        this.$store.commit('auth/setJwt', null)
+        this.$store.commit('user/setUser', null)
       },
     },
   }

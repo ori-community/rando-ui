@@ -28,6 +28,7 @@ message GameInfo {
   int64 id = 1;
   repeated TeamInfo teams = 2;
   bool hasBingoBoard = 3;
+  repeated UserInfo spectators = 4;
 }
 
 message BingoSquare {
@@ -70,4 +71,8 @@ message BingoBoard {
 message SyncBoardMessage {
   BingoBoard board = 1;
   bool replace = 2;
+}
+
+message Authenticate {
+  string jwt = 1;
 }

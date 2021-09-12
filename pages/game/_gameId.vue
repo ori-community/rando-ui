@@ -8,6 +8,7 @@
             <wotw-team-view
               v-for='team in games[gameId].teams'
               :key='team.id'
+              :can-join='!isSpectating'
               :color='teamColors[team.id]'
               :disabled='loading'
               :team='team'
@@ -16,20 +17,26 @@
             />
           </div>
 
-          <div class='text-center mt-4'>
-            <v-tooltip bottom :disabled='canCreateTeam'>
+          <div v-if='!isSpectating' class='text-center mt-4'>
+            <v-tooltip :disabled='canCreateTeam' bottom>
               <span>
                 Bingo games currently don't support more than 8 teams.
               </span>
               <template #activator='{on}'>
                 <div class='d-inline-block' v-on='on'>
-                  <v-btn large text :disabled='loading || !canCreateTeam' @click='createTeam'>
+                  <v-btn :disabled='loading || !canCreateTeam' large text @click='createTeam'>
                     <v-icon left>mdi-plus</v-icon>
                     New team
                   </v-btn>
                 </div>
               </template>
             </v-tooltip>
+          </div>
+          <div v-else class='text-center mt-4'>
+            <v-alert class='d-inline-block' color='info darken'>
+              <v-icon left>mdi-monitor-eye</v-icon>
+              You are spectating this game.
+            </v-alert>
           </div>
         </div>
         <div v-if='!isLoggedIn && userLoaded' class='text-center'>
@@ -65,9 +72,9 @@
             Settings
           </v-btn>
           <v-btn
-            text
-            :loading='embedUrlLoading'
             :disabled='embedUrlCopied'
+            :loading='embedUrlLoading'
+            text
             @click='createEmbedUrl'
           >
             <template v-if='embedUrlCopied'>
@@ -79,35 +86,52 @@
               Embed (OBS)
             </template>
           </v-btn>
+          <v-btn text @click='spectateDialogOpen = true'>
+            <v-icon left>mdi-monitor-eye</v-icon>
+            Spectate
+          </v-btn>
         </div>
       </v-container>
 
-      <div ref='boardContainer' class='board-container' :class='{"px-1": !boardSettings.obsMode}'>
+      <div ref='boardContainer' :class='{"px-1": !boardSettings.obsMode}' class='board-container'>
         <template v-if='showBoard'>
           <wotw-bingo-board
-            class='board'
-            :game='games[gameId]'
-            :team-colors='teamColors'
             :edge-labels='boardSettings.edgeLabels'
+            :game='games[gameId]'
             :hidden-teams='hiddenTeams'
             :highlight-team='highlightedTeamId'
+            :team-colors='teamColors'
+            class='board'
           />
           <div class='sidebar px-5'>
-            <transition-group name='list' class='bingo-teams'>
+            <transition-group class='bingo-teams' name='list'>
               <div
                 v-for='(bingoTeam, index) in sortedBingoTeams'
                 :key='bingoTeam.teamId'
-                class='relative'
                 :style='{zIndex: sortedBingoTeams.length - index}'
+                class='relative'
               >
                 <wotw-bingo-team-view
-                  :color='teamColors[bingoTeam.teamId]'
-                  :team-hidden='hiddenTeams.includes(bingoTeam.teamId)'
-                  :team='games[gameId].teams.find(t => t.id === bingoTeam.teamId)'
                   :bingo-team='bingoTeam'
-                  @click.native.ctrl.capture.stop='toggleTeamVisibility(bingoTeam.teamId, true)'
+                  :color='teamColors[bingoTeam.teamId]'
+                  :team='games[gameId].teams.find(t => t.id === bingoTeam.teamId)'
+                  :team-hidden='hiddenTeams.includes(bingoTeam.teamId)'
                   @click='toggleTeamVisibility(bingoTeam.teamId)'
+                  @click.native.ctrl.capture.stop='toggleTeamVisibility(bingoTeam.teamId, true)'
                 />
+              </div>
+
+              <div v-if='!boardSettings.hideSpectators && game.spectators.length > 0' key='spectators' class='mt-4'>
+                <div class='text-caption'>Spectators</div>
+
+                <v-tooltip v-for='spectator in game.spectators' :key='spectator.id' top>
+                  <span>{{ spectator.name }}</span>
+                  <template #activator='{on}'>
+                    <span v-on='on'>
+                      <discord-avatar :user='spectator' />
+                    </span>
+                  </template>
+                </v-tooltip>
               </div>
             </transition-group>
           </div>
@@ -129,21 +153,43 @@
 
           <v-checkbox
             v-model='boardSettings.edgeLabels'
-            label='Edge Labels'
             hint='Show coordinates around the board'
+            label='Edge Labels'
             persistent-hint
           />
 
           <v-checkbox
             v-model='boardSettings.highlightOwnTeam'
-            label='Highlight own team'
             hint='Reserve bottom left parts of bingo squares for your team. Greatly improves overview of your progress.'
+            label='Highlight own team'
             persistent-hint
           />
 
-          <div class='mt-3'>
-            To have Bingo Boards in OBS, just add this page as a Browser source
-            and follow the instructions.
+          <v-checkbox
+            v-model='boardSettings.hideSpectators'
+            hint='Hide spectators from the player list next to the board'
+            label='Hide spectators'
+            persistent-hint
+          />
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model='spectateDialogOpen' :persistent='spectateLoading' max-width='500'>
+        <v-card class='pa-5 relative'>
+          <h2>Spectate this game</h2>
+
+          Spectating the game lets you see all squares that have been discovered
+          by at least one team.<br>
+          Please note that you <b>cannot join this game anymore</b> after you
+          chose to spectate.
+
+          <div class='d-flex justify-end'>
+            <v-btn :disabled='spectateLoading' class='mr-1' text @click='spectateDialogOpen = false'>
+              Cancel
+            </v-btn>
+            <v-btn :loading='spectateLoading' color='accent' depressed @click='spectate'>
+              Spectate
+            </v-btn>
           </div>
         </v-card>
       </v-dialog>
@@ -184,7 +230,10 @@
       boardSettings: {
         edgeLabels: false,
         highlightOwnTeam: true,
+        hideSpectators: false,
       },
+      spectateDialogOpen: false,
+      spectateLoading: false,
     }),
     computed: {
       ...mapGetters('user', ['isLoggedIn']),
@@ -262,15 +311,32 @@
 
         return this.ownTeamId
       },
+      isSpectating() {
+        if (!this.game || !this.user) {
+          return false
+        }
+
+        return this.game.spectators.some(s => s.id === this.user.id)
+      },
     },
     watch: {
+      userLoaded: {
+        immediate: true,
+        handler(userLoaded) {
+          if (userLoaded && !this.isLoggedIn) {
+            if (this.$route.query.jwt) {
+              this.$store.commit('auth/setJwt', this.$route.query.jwt)
+              this.$store.dispatch('user/updateUser')
+            }
+          }
+        },
+      },
       isLoggedIn: {
         immediate: true,
         async handler(isLoggedIn) {
           if (isLoggedIn) {
             await this.$store.dispatch('gameState/fetchGame', this.gameId)
             await this.$store.dispatch('gameState/connectGame', {
-              userId: this.user?.id,
               gameId: this.gameId,
             })
             this.gameReady = true
@@ -319,6 +385,10 @@
     methods: {
       async join(team) {
         await this.$axios.post(`/games/${this.gameId}/teams/${team.id}`)
+        await this.$store.dispatch('gameState/connectGame', {
+          gameId: this.gameId,
+          reconnect: true,
+        })
       },
       async createTeam() {
         await this.$axios.post(`/games/${this.gameId}/teams`)
@@ -347,7 +417,7 @@
         this.embedUrlLoading = true
 
         const token = await this.$axios.$post('/tokens/', {
-          scopes: ['*'],
+          scopes: ['boards.read', 'user.info.read'],
         })
 
         const targetRoute = this.$router.resolve({
@@ -357,7 +427,7 @@
           },
           query: {
             jwt: token,
-          }
+          },
         })
         await window.navigator.clipboard.writeText(window.location.origin + targetRoute.href)
 
@@ -365,17 +435,29 @@
 
         this.embedUrlCopied = true
       },
+      async spectate() {
+        this.spectateLoading = true
+
+        try {
+          await this.$store.dispatch('gameState/spectateGame', this.gameId)
+          this.spectateDialogOpen = false
+        } catch (e) {
+          console.error(e)
+        }
+
+        this.spectateLoading = false
+      },
     },
   }
 </script>
 
 <style lang='scss' scoped>
   .teams {
+    align-items: flex-start;
     display: flex;
+    flex-wrap: wrap;
     gap: 2em;
     justify-content: center;
-    align-items: flex-start;
-    flex-wrap: wrap;
 
     .team-view {
       min-width: 15vw;
@@ -394,17 +476,17 @@
     }
 
     .sidebar {
-      flex-grow: 1;
-      display: flex;
       align-items: center;
-      justify-content: center;
+      display: flex;
       flex-direction: column;
+      flex-grow: 1;
+      justify-content: center;
 
       .bingo-teams {
         display: flex;
-        justify-content: stretch;
-        gap: 0.3em;
         flex-direction: column;
+        gap: 0.3em;
+        justify-content: stretch;
       }
     }
   }
@@ -412,8 +494,8 @@
   .relative {
     .close-button {
       position: absolute;
-      top: 1em;
       right: 1em;
+      top: 1em;
       z-index: 10;
     }
   }

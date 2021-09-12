@@ -5,7 +5,7 @@
     <v-card-text>
       <wotw-player-view v-for='player in team.members' :key='player.id' class='mb-1' :user='player' />
     </v-card-text>
-    <v-btn v-if='canJoin' :disabled='disabled' block color='accent' tile @click='$emit("join")'>
+    <v-btn v-if='canJoinInternal' :disabled='disabled' block color='accent' tile @click='$emit("join")'>
       Join
     </v-btn>
   </v-card>
@@ -28,12 +28,16 @@
       color: {
         type: String,
         default: '',
+      },
+      canJoin: {
+        type: Boolean,
+        default: true,
       }
     },
     computed: {
       ...mapState('user', ['user']),
-      canJoin() {
-        return !this.team.members.some(u => u.id === this.user?.id)
+      canJoinInternal() {
+        return this.canJoin && !this.team.members.some(u => u.id === this.user?.id)
       },
     },
   }

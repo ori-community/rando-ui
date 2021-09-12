@@ -1,1 +1,1 @@
-export const isElectron = () => typeof process !== 'undefined' && typeof process.versions === 'object' && !!process.versions.electron
+export const isElectron = () => window.__oriRandoUiElectron === true

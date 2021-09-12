@@ -1,10 +1,14 @@
 <template>
   <div class='page-toolbar d-flex align-center my-4'>
+    <v-btn exact v-if='isElectron' x-large depressed text to='/electron'>
+      <v-icon left>mdi-home-outline</v-icon>
+      Home
+    </v-btn>
     <v-btn x-large depressed text to='/seedgen'>
       <v-icon left>mdi-dice-multiple</v-icon>
       Seed generator
     </v-btn>
-    <v-btn x-large depressed text to='/settings'>
+    <v-btn v-if='isElectron' x-large depressed text to='/electron/settings'>
       <v-icon left>mdi-cog</v-icon>
       Settings
     </v-btn>
@@ -38,12 +42,14 @@
 
 <script>
   import { mapGetters, mapState } from 'vuex'
+  import { isElectron } from '~/assets/lib/isElectron'
 
   export default {
     name: 'WotwPageToolbar',
     computed: {
       ...mapGetters('user', ['isLoggedIn']),
       ...mapState('user', ['user']),
+      isElectron,
     },
     methods: {
       buildAbsoluteUrl(relativeUrl) {

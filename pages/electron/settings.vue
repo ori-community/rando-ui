@@ -1,14 +1,16 @@
 <template>
   <v-container>
-    <v-row>
+    <v-row v-if='settings !== null'>
       <v-col cols='12' md='6'>
         <v-card class='pa-5 mb-6'>
           <h3>Cutscenes</h3>
           <v-checkbox
+            v-model='settings.Flags.ShowShortCutscenes'
             label='Restore Short Cutscenes'
             messages='Enables the short-but-unskippable cutscenes normally removed by the randomizer.'
           />
           <v-checkbox
+            v-model='settings.Flags.ShowLongCutscenes'
             label='Restore Long Cutscenes'
             messages='Enables the long, unskippable cutscenes normally removed by the randomizer.'
           />
@@ -79,10 +81,25 @@
 
 <script>
   export default {
+    data: () => ({
+      settings: null,
+    }),
     head() {
       return {
         title: 'Settings',
       }
+    },
+    watch: {
+      settings: {
+        deep: true,
+        async handler(settings) {
+          await window.electronApi.invoke('settings.setSettings', settings)
+          await window.electronApi.invoke('settings.writeSettings')
+        }
+      }
+    },
+    async mounted() {
+      this.settings = await window.electronApi.invoke('settings.readSettings')
     },
   }
 </script>

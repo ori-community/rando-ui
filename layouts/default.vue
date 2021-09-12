@@ -32,11 +32,11 @@
   }
 
   ::-webkit-scrollbar-track {
-    background-color: var(--color-background);
+    background-color: var(--v-background-base);
   }
 
   ::-webkit-scrollbar-thumb {
-    background-color: var(--color-background-light);
+    background-color: var(--v-background-lighten1);
   }
 
   .inherit--text {

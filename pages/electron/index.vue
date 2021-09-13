@@ -16,7 +16,7 @@
             <v-btn v-else class='mt-3' depressed block @click='downloadAndInstallUpdate'>Install update</v-btn>
           </template>
           <template v-else>
-
+            You are running the latest version.
           </template>
         </v-card>
 
@@ -41,6 +41,7 @@
       updateDownloadProgress: 0,
     }),
     head: () => ({
+      title: 'Home',
       meta: [
         { hid: 'robots', name: 'robots', content: 'noindex' },
       ],

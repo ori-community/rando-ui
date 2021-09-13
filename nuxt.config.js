@@ -60,6 +60,7 @@ export default {
     '@nuxtjs/eslint-module',
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
+    '@nuxtjs/pwa',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -122,5 +123,9 @@ export default {
         use: 'js-yaml-loader',
       })
     },
+  },
+
+  router: {
+    mode: process.env.IS_ELECTRON === 'true' ? 'hash' : 'history'
   },
 }

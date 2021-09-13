@@ -5,8 +5,16 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import * as path from 'path'
 import { registerIpcApi } from './api.js'
+import fs from 'fs'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
+
+if (isDevelopment) {
+  if (!fs.existsSync('./work-dir')) {
+    fs.mkdirSync('./work-dir')
+  }
+  process.chdir('./work-dir')
+}
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -20,8 +28,8 @@ async function createWindow() {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
+    autoHideMenuBar: true,
     webPreferences: {
-
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
@@ -34,12 +42,12 @@ async function createWindow() {
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     // await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-    await win.loadURL('http://localhost:3000')
+    await win.loadURL('http://localhost:3000/electron')
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
     createProtocol('app')
     // Load the index.html when not in development
-    await win.loadURL('app://./index.html')
+    await win.loadURL('app://./index.html#/electron')
   }
 }
 

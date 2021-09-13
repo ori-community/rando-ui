@@ -25,7 +25,7 @@ export default {
     } else {
       settingsCache = {
         ...getDefaultSettings(),
-        ...ini.parse(await fs.promises.readFile(SETTINGS_PATH, {encoding: 'utf-8'}))
+        ...ini.parse(await fs.promises.readFile(SETTINGS_PATH, { encoding: 'utf-8' })),
       }
     }
 
@@ -35,6 +35,6 @@ export default {
     settingsCache = settings
   },
   async writeSettings() {
-    await fs.promises.writeFile(SETTINGS_PATH, ini.encode(settingsCache), {encoding: 'utf-8'})
+    await fs.promises.writeFile(SETTINGS_PATH, ini.encode(settingsCache), { encoding: 'utf-8' })
   },
 }

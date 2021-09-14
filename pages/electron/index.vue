@@ -1,10 +1,10 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols='12' md='9' order-md='0' order-sm='1'>
+      <v-col cols='12' md='9' order-md='0' order='1'>
         <wotw-rando-settings />
       </v-col>
-      <v-col cols='12' md='3' order-md='1' order-sm='0'>
+      <v-col cols='12' md='3' order-md='1' order='0'>
         <v-card :color='updateAvailable ? `warning darken-4` : `background lighten-1`' class='pa-4'>
           <h3>Version: {{ currentVersion }}</h3>
           <template v-if='updateAvailable'>
@@ -20,9 +20,14 @@
           </template>
         </v-card>
 
-        <v-btn x-large color='accent' block class='mt-6'>
+        <v-btn x-large color='accent' block class='mt-6' :loading='launching' @click='launch'>
           <img class='launch-icon' src='../../assets/images/launch.png' alt=''>
           Launch
+        </v-btn>
+
+        <v-btn color='background lighten-1' block class='mt-3' @click='openWiki'>
+          <v-icon left>mdi-book-outline</v-icon>
+          Read the Wiki
         </v-btn>
       </v-col>
     </v-row>
@@ -39,6 +44,7 @@
       latestRelease: null, // contains new version string if available
       updateDownloading: false,
       updateDownloadProgress: 0,
+      launching: false,
     }),
     head: () => ({
       title: 'Home',
@@ -75,6 +81,14 @@
         await window.electronApi.invoke('updater.downloadAndInstallUpdate', {
           url: this.latestRelease.assets.find(a => a.name === 'WotwRando.exe').browser_download_url,
         })
+      },
+      async launch() {
+        this.launching = true
+        await window.electronApi.invoke('launcher.launch')
+        this.launching = false
+      },
+      openWiki() {
+        window.electronApi.invoke('launcher.openWiki')
       }
     }
   }

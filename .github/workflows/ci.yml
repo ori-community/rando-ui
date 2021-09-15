@@ -13,64 +13,63 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  ci:
+  server:
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        node: [14]
+        os: [ ubuntu-latest ]
+        node: [ 14 ]
 
     steps:
-      - name: Checkout 🛎
-        uses: actions/checkout@master
+    - name: Checkout 🛎
+      uses: actions/checkout@master
 
-      - name: Setup node env 🏗
-        uses: actions/setup-node@v2.1.5
-        with:
-          node-version: ${{ matrix.node }}
-          check-latest: true
+    - name: Setup node env 🏗
+      uses: actions/setup-node@v2.1.5
+      with:
+        node-version: ${{ matrix.node }}
+        check-latest: true
 
-      - name: Get yarn cache directory path 🛠
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+    - name: Get yarn cache directory path 🛠
+      id: yarn-cache-dir-path
+      run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - name: Cache node_modules 📦
-        uses: actions/cache@v2.1.4
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+    - name: Cache node_modules 📦
+      uses: actions/cache@v2.1.4
+      id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
 
-      - name: Install dependencies 👨🏻‍💻
-        run: yarn
+    - name: Install dependencies 👨🏻‍💻
+      run: yarn
 
-      - name: Run linter 👀
-        run: yarn lint
+    - name: Run linter 👀
+      run: yarn lint
 
-      - name: Log in to the Container registry
-        uses: docker/login-action@v1.10.0
-        if: github.ref == 'refs/heads/main'
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Log in to the Container registry
+      uses: docker/login-action@v1.10.0
+      if: github.ref == 'refs/heads/main'
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v3.4.0
-        if: github.ref == 'refs/heads/main'
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}{% raw %}
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v3.4.0
+      if: github.ref == 'refs/heads/main'
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}{% raw %}
 
-      - name: Build and push Docker images
-        uses: docker/build-push-action@v2.6.1
-        if: github.ref == 'refs/heads/main'
-        with:
-          context: .
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          labels: ${{ steps.meta.outputs.labels }}
-
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v2.6.1
+      if: github.ref == 'refs/heads/main'
+      with:
+        context: .
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+        labels: ${{ steps.meta.outputs.labels }}

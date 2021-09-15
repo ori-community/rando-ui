@@ -2,7 +2,7 @@ import { SettingsService } from '../lib/SettingsService'
 import { spawn } from 'child_process'
 import fs from 'fs'
 import psList from 'ps-list'
-import { RandoIPCService } from '~/electron/src/lib/RandoIPCService'
+import { RandoIPCService } from '../lib/RandoIPCService'
 
 
 const isProcessRunning = async (processName) => {

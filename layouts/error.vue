@@ -4,9 +4,11 @@
       <h1 v-if="error.statusCode === 404">
         {{ pageNotFound }}
       </h1>
-      <h1 v-else>
+      <template v-else>
+        <h1>Something went oribly wrong.</h1>
         {{ otherError }}
-      </h1>
+      </template>
+
       <NuxtLink to="/">
         Home page
       </NuxtLink>

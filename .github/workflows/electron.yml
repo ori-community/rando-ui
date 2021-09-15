@@ -48,8 +48,8 @@ jobs:
     - name: Build electron
       working-directory: ./electron
       run: |
-        apt-get update -y
-        apt-get install wine -y
+        sudo apt-get update -y
+        sudo apt-get install wine -y
         yarn install
         yarn electron:build -w -l
 

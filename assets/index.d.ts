@@ -1,6 +1,6 @@
 declare namespace window {
   interface ElectronApi {
-    invoke(handler: string, ...args: any): void,
+    invoke(handler: string, ...args: any): any,
     on(handler: string, callback: (event: any, ...args: any) => void): void;
   }
 

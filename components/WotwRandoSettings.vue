@@ -1,7 +1,7 @@
 <template>
   <v-row v-if='settings !== null'>
     <v-col cols='12' md='6'>
-      <v-card class='pa-5 mb-6'>
+      <div class='mb-8'>
         <h3>Cutscenes</h3>
         <v-checkbox
           v-model='settings.Flags.ShowShortCutscenes'
@@ -13,8 +13,8 @@
           label='Restore Long Cutscenes'
           messages='Enables the long, unskippable cutscenes normally removed by the randomizer.'
         />
-      </v-card>
-      <v-card class='pa-5 mb-6'>
+      </div>
+      <div class='mb-8'>
         <h3>Map</h3>
         <v-checkbox
           label='Hide Quest Filter'
@@ -32,10 +32,10 @@
           label='Always Show Warps'
           messages='Always show Spirit Wells on the in-game map, no matter what filter'
         />
-      </v-card>
+      </div>
     </v-col>
     <v-col cols='12' md='6'>
-      <v-card class='pa-5 mb-6'>
+      <div class='mb-8'>
         <h3>Mouse Aiming</h3>
         <v-checkbox
           label='Grapple'
@@ -49,8 +49,8 @@
           label='Water Dash'
           messages='Enables aiming Water Dash with your mouse cursor'
         />
-      </v-card>
-      <v-card class='pa-5 mb-6'>
+      </div>
+      <div class='mb-8'>
         <h3>Launch settings</h3>
         <v-checkbox
           label='Launch with Item Tracker'
@@ -72,7 +72,7 @@
           label='Use Windows Store'
           messages='Launch the rando using the windows store version of the game.'
         />
-      </v-card>
+      </div>
     </v-col>
   </v-row>
 </template>

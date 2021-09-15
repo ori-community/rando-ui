@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col cols='12' md='9' order-md='0' order='1'>
-        <wotw-rando-settings />
+
       </v-col>
       <v-col cols='12' md='3' order-md='1' order='0'>
         <v-card :color='updateAvailable ? `warning darken-4` : `background lighten-1`' class='pa-4'>

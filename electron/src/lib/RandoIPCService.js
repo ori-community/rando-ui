@@ -3,16 +3,16 @@ import net from 'net'
 const PIPE_NAME = 'wotw_rando'
 const PIPE_PATH = '\\\\.\\pipe\\'
 
-export class RandoIPCService {
-  socket = null
+let socket = null
 
+export class RandoIPCService {
   static connect() {
-    if (this.socket !== null && this.socket.readyState !== 'open') {
-      this.socket.destroy();
+    if (socket !== null && socket.readyState !== 'open') {
+      socket.destroy();
     }
 
     return new Promise((resolve => {
-      this.socket = net.createConnection(PIPE_PATH + PIPE_NAME, () => {
+      socket = net.createConnection(PIPE_PATH + PIPE_NAME, () => {
         console.log('RandoIPC: Connected')
         resolve()
       })
@@ -20,7 +20,7 @@ export class RandoIPCService {
   }
 
   static send(message) {
-    this.socket.write(message + '\r\n');
+    socket.write(message + '\r\n');
   }
 
   static async trySend(message) {

@@ -48,8 +48,9 @@ jobs:
     - name: Build electron
       working-directory: ./electron
       run: |
+        sudo dpkg --add-architecture i386
         sudo apt-get update -y
-        sudo apt-get install wine -y
+        sudo apt-get install wine wine32 -y
         yarn install
         yarn electron:build -w -l
 

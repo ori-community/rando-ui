@@ -2,14 +2,21 @@ import { SettingsService } from '../lib/SettingsService'
 import { spawn } from 'child_process'
 import fs from 'fs'
 import psList from 'ps-list'
+import { RandoIPCService } from '~/electron/src/lib/RandoIPCService'
+
+
+const isProcessRunning = async (processName) => {
+  const processes = await psList()
+  return processes.some(p => p.name.toLowerCase() === processName.toLowerCase())
+}
 
 const waitForProcess = (processName, maxTries = 20) => new Promise((resolve, reject) => {
   let tries = 0
 
   const check = async () => {
     tries++
-    const processes = await psList()
-    if (processes.some(p => p.name.toLowerCase() === processName.toLowerCase())) {
+
+    if (await isProcessRunning(processName)) {
       resolve()
     } else if (tries > maxTries) {
       reject()
@@ -21,6 +28,10 @@ const waitForProcess = (processName, maxTries = 20) => new Promise((resolve, rej
 })
 
 export class LauncherService {
+  static getOpenedSeedPath() {
+    return process.argv[1] || null
+  }
+
   static async launch(seedFilePath = null) {
     try {
       if (seedFilePath) {
@@ -29,36 +40,40 @@ export class LauncherService {
 
       const settings = await SettingsService.readSettings()
 
-      let command = '.\\Injector.exe'
-
-      if (!settings.Flags.Dev) {
-        console.log('Starting Injector hidden')
-        command = 'start /p ' + command
-      }
-
-      spawn(command, {
-        detached: true,
-        shell: true,
-        stdio: 'ignore',
-        windowsHide: true,
-      })
-
-      await waitForProcess('injector.exe')
-
-      if (settings.Flags.UseWinStore) {
-        spawn('explorer.exe shell:AppsFolder\\Microsoft.Patagonia_8wekyb3d8bbwe!App', {
-          detached: true,
-          shell: true,
-          stdio: 'ignore',
-        }).unref()
-        await waitForProcess('oriandthewillofthewisps-pc.exe')
+      if (await isProcessRunning('injector.exe')) {
+        await RandoIPCService.trySend('reload')
       } else {
-        spawn(`${settings.Paths.Steam} -applaunch 1057090`, {
+        let command = '.\\Injector.exe'
+
+        if (!settings.Flags.Dev) {
+          console.log('Starting Injector hidden')
+          command = 'start /p ' + command
+        }
+
+        spawn(command, {
           detached: true,
           shell: true,
           stdio: 'ignore',
-        }).unref()
-        await waitForProcess('oriwotw.exe', 60)
+          windowsHide: true,
+        })
+
+        await waitForProcess('injector.exe')
+
+        if (settings.Flags.UseWinStore) {
+          spawn('explorer.exe shell:AppsFolder\\Microsoft.Patagonia_8wekyb3d8bbwe!App', {
+            detached: true,
+            shell: true,
+            stdio: 'ignore',
+          }).unref()
+          await waitForProcess('oriandthewillofthewisps-pc.exe')
+        } else {
+          spawn(`${settings.Paths.Steam} -applaunch 1057090`, {
+            detached: true,
+            shell: true,
+            stdio: 'ignore',
+          }).unref()
+          await waitForProcess('oriwotw.exe', 60)
+        }
       }
     } catch (e) {
       console.error('Failed to launch randomizer:')

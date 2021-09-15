@@ -2,8 +2,12 @@ import { LauncherService } from '../lib/LauncherService'
 import { shell } from 'electron'
 
 export default {
-  async launch() {
-    await LauncherService.launch()
+  getOpenedSeedPath() {
+    return LauncherService.getOpenedSeedPath()
+  },
+
+  async launch(seedPath = null) {
+    await LauncherService.launch(seedPath)
   },
 
   openWiki() {

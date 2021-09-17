@@ -38,8 +38,7 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item @click='createNewGame("bingo")'>Bingo</v-list-item>
-            <v-list-item @click='createNewGame("discovery_bingo")'>Discovery Bingo</v-list-item>
+            <v-list-item @click='createNewGame("normal")'>Normal</v-list-item>
             <v-list-item @click='createNewGame("lockout_bingo")'>Lockout Bingo</v-list-item>
             <v-list-item @click='createNewGame("coop")'>Co-op</v-list-item>
             <v-list-item @click='createNewGame("multi")'>Multiworld</v-list-item>
@@ -65,29 +64,26 @@
         this.newGameLoading = true
 
         try {
-          let gameId
+          let multiverseId
 
           switch (type) {
-            case 'coop':
-              gameId = await this.$axios.$post('/games', {isCoop: true})
-              break
-            case 'multi':
-              gameId = await this.$axios.$post('/games', {isMulti: true})
+            case 'normal':
+              multiverseId = await this.$axios.$post('/multiverses')
               break
             case 'bingo':
-              gameId = await this.$axios.$post('/bingo')
+              multiverseId = await this.$axios.$post('/bingo')
               break
             case 'discovery_bingo':
-              gameId = await this.$axios.$post('/bingo', {discovery: 2})
+              multiverseId = await this.$axios.$post('/bingo', {discovery: 2})
               break
             case 'lockout_bingo':
-              gameId = await this.$axios.$post('/bingo', {lockout: true})
+              multiverseId = await this.$axios.$post('/bingo', {lockout: true})
               break
             default:
               throw new Error(`Invalid game type: ${type}`)
           }
 
-          await this.$router.push({name: 'game-gameId', params: {gameId}})
+          await this.$router.push({name: 'game-multiverseId', params: {multiverseId}})
         } catch (e) {
           console.error(e)
         }

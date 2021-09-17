@@ -2,6 +2,7 @@ import fs from 'fs'
 import ini from 'ini'
 
 const SETTINGS_PATH = './settings.ini'
+const JWT_PATH = './.jwt'
 const getDefaultSettings = () => ({
   Paths: {
     Steam: null,
@@ -37,4 +38,7 @@ export default {
   async writeSettings() {
     await fs.promises.writeFile(SETTINGS_PATH, ini.encode(settingsCache), { encoding: 'utf-8' })
   },
+  async setClientJwt(event, jwt) {
+    await fs.promises.writeFile(JWT_PATH, jwt, {encoding: 'utf-8'})
+  }
 }

@@ -18,22 +18,28 @@ message UserInfo {
   optional string avatarId = 3;
 }
 
-message TeamInfo {
+message WorldInfo {
   int64 id = 1;
   string name = 2;
   repeated UserInfo members = 3;
 }
 
-message GameInfo {
+message UniverseInfo {
   int64 id = 1;
-  repeated TeamInfo teams = 2;
+  string name = 2;
+  repeated WorldInfo worlds = 3;
+}
+
+message MultiverseInfoMessage {
+  int64 id = 1;
+  repeated UniverseInfo universes = 2;
   bool hasBingoBoard = 3;
   repeated UserInfo spectators = 4;
 }
 
 message BingoSquare {
   string text = 1;
-  repeated TeamInfo completedBy = 2;
+  repeated WorldInfo completedBy = 2;
   repeated BingoGoal goals = 3;
 }
 
@@ -41,16 +47,16 @@ message RequestUpdatesMessage {
   string playerId = 1;
 }
 
-message BingoTeamInfo {
-  int64 teamId = 1;
+message BingoUniverseInfo {
+  int64 universeId = 1;
   string score = 3;
   int32 rank = 4;
   int32 squares = 5;
   int32 lines = 6;
 }
 
-message SyncBingoTeamsMessage {
-  repeated BingoTeamInfo teams = 1;
+message SyncBingoUniversesMessage {
+  repeated BingoUniverseInfo bingoUniverses = 1;
 }
 
 message Position {
@@ -73,6 +79,6 @@ message SyncBoardMessage {
   bool replace = 2;
 }
 
-message Authenticate {
+message AuthenticateMessage {
   string jwt = 1;
 }

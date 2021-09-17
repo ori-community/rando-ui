@@ -1,5 +1,5 @@
 <template>
-  <v-card class='team-view' :class='{"team-hidden": teamHidden}' @click='$emit("click")'>
+  <v-card class='universe-view' :class='{"team-hidden": teamHidden}' @click='$emit("click")'>
     <v-sheet :color='teamHidden ? "" : color' class='color-stripe'>
       <div v-if='!!bingoTeam' class='squares px-2'>
         {{ bingoTeam.squares }}
@@ -52,7 +52,7 @@
 </script>
 
 <style lang='scss' scoped>
-  .team-view {
+  .universe-view {
     overflow: hidden;
     display: flex;
     flex-direction: row;

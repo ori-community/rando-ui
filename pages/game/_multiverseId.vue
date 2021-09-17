@@ -1,32 +1,33 @@
 <template>
   <div>
     <v-container>
-      <h1 class='text-center mt-12 mb-6'>Game <small>#</small>{{ gameId }}</h1>
+      <h1 class='text-center mt-12 mb-6'>Game <small>#</small>{{ multiverseId }}</h1>
       <throttled-spinner>
-        <div v-if='isLoggedIn && gameReady'>
-          <div class='teams'>
-            <wotw-team-view
-              v-for='team in games[gameId].teams'
-              :key='team.id'
+        <div v-if='isLoggedIn && multiverseReady'>
+          <div class='universes'>
+            <wotw-universe-view
+              v-for='universe in multiverse.universes'
+              :key='universe.id'
               :can-join='!isSpectating'
-              :color='teamColors[team.id]'
+              :color='universeColors[universe.id]'
               :disabled='loading'
-              :team='team'
-              class='team-view'
-              @join='join(team)'
+              :universe='universe'
+              class='universe-view'
+              @join-world='worldId => join(worldId)'
+              @new-world='createWorld(universe.id)'
             />
           </div>
 
           <div v-if='!isSpectating' class='text-center mt-4'>
-            <v-tooltip :disabled='canCreateTeam' bottom>
+            <v-tooltip :disabled='canCreateUniverse' bottom>
               <span>
-                Bingo games currently don't support more than 8 teams.
+                You ran out of space in your multiverse.
               </span>
               <template #activator='{on}'>
                 <div class='d-inline-block' v-on='on'>
-                  <v-btn :disabled='loading || !canCreateTeam' large text @click='createTeam'>
+                  <v-btn :disabled='loading || !canCreateUniverse' large text @click='createWorld()'>
                     <v-icon left>mdi-plus</v-icon>
-                    New team
+                    New Universe
                   </v-btn>
                 </div>
               </template>
@@ -52,7 +53,7 @@
       </throttled-spinner>
     </v-container>
 
-    <template v-if='isLoggedIn && gameReady && !!game.bingoBoard'>
+    <template v-if='isLoggedIn && multiverseReady && !!multiverse.bingoBoard'>
       <v-container>
         <h2 class='text-center mb-3 mt-8'>Bingo board</h2>
 
@@ -98,26 +99,26 @@
           <wotw-bingo-board
             :edge-labels='boardSettings.edgeLabels'
             :game='games[gameId]'
-            :hidden-teams='hiddenTeams'
-            :highlight-team='highlightedTeamId'
-            :team-colors='teamColors'
+            :hidden-teams='hiddenUniverses'
+            :highlight-team='highlightedUniverseId'
+            :team-colors='universeColors'
             class='board'
           />
           <div class='sidebar px-5'>
-            <transition-group class='bingo-teams' name='list'>
+            <transition-group class='bingo-universes' name='list'>
               <div
-                v-for='(bingoTeam, index) in sortedBingoTeams'
+                v-for='(bingoTeam, index) in sortedBingoUniverses'
                 :key='bingoTeam.teamId'
-                :style='{zIndex: sortedBingoTeams.length - index}'
+                :style='{zIndex: sortedBingoUniverses.length - index}'
                 class='relative'
               >
                 <wotw-bingo-team-view
                   :bingo-team='bingoTeam'
-                  :color='teamColors[bingoTeam.teamId]'
+                  :color='universeColors[bingoTeam.teamId]'
                   :team='games[gameId].teams.find(t => t.id === bingoTeam.teamId)'
-                  :team-hidden='hiddenTeams.includes(bingoTeam.teamId)'
-                  @click='toggleTeamVisibility(bingoTeam.teamId)'
-                  @click.native.ctrl.capture.stop='toggleTeamVisibility(bingoTeam.teamId, true)'
+                  :team-hidden='hiddenUniverses.includes(bingoTeam.teamId)'
+                  @click='toggleUniverseVisibility(bingoTeam.teamId)'
+                  @click.native.ctrl.capture.stop='toggleUniverseVisibility(bingoTeam.teamId, true)'
                 />
               </div>
 
@@ -159,7 +160,7 @@
           />
 
           <v-checkbox
-            v-model='boardSettings.highlightOwnTeam'
+            v-model='boardSettings.highlightOwnUniverse'
             hint='Reserve bottom left parts of bingo squares for your team. Greatly improves overview of your progress.'
             label='Highlight own team'
             persistent-hint
@@ -223,13 +224,13 @@
       loading: false,
       embedUrlLoading: false,
       embedUrlCopied: false,
-      gameReady: false,
+      multiverseReady: false,
       showBoard: false,
-      hiddenTeams: [], // Array of team IDs
+      hiddenUniverses: [], // Array of team IDs
       boardSettingsOpen: false,
       boardSettings: {
         edgeLabels: false,
-        highlightOwnTeam: true,
+        highlightOwnUniverse: true,
         hideSpectators: false,
       },
       spectateDialogOpen: false,
@@ -238,42 +239,42 @@
     computed: {
       ...mapGetters('user', ['isLoggedIn']),
       ...mapState('user', ['user', 'userLoaded']),
-      ...mapState('gameState', ['games']),
+      ...mapState('multiverseState', ['multiverses']),
       isOBS() {
         return isOBS()
       },
-      gameId() {
-        return this.$route.params.gameId
+      multiverseId() {
+        return this.$route.params.multiverseId
       },
-      game() {
-        return this.games[this.gameId]
+      multiverse() {
+        return this.multiverses[this.multiverseId]
       },
-      sortedBingoTeams() {
-        if (!this.game) {
+      sortedBingoUniverses() {
+        if (!this.multiverse) {
           return []
         }
 
         // Only return bingo teams for which we have a team
-        const teams = this.game.teams
+        const universes = this.multiverse.universes
         return [
-          ...this.game.bingoTeams.filter(b => teams.some(t => t.id === b.teamId)),
+          ...this.multiverse.bingoUniverses.filter(b => universes.some(u => u.id === b.universeId)),
         ].sort((a, b) => {
           const rankDifference = b.rank - a.rank
 
           if (rankDifference === 0) {
-            return a.teamId - b.teamId
+            return a.universeId - b.universeId
           }
 
           return rankDifference
         })
       },
-      teamColors() {
-        if (!this.game) {
+      universeColors() {
+        if (!this.multiverse) {
           return {}
         }
 
-        const teamIds = this.game.teams.map(t => t.id).sort()
-        const teamColors = {}
+        const universeIds = this.multiverse.universes.map(u => u.id).sort()
+        const universeColors = {}
         const colorPool = [
           colors.brown.darken1,
           colors.indigo.darken2,
@@ -285,38 +286,40 @@
           colors.blue.darken3,
         ]
 
-        for (const teamId of teamIds) {
-          teamColors[teamId] = colorPool.pop() ?? 'transparent'
+        for (const universeId of universeIds) {
+          universeColors[universeId] = colorPool.pop() ?? 'transparent'
         }
 
-        return teamColors
+        return universeColors
       },
-      canCreateTeam() {
-        return this.sortedBingoTeams.length < 8
+      canCreateUniverse() {
+        return this.multiverse.universes.length < 8
       },
-      ownTeam() {
-        return this.game.teams.find(
-          team => team.members.find(
-            player => player.id === this.user?.id,
+      ownUniverse() {
+        return this.multiverse.universes.find(
+          universe => universe.worlds.find(
+            world => world.members.find(
+              player => player.id === this.user?.id,
+            )
           ),
         )
       },
-      ownTeamId() {
-        return this.ownTeam?.id
+      ownUniverseId() {
+        return this.ownUniverse?.id
       },
-      highlightedTeamId() {
-        if (!this.boardSettings.highlightOwnTeam) {
+      highlightedUniverseId() {
+        if (!this.boardSettings.highlightOwnUniverse) {
           return null
         }
 
-        return this.ownTeamId
+        return this.ownUniverseId
       },
       isSpectating() {
-        if (!this.game || !this.user) {
+        if (!this.multiverse || !this.user) {
           return false
         }
 
-        return this.game.spectators.some(s => s.id === this.user.id)
+        return this.multiverse.spectators.some(s => s.id === this.user.id)
       },
     },
     watch: {
@@ -335,11 +338,11 @@
         immediate: true,
         async handler(isLoggedIn) {
           if (isLoggedIn) {
-            await this.$store.dispatch('gameState/fetchGame', this.gameId)
-            await this.$store.dispatch('gameState/connectGame', {
-              gameId: this.gameId,
+            await this.$store.dispatch('multiverseState/fetchMultiverse', this.multiverseId)
+            await this.$store.dispatch('multiverseState/connectMultiverse', {
+              multiverseId: this.multiverseId,
             })
-            this.gameReady = true
+            this.multiverseReady = true
           }
         },
       },
@@ -349,15 +352,15 @@
           window.localStorage.setItem('boardSettings', JSON.stringify(boardSettings))
         },
       },
-      'game.teams'() { // TODO: Temporary workaround for orirando/wotw-server#5
-        if (this.game.bingoBoard) {
-          this.$store.dispatch('gameState/fetchBingoBoard', this.gameId)
+      'multiverse.universes'() { // TODO: Temporary workaround for orirando/wotw-server#5
+        if (this.multiverse.bingoBoard) {
+          this.$store.dispatch('multiverseState/fetchBingoBoard', this.multiverseId)
         }
       },
-      gameReady: {
+      multiverseReady: {
         immediate: true,
-        handler(gameReady) {
-          if (gameReady && this.game.bingoBoard) {
+        handler(multiverseReady) {
+          if (multiverseReady && this.multiverse.bingoBoard) {
             this.$nextTick(() => {
               if (isOBS()) {
                 const styleElement = document.createElement('style')
@@ -383,15 +386,15 @@
       }
     },
     methods: {
-      async join(team) {
-        await this.$axios.post(`/games/${this.gameId}/teams/${team.id}`)
-        await this.$store.dispatch('gameState/connectGame', {
-          gameId: this.gameId,
+      async join(worldId) {
+        await this.$axios.post(`/multiverses/${this.multiverseId}/worlds/${worldId}`)
+        await this.$store.dispatch('multiverseState/connectMultiverse', {
+          multiverseId: this.multiverseId,
           reconnect: true,
         })
       },
-      async createTeam() {
-        await this.$axios.post(`/games/${this.gameId}/teams`)
+      async createWorld(universeId = null) {
+        await this.$axios.post(`/multiverses/${this.multiverseId}/${universeId}/worlds`)
       },
       centerBoard() {
         this.$refs.boardContainer.scrollIntoView({
@@ -400,17 +403,17 @@
         })
         this.showBoard = true
       },
-      toggleTeamVisibility(teamId, exclusive = false) {
+      toggleUniverseVisibility(universeId, exclusive = false) {
         if (exclusive) {
-          if (this.hiddenTeams.length === this.sortedBingoTeams.length - 1 && !this.hiddenTeams.includes(teamId)) {
-            this.hiddenTeams = []
+          if (this.hiddenUniverses.length === this.sortedBingoUniverses.length - 1 && !this.hiddenUniverses.includes(universeId)) {
+            this.hiddenUniverses = []
           } else {
-            this.hiddenTeams = this.sortedBingoTeams.map(t => t.teamId).filter(t => t !== teamId)
+            this.hiddenUniverses = this.sortedBingoUniverses.map(b => b.universeId).filter(u => u !== universeId)
           }
-        } else if (this.hiddenTeams.includes(teamId)) {
-          this.hiddenTeams = this.hiddenTeams.filter(t => t !== teamId)
+        } else if (this.hiddenUniverses.includes(universeId)) {
+          this.hiddenUniverses = this.hiddenUniverses.filter(u => u !== universeId)
         } else {
-          this.hiddenTeams.push(teamId)
+          this.hiddenUniverses.push(universeId)
         }
       },
       async createEmbedUrl() {
@@ -421,9 +424,9 @@
         })
 
         const targetRoute = this.$router.resolve({
-          name: 'game-gameId',
+          name: 'game-multiverseId',
           params: {
-            gameId: this.gameId,
+            multiverseId: this.multiverseId,
           },
           query: {
             jwt: token,
@@ -439,7 +442,7 @@
         this.spectateLoading = true
 
         try {
-          await this.$store.dispatch('gameState/spectateGame', this.gameId)
+          await this.$store.dispatch('multiverseState/spectateMultiverse', this.multiverseId)
           this.spectateDialogOpen = false
         } catch (e) {
           console.error(e)
@@ -452,14 +455,14 @@
 </script>
 
 <style lang='scss' scoped>
-  .teams {
+  .universes {
     align-items: flex-start;
     display: flex;
     flex-wrap: wrap;
     gap: 2em;
     justify-content: center;
 
-    .team-view {
+    .universe-view {
       min-width: 15vw;
     }
   }
@@ -482,7 +485,7 @@
       flex-grow: 1;
       justify-content: center;
 
-      .bingo-teams {
+      .bingo-universes {
         display: flex;
         flex-direction: column;
         gap: 0.3em;

@@ -732,26 +732,26 @@ export const RandoProto = $root.RandoProto = (() => {
         return UserInfo;
     })();
 
-    RandoProto.TeamInfo = (function() {
+    RandoProto.WorldInfo = (function() {
 
         /**
-         * Properties of a TeamInfo.
+         * Properties of a WorldInfo.
          * @memberof RandoProto
-         * @interface ITeamInfo
-         * @property {number|Long|null} [id] TeamInfo id
-         * @property {string|null} [name] TeamInfo name
-         * @property {Array.<RandoProto.IUserInfo>|null} [members] TeamInfo members
+         * @interface IWorldInfo
+         * @property {number|Long|null} [id] WorldInfo id
+         * @property {string|null} [name] WorldInfo name
+         * @property {Array.<RandoProto.IUserInfo>|null} [members] WorldInfo members
          */
 
         /**
-         * Constructs a new TeamInfo.
+         * Constructs a new WorldInfo.
          * @memberof RandoProto
-         * @classdesc Represents a TeamInfo.
-         * @implements ITeamInfo
+         * @classdesc Represents a WorldInfo.
+         * @implements IWorldInfo
          * @constructor
-         * @param {RandoProto.ITeamInfo=} [properties] Properties to set
+         * @param {RandoProto.IWorldInfo=} [properties] Properties to set
          */
-        function TeamInfo(properties) {
+        function WorldInfo(properties) {
             this.members = [];
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -760,51 +760,51 @@ export const RandoProto = $root.RandoProto = (() => {
         }
 
         /**
-         * TeamInfo id.
+         * WorldInfo id.
          * @member {number|Long} id
-         * @memberof RandoProto.TeamInfo
+         * @memberof RandoProto.WorldInfo
          * @instance
          */
-        TeamInfo.prototype.id = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+        WorldInfo.prototype.id = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * TeamInfo name.
+         * WorldInfo name.
          * @member {string} name
-         * @memberof RandoProto.TeamInfo
+         * @memberof RandoProto.WorldInfo
          * @instance
          */
-        TeamInfo.prototype.name = "";
+        WorldInfo.prototype.name = "";
 
         /**
-         * TeamInfo members.
+         * WorldInfo members.
          * @member {Array.<RandoProto.IUserInfo>} members
-         * @memberof RandoProto.TeamInfo
+         * @memberof RandoProto.WorldInfo
          * @instance
          */
-        TeamInfo.prototype.members = $util.emptyArray;
+        WorldInfo.prototype.members = $util.emptyArray;
 
         /**
-         * Creates a new TeamInfo instance using the specified properties.
+         * Creates a new WorldInfo instance using the specified properties.
          * @function create
-         * @memberof RandoProto.TeamInfo
+         * @memberof RandoProto.WorldInfo
          * @static
-         * @param {RandoProto.ITeamInfo=} [properties] Properties to set
-         * @returns {RandoProto.TeamInfo} TeamInfo instance
+         * @param {RandoProto.IWorldInfo=} [properties] Properties to set
+         * @returns {RandoProto.WorldInfo} WorldInfo instance
          */
-        TeamInfo.create = function create(properties) {
-            return new TeamInfo(properties);
+        WorldInfo.create = function create(properties) {
+            return new WorldInfo(properties);
         };
 
         /**
-         * Encodes the specified TeamInfo message. Does not implicitly {@link RandoProto.TeamInfo.verify|verify} messages.
+         * Encodes the specified WorldInfo message. Does not implicitly {@link RandoProto.WorldInfo.verify|verify} messages.
          * @function encode
-         * @memberof RandoProto.TeamInfo
+         * @memberof RandoProto.WorldInfo
          * @static
-         * @param {RandoProto.ITeamInfo} message TeamInfo message or plain object to encode
+         * @param {RandoProto.IWorldInfo} message WorldInfo message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        TeamInfo.encode = function encode(message, writer) {
+        WorldInfo.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.id != null && Object.hasOwnProperty.call(message, "id"))
@@ -818,33 +818,33 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Encodes the specified TeamInfo message, length delimited. Does not implicitly {@link RandoProto.TeamInfo.verify|verify} messages.
+         * Encodes the specified WorldInfo message, length delimited. Does not implicitly {@link RandoProto.WorldInfo.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof RandoProto.TeamInfo
+         * @memberof RandoProto.WorldInfo
          * @static
-         * @param {RandoProto.ITeamInfo} message TeamInfo message or plain object to encode
+         * @param {RandoProto.IWorldInfo} message WorldInfo message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        TeamInfo.encodeDelimited = function encodeDelimited(message, writer) {
+        WorldInfo.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes a TeamInfo message from the specified reader or buffer.
+         * Decodes a WorldInfo message from the specified reader or buffer.
          * @function decode
-         * @memberof RandoProto.TeamInfo
+         * @memberof RandoProto.WorldInfo
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {RandoProto.TeamInfo} TeamInfo
+         * @returns {RandoProto.WorldInfo} WorldInfo
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        TeamInfo.decode = function decode(reader, length) {
+        WorldInfo.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.RandoProto.TeamInfo();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.RandoProto.WorldInfo();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -868,30 +868,30 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Decodes a TeamInfo message from the specified reader or buffer, length delimited.
+         * Decodes a WorldInfo message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof RandoProto.TeamInfo
+         * @memberof RandoProto.WorldInfo
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {RandoProto.TeamInfo} TeamInfo
+         * @returns {RandoProto.WorldInfo} WorldInfo
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        TeamInfo.decodeDelimited = function decodeDelimited(reader) {
+        WorldInfo.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies a TeamInfo message.
+         * Verifies a WorldInfo message.
          * @function verify
-         * @memberof RandoProto.TeamInfo
+         * @memberof RandoProto.WorldInfo
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        TeamInfo.verify = function verify(message) {
+        WorldInfo.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.id != null && message.hasOwnProperty("id"))
@@ -913,17 +913,17 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Creates a TeamInfo message from a plain object. Also converts values to their respective internal types.
+         * Creates a WorldInfo message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof RandoProto.TeamInfo
+         * @memberof RandoProto.WorldInfo
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {RandoProto.TeamInfo} TeamInfo
+         * @returns {RandoProto.WorldInfo} WorldInfo
          */
-        TeamInfo.fromObject = function fromObject(object) {
-            if (object instanceof $root.RandoProto.TeamInfo)
+        WorldInfo.fromObject = function fromObject(object) {
+            if (object instanceof $root.RandoProto.WorldInfo)
                 return object;
-            let message = new $root.RandoProto.TeamInfo();
+            let message = new $root.RandoProto.WorldInfo();
             if (object.id != null)
                 if ($util.Long)
                     (message.id = $util.Long.fromValue(object.id)).unsigned = false;
@@ -937,11 +937,11 @@ export const RandoProto = $root.RandoProto = (() => {
                 message.name = String(object.name);
             if (object.members) {
                 if (!Array.isArray(object.members))
-                    throw TypeError(".RandoProto.TeamInfo.members: array expected");
+                    throw TypeError(".RandoProto.WorldInfo.members: array expected");
                 message.members = [];
                 for (let i = 0; i < object.members.length; ++i) {
                     if (typeof object.members[i] !== "object")
-                        throw TypeError(".RandoProto.TeamInfo.members: object expected");
+                        throw TypeError(".RandoProto.WorldInfo.members: object expected");
                     message.members[i] = $root.RandoProto.UserInfo.fromObject(object.members[i]);
                 }
             }
@@ -949,15 +949,15 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Creates a plain object from a TeamInfo message. Also converts values to other types if specified.
+         * Creates a plain object from a WorldInfo message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof RandoProto.TeamInfo
+         * @memberof RandoProto.WorldInfo
          * @static
-         * @param {RandoProto.TeamInfo} message TeamInfo
+         * @param {RandoProto.WorldInfo} message WorldInfo
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        TeamInfo.toObject = function toObject(message, options) {
+        WorldInfo.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
@@ -987,52 +987,331 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Converts this TeamInfo to JSON.
+         * Converts this WorldInfo to JSON.
          * @function toJSON
-         * @memberof RandoProto.TeamInfo
+         * @memberof RandoProto.WorldInfo
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        TeamInfo.prototype.toJSON = function toJSON() {
+        WorldInfo.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
         /**
-         * Gets the default type url for TeamInfo
+         * Gets the default type url for WorldInfo
          * @function getTypeUrl
-         * @memberof RandoProto.TeamInfo
+         * @memberof RandoProto.WorldInfo
          * @static
          * @returns {string} The default type url
          */
-        TeamInfo.getTypeUrl = function getTypeUrl() {
-            return "type.googleapis.com/RandoProto.TeamInfo";
+        WorldInfo.getTypeUrl = function getTypeUrl() {
+            return "type.googleapis.com/RandoProto.WorldInfo";
         };
 
-        return TeamInfo;
+        return WorldInfo;
     })();
 
-    RandoProto.GameInfo = (function() {
+    RandoProto.UniverseInfo = (function() {
 
         /**
-         * Properties of a GameInfo.
+         * Properties of an UniverseInfo.
          * @memberof RandoProto
-         * @interface IGameInfo
-         * @property {number|Long|null} [id] GameInfo id
-         * @property {Array.<RandoProto.ITeamInfo>|null} [teams] GameInfo teams
-         * @property {boolean|null} [hasBingoBoard] GameInfo hasBingoBoard
-         * @property {Array.<RandoProto.IUserInfo>|null} [spectators] GameInfo spectators
+         * @interface IUniverseInfo
+         * @property {number|Long|null} [id] UniverseInfo id
+         * @property {string|null} [name] UniverseInfo name
+         * @property {Array.<RandoProto.IWorldInfo>|null} [worlds] UniverseInfo worlds
          */
 
         /**
-         * Constructs a new GameInfo.
+         * Constructs a new UniverseInfo.
          * @memberof RandoProto
-         * @classdesc Represents a GameInfo.
-         * @implements IGameInfo
+         * @classdesc Represents an UniverseInfo.
+         * @implements IUniverseInfo
          * @constructor
-         * @param {RandoProto.IGameInfo=} [properties] Properties to set
+         * @param {RandoProto.IUniverseInfo=} [properties] Properties to set
          */
-        function GameInfo(properties) {
-            this.teams = [];
+        function UniverseInfo(properties) {
+            this.worlds = [];
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * UniverseInfo id.
+         * @member {number|Long} id
+         * @memberof RandoProto.UniverseInfo
+         * @instance
+         */
+        UniverseInfo.prototype.id = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * UniverseInfo name.
+         * @member {string} name
+         * @memberof RandoProto.UniverseInfo
+         * @instance
+         */
+        UniverseInfo.prototype.name = "";
+
+        /**
+         * UniverseInfo worlds.
+         * @member {Array.<RandoProto.IWorldInfo>} worlds
+         * @memberof RandoProto.UniverseInfo
+         * @instance
+         */
+        UniverseInfo.prototype.worlds = $util.emptyArray;
+
+        /**
+         * Creates a new UniverseInfo instance using the specified properties.
+         * @function create
+         * @memberof RandoProto.UniverseInfo
+         * @static
+         * @param {RandoProto.IUniverseInfo=} [properties] Properties to set
+         * @returns {RandoProto.UniverseInfo} UniverseInfo instance
+         */
+        UniverseInfo.create = function create(properties) {
+            return new UniverseInfo(properties);
+        };
+
+        /**
+         * Encodes the specified UniverseInfo message. Does not implicitly {@link RandoProto.UniverseInfo.verify|verify} messages.
+         * @function encode
+         * @memberof RandoProto.UniverseInfo
+         * @static
+         * @param {RandoProto.IUniverseInfo} message UniverseInfo message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UniverseInfo.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.id);
+            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.name);
+            if (message.worlds != null && message.worlds.length)
+                for (let i = 0; i < message.worlds.length; ++i)
+                    $root.RandoProto.WorldInfo.encode(message.worlds[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified UniverseInfo message, length delimited. Does not implicitly {@link RandoProto.UniverseInfo.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof RandoProto.UniverseInfo
+         * @static
+         * @param {RandoProto.IUniverseInfo} message UniverseInfo message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UniverseInfo.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an UniverseInfo message from the specified reader or buffer.
+         * @function decode
+         * @memberof RandoProto.UniverseInfo
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {RandoProto.UniverseInfo} UniverseInfo
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UniverseInfo.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.RandoProto.UniverseInfo();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.id = reader.int64();
+                    break;
+                case 2:
+                    message.name = reader.string();
+                    break;
+                case 3:
+                    if (!(message.worlds && message.worlds.length))
+                        message.worlds = [];
+                    message.worlds.push($root.RandoProto.WorldInfo.decode(reader, reader.uint32()));
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an UniverseInfo message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof RandoProto.UniverseInfo
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {RandoProto.UniverseInfo} UniverseInfo
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UniverseInfo.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an UniverseInfo message.
+         * @function verify
+         * @memberof RandoProto.UniverseInfo
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        UniverseInfo.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.id != null && message.hasOwnProperty("id"))
+                if (!$util.isInteger(message.id) && !(message.id && $util.isInteger(message.id.low) && $util.isInteger(message.id.high)))
+                    return "id: integer|Long expected";
+            if (message.name != null && message.hasOwnProperty("name"))
+                if (!$util.isString(message.name))
+                    return "name: string expected";
+            if (message.worlds != null && message.hasOwnProperty("worlds")) {
+                if (!Array.isArray(message.worlds))
+                    return "worlds: array expected";
+                for (let i = 0; i < message.worlds.length; ++i) {
+                    let error = $root.RandoProto.WorldInfo.verify(message.worlds[i]);
+                    if (error)
+                        return "worlds." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates an UniverseInfo message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof RandoProto.UniverseInfo
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {RandoProto.UniverseInfo} UniverseInfo
+         */
+        UniverseInfo.fromObject = function fromObject(object) {
+            if (object instanceof $root.RandoProto.UniverseInfo)
+                return object;
+            let message = new $root.RandoProto.UniverseInfo();
+            if (object.id != null)
+                if ($util.Long)
+                    (message.id = $util.Long.fromValue(object.id)).unsigned = false;
+                else if (typeof object.id === "string")
+                    message.id = parseInt(object.id, 10);
+                else if (typeof object.id === "number")
+                    message.id = object.id;
+                else if (typeof object.id === "object")
+                    message.id = new $util.LongBits(object.id.low >>> 0, object.id.high >>> 0).toNumber();
+            if (object.name != null)
+                message.name = String(object.name);
+            if (object.worlds) {
+                if (!Array.isArray(object.worlds))
+                    throw TypeError(".RandoProto.UniverseInfo.worlds: array expected");
+                message.worlds = [];
+                for (let i = 0; i < object.worlds.length; ++i) {
+                    if (typeof object.worlds[i] !== "object")
+                        throw TypeError(".RandoProto.UniverseInfo.worlds: object expected");
+                    message.worlds[i] = $root.RandoProto.WorldInfo.fromObject(object.worlds[i]);
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an UniverseInfo message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof RandoProto.UniverseInfo
+         * @static
+         * @param {RandoProto.UniverseInfo} message UniverseInfo
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        UniverseInfo.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.arrays || options.defaults)
+                object.worlds = [];
+            if (options.defaults) {
+                if ($util.Long) {
+                    let long = new $util.Long(0, 0, false);
+                    object.id = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                } else
+                    object.id = options.longs === String ? "0" : 0;
+                object.name = "";
+            }
+            if (message.id != null && message.hasOwnProperty("id"))
+                if (typeof message.id === "number")
+                    object.id = options.longs === String ? String(message.id) : message.id;
+                else
+                    object.id = options.longs === String ? $util.Long.prototype.toString.call(message.id) : options.longs === Number ? new $util.LongBits(message.id.low >>> 0, message.id.high >>> 0).toNumber() : message.id;
+            if (message.name != null && message.hasOwnProperty("name"))
+                object.name = message.name;
+            if (message.worlds && message.worlds.length) {
+                object.worlds = [];
+                for (let j = 0; j < message.worlds.length; ++j)
+                    object.worlds[j] = $root.RandoProto.WorldInfo.toObject(message.worlds[j], options);
+            }
+            return object;
+        };
+
+        /**
+         * Converts this UniverseInfo to JSON.
+         * @function toJSON
+         * @memberof RandoProto.UniverseInfo
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        UniverseInfo.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for UniverseInfo
+         * @function getTypeUrl
+         * @memberof RandoProto.UniverseInfo
+         * @static
+         * @returns {string} The default type url
+         */
+        UniverseInfo.getTypeUrl = function getTypeUrl() {
+            return "type.googleapis.com/RandoProto.UniverseInfo";
+        };
+
+        return UniverseInfo;
+    })();
+
+    RandoProto.MultiverseInfoMessage = (function() {
+
+        /**
+         * Properties of a MultiverseInfoMessage.
+         * @memberof RandoProto
+         * @interface IMultiverseInfoMessage
+         * @property {number|Long|null} [id] MultiverseInfoMessage id
+         * @property {Array.<RandoProto.IUniverseInfo>|null} [universes] MultiverseInfoMessage universes
+         * @property {boolean|null} [hasBingoBoard] MultiverseInfoMessage hasBingoBoard
+         * @property {Array.<RandoProto.IUserInfo>|null} [spectators] MultiverseInfoMessage spectators
+         */
+
+        /**
+         * Constructs a new MultiverseInfoMessage.
+         * @memberof RandoProto
+         * @classdesc Represents a MultiverseInfoMessage.
+         * @implements IMultiverseInfoMessage
+         * @constructor
+         * @param {RandoProto.IMultiverseInfoMessage=} [properties] Properties to set
+         */
+        function MultiverseInfoMessage(properties) {
+            this.universes = [];
             this.spectators = [];
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
@@ -1041,66 +1320,66 @@ export const RandoProto = $root.RandoProto = (() => {
         }
 
         /**
-         * GameInfo id.
+         * MultiverseInfoMessage id.
          * @member {number|Long} id
-         * @memberof RandoProto.GameInfo
+         * @memberof RandoProto.MultiverseInfoMessage
          * @instance
          */
-        GameInfo.prototype.id = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+        MultiverseInfoMessage.prototype.id = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * GameInfo teams.
-         * @member {Array.<RandoProto.ITeamInfo>} teams
-         * @memberof RandoProto.GameInfo
+         * MultiverseInfoMessage universes.
+         * @member {Array.<RandoProto.IUniverseInfo>} universes
+         * @memberof RandoProto.MultiverseInfoMessage
          * @instance
          */
-        GameInfo.prototype.teams = $util.emptyArray;
+        MultiverseInfoMessage.prototype.universes = $util.emptyArray;
 
         /**
-         * GameInfo hasBingoBoard.
+         * MultiverseInfoMessage hasBingoBoard.
          * @member {boolean} hasBingoBoard
-         * @memberof RandoProto.GameInfo
+         * @memberof RandoProto.MultiverseInfoMessage
          * @instance
          */
-        GameInfo.prototype.hasBingoBoard = false;
+        MultiverseInfoMessage.prototype.hasBingoBoard = false;
 
         /**
-         * GameInfo spectators.
+         * MultiverseInfoMessage spectators.
          * @member {Array.<RandoProto.IUserInfo>} spectators
-         * @memberof RandoProto.GameInfo
+         * @memberof RandoProto.MultiverseInfoMessage
          * @instance
          */
-        GameInfo.prototype.spectators = $util.emptyArray;
+        MultiverseInfoMessage.prototype.spectators = $util.emptyArray;
 
         /**
-         * Creates a new GameInfo instance using the specified properties.
+         * Creates a new MultiverseInfoMessage instance using the specified properties.
          * @function create
-         * @memberof RandoProto.GameInfo
+         * @memberof RandoProto.MultiverseInfoMessage
          * @static
-         * @param {RandoProto.IGameInfo=} [properties] Properties to set
-         * @returns {RandoProto.GameInfo} GameInfo instance
+         * @param {RandoProto.IMultiverseInfoMessage=} [properties] Properties to set
+         * @returns {RandoProto.MultiverseInfoMessage} MultiverseInfoMessage instance
          */
-        GameInfo.create = function create(properties) {
-            return new GameInfo(properties);
+        MultiverseInfoMessage.create = function create(properties) {
+            return new MultiverseInfoMessage(properties);
         };
 
         /**
-         * Encodes the specified GameInfo message. Does not implicitly {@link RandoProto.GameInfo.verify|verify} messages.
+         * Encodes the specified MultiverseInfoMessage message. Does not implicitly {@link RandoProto.MultiverseInfoMessage.verify|verify} messages.
          * @function encode
-         * @memberof RandoProto.GameInfo
+         * @memberof RandoProto.MultiverseInfoMessage
          * @static
-         * @param {RandoProto.IGameInfo} message GameInfo message or plain object to encode
+         * @param {RandoProto.IMultiverseInfoMessage} message MultiverseInfoMessage message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        GameInfo.encode = function encode(message, writer) {
+        MultiverseInfoMessage.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.id != null && Object.hasOwnProperty.call(message, "id"))
                 writer.uint32(/* id 1, wireType 0 =*/8).int64(message.id);
-            if (message.teams != null && message.teams.length)
-                for (let i = 0; i < message.teams.length; ++i)
-                    $root.RandoProto.TeamInfo.encode(message.teams[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+            if (message.universes != null && message.universes.length)
+                for (let i = 0; i < message.universes.length; ++i)
+                    $root.RandoProto.UniverseInfo.encode(message.universes[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.hasBingoBoard != null && Object.hasOwnProperty.call(message, "hasBingoBoard"))
                 writer.uint32(/* id 3, wireType 0 =*/24).bool(message.hasBingoBoard);
             if (message.spectators != null && message.spectators.length)
@@ -1110,33 +1389,33 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Encodes the specified GameInfo message, length delimited. Does not implicitly {@link RandoProto.GameInfo.verify|verify} messages.
+         * Encodes the specified MultiverseInfoMessage message, length delimited. Does not implicitly {@link RandoProto.MultiverseInfoMessage.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof RandoProto.GameInfo
+         * @memberof RandoProto.MultiverseInfoMessage
          * @static
-         * @param {RandoProto.IGameInfo} message GameInfo message or plain object to encode
+         * @param {RandoProto.IMultiverseInfoMessage} message MultiverseInfoMessage message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        GameInfo.encodeDelimited = function encodeDelimited(message, writer) {
+        MultiverseInfoMessage.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes a GameInfo message from the specified reader or buffer.
+         * Decodes a MultiverseInfoMessage message from the specified reader or buffer.
          * @function decode
-         * @memberof RandoProto.GameInfo
+         * @memberof RandoProto.MultiverseInfoMessage
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {RandoProto.GameInfo} GameInfo
+         * @returns {RandoProto.MultiverseInfoMessage} MultiverseInfoMessage
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        GameInfo.decode = function decode(reader, length) {
+        MultiverseInfoMessage.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.RandoProto.GameInfo();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.RandoProto.MultiverseInfoMessage();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -1144,9 +1423,9 @@ export const RandoProto = $root.RandoProto = (() => {
                     message.id = reader.int64();
                     break;
                 case 2:
-                    if (!(message.teams && message.teams.length))
-                        message.teams = [];
-                    message.teams.push($root.RandoProto.TeamInfo.decode(reader, reader.uint32()));
+                    if (!(message.universes && message.universes.length))
+                        message.universes = [];
+                    message.universes.push($root.RandoProto.UniverseInfo.decode(reader, reader.uint32()));
                     break;
                 case 3:
                     message.hasBingoBoard = reader.bool();
@@ -1165,42 +1444,42 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Decodes a GameInfo message from the specified reader or buffer, length delimited.
+         * Decodes a MultiverseInfoMessage message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof RandoProto.GameInfo
+         * @memberof RandoProto.MultiverseInfoMessage
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {RandoProto.GameInfo} GameInfo
+         * @returns {RandoProto.MultiverseInfoMessage} MultiverseInfoMessage
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        GameInfo.decodeDelimited = function decodeDelimited(reader) {
+        MultiverseInfoMessage.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies a GameInfo message.
+         * Verifies a MultiverseInfoMessage message.
          * @function verify
-         * @memberof RandoProto.GameInfo
+         * @memberof RandoProto.MultiverseInfoMessage
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        GameInfo.verify = function verify(message) {
+        MultiverseInfoMessage.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.id != null && message.hasOwnProperty("id"))
                 if (!$util.isInteger(message.id) && !(message.id && $util.isInteger(message.id.low) && $util.isInteger(message.id.high)))
                     return "id: integer|Long expected";
-            if (message.teams != null && message.hasOwnProperty("teams")) {
-                if (!Array.isArray(message.teams))
-                    return "teams: array expected";
-                for (let i = 0; i < message.teams.length; ++i) {
-                    let error = $root.RandoProto.TeamInfo.verify(message.teams[i]);
+            if (message.universes != null && message.hasOwnProperty("universes")) {
+                if (!Array.isArray(message.universes))
+                    return "universes: array expected";
+                for (let i = 0; i < message.universes.length; ++i) {
+                    let error = $root.RandoProto.UniverseInfo.verify(message.universes[i]);
                     if (error)
-                        return "teams." + error;
+                        return "universes." + error;
                 }
             }
             if (message.hasBingoBoard != null && message.hasOwnProperty("hasBingoBoard"))
@@ -1219,17 +1498,17 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Creates a GameInfo message from a plain object. Also converts values to their respective internal types.
+         * Creates a MultiverseInfoMessage message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof RandoProto.GameInfo
+         * @memberof RandoProto.MultiverseInfoMessage
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {RandoProto.GameInfo} GameInfo
+         * @returns {RandoProto.MultiverseInfoMessage} MultiverseInfoMessage
          */
-        GameInfo.fromObject = function fromObject(object) {
-            if (object instanceof $root.RandoProto.GameInfo)
+        MultiverseInfoMessage.fromObject = function fromObject(object) {
+            if (object instanceof $root.RandoProto.MultiverseInfoMessage)
                 return object;
-            let message = new $root.RandoProto.GameInfo();
+            let message = new $root.RandoProto.MultiverseInfoMessage();
             if (object.id != null)
                 if ($util.Long)
                     (message.id = $util.Long.fromValue(object.id)).unsigned = false;
@@ -1239,25 +1518,25 @@ export const RandoProto = $root.RandoProto = (() => {
                     message.id = object.id;
                 else if (typeof object.id === "object")
                     message.id = new $util.LongBits(object.id.low >>> 0, object.id.high >>> 0).toNumber();
-            if (object.teams) {
-                if (!Array.isArray(object.teams))
-                    throw TypeError(".RandoProto.GameInfo.teams: array expected");
-                message.teams = [];
-                for (let i = 0; i < object.teams.length; ++i) {
-                    if (typeof object.teams[i] !== "object")
-                        throw TypeError(".RandoProto.GameInfo.teams: object expected");
-                    message.teams[i] = $root.RandoProto.TeamInfo.fromObject(object.teams[i]);
+            if (object.universes) {
+                if (!Array.isArray(object.universes))
+                    throw TypeError(".RandoProto.MultiverseInfoMessage.universes: array expected");
+                message.universes = [];
+                for (let i = 0; i < object.universes.length; ++i) {
+                    if (typeof object.universes[i] !== "object")
+                        throw TypeError(".RandoProto.MultiverseInfoMessage.universes: object expected");
+                    message.universes[i] = $root.RandoProto.UniverseInfo.fromObject(object.universes[i]);
                 }
             }
             if (object.hasBingoBoard != null)
                 message.hasBingoBoard = Boolean(object.hasBingoBoard);
             if (object.spectators) {
                 if (!Array.isArray(object.spectators))
-                    throw TypeError(".RandoProto.GameInfo.spectators: array expected");
+                    throw TypeError(".RandoProto.MultiverseInfoMessage.spectators: array expected");
                 message.spectators = [];
                 for (let i = 0; i < object.spectators.length; ++i) {
                     if (typeof object.spectators[i] !== "object")
-                        throw TypeError(".RandoProto.GameInfo.spectators: object expected");
+                        throw TypeError(".RandoProto.MultiverseInfoMessage.spectators: object expected");
                     message.spectators[i] = $root.RandoProto.UserInfo.fromObject(object.spectators[i]);
                 }
             }
@@ -1265,20 +1544,20 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Creates a plain object from a GameInfo message. Also converts values to other types if specified.
+         * Creates a plain object from a MultiverseInfoMessage message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof RandoProto.GameInfo
+         * @memberof RandoProto.MultiverseInfoMessage
          * @static
-         * @param {RandoProto.GameInfo} message GameInfo
+         * @param {RandoProto.MultiverseInfoMessage} message MultiverseInfoMessage
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        GameInfo.toObject = function toObject(message, options) {
+        MultiverseInfoMessage.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.arrays || options.defaults) {
-                object.teams = [];
+                object.universes = [];
                 object.spectators = [];
             }
             if (options.defaults) {
@@ -1294,10 +1573,10 @@ export const RandoProto = $root.RandoProto = (() => {
                     object.id = options.longs === String ? String(message.id) : message.id;
                 else
                     object.id = options.longs === String ? $util.Long.prototype.toString.call(message.id) : options.longs === Number ? new $util.LongBits(message.id.low >>> 0, message.id.high >>> 0).toNumber() : message.id;
-            if (message.teams && message.teams.length) {
-                object.teams = [];
-                for (let j = 0; j < message.teams.length; ++j)
-                    object.teams[j] = $root.RandoProto.TeamInfo.toObject(message.teams[j], options);
+            if (message.universes && message.universes.length) {
+                object.universes = [];
+                for (let j = 0; j < message.universes.length; ++j)
+                    object.universes[j] = $root.RandoProto.UniverseInfo.toObject(message.universes[j], options);
             }
             if (message.hasBingoBoard != null && message.hasOwnProperty("hasBingoBoard"))
                 object.hasBingoBoard = message.hasBingoBoard;
@@ -1310,28 +1589,28 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Converts this GameInfo to JSON.
+         * Converts this MultiverseInfoMessage to JSON.
          * @function toJSON
-         * @memberof RandoProto.GameInfo
+         * @memberof RandoProto.MultiverseInfoMessage
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        GameInfo.prototype.toJSON = function toJSON() {
+        MultiverseInfoMessage.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
         /**
-         * Gets the default type url for GameInfo
+         * Gets the default type url for MultiverseInfoMessage
          * @function getTypeUrl
-         * @memberof RandoProto.GameInfo
+         * @memberof RandoProto.MultiverseInfoMessage
          * @static
          * @returns {string} The default type url
          */
-        GameInfo.getTypeUrl = function getTypeUrl() {
-            return "type.googleapis.com/RandoProto.GameInfo";
+        MultiverseInfoMessage.getTypeUrl = function getTypeUrl() {
+            return "type.googleapis.com/RandoProto.MultiverseInfoMessage";
         };
 
-        return GameInfo;
+        return MultiverseInfoMessage;
     })();
 
     RandoProto.BingoSquare = (function() {
@@ -1341,7 +1620,7 @@ export const RandoProto = $root.RandoProto = (() => {
          * @memberof RandoProto
          * @interface IBingoSquare
          * @property {string|null} [text] BingoSquare text
-         * @property {Array.<RandoProto.ITeamInfo>|null} [completedBy] BingoSquare completedBy
+         * @property {Array.<RandoProto.IWorldInfo>|null} [completedBy] BingoSquare completedBy
          * @property {Array.<RandoProto.IBingoGoal>|null} [goals] BingoSquare goals
          */
 
@@ -1372,7 +1651,7 @@ export const RandoProto = $root.RandoProto = (() => {
 
         /**
          * BingoSquare completedBy.
-         * @member {Array.<RandoProto.ITeamInfo>} completedBy
+         * @member {Array.<RandoProto.IWorldInfo>} completedBy
          * @memberof RandoProto.BingoSquare
          * @instance
          */
@@ -1414,7 +1693,7 @@ export const RandoProto = $root.RandoProto = (() => {
                 writer.uint32(/* id 1, wireType 2 =*/10).string(message.text);
             if (message.completedBy != null && message.completedBy.length)
                 for (let i = 0; i < message.completedBy.length; ++i)
-                    $root.RandoProto.TeamInfo.encode(message.completedBy[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    $root.RandoProto.WorldInfo.encode(message.completedBy[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.goals != null && message.goals.length)
                 for (let i = 0; i < message.goals.length; ++i)
                     $root.RandoProto.BingoGoal.encode(message.goals[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
@@ -1458,7 +1737,7 @@ export const RandoProto = $root.RandoProto = (() => {
                 case 2:
                     if (!(message.completedBy && message.completedBy.length))
                         message.completedBy = [];
-                    message.completedBy.push($root.RandoProto.TeamInfo.decode(reader, reader.uint32()));
+                    message.completedBy.push($root.RandoProto.WorldInfo.decode(reader, reader.uint32()));
                     break;
                 case 3:
                     if (!(message.goals && message.goals.length))
@@ -1507,7 +1786,7 @@ export const RandoProto = $root.RandoProto = (() => {
                 if (!Array.isArray(message.completedBy))
                     return "completedBy: array expected";
                 for (let i = 0; i < message.completedBy.length; ++i) {
-                    let error = $root.RandoProto.TeamInfo.verify(message.completedBy[i]);
+                    let error = $root.RandoProto.WorldInfo.verify(message.completedBy[i]);
                     if (error)
                         return "completedBy." + error;
                 }
@@ -1545,7 +1824,7 @@ export const RandoProto = $root.RandoProto = (() => {
                 for (let i = 0; i < object.completedBy.length; ++i) {
                     if (typeof object.completedBy[i] !== "object")
                         throw TypeError(".RandoProto.BingoSquare.completedBy: object expected");
-                    message.completedBy[i] = $root.RandoProto.TeamInfo.fromObject(object.completedBy[i]);
+                    message.completedBy[i] = $root.RandoProto.WorldInfo.fromObject(object.completedBy[i]);
                 }
             }
             if (object.goals) {
@@ -1585,7 +1864,7 @@ export const RandoProto = $root.RandoProto = (() => {
             if (message.completedBy && message.completedBy.length) {
                 object.completedBy = [];
                 for (let j = 0; j < message.completedBy.length; ++j)
-                    object.completedBy[j] = $root.RandoProto.TeamInfo.toObject(message.completedBy[j], options);
+                    object.completedBy[j] = $root.RandoProto.WorldInfo.toObject(message.completedBy[j], options);
             }
             if (message.goals && message.goals.length) {
                 object.goals = [];
@@ -1818,28 +2097,28 @@ export const RandoProto = $root.RandoProto = (() => {
         return RequestUpdatesMessage;
     })();
 
-    RandoProto.BingoTeamInfo = (function() {
+    RandoProto.BingoUniverseInfo = (function() {
 
         /**
-         * Properties of a BingoTeamInfo.
+         * Properties of a BingoUniverseInfo.
          * @memberof RandoProto
-         * @interface IBingoTeamInfo
-         * @property {number|Long|null} [teamId] BingoTeamInfo teamId
-         * @property {string|null} [score] BingoTeamInfo score
-         * @property {number|null} [rank] BingoTeamInfo rank
-         * @property {number|null} [squares] BingoTeamInfo squares
-         * @property {number|null} [lines] BingoTeamInfo lines
+         * @interface IBingoUniverseInfo
+         * @property {number|Long|null} [universeId] BingoUniverseInfo universeId
+         * @property {string|null} [score] BingoUniverseInfo score
+         * @property {number|null} [rank] BingoUniverseInfo rank
+         * @property {number|null} [squares] BingoUniverseInfo squares
+         * @property {number|null} [lines] BingoUniverseInfo lines
          */
 
         /**
-         * Constructs a new BingoTeamInfo.
+         * Constructs a new BingoUniverseInfo.
          * @memberof RandoProto
-         * @classdesc Represents a BingoTeamInfo.
-         * @implements IBingoTeamInfo
+         * @classdesc Represents a BingoUniverseInfo.
+         * @implements IBingoUniverseInfo
          * @constructor
-         * @param {RandoProto.IBingoTeamInfo=} [properties] Properties to set
+         * @param {RandoProto.IBingoUniverseInfo=} [properties] Properties to set
          */
-        function BingoTeamInfo(properties) {
+        function BingoUniverseInfo(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -1847,71 +2126,71 @@ export const RandoProto = $root.RandoProto = (() => {
         }
 
         /**
-         * BingoTeamInfo teamId.
-         * @member {number|Long} teamId
-         * @memberof RandoProto.BingoTeamInfo
+         * BingoUniverseInfo universeId.
+         * @member {number|Long} universeId
+         * @memberof RandoProto.BingoUniverseInfo
          * @instance
          */
-        BingoTeamInfo.prototype.teamId = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+        BingoUniverseInfo.prototype.universeId = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
         /**
-         * BingoTeamInfo score.
+         * BingoUniverseInfo score.
          * @member {string} score
-         * @memberof RandoProto.BingoTeamInfo
+         * @memberof RandoProto.BingoUniverseInfo
          * @instance
          */
-        BingoTeamInfo.prototype.score = "";
+        BingoUniverseInfo.prototype.score = "";
 
         /**
-         * BingoTeamInfo rank.
+         * BingoUniverseInfo rank.
          * @member {number} rank
-         * @memberof RandoProto.BingoTeamInfo
+         * @memberof RandoProto.BingoUniverseInfo
          * @instance
          */
-        BingoTeamInfo.prototype.rank = 0;
+        BingoUniverseInfo.prototype.rank = 0;
 
         /**
-         * BingoTeamInfo squares.
+         * BingoUniverseInfo squares.
          * @member {number} squares
-         * @memberof RandoProto.BingoTeamInfo
+         * @memberof RandoProto.BingoUniverseInfo
          * @instance
          */
-        BingoTeamInfo.prototype.squares = 0;
+        BingoUniverseInfo.prototype.squares = 0;
 
         /**
-         * BingoTeamInfo lines.
+         * BingoUniverseInfo lines.
          * @member {number} lines
-         * @memberof RandoProto.BingoTeamInfo
+         * @memberof RandoProto.BingoUniverseInfo
          * @instance
          */
-        BingoTeamInfo.prototype.lines = 0;
+        BingoUniverseInfo.prototype.lines = 0;
 
         /**
-         * Creates a new BingoTeamInfo instance using the specified properties.
+         * Creates a new BingoUniverseInfo instance using the specified properties.
          * @function create
-         * @memberof RandoProto.BingoTeamInfo
+         * @memberof RandoProto.BingoUniverseInfo
          * @static
-         * @param {RandoProto.IBingoTeamInfo=} [properties] Properties to set
-         * @returns {RandoProto.BingoTeamInfo} BingoTeamInfo instance
+         * @param {RandoProto.IBingoUniverseInfo=} [properties] Properties to set
+         * @returns {RandoProto.BingoUniverseInfo} BingoUniverseInfo instance
          */
-        BingoTeamInfo.create = function create(properties) {
-            return new BingoTeamInfo(properties);
+        BingoUniverseInfo.create = function create(properties) {
+            return new BingoUniverseInfo(properties);
         };
 
         /**
-         * Encodes the specified BingoTeamInfo message. Does not implicitly {@link RandoProto.BingoTeamInfo.verify|verify} messages.
+         * Encodes the specified BingoUniverseInfo message. Does not implicitly {@link RandoProto.BingoUniverseInfo.verify|verify} messages.
          * @function encode
-         * @memberof RandoProto.BingoTeamInfo
+         * @memberof RandoProto.BingoUniverseInfo
          * @static
-         * @param {RandoProto.IBingoTeamInfo} message BingoTeamInfo message or plain object to encode
+         * @param {RandoProto.IBingoUniverseInfo} message BingoUniverseInfo message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        BingoTeamInfo.encode = function encode(message, writer) {
+        BingoUniverseInfo.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.teamId != null && Object.hasOwnProperty.call(message, "teamId"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.teamId);
+            if (message.universeId != null && Object.hasOwnProperty.call(message, "universeId"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.universeId);
             if (message.score != null && Object.hasOwnProperty.call(message, "score"))
                 writer.uint32(/* id 3, wireType 2 =*/26).string(message.score);
             if (message.rank != null && Object.hasOwnProperty.call(message, "rank"))
@@ -1924,38 +2203,38 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Encodes the specified BingoTeamInfo message, length delimited. Does not implicitly {@link RandoProto.BingoTeamInfo.verify|verify} messages.
+         * Encodes the specified BingoUniverseInfo message, length delimited. Does not implicitly {@link RandoProto.BingoUniverseInfo.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof RandoProto.BingoTeamInfo
+         * @memberof RandoProto.BingoUniverseInfo
          * @static
-         * @param {RandoProto.IBingoTeamInfo} message BingoTeamInfo message or plain object to encode
+         * @param {RandoProto.IBingoUniverseInfo} message BingoUniverseInfo message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        BingoTeamInfo.encodeDelimited = function encodeDelimited(message, writer) {
+        BingoUniverseInfo.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes a BingoTeamInfo message from the specified reader or buffer.
+         * Decodes a BingoUniverseInfo message from the specified reader or buffer.
          * @function decode
-         * @memberof RandoProto.BingoTeamInfo
+         * @memberof RandoProto.BingoUniverseInfo
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {RandoProto.BingoTeamInfo} BingoTeamInfo
+         * @returns {RandoProto.BingoUniverseInfo} BingoUniverseInfo
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        BingoTeamInfo.decode = function decode(reader, length) {
+        BingoUniverseInfo.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.RandoProto.BingoTeamInfo();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.RandoProto.BingoUniverseInfo();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    message.teamId = reader.int64();
+                    message.universeId = reader.int64();
                     break;
                 case 3:
                     message.score = reader.string();
@@ -1978,35 +2257,35 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Decodes a BingoTeamInfo message from the specified reader or buffer, length delimited.
+         * Decodes a BingoUniverseInfo message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof RandoProto.BingoTeamInfo
+         * @memberof RandoProto.BingoUniverseInfo
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {RandoProto.BingoTeamInfo} BingoTeamInfo
+         * @returns {RandoProto.BingoUniverseInfo} BingoUniverseInfo
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        BingoTeamInfo.decodeDelimited = function decodeDelimited(reader) {
+        BingoUniverseInfo.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies a BingoTeamInfo message.
+         * Verifies a BingoUniverseInfo message.
          * @function verify
-         * @memberof RandoProto.BingoTeamInfo
+         * @memberof RandoProto.BingoUniverseInfo
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        BingoTeamInfo.verify = function verify(message) {
+        BingoUniverseInfo.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.teamId != null && message.hasOwnProperty("teamId"))
-                if (!$util.isInteger(message.teamId) && !(message.teamId && $util.isInteger(message.teamId.low) && $util.isInteger(message.teamId.high)))
-                    return "teamId: integer|Long expected";
+            if (message.universeId != null && message.hasOwnProperty("universeId"))
+                if (!$util.isInteger(message.universeId) && !(message.universeId && $util.isInteger(message.universeId.low) && $util.isInteger(message.universeId.high)))
+                    return "universeId: integer|Long expected";
             if (message.score != null && message.hasOwnProperty("score"))
                 if (!$util.isString(message.score))
                     return "score: string expected";
@@ -2023,26 +2302,26 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Creates a BingoTeamInfo message from a plain object. Also converts values to their respective internal types.
+         * Creates a BingoUniverseInfo message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof RandoProto.BingoTeamInfo
+         * @memberof RandoProto.BingoUniverseInfo
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {RandoProto.BingoTeamInfo} BingoTeamInfo
+         * @returns {RandoProto.BingoUniverseInfo} BingoUniverseInfo
          */
-        BingoTeamInfo.fromObject = function fromObject(object) {
-            if (object instanceof $root.RandoProto.BingoTeamInfo)
+        BingoUniverseInfo.fromObject = function fromObject(object) {
+            if (object instanceof $root.RandoProto.BingoUniverseInfo)
                 return object;
-            let message = new $root.RandoProto.BingoTeamInfo();
-            if (object.teamId != null)
+            let message = new $root.RandoProto.BingoUniverseInfo();
+            if (object.universeId != null)
                 if ($util.Long)
-                    (message.teamId = $util.Long.fromValue(object.teamId)).unsigned = false;
-                else if (typeof object.teamId === "string")
-                    message.teamId = parseInt(object.teamId, 10);
-                else if (typeof object.teamId === "number")
-                    message.teamId = object.teamId;
-                else if (typeof object.teamId === "object")
-                    message.teamId = new $util.LongBits(object.teamId.low >>> 0, object.teamId.high >>> 0).toNumber();
+                    (message.universeId = $util.Long.fromValue(object.universeId)).unsigned = false;
+                else if (typeof object.universeId === "string")
+                    message.universeId = parseInt(object.universeId, 10);
+                else if (typeof object.universeId === "number")
+                    message.universeId = object.universeId;
+                else if (typeof object.universeId === "object")
+                    message.universeId = new $util.LongBits(object.universeId.low >>> 0, object.universeId.high >>> 0).toNumber();
             if (object.score != null)
                 message.score = String(object.score);
             if (object.rank != null)
@@ -2055,34 +2334,34 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Creates a plain object from a BingoTeamInfo message. Also converts values to other types if specified.
+         * Creates a plain object from a BingoUniverseInfo message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof RandoProto.BingoTeamInfo
+         * @memberof RandoProto.BingoUniverseInfo
          * @static
-         * @param {RandoProto.BingoTeamInfo} message BingoTeamInfo
+         * @param {RandoProto.BingoUniverseInfo} message BingoUniverseInfo
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        BingoTeamInfo.toObject = function toObject(message, options) {
+        BingoUniverseInfo.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
                 if ($util.Long) {
                     let long = new $util.Long(0, 0, false);
-                    object.teamId = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                    object.universeId = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
-                    object.teamId = options.longs === String ? "0" : 0;
+                    object.universeId = options.longs === String ? "0" : 0;
                 object.score = "";
                 object.rank = 0;
                 object.squares = 0;
                 object.lines = 0;
             }
-            if (message.teamId != null && message.hasOwnProperty("teamId"))
-                if (typeof message.teamId === "number")
-                    object.teamId = options.longs === String ? String(message.teamId) : message.teamId;
+            if (message.universeId != null && message.hasOwnProperty("universeId"))
+                if (typeof message.universeId === "number")
+                    object.universeId = options.longs === String ? String(message.universeId) : message.universeId;
                 else
-                    object.teamId = options.longs === String ? $util.Long.prototype.toString.call(message.teamId) : options.longs === Number ? new $util.LongBits(message.teamId.low >>> 0, message.teamId.high >>> 0).toNumber() : message.teamId;
+                    object.universeId = options.longs === String ? $util.Long.prototype.toString.call(message.universeId) : options.longs === Number ? new $util.LongBits(message.universeId.low >>> 0, message.universeId.high >>> 0).toNumber() : message.universeId;
             if (message.score != null && message.hasOwnProperty("score"))
                 object.score = message.score;
             if (message.rank != null && message.hasOwnProperty("rank"))
@@ -2095,49 +2374,49 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Converts this BingoTeamInfo to JSON.
+         * Converts this BingoUniverseInfo to JSON.
          * @function toJSON
-         * @memberof RandoProto.BingoTeamInfo
+         * @memberof RandoProto.BingoUniverseInfo
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        BingoTeamInfo.prototype.toJSON = function toJSON() {
+        BingoUniverseInfo.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
         /**
-         * Gets the default type url for BingoTeamInfo
+         * Gets the default type url for BingoUniverseInfo
          * @function getTypeUrl
-         * @memberof RandoProto.BingoTeamInfo
+         * @memberof RandoProto.BingoUniverseInfo
          * @static
          * @returns {string} The default type url
          */
-        BingoTeamInfo.getTypeUrl = function getTypeUrl() {
-            return "type.googleapis.com/RandoProto.BingoTeamInfo";
+        BingoUniverseInfo.getTypeUrl = function getTypeUrl() {
+            return "type.googleapis.com/RandoProto.BingoUniverseInfo";
         };
 
-        return BingoTeamInfo;
+        return BingoUniverseInfo;
     })();
 
-    RandoProto.SyncBingoTeamsMessage = (function() {
+    RandoProto.SyncBingoUniversesMessage = (function() {
 
         /**
-         * Properties of a SyncBingoTeamsMessage.
+         * Properties of a SyncBingoUniversesMessage.
          * @memberof RandoProto
-         * @interface ISyncBingoTeamsMessage
-         * @property {Array.<RandoProto.IBingoTeamInfo>|null} [teams] SyncBingoTeamsMessage teams
+         * @interface ISyncBingoUniversesMessage
+         * @property {Array.<RandoProto.IBingoUniverseInfo>|null} [bingoUniverses] SyncBingoUniversesMessage bingoUniverses
          */
 
         /**
-         * Constructs a new SyncBingoTeamsMessage.
+         * Constructs a new SyncBingoUniversesMessage.
          * @memberof RandoProto
-         * @classdesc Represents a SyncBingoTeamsMessage.
-         * @implements ISyncBingoTeamsMessage
+         * @classdesc Represents a SyncBingoUniversesMessage.
+         * @implements ISyncBingoUniversesMessage
          * @constructor
-         * @param {RandoProto.ISyncBingoTeamsMessage=} [properties] Properties to set
+         * @param {RandoProto.ISyncBingoUniversesMessage=} [properties] Properties to set
          */
-        function SyncBingoTeamsMessage(properties) {
-            this.teams = [];
+        function SyncBingoUniversesMessage(properties) {
+            this.bingoUniverses = [];
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -2145,78 +2424,78 @@ export const RandoProto = $root.RandoProto = (() => {
         }
 
         /**
-         * SyncBingoTeamsMessage teams.
-         * @member {Array.<RandoProto.IBingoTeamInfo>} teams
-         * @memberof RandoProto.SyncBingoTeamsMessage
+         * SyncBingoUniversesMessage bingoUniverses.
+         * @member {Array.<RandoProto.IBingoUniverseInfo>} bingoUniverses
+         * @memberof RandoProto.SyncBingoUniversesMessage
          * @instance
          */
-        SyncBingoTeamsMessage.prototype.teams = $util.emptyArray;
+        SyncBingoUniversesMessage.prototype.bingoUniverses = $util.emptyArray;
 
         /**
-         * Creates a new SyncBingoTeamsMessage instance using the specified properties.
+         * Creates a new SyncBingoUniversesMessage instance using the specified properties.
          * @function create
-         * @memberof RandoProto.SyncBingoTeamsMessage
+         * @memberof RandoProto.SyncBingoUniversesMessage
          * @static
-         * @param {RandoProto.ISyncBingoTeamsMessage=} [properties] Properties to set
-         * @returns {RandoProto.SyncBingoTeamsMessage} SyncBingoTeamsMessage instance
+         * @param {RandoProto.ISyncBingoUniversesMessage=} [properties] Properties to set
+         * @returns {RandoProto.SyncBingoUniversesMessage} SyncBingoUniversesMessage instance
          */
-        SyncBingoTeamsMessage.create = function create(properties) {
-            return new SyncBingoTeamsMessage(properties);
+        SyncBingoUniversesMessage.create = function create(properties) {
+            return new SyncBingoUniversesMessage(properties);
         };
 
         /**
-         * Encodes the specified SyncBingoTeamsMessage message. Does not implicitly {@link RandoProto.SyncBingoTeamsMessage.verify|verify} messages.
+         * Encodes the specified SyncBingoUniversesMessage message. Does not implicitly {@link RandoProto.SyncBingoUniversesMessage.verify|verify} messages.
          * @function encode
-         * @memberof RandoProto.SyncBingoTeamsMessage
+         * @memberof RandoProto.SyncBingoUniversesMessage
          * @static
-         * @param {RandoProto.ISyncBingoTeamsMessage} message SyncBingoTeamsMessage message or plain object to encode
+         * @param {RandoProto.ISyncBingoUniversesMessage} message SyncBingoUniversesMessage message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        SyncBingoTeamsMessage.encode = function encode(message, writer) {
+        SyncBingoUniversesMessage.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.teams != null && message.teams.length)
-                for (let i = 0; i < message.teams.length; ++i)
-                    $root.RandoProto.BingoTeamInfo.encode(message.teams[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.bingoUniverses != null && message.bingoUniverses.length)
+                for (let i = 0; i < message.bingoUniverses.length; ++i)
+                    $root.RandoProto.BingoUniverseInfo.encode(message.bingoUniverses[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             return writer;
         };
 
         /**
-         * Encodes the specified SyncBingoTeamsMessage message, length delimited. Does not implicitly {@link RandoProto.SyncBingoTeamsMessage.verify|verify} messages.
+         * Encodes the specified SyncBingoUniversesMessage message, length delimited. Does not implicitly {@link RandoProto.SyncBingoUniversesMessage.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof RandoProto.SyncBingoTeamsMessage
+         * @memberof RandoProto.SyncBingoUniversesMessage
          * @static
-         * @param {RandoProto.ISyncBingoTeamsMessage} message SyncBingoTeamsMessage message or plain object to encode
+         * @param {RandoProto.ISyncBingoUniversesMessage} message SyncBingoUniversesMessage message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        SyncBingoTeamsMessage.encodeDelimited = function encodeDelimited(message, writer) {
+        SyncBingoUniversesMessage.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes a SyncBingoTeamsMessage message from the specified reader or buffer.
+         * Decodes a SyncBingoUniversesMessage message from the specified reader or buffer.
          * @function decode
-         * @memberof RandoProto.SyncBingoTeamsMessage
+         * @memberof RandoProto.SyncBingoUniversesMessage
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {RandoProto.SyncBingoTeamsMessage} SyncBingoTeamsMessage
+         * @returns {RandoProto.SyncBingoUniversesMessage} SyncBingoUniversesMessage
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        SyncBingoTeamsMessage.decode = function decode(reader, length) {
+        SyncBingoUniversesMessage.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.RandoProto.SyncBingoTeamsMessage();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.RandoProto.SyncBingoUniversesMessage();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    if (!(message.teams && message.teams.length))
-                        message.teams = [];
-                    message.teams.push($root.RandoProto.BingoTeamInfo.decode(reader, reader.uint32()));
+                    if (!(message.bingoUniverses && message.bingoUniverses.length))
+                        message.bingoUniverses = [];
+                    message.bingoUniverses.push($root.RandoProto.BingoUniverseInfo.decode(reader, reader.uint32()));
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -2227,115 +2506,115 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Decodes a SyncBingoTeamsMessage message from the specified reader or buffer, length delimited.
+         * Decodes a SyncBingoUniversesMessage message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof RandoProto.SyncBingoTeamsMessage
+         * @memberof RandoProto.SyncBingoUniversesMessage
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {RandoProto.SyncBingoTeamsMessage} SyncBingoTeamsMessage
+         * @returns {RandoProto.SyncBingoUniversesMessage} SyncBingoUniversesMessage
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        SyncBingoTeamsMessage.decodeDelimited = function decodeDelimited(reader) {
+        SyncBingoUniversesMessage.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies a SyncBingoTeamsMessage message.
+         * Verifies a SyncBingoUniversesMessage message.
          * @function verify
-         * @memberof RandoProto.SyncBingoTeamsMessage
+         * @memberof RandoProto.SyncBingoUniversesMessage
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        SyncBingoTeamsMessage.verify = function verify(message) {
+        SyncBingoUniversesMessage.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.teams != null && message.hasOwnProperty("teams")) {
-                if (!Array.isArray(message.teams))
-                    return "teams: array expected";
-                for (let i = 0; i < message.teams.length; ++i) {
-                    let error = $root.RandoProto.BingoTeamInfo.verify(message.teams[i]);
+            if (message.bingoUniverses != null && message.hasOwnProperty("bingoUniverses")) {
+                if (!Array.isArray(message.bingoUniverses))
+                    return "bingoUniverses: array expected";
+                for (let i = 0; i < message.bingoUniverses.length; ++i) {
+                    let error = $root.RandoProto.BingoUniverseInfo.verify(message.bingoUniverses[i]);
                     if (error)
-                        return "teams." + error;
+                        return "bingoUniverses." + error;
                 }
             }
             return null;
         };
 
         /**
-         * Creates a SyncBingoTeamsMessage message from a plain object. Also converts values to their respective internal types.
+         * Creates a SyncBingoUniversesMessage message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof RandoProto.SyncBingoTeamsMessage
+         * @memberof RandoProto.SyncBingoUniversesMessage
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {RandoProto.SyncBingoTeamsMessage} SyncBingoTeamsMessage
+         * @returns {RandoProto.SyncBingoUniversesMessage} SyncBingoUniversesMessage
          */
-        SyncBingoTeamsMessage.fromObject = function fromObject(object) {
-            if (object instanceof $root.RandoProto.SyncBingoTeamsMessage)
+        SyncBingoUniversesMessage.fromObject = function fromObject(object) {
+            if (object instanceof $root.RandoProto.SyncBingoUniversesMessage)
                 return object;
-            let message = new $root.RandoProto.SyncBingoTeamsMessage();
-            if (object.teams) {
-                if (!Array.isArray(object.teams))
-                    throw TypeError(".RandoProto.SyncBingoTeamsMessage.teams: array expected");
-                message.teams = [];
-                for (let i = 0; i < object.teams.length; ++i) {
-                    if (typeof object.teams[i] !== "object")
-                        throw TypeError(".RandoProto.SyncBingoTeamsMessage.teams: object expected");
-                    message.teams[i] = $root.RandoProto.BingoTeamInfo.fromObject(object.teams[i]);
+            let message = new $root.RandoProto.SyncBingoUniversesMessage();
+            if (object.bingoUniverses) {
+                if (!Array.isArray(object.bingoUniverses))
+                    throw TypeError(".RandoProto.SyncBingoUniversesMessage.bingoUniverses: array expected");
+                message.bingoUniverses = [];
+                for (let i = 0; i < object.bingoUniverses.length; ++i) {
+                    if (typeof object.bingoUniverses[i] !== "object")
+                        throw TypeError(".RandoProto.SyncBingoUniversesMessage.bingoUniverses: object expected");
+                    message.bingoUniverses[i] = $root.RandoProto.BingoUniverseInfo.fromObject(object.bingoUniverses[i]);
                 }
             }
             return message;
         };
 
         /**
-         * Creates a plain object from a SyncBingoTeamsMessage message. Also converts values to other types if specified.
+         * Creates a plain object from a SyncBingoUniversesMessage message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof RandoProto.SyncBingoTeamsMessage
+         * @memberof RandoProto.SyncBingoUniversesMessage
          * @static
-         * @param {RandoProto.SyncBingoTeamsMessage} message SyncBingoTeamsMessage
+         * @param {RandoProto.SyncBingoUniversesMessage} message SyncBingoUniversesMessage
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        SyncBingoTeamsMessage.toObject = function toObject(message, options) {
+        SyncBingoUniversesMessage.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.arrays || options.defaults)
-                object.teams = [];
-            if (message.teams && message.teams.length) {
-                object.teams = [];
-                for (let j = 0; j < message.teams.length; ++j)
-                    object.teams[j] = $root.RandoProto.BingoTeamInfo.toObject(message.teams[j], options);
+                object.bingoUniverses = [];
+            if (message.bingoUniverses && message.bingoUniverses.length) {
+                object.bingoUniverses = [];
+                for (let j = 0; j < message.bingoUniverses.length; ++j)
+                    object.bingoUniverses[j] = $root.RandoProto.BingoUniverseInfo.toObject(message.bingoUniverses[j], options);
             }
             return object;
         };
 
         /**
-         * Converts this SyncBingoTeamsMessage to JSON.
+         * Converts this SyncBingoUniversesMessage to JSON.
          * @function toJSON
-         * @memberof RandoProto.SyncBingoTeamsMessage
+         * @memberof RandoProto.SyncBingoUniversesMessage
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        SyncBingoTeamsMessage.prototype.toJSON = function toJSON() {
+        SyncBingoUniversesMessage.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
         /**
-         * Gets the default type url for SyncBingoTeamsMessage
+         * Gets the default type url for SyncBingoUniversesMessage
          * @function getTypeUrl
-         * @memberof RandoProto.SyncBingoTeamsMessage
+         * @memberof RandoProto.SyncBingoUniversesMessage
          * @static
          * @returns {string} The default type url
          */
-        SyncBingoTeamsMessage.getTypeUrl = function getTypeUrl() {
-            return "type.googleapis.com/RandoProto.SyncBingoTeamsMessage";
+        SyncBingoUniversesMessage.getTypeUrl = function getTypeUrl() {
+            return "type.googleapis.com/RandoProto.SyncBingoUniversesMessage";
         };
 
-        return SyncBingoTeamsMessage;
+        return SyncBingoUniversesMessage;
     })();
 
     RandoProto.Position = (function() {
@@ -3258,24 +3537,24 @@ export const RandoProto = $root.RandoProto = (() => {
         return SyncBoardMessage;
     })();
 
-    RandoProto.Authenticate = (function() {
+    RandoProto.AuthenticateMessage = (function() {
 
         /**
-         * Properties of an Authenticate.
+         * Properties of an AuthenticateMessage.
          * @memberof RandoProto
-         * @interface IAuthenticate
-         * @property {string|null} [jwt] Authenticate jwt
+         * @interface IAuthenticateMessage
+         * @property {string|null} [jwt] AuthenticateMessage jwt
          */
 
         /**
-         * Constructs a new Authenticate.
+         * Constructs a new AuthenticateMessage.
          * @memberof RandoProto
-         * @classdesc Represents an Authenticate.
-         * @implements IAuthenticate
+         * @classdesc Represents an AuthenticateMessage.
+         * @implements IAuthenticateMessage
          * @constructor
-         * @param {RandoProto.IAuthenticate=} [properties] Properties to set
+         * @param {RandoProto.IAuthenticateMessage=} [properties] Properties to set
          */
-        function Authenticate(properties) {
+        function AuthenticateMessage(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -3283,35 +3562,35 @@ export const RandoProto = $root.RandoProto = (() => {
         }
 
         /**
-         * Authenticate jwt.
+         * AuthenticateMessage jwt.
          * @member {string} jwt
-         * @memberof RandoProto.Authenticate
+         * @memberof RandoProto.AuthenticateMessage
          * @instance
          */
-        Authenticate.prototype.jwt = "";
+        AuthenticateMessage.prototype.jwt = "";
 
         /**
-         * Creates a new Authenticate instance using the specified properties.
+         * Creates a new AuthenticateMessage instance using the specified properties.
          * @function create
-         * @memberof RandoProto.Authenticate
+         * @memberof RandoProto.AuthenticateMessage
          * @static
-         * @param {RandoProto.IAuthenticate=} [properties] Properties to set
-         * @returns {RandoProto.Authenticate} Authenticate instance
+         * @param {RandoProto.IAuthenticateMessage=} [properties] Properties to set
+         * @returns {RandoProto.AuthenticateMessage} AuthenticateMessage instance
          */
-        Authenticate.create = function create(properties) {
-            return new Authenticate(properties);
+        AuthenticateMessage.create = function create(properties) {
+            return new AuthenticateMessage(properties);
         };
 
         /**
-         * Encodes the specified Authenticate message. Does not implicitly {@link RandoProto.Authenticate.verify|verify} messages.
+         * Encodes the specified AuthenticateMessage message. Does not implicitly {@link RandoProto.AuthenticateMessage.verify|verify} messages.
          * @function encode
-         * @memberof RandoProto.Authenticate
+         * @memberof RandoProto.AuthenticateMessage
          * @static
-         * @param {RandoProto.IAuthenticate} message Authenticate message or plain object to encode
+         * @param {RandoProto.IAuthenticateMessage} message AuthenticateMessage message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        Authenticate.encode = function encode(message, writer) {
+        AuthenticateMessage.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.jwt != null && Object.hasOwnProperty.call(message, "jwt"))
@@ -3320,33 +3599,33 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Encodes the specified Authenticate message, length delimited. Does not implicitly {@link RandoProto.Authenticate.verify|verify} messages.
+         * Encodes the specified AuthenticateMessage message, length delimited. Does not implicitly {@link RandoProto.AuthenticateMessage.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof RandoProto.Authenticate
+         * @memberof RandoProto.AuthenticateMessage
          * @static
-         * @param {RandoProto.IAuthenticate} message Authenticate message or plain object to encode
+         * @param {RandoProto.IAuthenticateMessage} message AuthenticateMessage message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        Authenticate.encodeDelimited = function encodeDelimited(message, writer) {
+        AuthenticateMessage.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes an Authenticate message from the specified reader or buffer.
+         * Decodes an AuthenticateMessage message from the specified reader or buffer.
          * @function decode
-         * @memberof RandoProto.Authenticate
+         * @memberof RandoProto.AuthenticateMessage
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {RandoProto.Authenticate} Authenticate
+         * @returns {RandoProto.AuthenticateMessage} AuthenticateMessage
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        Authenticate.decode = function decode(reader, length) {
+        AuthenticateMessage.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.RandoProto.Authenticate();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.RandoProto.AuthenticateMessage();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
@@ -3362,30 +3641,30 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Decodes an Authenticate message from the specified reader or buffer, length delimited.
+         * Decodes an AuthenticateMessage message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof RandoProto.Authenticate
+         * @memberof RandoProto.AuthenticateMessage
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {RandoProto.Authenticate} Authenticate
+         * @returns {RandoProto.AuthenticateMessage} AuthenticateMessage
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        Authenticate.decodeDelimited = function decodeDelimited(reader) {
+        AuthenticateMessage.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies an Authenticate message.
+         * Verifies an AuthenticateMessage message.
          * @function verify
-         * @memberof RandoProto.Authenticate
+         * @memberof RandoProto.AuthenticateMessage
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        Authenticate.verify = function verify(message) {
+        AuthenticateMessage.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.jwt != null && message.hasOwnProperty("jwt"))
@@ -3395,32 +3674,32 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Creates an Authenticate message from a plain object. Also converts values to their respective internal types.
+         * Creates an AuthenticateMessage message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof RandoProto.Authenticate
+         * @memberof RandoProto.AuthenticateMessage
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {RandoProto.Authenticate} Authenticate
+         * @returns {RandoProto.AuthenticateMessage} AuthenticateMessage
          */
-        Authenticate.fromObject = function fromObject(object) {
-            if (object instanceof $root.RandoProto.Authenticate)
+        AuthenticateMessage.fromObject = function fromObject(object) {
+            if (object instanceof $root.RandoProto.AuthenticateMessage)
                 return object;
-            let message = new $root.RandoProto.Authenticate();
+            let message = new $root.RandoProto.AuthenticateMessage();
             if (object.jwt != null)
                 message.jwt = String(object.jwt);
             return message;
         };
 
         /**
-         * Creates a plain object from an Authenticate message. Also converts values to other types if specified.
+         * Creates a plain object from an AuthenticateMessage message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof RandoProto.Authenticate
+         * @memberof RandoProto.AuthenticateMessage
          * @static
-         * @param {RandoProto.Authenticate} message Authenticate
+         * @param {RandoProto.AuthenticateMessage} message AuthenticateMessage
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        Authenticate.toObject = function toObject(message, options) {
+        AuthenticateMessage.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
@@ -3432,28 +3711,28 @@ export const RandoProto = $root.RandoProto = (() => {
         };
 
         /**
-         * Converts this Authenticate to JSON.
+         * Converts this AuthenticateMessage to JSON.
          * @function toJSON
-         * @memberof RandoProto.Authenticate
+         * @memberof RandoProto.AuthenticateMessage
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        Authenticate.prototype.toJSON = function toJSON() {
+        AuthenticateMessage.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
         /**
-         * Gets the default type url for Authenticate
+         * Gets the default type url for AuthenticateMessage
          * @function getTypeUrl
-         * @memberof RandoProto.Authenticate
+         * @memberof RandoProto.AuthenticateMessage
          * @static
          * @returns {string} The default type url
          */
-        Authenticate.getTypeUrl = function getTypeUrl() {
-            return "type.googleapis.com/RandoProto.Authenticate";
+        AuthenticateMessage.getTypeUrl = function getTypeUrl() {
+            return "type.googleapis.com/RandoProto.AuthenticateMessage";
         };
 
-        return Authenticate;
+        return AuthenticateMessage;
     })();
 
     return RandoProto;

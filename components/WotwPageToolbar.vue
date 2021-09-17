@@ -60,6 +60,10 @@
         window.location.href = `${this.$axios.defaults.baseURL}/login?redir=${this.buildAbsoluteUrl('/auth/callback')}`
       },
       logout() {
+        if (isElectron()) {
+          window.electronApi.invoke('settings.deleteClientJwt')
+        }
+
         this.$store.commit('auth/setJwt', null)
         this.$store.commit('user/setUser', null)
       },

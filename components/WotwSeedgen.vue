@@ -123,8 +123,7 @@
                         v-model='createOnlineGame'
                           :items="[
                             {text: 'None', value: 'none'},
-                            {text: 'Co-op', value: 'coop'},
-                            {text: 'Multiworld', value: 'multi'},
+                            {text: 'Normal', value: 'normal'},
                             {text: 'Bingo', value: 'bingo'},
                             {text: 'Discovery Bingo', value: 'discovery_bingo'},
                             {text: 'Lockout Bingo', value: 'lockout_bingo'},
@@ -137,8 +136,8 @@
                     <v-combobox
                       v-model='seedgenConfig.multiNames'
                       :items='[]'
-                      hint='If you specify player names here, this seed will be a multiworld seed. Press Enter to add players.'
-                      label='Multiworld player names'
+                      hint='If you specify world names here, this seed will be a multiworld seed. Press Enter to add players.'
+                      label='Multiworld world names'
                       multiple
                       persistent-hint
                     >
@@ -235,7 +234,7 @@
       availableDifficulties: difficulties,
       availableHeaders: null, // Fetched from server
       availablePresets: null, // Fetched from server
-      createOnlineGame: 'coop',
+      createOnlineGame: 'normal',
       loading: false,
       showResultDialog: false,
       seedgenResult: null,
@@ -317,11 +316,8 @@
 
           if (this.seedgenConfig.flags.includes('--multiplayer')) {
             switch (this.createOnlineGame) {
-              case 'coop':
-                result.gameId = await this.$axios.$post('/games', {isCoop: true})
-                break
-              case 'multi':
-                result.gameId = await this.$axios.$post('/games', {isMulti: true})
+              case 'normal':
+                result.gameId = await this.$axios.$post('/multiverses')
                 break
               case 'bingo':
                 result.gameId = await this.$axios.$post('/bingo')

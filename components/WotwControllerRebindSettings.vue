@@ -39,10 +39,10 @@
           </v-list-item-title>
           <v-list-item-subtitle>
             <div v-for='(binding, index) in boundActions[action.name]' :key='index'>
-              {{ binding.map(getButtonNameForUnityId).join(' + ') }}
               <v-btn x-small icon @click='boundActions[action.name].splice(index, 1)'>
                 <v-icon>mdi-close</v-icon>
               </v-btn>
+              {{ binding.map(getButtonNameForUnityId).join(' + ') }}
             </div>
           </v-list-item-subtitle>
         </v-list-item-content>

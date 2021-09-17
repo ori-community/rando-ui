@@ -1,9 +1,8 @@
 <template>
-  <v-card class='team-view'>
-    <v-sheet :color='color' height='0.5em' />
-    <v-card-title>{{ team.name }}</v-card-title>
+  <v-card class='world-view' outlined color='background lighten-2'>
+    <v-card-title>{{ world.name }}</v-card-title>
     <v-card-text>
-      <wotw-player-view v-for='player in team.members' :key='player.id' class='mb-1' :user='player' />
+      <wotw-player-view v-for='player in world.members' :key='player.id' class='mb-1' :user='player' />
     </v-card-text>
     <v-btn v-if='canJoinInternal' :disabled='disabled' block color='accent' tile @click='$emit("join")'>
       Join
@@ -15,9 +14,9 @@
   import { mapState } from 'vuex'
 
   export default {
-    name: 'WotwTeamView',
+    name: 'WotwWorldView',
     props: {
-      team: {
+      world: {
         type: Object,
         required: true,
       },
@@ -37,14 +36,14 @@
     computed: {
       ...mapState('user', ['user']),
       canJoinInternal() {
-        return this.canJoin && !this.team.members.some(u => u.id === this.user?.id)
+        return this.canJoin && !this.world.members.some(u => u.id === this.user?.id)
       },
     },
   }
 </script>
 
 <style lang='scss' scoped>
-  .team-view {
+  .world-view {
     min-width: 15vw;
     overflow: hidden;
   }

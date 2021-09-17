@@ -5,6 +5,8 @@
 </template>
 
 <script>
+  import { isElectron } from '~/assets/lib/isElectron'
+
   export default {
     name: 'Callback',
     async middleware({ app, route }) {
@@ -17,6 +19,13 @@
           scopes: ['*'],
         })
         app.store.commit('auth/setJwt', token)
+
+        if (isElectron()) {
+          const clientToken = await app.$axios.$post('/tokens/', {
+            scopes: ['multiverses.connect'],
+          })
+          window.electronApi.invoke('settings.setClientJwt', clientToken)
+        }
       }
 
       await app.router.replace(app.store.state.auth.redirectPath ?? {name: 'index'})

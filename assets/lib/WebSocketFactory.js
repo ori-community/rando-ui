@@ -10,7 +10,7 @@ export class WebSocketFactory {
       const ws = new WebSocket(`${process.env.WS_BASE_URL}${endpoint}`)
 
       ws.addEventListener('open', () => {
-        ws.send(makePacket(RandoProto.Authenticate, {
+        ws.send(makePacket(RandoProto.AuthenticateMessage, {
           jwt: this.jwt,
         }))
 

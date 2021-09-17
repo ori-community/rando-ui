@@ -10,14 +10,14 @@ export class GamepadService {
     }
 
     // Handle virtual axis buttons
-    if (gamepad.axes[0] < -0.5) pressedButtons.push('LeftStickLeft')
-    if (gamepad.axes[0] > 0.5) pressedButtons.push('LeftStickRight')
-    if (gamepad.axes[1] < -0.5) pressedButtons.push('LeftStickUp')
-    if (gamepad.axes[1] > 0.5) pressedButtons.push('LeftStickDown')
-    if (gamepad.axes[2] < -0.5) pressedButtons.push('RightStickLeft')
-    if (gamepad.axes[2] > 0.5) pressedButtons.push('RightStickRight')
-    if (gamepad.axes[3] < -0.5) pressedButtons.push('RightStickUp')
-    if (gamepad.axes[3] > 0.5) pressedButtons.push('RightStickDown')
+    if (gamepad.axes[0] < -0.5) pressedButtons.push(controllerButtons.LeftStickLeft.unityId)
+    if (gamepad.axes[0] > 0.5) pressedButtons.push(controllerButtons.LeftStickRight.unityId)
+    if (gamepad.axes[1] < -0.5) pressedButtons.push(controllerButtons.LeftStickUp.unityId)
+    if (gamepad.axes[1] > 0.5) pressedButtons.push(controllerButtons.LeftStickDown.unityId)
+    if (gamepad.axes[2] < -0.5) pressedButtons.push(controllerButtons.RightStickLeft.unityId)
+    if (gamepad.axes[2] > 0.5) pressedButtons.push(controllerButtons.RightStickRight.unityId)
+    if (gamepad.axes[3] < -0.5) pressedButtons.push(controllerButtons.RightStickUp.unityId)
+    if (gamepad.axes[3] > 0.5) pressedButtons.push(controllerButtons.RightStickDown.unityId)
 
     return pressedButtons
   }

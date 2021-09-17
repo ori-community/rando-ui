@@ -49,14 +49,15 @@ export class LauncherService {
 
         if (!settings.Flags.Dev) {
           console.log('Starting Injector hidden')
-          command = 'start /p ' + command
+          command = 'start /b ' + command
         }
+
+        console.log('Command:', command)
 
         spawn(command, {
           detached: true,
           shell: true,
           stdio: 'ignore',
-          windowsHide: true,
         })
 
         await waitForProcess('injector.exe')

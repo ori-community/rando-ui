@@ -80,8 +80,7 @@ jobs:
       if: github.ref == 'refs/heads/dev'
       with:
         context: .
-        build-args:
-          - API_HOST=dev.wotw.orirando.com
+        build-args: API_HOST=dev.wotw.orirando.com
         push: true
         tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev
         labels: ${{ steps.meta.outputs.labels }}

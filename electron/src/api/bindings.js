@@ -1,6 +1,7 @@
 import fs from 'fs'
+import { RANDOMIZER_BASE_PATH } from '~/electron/src/lib/Constants'
 
-const CONTROLLER_BINDINGS_FILE = 'controller_bindings.json'
+const CONTROLLER_BINDINGS_FILE = `${RANDOMIZER_BASE_PATH}/controller_bindings.json`
 
 export default {
   async loadControllerBindings() {

@@ -3,6 +3,7 @@ import { spawn } from 'child_process'
 import fs from 'fs'
 import psList from 'ps-list'
 import { RandoIPCService } from '../lib/RandoIPCService'
+import { RANDOMIZER_BASE_PATH } from '~/electron/src/lib/Constants'
 
 
 const isProcessRunning = async (processName) => {
@@ -35,7 +36,7 @@ export class LauncherService {
   static async launch(seedFilePath = null) {
     try {
       if (seedFilePath) {
-        await fs.promises.writeFile('./.currentseedpath', seedFilePath.trim())
+        await fs.promises.writeFile(`${RANDOMIZER_BASE_PATH}/.currentseedpath`, seedFilePath.trim())
       }
 
       const settings = await SettingsService.readSettings()
@@ -43,7 +44,8 @@ export class LauncherService {
       if (await isProcessRunning('injector.exe')) {
         await RandoIPCService.trySend('reload')
       } else {
-        let command = '.\\Injector.exe'
+        //                Why is windows a thing ↓
+        let command = `${RANDOMIZER_BASE_PATH.replaceAll('/', '\\')}\\Injector.exe`
 
         if (!settings.Flags.Dev) {
           console.log('Starting Injector hidden')

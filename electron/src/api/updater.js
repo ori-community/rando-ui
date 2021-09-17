@@ -3,8 +3,9 @@ import { download } from 'electron-dl'
 import { BrowserWindow } from 'electron'
 import { app } from 'electron'
 import { spawn } from 'child_process'
+import { RANDOMIZER_BASE_PATH } from '~/electron/src/lib/Constants'
 
-const VERSION_FILE = './VERSION'
+const VERSION_FILE = `${RANDOMIZER_BASE_PATH}/VERSION`
 
 export default {
   async getVersion() {

@@ -1,6 +1,6 @@
 import fs from 'fs'
 import ini from 'ini'
-import { RANDOMIZER_BASE_PATH } from '~/electron/src/lib/Constants'
+import { RANDOMIZER_BASE_PATH } from '../lib/Constants'
 
 const SETTINGS_PATH = `${RANDOMIZER_BASE_PATH}/settings.ini`
 const JWT_PATH = `${RANDOMIZER_BASE_PATH}/.jwt`

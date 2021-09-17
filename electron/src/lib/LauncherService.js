@@ -3,7 +3,7 @@ import { spawn } from 'child_process'
 import fs from 'fs'
 import psList from 'ps-list'
 import { RandoIPCService } from '../lib/RandoIPCService'
-import { RANDOMIZER_BASE_PATH } from '~/electron/src/lib/Constants'
+import { RANDOMIZER_BASE_PATH } from './Constants'
 
 
 const isProcessRunning = async (processName) => {

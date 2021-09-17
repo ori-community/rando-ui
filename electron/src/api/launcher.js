@@ -6,7 +6,7 @@ export default {
     return LauncherService.getOpenedSeedPath()
   },
 
-  async launch(seedPath = null) {
+  async launch(event, seedPath = null) {
     await LauncherService.launch(seedPath)
   },
 

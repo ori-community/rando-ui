@@ -39,7 +39,7 @@ message MultiverseInfoMessage {
 
 message BingoSquare {
   string text = 1;
-  repeated WorldInfo completedBy = 2;
+  repeated UniverseInfo completedBy = 2;
   repeated BingoGoal goals = 3;
 }
 

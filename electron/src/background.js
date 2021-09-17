@@ -63,6 +63,14 @@ async function createWindow() {
     // Load the index.html when not in development
     await win.loadURL('app://./index.html#/electron')
   }
+
+  app.on('open-url', (event, url) => {
+    url = new URL(url)
+
+    if (url.protocol === 'ori-rando:') {
+      win.webContents.send('open-url', url)
+    }
+  })
 }
 
 // Quit when all windows are closed.
@@ -72,10 +80,6 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
-})
-
-app.on('open-url', (event, url) => {
-  console.log(url)
 })
 
 app.on('activate', () => {

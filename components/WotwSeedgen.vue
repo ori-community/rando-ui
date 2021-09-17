@@ -268,8 +268,8 @@
     },
     watch: {
       'seedgenConfig.multiNames'(multiNames) {
-        if (multiNames && multiNames.length > 0) {
-          this.createOnlineGame = 'multi'
+        if (multiNames && multiNames.length > 0 && this.createOnlineGame === 'none') {
+          this.createOnlineGame = 'normal'
         }
       },
       '$route.query.result'() {

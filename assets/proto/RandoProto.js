@@ -1620,7 +1620,7 @@ export const RandoProto = $root.RandoProto = (() => {
          * @memberof RandoProto
          * @interface IBingoSquare
          * @property {string|null} [text] BingoSquare text
-         * @property {Array.<RandoProto.IWorldInfo>|null} [completedBy] BingoSquare completedBy
+         * @property {Array.<RandoProto.IUniverseInfo>|null} [completedBy] BingoSquare completedBy
          * @property {Array.<RandoProto.IBingoGoal>|null} [goals] BingoSquare goals
          */
 
@@ -1651,7 +1651,7 @@ export const RandoProto = $root.RandoProto = (() => {
 
         /**
          * BingoSquare completedBy.
-         * @member {Array.<RandoProto.IWorldInfo>} completedBy
+         * @member {Array.<RandoProto.IUniverseInfo>} completedBy
          * @memberof RandoProto.BingoSquare
          * @instance
          */
@@ -1693,7 +1693,7 @@ export const RandoProto = $root.RandoProto = (() => {
                 writer.uint32(/* id 1, wireType 2 =*/10).string(message.text);
             if (message.completedBy != null && message.completedBy.length)
                 for (let i = 0; i < message.completedBy.length; ++i)
-                    $root.RandoProto.WorldInfo.encode(message.completedBy[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    $root.RandoProto.UniverseInfo.encode(message.completedBy[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
             if (message.goals != null && message.goals.length)
                 for (let i = 0; i < message.goals.length; ++i)
                     $root.RandoProto.BingoGoal.encode(message.goals[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
@@ -1737,7 +1737,7 @@ export const RandoProto = $root.RandoProto = (() => {
                 case 2:
                     if (!(message.completedBy && message.completedBy.length))
                         message.completedBy = [];
-                    message.completedBy.push($root.RandoProto.WorldInfo.decode(reader, reader.uint32()));
+                    message.completedBy.push($root.RandoProto.UniverseInfo.decode(reader, reader.uint32()));
                     break;
                 case 3:
                     if (!(message.goals && message.goals.length))
@@ -1786,7 +1786,7 @@ export const RandoProto = $root.RandoProto = (() => {
                 if (!Array.isArray(message.completedBy))
                     return "completedBy: array expected";
                 for (let i = 0; i < message.completedBy.length; ++i) {
-                    let error = $root.RandoProto.WorldInfo.verify(message.completedBy[i]);
+                    let error = $root.RandoProto.UniverseInfo.verify(message.completedBy[i]);
                     if (error)
                         return "completedBy." + error;
                 }
@@ -1824,7 +1824,7 @@ export const RandoProto = $root.RandoProto = (() => {
                 for (let i = 0; i < object.completedBy.length; ++i) {
                     if (typeof object.completedBy[i] !== "object")
                         throw TypeError(".RandoProto.BingoSquare.completedBy: object expected");
-                    message.completedBy[i] = $root.RandoProto.WorldInfo.fromObject(object.completedBy[i]);
+                    message.completedBy[i] = $root.RandoProto.UniverseInfo.fromObject(object.completedBy[i]);
                 }
             }
             if (object.goals) {
@@ -1864,7 +1864,7 @@ export const RandoProto = $root.RandoProto = (() => {
             if (message.completedBy && message.completedBy.length) {
                 object.completedBy = [];
                 for (let j = 0; j < message.completedBy.length; ++j)
-                    object.completedBy[j] = $root.RandoProto.WorldInfo.toObject(message.completedBy[j], options);
+                    object.completedBy[j] = $root.RandoProto.UniverseInfo.toObject(message.completedBy[j], options);
             }
             if (message.goals && message.goals.length) {
                 object.goals = [];

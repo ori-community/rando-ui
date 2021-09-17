@@ -39,9 +39,9 @@
           </template>
           <v-list>
             <v-list-item @click='createNewGame("normal")'>Normal</v-list-item>
+            <v-list-item @click='createNewGame("bingo")'>Bingo</v-list-item>
+            <v-list-item @click='createNewGame("discovery_bingo")'>Discovery Bingo</v-list-item>
             <v-list-item @click='createNewGame("lockout_bingo")'>Lockout Bingo</v-list-item>
-            <v-list-item @click='createNewGame("coop")'>Co-op</v-list-item>
-            <v-list-item @click='createNewGame("multi")'>Multiworld</v-list-item>
           </v-list>
         </v-menu>
       </div>

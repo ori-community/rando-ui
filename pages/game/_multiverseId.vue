@@ -98,34 +98,34 @@
         <template v-if='showBoard'>
           <wotw-bingo-board
             :edge-labels='boardSettings.edgeLabels'
-            :game='games[gameId]'
-            :hidden-teams='hiddenUniverses'
-            :highlight-team='highlightedUniverseId'
-            :team-colors='universeColors'
+            :multiverse='multiverse'
+            :hidden-universes='hiddenUniverses'
+            :highlight-universe='highlightedUniverseId'
+            :universe-colors='universeColors'
             class='board'
           />
           <div class='sidebar px-5'>
             <transition-group class='bingo-universes' name='list'>
               <div
-                v-for='(bingoTeam, index) in sortedBingoUniverses'
-                :key='bingoTeam.teamId'
+                v-for='(bingoUniverse, index) in sortedBingoUniverses'
+                :key='bingoUniverse.universeId'
                 :style='{zIndex: sortedBingoUniverses.length - index}'
                 class='relative'
               >
-                <wotw-bingo-team-view
-                  :bingo-team='bingoTeam'
-                  :color='universeColors[bingoTeam.teamId]'
-                  :team='games[gameId].teams.find(t => t.id === bingoTeam.teamId)'
-                  :team-hidden='hiddenUniverses.includes(bingoTeam.teamId)'
-                  @click='toggleUniverseVisibility(bingoTeam.teamId)'
-                  @click.native.ctrl.capture.stop='toggleUniverseVisibility(bingoTeam.teamId, true)'
+                <wotw-bingo-universe-view
+                  :bingo-universe='bingoUniverse'
+                  :color='universeColors[bingoUniverse.universeId]'
+                  :universe='multiverse.universes.find(u => u.id === bingoUniverse.universeId)'
+                  :universe-hidden='hiddenUniverses.includes(bingoUniverse.universeId)'
+                  @click='toggleUniverseVisibility(bingoUniverse.universeId)'
+                  @click.native.ctrl.capture.stop='toggleUniverseVisibility(bingoUniverse.universeId, true)'
                 />
               </div>
 
-              <div v-if='!boardSettings.hideSpectators && game.spectators.length > 0' key='spectators' class='mt-4'>
+              <div v-if='!boardSettings.hideSpectators && multiverse.spectators.length > 0' key='spectators' class='mt-4'>
                 <div class='text-caption'>Spectators</div>
 
-                <v-tooltip v-for='spectator in game.spectators' :key='spectator.id' top>
+                <v-tooltip v-for='spectator in multiverse.spectators' :key='spectator.id' top>
                   <span>{{ spectator.name }}</span>
                   <template #activator='{on}'>
                     <span v-on='on'>

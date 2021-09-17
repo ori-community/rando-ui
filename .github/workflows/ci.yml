@@ -48,8 +48,8 @@ jobs:
     - name: Install dependencies 👨🏻‍💻
       run: yarn
 
-    - name: Run linter 👀
-      run: yarn lint
+    # - name: Run linter 👀
+    #   run: yarn lint
 
     - name: Log in to the Container registry
       uses: docker/login-action@v1.10.0

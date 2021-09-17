@@ -27,7 +27,8 @@ export default {
     } else {
       settingsCache = {
         ...getDefaultSettings(),
-        ...ini.parse(await fs.promises.readFile(SETTINGS_PATH, { encoding: 'utf-8' })),
+        //                                                                         ↓ AUTOHOTKEY WHYYYYYYYYYYYYYYYYY
+        ...ini.parse(await fs.promises.readFile(SETTINGS_PATH, { encoding: 'utf16le' })),
       }
     }
 
@@ -37,9 +38,9 @@ export default {
     settingsCache = settings
   },
   async writeSettings() {
-    await fs.promises.writeFile(SETTINGS_PATH, ini.encode(settingsCache), { encoding: 'utf-8' })
+    await fs.promises.writeFile(SETTINGS_PATH, ini.encode(settingsCache), { encoding: 'utf16le' })
   },
   async setClientJwt(event, jwt) {
-    await fs.promises.writeFile(JWT_PATH, jwt, {encoding: 'utf-8'})
-  }
+    await fs.promises.writeFile(JWT_PATH, jwt, { encoding: 'utf16le' })
+  },
 }

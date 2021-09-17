@@ -24,11 +24,17 @@
           const clientToken = await app.$axios.$post('/tokens/', {
             scopes: ['multiverses.connect'],
           })
-          window.electronApi.invoke('settings.setClientJwt', clientToken)
+          window.electronApi.invoke('auth.setClientJwt', clientToken)
+
+          await app.store.dispatch('user/updateUser')
         }
       }
 
-      await app.router.replace(app.store.state.auth.redirectPath ?? {name: 'index'})
+      try {
+        await app.router.replace(app.store.state.auth.redirectPath ?? {name: 'index'})
+      } catch (e) {
+        // Noop
+      }
     },
   }
 </script>

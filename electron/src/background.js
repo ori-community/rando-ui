@@ -16,10 +16,24 @@ if (isDevelopment) {
   process.chdir('./work-dir')
 }
 
+if (!app.requestSingleInstanceLock()) {
+  app.quit()
+}
+
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } },
 ])
+
+if (process.defaultApp) {
+  if (process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient('ori-rando', process.execPath, [path.resolve(process.argv[1])])
+  }
+} else {
+  app.setAsDefaultProtocolClient('ori-rando')
+}
+
+// app.setAsDefaultProtocolClient('ori-rando')
 
 async function createWindow() {
   registerIpcApi()
@@ -58,6 +72,10 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
+})
+
+app.on('open-url', (event, url) => {
+  console.log(url)
 })
 
 app.on('activate', () => {

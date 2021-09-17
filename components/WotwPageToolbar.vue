@@ -55,13 +55,19 @@
       buildAbsoluteUrl(relativeUrl) {
         return `${window.location.origin}${relativeUrl}`
       },
-      login() {
+      async login() {
         this.$store.commit('auth/setRedirectPath', this.$router.resolve(this.$route).href)
-        window.location.href = `${this.$axios.defaults.baseURL}/login?redir=${this.buildAbsoluteUrl('/auth/callback')}`
+
+        if (isElectron()) {
+          const jwt = await window.electronApi.invoke('auth.startOAuthFlow', this.$axios.defaults.baseURL)
+          await this.$router.push({ name: 'auth-callback', query: { jwt } })
+        } else {
+          window.location.href = `${this.$axios.defaults.baseURL}/login?redir=${this.buildAbsoluteUrl('/auth/callback')}`
+        }
       },
       logout() {
         if (isElectron()) {
-          window.electronApi.invoke('settings.deleteClientJwt')
+          window.electronApi.invoke('auth.deleteClientJwt')
         }
 
         this.$store.commit('auth/setJwt', null)

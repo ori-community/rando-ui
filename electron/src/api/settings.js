@@ -3,7 +3,6 @@ import ini from 'ini'
 import { RANDOMIZER_BASE_PATH } from '../lib/Constants'
 
 const SETTINGS_PATH = `${RANDOMIZER_BASE_PATH}/settings.ini`
-const JWT_PATH = `${RANDOMIZER_BASE_PATH}/.jwt`
 const getDefaultSettings = () => ({
   Paths: {
     Steam: null,
@@ -39,8 +38,5 @@ export default {
   },
   async writeSettings() {
     await fs.promises.writeFile(SETTINGS_PATH, ini.encode(settingsCache), { encoding: 'utf16le' })
-  },
-  async setClientJwt(event, jwt) {
-    await fs.promises.writeFile(JWT_PATH, jwt, { encoding: 'utf16le' })
   },
 }

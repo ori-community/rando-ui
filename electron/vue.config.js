@@ -16,6 +16,12 @@ module.exports = {
         win: {
           target: ['portable'],
         },
+        protocols: {
+          name: "ori-rando-protocol",
+          schemes: [
+            "ori-rando"
+          ]
+        }
       },
     },
   },

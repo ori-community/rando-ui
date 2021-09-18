@@ -3735,5 +3735,956 @@ export const RandoProto = $root.RandoProto = (() => {
         return AuthenticateMessage;
     })();
 
+    RandoProto.AuthenticatedMessage = (function() {
+
+        /**
+         * Properties of an AuthenticatedMessage.
+         * @memberof RandoProto
+         * @interface IAuthenticatedMessage
+         * @property {RandoProto.IUserInfo|null} [user] AuthenticatedMessage user
+         * @property {number|null} [udpId] AuthenticatedMessage udpId
+         * @property {Uint8Array|null} [udpKey] AuthenticatedMessage udpKey
+         */
+
+        /**
+         * Constructs a new AuthenticatedMessage.
+         * @memberof RandoProto
+         * @classdesc Represents an AuthenticatedMessage.
+         * @implements IAuthenticatedMessage
+         * @constructor
+         * @param {RandoProto.IAuthenticatedMessage=} [properties] Properties to set
+         */
+        function AuthenticatedMessage(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * AuthenticatedMessage user.
+         * @member {RandoProto.IUserInfo|null|undefined} user
+         * @memberof RandoProto.AuthenticatedMessage
+         * @instance
+         */
+        AuthenticatedMessage.prototype.user = null;
+
+        /**
+         * AuthenticatedMessage udpId.
+         * @member {number} udpId
+         * @memberof RandoProto.AuthenticatedMessage
+         * @instance
+         */
+        AuthenticatedMessage.prototype.udpId = 0;
+
+        /**
+         * AuthenticatedMessage udpKey.
+         * @member {Uint8Array} udpKey
+         * @memberof RandoProto.AuthenticatedMessage
+         * @instance
+         */
+        AuthenticatedMessage.prototype.udpKey = $util.newBuffer([]);
+
+        /**
+         * Creates a new AuthenticatedMessage instance using the specified properties.
+         * @function create
+         * @memberof RandoProto.AuthenticatedMessage
+         * @static
+         * @param {RandoProto.IAuthenticatedMessage=} [properties] Properties to set
+         * @returns {RandoProto.AuthenticatedMessage} AuthenticatedMessage instance
+         */
+        AuthenticatedMessage.create = function create(properties) {
+            return new AuthenticatedMessage(properties);
+        };
+
+        /**
+         * Encodes the specified AuthenticatedMessage message. Does not implicitly {@link RandoProto.AuthenticatedMessage.verify|verify} messages.
+         * @function encode
+         * @memberof RandoProto.AuthenticatedMessage
+         * @static
+         * @param {RandoProto.IAuthenticatedMessage} message AuthenticatedMessage message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        AuthenticatedMessage.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.user != null && Object.hasOwnProperty.call(message, "user"))
+                $root.RandoProto.UserInfo.encode(message.user, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            if (message.udpId != null && Object.hasOwnProperty.call(message, "udpId"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.udpId);
+            if (message.udpKey != null && Object.hasOwnProperty.call(message, "udpKey"))
+                writer.uint32(/* id 3, wireType 2 =*/26).bytes(message.udpKey);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified AuthenticatedMessage message, length delimited. Does not implicitly {@link RandoProto.AuthenticatedMessage.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof RandoProto.AuthenticatedMessage
+         * @static
+         * @param {RandoProto.IAuthenticatedMessage} message AuthenticatedMessage message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        AuthenticatedMessage.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an AuthenticatedMessage message from the specified reader or buffer.
+         * @function decode
+         * @memberof RandoProto.AuthenticatedMessage
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {RandoProto.AuthenticatedMessage} AuthenticatedMessage
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        AuthenticatedMessage.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.RandoProto.AuthenticatedMessage();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.user = $root.RandoProto.UserInfo.decode(reader, reader.uint32());
+                    break;
+                case 2:
+                    message.udpId = reader.int32();
+                    break;
+                case 3:
+                    message.udpKey = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an AuthenticatedMessage message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof RandoProto.AuthenticatedMessage
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {RandoProto.AuthenticatedMessage} AuthenticatedMessage
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        AuthenticatedMessage.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an AuthenticatedMessage message.
+         * @function verify
+         * @memberof RandoProto.AuthenticatedMessage
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        AuthenticatedMessage.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.user != null && message.hasOwnProperty("user")) {
+                let error = $root.RandoProto.UserInfo.verify(message.user);
+                if (error)
+                    return "user." + error;
+            }
+            if (message.udpId != null && message.hasOwnProperty("udpId"))
+                if (!$util.isInteger(message.udpId))
+                    return "udpId: integer expected";
+            if (message.udpKey != null && message.hasOwnProperty("udpKey"))
+                if (!(message.udpKey && typeof message.udpKey.length === "number" || $util.isString(message.udpKey)))
+                    return "udpKey: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates an AuthenticatedMessage message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof RandoProto.AuthenticatedMessage
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {RandoProto.AuthenticatedMessage} AuthenticatedMessage
+         */
+        AuthenticatedMessage.fromObject = function fromObject(object) {
+            if (object instanceof $root.RandoProto.AuthenticatedMessage)
+                return object;
+            let message = new $root.RandoProto.AuthenticatedMessage();
+            if (object.user != null) {
+                if (typeof object.user !== "object")
+                    throw TypeError(".RandoProto.AuthenticatedMessage.user: object expected");
+                message.user = $root.RandoProto.UserInfo.fromObject(object.user);
+            }
+            if (object.udpId != null)
+                message.udpId = object.udpId | 0;
+            if (object.udpKey != null)
+                if (typeof object.udpKey === "string")
+                    $util.base64.decode(object.udpKey, message.udpKey = $util.newBuffer($util.base64.length(object.udpKey)), 0);
+                else if (object.udpKey.length)
+                    message.udpKey = object.udpKey;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an AuthenticatedMessage message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof RandoProto.AuthenticatedMessage
+         * @static
+         * @param {RandoProto.AuthenticatedMessage} message AuthenticatedMessage
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        AuthenticatedMessage.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.user = null;
+                object.udpId = 0;
+                if (options.bytes === String)
+                    object.udpKey = "";
+                else {
+                    object.udpKey = [];
+                    if (options.bytes !== Array)
+                        object.udpKey = $util.newBuffer(object.udpKey);
+                }
+            }
+            if (message.user != null && message.hasOwnProperty("user"))
+                object.user = $root.RandoProto.UserInfo.toObject(message.user, options);
+            if (message.udpId != null && message.hasOwnProperty("udpId"))
+                object.udpId = message.udpId;
+            if (message.udpKey != null && message.hasOwnProperty("udpKey"))
+                object.udpKey = options.bytes === String ? $util.base64.encode(message.udpKey, 0, message.udpKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.udpKey) : message.udpKey;
+            return object;
+        };
+
+        /**
+         * Converts this AuthenticatedMessage to JSON.
+         * @function toJSON
+         * @memberof RandoProto.AuthenticatedMessage
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        AuthenticatedMessage.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for AuthenticatedMessage
+         * @function getTypeUrl
+         * @memberof RandoProto.AuthenticatedMessage
+         * @static
+         * @returns {string} The default type url
+         */
+        AuthenticatedMessage.getTypeUrl = function getTypeUrl() {
+            return "type.googleapis.com/RandoProto.AuthenticatedMessage";
+        };
+
+        return AuthenticatedMessage;
+    })();
+
+    RandoProto.PlayerPositionMessage = (function() {
+
+        /**
+         * Properties of a PlayerPositionMessage.
+         * @memberof RandoProto
+         * @interface IPlayerPositionMessage
+         * @property {number|null} [x] PlayerPositionMessage x
+         * @property {number|null} [y] PlayerPositionMessage y
+         */
+
+        /**
+         * Constructs a new PlayerPositionMessage.
+         * @memberof RandoProto
+         * @classdesc Represents a PlayerPositionMessage.
+         * @implements IPlayerPositionMessage
+         * @constructor
+         * @param {RandoProto.IPlayerPositionMessage=} [properties] Properties to set
+         */
+        function PlayerPositionMessage(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * PlayerPositionMessage x.
+         * @member {number} x
+         * @memberof RandoProto.PlayerPositionMessage
+         * @instance
+         */
+        PlayerPositionMessage.prototype.x = 0;
+
+        /**
+         * PlayerPositionMessage y.
+         * @member {number} y
+         * @memberof RandoProto.PlayerPositionMessage
+         * @instance
+         */
+        PlayerPositionMessage.prototype.y = 0;
+
+        /**
+         * Creates a new PlayerPositionMessage instance using the specified properties.
+         * @function create
+         * @memberof RandoProto.PlayerPositionMessage
+         * @static
+         * @param {RandoProto.IPlayerPositionMessage=} [properties] Properties to set
+         * @returns {RandoProto.PlayerPositionMessage} PlayerPositionMessage instance
+         */
+        PlayerPositionMessage.create = function create(properties) {
+            return new PlayerPositionMessage(properties);
+        };
+
+        /**
+         * Encodes the specified PlayerPositionMessage message. Does not implicitly {@link RandoProto.PlayerPositionMessage.verify|verify} messages.
+         * @function encode
+         * @memberof RandoProto.PlayerPositionMessage
+         * @static
+         * @param {RandoProto.IPlayerPositionMessage} message PlayerPositionMessage message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        PlayerPositionMessage.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.x != null && Object.hasOwnProperty.call(message, "x"))
+                writer.uint32(/* id 1, wireType 5 =*/13).float(message.x);
+            if (message.y != null && Object.hasOwnProperty.call(message, "y"))
+                writer.uint32(/* id 2, wireType 5 =*/21).float(message.y);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified PlayerPositionMessage message, length delimited. Does not implicitly {@link RandoProto.PlayerPositionMessage.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof RandoProto.PlayerPositionMessage
+         * @static
+         * @param {RandoProto.IPlayerPositionMessage} message PlayerPositionMessage message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        PlayerPositionMessage.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a PlayerPositionMessage message from the specified reader or buffer.
+         * @function decode
+         * @memberof RandoProto.PlayerPositionMessage
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {RandoProto.PlayerPositionMessage} PlayerPositionMessage
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        PlayerPositionMessage.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.RandoProto.PlayerPositionMessage();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.x = reader.float();
+                    break;
+                case 2:
+                    message.y = reader.float();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a PlayerPositionMessage message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof RandoProto.PlayerPositionMessage
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {RandoProto.PlayerPositionMessage} PlayerPositionMessage
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        PlayerPositionMessage.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a PlayerPositionMessage message.
+         * @function verify
+         * @memberof RandoProto.PlayerPositionMessage
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        PlayerPositionMessage.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.x != null && message.hasOwnProperty("x"))
+                if (typeof message.x !== "number")
+                    return "x: number expected";
+            if (message.y != null && message.hasOwnProperty("y"))
+                if (typeof message.y !== "number")
+                    return "y: number expected";
+            return null;
+        };
+
+        /**
+         * Creates a PlayerPositionMessage message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof RandoProto.PlayerPositionMessage
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {RandoProto.PlayerPositionMessage} PlayerPositionMessage
+         */
+        PlayerPositionMessage.fromObject = function fromObject(object) {
+            if (object instanceof $root.RandoProto.PlayerPositionMessage)
+                return object;
+            let message = new $root.RandoProto.PlayerPositionMessage();
+            if (object.x != null)
+                message.x = Number(object.x);
+            if (object.y != null)
+                message.y = Number(object.y);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a PlayerPositionMessage message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof RandoProto.PlayerPositionMessage
+         * @static
+         * @param {RandoProto.PlayerPositionMessage} message PlayerPositionMessage
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        PlayerPositionMessage.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.x = 0;
+                object.y = 0;
+            }
+            if (message.x != null && message.hasOwnProperty("x"))
+                object.x = options.json && !isFinite(message.x) ? String(message.x) : message.x;
+            if (message.y != null && message.hasOwnProperty("y"))
+                object.y = options.json && !isFinite(message.y) ? String(message.y) : message.y;
+            return object;
+        };
+
+        /**
+         * Converts this PlayerPositionMessage to JSON.
+         * @function toJSON
+         * @memberof RandoProto.PlayerPositionMessage
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        PlayerPositionMessage.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for PlayerPositionMessage
+         * @function getTypeUrl
+         * @memberof RandoProto.PlayerPositionMessage
+         * @static
+         * @returns {string} The default type url
+         */
+        PlayerPositionMessage.getTypeUrl = function getTypeUrl() {
+            return "type.googleapis.com/RandoProto.PlayerPositionMessage";
+        };
+
+        return PlayerPositionMessage;
+    })();
+
+    RandoProto.UpdatePlayerPositionMessage = (function() {
+
+        /**
+         * Properties of an UpdatePlayerPositionMessage.
+         * @memberof RandoProto
+         * @interface IUpdatePlayerPositionMessage
+         * @property {string|null} [playerId] UpdatePlayerPositionMessage playerId
+         * @property {number|null} [x] UpdatePlayerPositionMessage x
+         * @property {number|null} [y] UpdatePlayerPositionMessage y
+         */
+
+        /**
+         * Constructs a new UpdatePlayerPositionMessage.
+         * @memberof RandoProto
+         * @classdesc Represents an UpdatePlayerPositionMessage.
+         * @implements IUpdatePlayerPositionMessage
+         * @constructor
+         * @param {RandoProto.IUpdatePlayerPositionMessage=} [properties] Properties to set
+         */
+        function UpdatePlayerPositionMessage(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * UpdatePlayerPositionMessage playerId.
+         * @member {string} playerId
+         * @memberof RandoProto.UpdatePlayerPositionMessage
+         * @instance
+         */
+        UpdatePlayerPositionMessage.prototype.playerId = "";
+
+        /**
+         * UpdatePlayerPositionMessage x.
+         * @member {number} x
+         * @memberof RandoProto.UpdatePlayerPositionMessage
+         * @instance
+         */
+        UpdatePlayerPositionMessage.prototype.x = 0;
+
+        /**
+         * UpdatePlayerPositionMessage y.
+         * @member {number} y
+         * @memberof RandoProto.UpdatePlayerPositionMessage
+         * @instance
+         */
+        UpdatePlayerPositionMessage.prototype.y = 0;
+
+        /**
+         * Creates a new UpdatePlayerPositionMessage instance using the specified properties.
+         * @function create
+         * @memberof RandoProto.UpdatePlayerPositionMessage
+         * @static
+         * @param {RandoProto.IUpdatePlayerPositionMessage=} [properties] Properties to set
+         * @returns {RandoProto.UpdatePlayerPositionMessage} UpdatePlayerPositionMessage instance
+         */
+        UpdatePlayerPositionMessage.create = function create(properties) {
+            return new UpdatePlayerPositionMessage(properties);
+        };
+
+        /**
+         * Encodes the specified UpdatePlayerPositionMessage message. Does not implicitly {@link RandoProto.UpdatePlayerPositionMessage.verify|verify} messages.
+         * @function encode
+         * @memberof RandoProto.UpdatePlayerPositionMessage
+         * @static
+         * @param {RandoProto.IUpdatePlayerPositionMessage} message UpdatePlayerPositionMessage message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdatePlayerPositionMessage.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.playerId != null && Object.hasOwnProperty.call(message, "playerId"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.playerId);
+            if (message.x != null && Object.hasOwnProperty.call(message, "x"))
+                writer.uint32(/* id 2, wireType 5 =*/21).float(message.x);
+            if (message.y != null && Object.hasOwnProperty.call(message, "y"))
+                writer.uint32(/* id 3, wireType 5 =*/29).float(message.y);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified UpdatePlayerPositionMessage message, length delimited. Does not implicitly {@link RandoProto.UpdatePlayerPositionMessage.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof RandoProto.UpdatePlayerPositionMessage
+         * @static
+         * @param {RandoProto.IUpdatePlayerPositionMessage} message UpdatePlayerPositionMessage message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UpdatePlayerPositionMessage.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an UpdatePlayerPositionMessage message from the specified reader or buffer.
+         * @function decode
+         * @memberof RandoProto.UpdatePlayerPositionMessage
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {RandoProto.UpdatePlayerPositionMessage} UpdatePlayerPositionMessage
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdatePlayerPositionMessage.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.RandoProto.UpdatePlayerPositionMessage();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.playerId = reader.string();
+                    break;
+                case 2:
+                    message.x = reader.float();
+                    break;
+                case 3:
+                    message.y = reader.float();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an UpdatePlayerPositionMessage message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof RandoProto.UpdatePlayerPositionMessage
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {RandoProto.UpdatePlayerPositionMessage} UpdatePlayerPositionMessage
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UpdatePlayerPositionMessage.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an UpdatePlayerPositionMessage message.
+         * @function verify
+         * @memberof RandoProto.UpdatePlayerPositionMessage
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        UpdatePlayerPositionMessage.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.playerId != null && message.hasOwnProperty("playerId"))
+                if (!$util.isString(message.playerId))
+                    return "playerId: string expected";
+            if (message.x != null && message.hasOwnProperty("x"))
+                if (typeof message.x !== "number")
+                    return "x: number expected";
+            if (message.y != null && message.hasOwnProperty("y"))
+                if (typeof message.y !== "number")
+                    return "y: number expected";
+            return null;
+        };
+
+        /**
+         * Creates an UpdatePlayerPositionMessage message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof RandoProto.UpdatePlayerPositionMessage
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {RandoProto.UpdatePlayerPositionMessage} UpdatePlayerPositionMessage
+         */
+        UpdatePlayerPositionMessage.fromObject = function fromObject(object) {
+            if (object instanceof $root.RandoProto.UpdatePlayerPositionMessage)
+                return object;
+            let message = new $root.RandoProto.UpdatePlayerPositionMessage();
+            if (object.playerId != null)
+                message.playerId = String(object.playerId);
+            if (object.x != null)
+                message.x = Number(object.x);
+            if (object.y != null)
+                message.y = Number(object.y);
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an UpdatePlayerPositionMessage message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof RandoProto.UpdatePlayerPositionMessage
+         * @static
+         * @param {RandoProto.UpdatePlayerPositionMessage} message UpdatePlayerPositionMessage
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        UpdatePlayerPositionMessage.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.playerId = "";
+                object.x = 0;
+                object.y = 0;
+            }
+            if (message.playerId != null && message.hasOwnProperty("playerId"))
+                object.playerId = message.playerId;
+            if (message.x != null && message.hasOwnProperty("x"))
+                object.x = options.json && !isFinite(message.x) ? String(message.x) : message.x;
+            if (message.y != null && message.hasOwnProperty("y"))
+                object.y = options.json && !isFinite(message.y) ? String(message.y) : message.y;
+            return object;
+        };
+
+        /**
+         * Converts this UpdatePlayerPositionMessage to JSON.
+         * @function toJSON
+         * @memberof RandoProto.UpdatePlayerPositionMessage
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        UpdatePlayerPositionMessage.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for UpdatePlayerPositionMessage
+         * @function getTypeUrl
+         * @memberof RandoProto.UpdatePlayerPositionMessage
+         * @static
+         * @returns {string} The default type url
+         */
+        UpdatePlayerPositionMessage.getTypeUrl = function getTypeUrl() {
+            return "type.googleapis.com/RandoProto.UpdatePlayerPositionMessage";
+        };
+
+        return UpdatePlayerPositionMessage;
+    })();
+
+    RandoProto.UdpPacket = (function() {
+
+        /**
+         * Properties of an UdpPacket.
+         * @memberof RandoProto
+         * @interface IUdpPacket
+         * @property {number|null} [udpId] UdpPacket udpId
+         * @property {Uint8Array|null} [encryptedPacket] UdpPacket encryptedPacket
+         */
+
+        /**
+         * Constructs a new UdpPacket.
+         * @memberof RandoProto
+         * @classdesc Represents an UdpPacket.
+         * @implements IUdpPacket
+         * @constructor
+         * @param {RandoProto.IUdpPacket=} [properties] Properties to set
+         */
+        function UdpPacket(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * UdpPacket udpId.
+         * @member {number} udpId
+         * @memberof RandoProto.UdpPacket
+         * @instance
+         */
+        UdpPacket.prototype.udpId = 0;
+
+        /**
+         * UdpPacket encryptedPacket.
+         * @member {Uint8Array} encryptedPacket
+         * @memberof RandoProto.UdpPacket
+         * @instance
+         */
+        UdpPacket.prototype.encryptedPacket = $util.newBuffer([]);
+
+        /**
+         * Creates a new UdpPacket instance using the specified properties.
+         * @function create
+         * @memberof RandoProto.UdpPacket
+         * @static
+         * @param {RandoProto.IUdpPacket=} [properties] Properties to set
+         * @returns {RandoProto.UdpPacket} UdpPacket instance
+         */
+        UdpPacket.create = function create(properties) {
+            return new UdpPacket(properties);
+        };
+
+        /**
+         * Encodes the specified UdpPacket message. Does not implicitly {@link RandoProto.UdpPacket.verify|verify} messages.
+         * @function encode
+         * @memberof RandoProto.UdpPacket
+         * @static
+         * @param {RandoProto.IUdpPacket} message UdpPacket message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UdpPacket.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.udpId != null && Object.hasOwnProperty.call(message, "udpId"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.udpId);
+            if (message.encryptedPacket != null && Object.hasOwnProperty.call(message, "encryptedPacket"))
+                writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.encryptedPacket);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified UdpPacket message, length delimited. Does not implicitly {@link RandoProto.UdpPacket.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof RandoProto.UdpPacket
+         * @static
+         * @param {RandoProto.IUdpPacket} message UdpPacket message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UdpPacket.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an UdpPacket message from the specified reader or buffer.
+         * @function decode
+         * @memberof RandoProto.UdpPacket
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {RandoProto.UdpPacket} UdpPacket
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UdpPacket.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.RandoProto.UdpPacket();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.udpId = reader.int32();
+                    break;
+                case 2:
+                    message.encryptedPacket = reader.bytes();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an UdpPacket message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof RandoProto.UdpPacket
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {RandoProto.UdpPacket} UdpPacket
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UdpPacket.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an UdpPacket message.
+         * @function verify
+         * @memberof RandoProto.UdpPacket
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        UdpPacket.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.udpId != null && message.hasOwnProperty("udpId"))
+                if (!$util.isInteger(message.udpId))
+                    return "udpId: integer expected";
+            if (message.encryptedPacket != null && message.hasOwnProperty("encryptedPacket"))
+                if (!(message.encryptedPacket && typeof message.encryptedPacket.length === "number" || $util.isString(message.encryptedPacket)))
+                    return "encryptedPacket: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates an UdpPacket message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof RandoProto.UdpPacket
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {RandoProto.UdpPacket} UdpPacket
+         */
+        UdpPacket.fromObject = function fromObject(object) {
+            if (object instanceof $root.RandoProto.UdpPacket)
+                return object;
+            let message = new $root.RandoProto.UdpPacket();
+            if (object.udpId != null)
+                message.udpId = object.udpId | 0;
+            if (object.encryptedPacket != null)
+                if (typeof object.encryptedPacket === "string")
+                    $util.base64.decode(object.encryptedPacket, message.encryptedPacket = $util.newBuffer($util.base64.length(object.encryptedPacket)), 0);
+                else if (object.encryptedPacket.length)
+                    message.encryptedPacket = object.encryptedPacket;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an UdpPacket message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof RandoProto.UdpPacket
+         * @static
+         * @param {RandoProto.UdpPacket} message UdpPacket
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        UdpPacket.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.udpId = 0;
+                if (options.bytes === String)
+                    object.encryptedPacket = "";
+                else {
+                    object.encryptedPacket = [];
+                    if (options.bytes !== Array)
+                        object.encryptedPacket = $util.newBuffer(object.encryptedPacket);
+                }
+            }
+            if (message.udpId != null && message.hasOwnProperty("udpId"))
+                object.udpId = message.udpId;
+            if (message.encryptedPacket != null && message.hasOwnProperty("encryptedPacket"))
+                object.encryptedPacket = options.bytes === String ? $util.base64.encode(message.encryptedPacket, 0, message.encryptedPacket.length) : options.bytes === Array ? Array.prototype.slice.call(message.encryptedPacket) : message.encryptedPacket;
+            return object;
+        };
+
+        /**
+         * Converts this UdpPacket to JSON.
+         * @function toJSON
+         * @memberof RandoProto.UdpPacket
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        UdpPacket.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for UdpPacket
+         * @function getTypeUrl
+         * @memberof RandoProto.UdpPacket
+         * @static
+         * @returns {string} The default type url
+         */
+        UdpPacket.getTypeUrl = function getTypeUrl() {
+            return "type.googleapis.com/RandoProto.UdpPacket";
+        };
+
+        return UdpPacket;
+    })();
+
     return RandoProto;
 })();

@@ -82,3 +82,27 @@ message SyncBoardMessage {
 message AuthenticateMessage {
   string jwt = 1;
 }
+
+
+// Unused in web
+message AuthenticatedMessage {
+  UserInfo user = 1;
+  int32 udpId = 2;
+  bytes udpKey = 3;
+}
+
+message PlayerPositionMessage  {
+  float x = 1;
+  float y = 2;
+}
+
+message UpdatePlayerPositionMessage  {
+  string playerId = 1;
+  float x = 2;
+  float y = 3;
+}
+
+message UdpPacket {
+  int32 udpId = 1;
+  bytes encryptedPacket = 2;
+}

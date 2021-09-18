@@ -41,7 +41,7 @@ export class LauncherService {
 
       const settings = await SettingsService.readSettings()
 
-      if (await isProcessRunning('injector.exe')) {
+      if (await isProcessRunning('injector')) {
         await RandoIPCService.trySend('reload')
       } else {
         //                Why is windows a thing ↓
@@ -60,7 +60,7 @@ export class LauncherService {
           stdio: 'ignore',
         })
 
-        await waitForProcess('injector.exe')
+        await waitForProcess('injector')
 
         if (settings.Flags.UseWinStore) {
           spawn('explorer.exe shell:AppsFolder\\Microsoft.Patagonia_8wekyb3d8bbwe!App', {
@@ -68,14 +68,14 @@ export class LauncherService {
             shell: true,
             stdio: 'ignore',
           }).unref()
-          await waitForProcess('oriandthewillofthewisps-pc.exe')
+          await waitForProcess('oriandthewillofthewisps-pc')
         } else {
           spawn(`${settings.Paths.Steam} -applaunch 1057090`, {
             detached: true,
             shell: true,
             stdio: 'ignore',
           }).unref()
-          await waitForProcess('oriwotw.exe', 60)
+          await waitForProcess('oriwotw', 60)
         }
       }
     } catch (e) {

@@ -20,7 +20,7 @@
           </template>
         </v-card>
 
-        <v-btn x-large color='accent' block class='mt-6' :loading='launching' @click='launch'>
+        <v-btn x-large color='accent' block class='mt-6' :loading='launching' @click='launch()'>
           <img class='launch-icon' src='../../assets/images/launch.png' alt=''>
           Launch
         </v-btn>
@@ -60,6 +60,17 @@
         return this.latestRelease?.name?.replaceAll(/[^[0-9.]/g, '')
       }
     },
+    watch: {
+      $route: {
+        immediate: true,
+        handler(route) {
+          if (route.query.seedFile) {
+            this.$router.replace({query: {}})
+            this.launch(route.query.seedFile)
+          }
+        },
+      }
+    },
     mounted() {
       this.checkForUpdates()
     },
@@ -68,8 +79,8 @@
         this.currentVersion = await window.electronApi.invoke('updater.getVersion')
         const octokit = new Octokit
         this.latestRelease = (await octokit.rest.repos.getLatestRelease({
-          owner: 'sparkle-preference',
-          repo: 'OriWotwRandomizerClient',
+          owner: 'ori-rando',
+          repo: 'build',
         })).data
       },
       async downloadAndInstallUpdate() {
@@ -79,12 +90,16 @@
           this.updateDownloadProgress = progress.percent * 100
         })
         await window.electronApi.invoke('updater.downloadAndInstallUpdate', {
-          url: this.latestRelease.assets.find(a => a.name === 'WotwRando.exe').browser_download_url,
+          url: this.latestRelease.assets.find(a => a.name === 'WotwRandoSetup.exe').browser_download_url,
         })
       },
-      async launch() {
+      async launch(seedFile = null) {
+        if (this.launching) {
+          return
+        }
+
         this.launching = true
-        await window.electronApi.invoke('launcher.launch')
+        await window.electronApi.invoke('launcher.launch', seedFile)
         this.launching = false
       },
       openWiki() {

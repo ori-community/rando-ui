@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, dialog, BrowserWindow, ipcMain, ipcRenderer } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import * as path from 'path'
@@ -14,6 +14,8 @@ if (isDevelopment) {
     fs.mkdirSync('./work-dir')
   }
   process.chdir('./work-dir')
+} else {
+  process.chdir(path.dirname(process.argv0))
 }
 
 if (!app.requestSingleInstanceLock()) {
@@ -25,13 +27,7 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } },
 ])
 
-if (process.defaultApp) {
-  if (process.argv.length >= 2) {
-    app.setAsDefaultProtocolClient('ori-rando', process.execPath, [path.resolve(process.argv[1])])
-  }
-} else {
-  app.setAsDefaultProtocolClient('ori-rando')
-}
+app.setAsDefaultProtocolClient('ori-rando')
 
 // app.setAsDefaultProtocolClient('ori-rando')
 
@@ -67,13 +63,29 @@ async function createWindow() {
   win.show()
   win.maximize()
 
-  app.on('open-url', (event, url) => {
-    url = new URL(url)
+  const commandLineArgumentHandler = (args) => {
+    const lastArg = args[args.length - 1]
 
-    if (url.protocol === 'ori-rando:') {
-      win.webContents.send('open-url', url)
+    if (lastArg.endsWith('.wotwr') && fs.existsSync(lastArg)) {
+      // We got a seed!
+      win.focus()
+      win.webContents.send('main.openSeed', lastArg)
+    } else {
+      // Maybe an URL?
+      try {
+        const url = new URL(lastArg)
+        if (url.protocol === 'ori-rando:') {
+          win.focus()
+          win.webContents.send('main.openUrl', url.toString())
+        }
+      } catch (e) {
+        console.warn('Could not parse URL', e)
+      }
     }
-  })
+  }
+
+  app.on('second-instance', (event, args) => commandLineArgumentHandler(args))
+  commandLineArgumentHandler(process.argv)
 }
 
 // Quit when all windows are closed.

@@ -5,21 +5,34 @@ import { RANDOMIZER_BASE_PATH } from './Constants'
 const SETTINGS_PATH = `${RANDOMIZER_BASE_PATH}/settings.ini`
 const getDefaultSettings = () => ({
   Paths: {
-    Steam: null,
+    Steam: 'C:\\Program Files (x86)\\Steam\\steam.exe',
   },
   Flags: {
     UseWinStore: false,
-    SkipUpdate: false,
     Dev: false,
     MuteInjectLogs: false,
     ShowShortCutscenes: false,
     ShowLongCutscenes: false,
+    HideQuestFilter: false,
+    HideWarpFilter: false,
+    HideCollectableFilter: false,
+    AlwaysShowWarps: false,
+    GrappleMouseControl: false,
+    BurrowMouseControl: false,
+    WaterDashMouseControl: false,
+    DisableNetcode: false,
+    LaunchWithTracker: false,
   },
 })
 
 let settingsCache = null
 
 export class SettingsService {
+  static async makeSureSettingsFileExists() {
+    await this.readSettings()
+    await this.writeSettings()
+  }
+
   static async readSettings() {
     if (!fs.existsSync(SETTINGS_PATH)) {
       console.log('Settings file not found, using default settings...')
@@ -38,7 +51,7 @@ export class SettingsService {
     return settingsCache
   }
 
-  static async setSettings(event, settings) {
+  static setSettings(settings) {
     settingsCache = settings
   }
 

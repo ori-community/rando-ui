@@ -1,7 +1,7 @@
 <template>
   <v-app dark>
     <v-main class='main'>
-      <v-container>
+      <v-container v-if='!shouldHideToolbar'>
         <wotw-page-toolbar />
       </v-container>
 
@@ -15,10 +15,43 @@
 </template>
 
 <script>
+  import { mapState } from 'vuex'
+  import { isElectron } from '~/assets/lib/isElectron'
+
   export default {
+    computed: {
+      ...mapState(['user/user']),
+      shouldHideToolbar() {
+        return !!this.$route.query.hideToolbar && !!this.user
+      }
+    },
+    beforeMount() {
+      if (isElectron()) {
+        window.electronApi.on('main.openSeed', (event, seedFile) => {
+          this.$router.push({ name: 'electron', query: { seedFile } })
+        })
+
+        window.electronApi.on('main.openUrl', async (event, url) => {
+          url = new URL(url)
+
+          if (url.protocol === 'ori-rando:') {
+            switch (url.pathname) {
+              case '//authenticate/':
+                await this.$router.push({ name: 'auth-callback', query: { jwt: url.searchParams.get('jwt') } })
+                break
+              case '//seedgen/':
+                await this.$router.push({ name: 'seedgen', query: { result: url.searchParams.get('result') } })
+                break
+              default:
+                console.warn('Could not handle URL', url)
+            }
+          }
+        })
+      }
+    },
     mounted() {
       this.$store.dispatch('user/updateUser')
-    }
+    },
   }
 </script>
 

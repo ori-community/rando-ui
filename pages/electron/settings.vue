@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h2 class='text-center'>Settings</h2>
+    <h2 class='text-center mb-8'>Settings</h2>
 
     <v-card>
       <v-tabs>
@@ -15,7 +15,7 @@
           <wotw-controller-rebind-settings />
         </v-tab-item>
         <v-tab-item class='pa-5'>
-          <wotw-controller-rebind-settings />
+          soon™
         </v-tab-item>
       </v-tabs>
     </v-card>

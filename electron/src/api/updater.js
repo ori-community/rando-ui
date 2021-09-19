@@ -16,7 +16,6 @@ export default {
     return (await fs.promises.readFile(VERSION_FILE, { encoding: 'utf-8' })).trim()
   },
   async downloadAndInstallUpdate(event, { url }) {
-
     await download(BrowserWindow.getFocusedWindow(), url, {
       onProgress: progress => {
         event.sender.send('updater.downloadProgress', progress)
@@ -25,7 +24,8 @@ export default {
         console.log('Spawning process: ', item.path)
         spawn(item.path, [], {
           detached: true,
-        })
+          stdio: 'ignore',
+        }).unref()
         app.quit()
         process.exit()
       },

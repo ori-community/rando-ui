@@ -179,7 +179,7 @@
               x-large
               @click='generateSeed'
             >
-              Generate
+              {{ isElectron && !seedgenConfig.flags.includes('--multiplayer') ? 'Generate and Launch' : 'Generate' }}
             </v-btn>
           </div>
         </template>
@@ -211,6 +211,7 @@
   import difficulties from '~/assets/seedgen/difficulties.yaml'
   import { confettiFromElement } from '~/assets/lib/confettiFromElement'
   import { db } from '~/assets/db/database'
+  import { isElectron } from '~/assets/lib/isElectron'
 
   const generateNewSeedgenConfig = () => ({
     flags: [],
@@ -241,6 +242,7 @@
       anyPresetSelected: false,
     }),
     computed: {
+      isElectron,
       loadedServerConfig() {
         return !!this.availableHeaders && !!this.availablePresets
       },
@@ -317,16 +319,16 @@
           if (this.seedgenConfig.flags.includes('--multiplayer')) {
             switch (this.createOnlineGame) {
               case 'normal':
-                result.gameId = await this.$axios.$post('/multiverses')
+                result.multiverseId = await this.$axios.$post('/multiverses')
                 break
               case 'bingo':
-                result.gameId = await this.$axios.$post('/bingo')
+                result.multiverseId = await this.$axios.$post('/bingo')
                 break
               case 'discovery_bingo':
-                result.gameId = await this.$axios.$post('/bingo', {discovery: 2})
+                result.multiverseId = await this.$axios.$post('/bingo', {discovery: 2})
                 break
               case 'lockout_bingo':
-                result.gameId = await this.$axios.$post('/bingo', {lockout: true})
+                result.multiverseId = await this.$axios.$post('/bingo', {lockout: true})
                 break
             }
           }
@@ -335,13 +337,26 @@
 
           // Download the seed instantly for single player, non-networked games
           // and show the download dialog otherwise
-          if (this.seedgenResult.gameId === null && result.playerList.length === 0) {
-            saveAs(`${this.$axios.defaults.baseURL}/seeds/${result.seedId}`, `seed_${result.seedId}.wotwr`)
+          if (this.seedgenResult.multiverseId === null && result.worldList.length === 0) {
+            const url = `${this.$axios.defaults.baseURL}/seeds/${result.seedId}`
+            const fileName = `seed_${result.seedId}.wotwr`
+
             confettiFromElement(this.$refs.generateButton.$el, {
               disableForReducedMotion: true,
               zIndex: 100000,
             })
 
+            if (isElectron()) {
+              try {
+                await window.electronApi.invoke('launcher.launchSeedFromUrl', {
+                  url, fileName,
+                })
+              } catch (e) {
+                console.error(e)
+              }
+            } else {
+              saveAs(url, fileName)
+            }
           } else {
             await this.$router.replace({ query: { result: JSON.stringify(result) } })
 

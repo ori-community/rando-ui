@@ -4,6 +4,7 @@ import fs from 'fs'
 import psList from 'ps-list'
 import { RandoIPCService } from '../lib/RandoIPCService'
 import { RANDOMIZER_BASE_PATH } from './Constants'
+import { BindingsService } from '../lib/BindingsService'
 
 
 const isProcessRunning = async (processName) => {
@@ -22,7 +23,7 @@ const waitForProcess = (processName, maxTries = 20) => new Promise((resolve, rej
     if (await isProcessRunning(processName)) {
       resolve()
     } else if (tries > maxTries) {
-      reject()
+      reject(new Error(`Could not find process ${processName} within ${maxTries} seconds`))
     } else {
       setTimeout(check, 1000)
     }
@@ -38,9 +39,14 @@ export class LauncherService {
   static async launch(seedFilePath = null) {
     try {
       if (seedFilePath) {
+        console.log('Launching seed', seedFilePath)
         await fs.promises.writeFile(`${RANDOMIZER_BASE_PATH}/.currentseedpath`, seedFilePath.trim())
+      } else {
+        console.log('Launching last seed')
       }
 
+      await BindingsService.makeSureControllerBindingsFileExists()
+      await SettingsService.makeSureSettingsFileExists()
       const settings = await SettingsService.readSettings()
 
       if (await isProcessRunning('injector.exe')) {

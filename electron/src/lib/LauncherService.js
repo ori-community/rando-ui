@@ -46,6 +46,7 @@ export class LauncherService {
       }
 
       await BindingsService.makeSureControllerBindingsFileExists()
+      await BindingsService.makeSureKeyboardBindingsFileExists()
       await SettingsService.makeSureSettingsFileExists()
       const settings = await SettingsService.readSettings()
 

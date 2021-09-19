@@ -52,12 +52,11 @@ jobs:
         sudo apt-get update -y
         sudo apt-get install wine wine32 -y
         yarn install
-        yarn electron:build -w -l
+        yarn electron:build -w
 
     - name: Archive artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: electron-launcher
+        name: ori-rando-launcher
         path: |
-          ./electron/dist_electron/*.AppImage
-          ./electron/dist_electron/*.exe
+          ./electron/dist_electron/win-unpacked/*

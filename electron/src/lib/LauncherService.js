@@ -7,7 +7,7 @@ import { RANDOMIZER_BASE_PATH } from './Constants'
 
 
 const isProcessRunning = async (processName) => {
-  const processes = await psList()
+  const processes = await psList({ all: true })
   return processes.some(p => p.name.toLowerCase() === processName.toLowerCase())
 }
 
@@ -16,6 +16,8 @@ const waitForProcess = (processName, maxTries = 20) => new Promise((resolve, rej
 
   const check = async () => {
     tries++
+
+    console.log(processName, await isProcessRunning(processName))
 
     if (await isProcessRunning(processName)) {
       resolve()
@@ -41,7 +43,7 @@ export class LauncherService {
 
       const settings = await SettingsService.readSettings()
 
-      if (await isProcessRunning('injector')) {
+      if (await isProcessRunning('injector.exe')) {
         await RandoIPCService.trySend('reload')
       } else {
         //                Why is windows a thing ↓
@@ -49,18 +51,17 @@ export class LauncherService {
 
         if (!settings.Flags.Dev) {
           console.log('Starting Injector hidden')
-          command = 'start /b ' + command
+          command = 'start /b /min ' + command
         }
 
-        console.log('Command:', command)
-
+        // FIXME: Hiding the window does not work due to a node bug (?)
         spawn(command, {
           detached: true,
           shell: true,
           stdio: 'ignore',
-        })
+        }).unref()
 
-        await waitForProcess('injector')
+        await waitForProcess('injector.exe', 10)
 
         if (settings.Flags.UseWinStore) {
           spawn('explorer.exe shell:AppsFolder\\Microsoft.Patagonia_8wekyb3d8bbwe!App', {
@@ -68,14 +69,14 @@ export class LauncherService {
             shell: true,
             stdio: 'ignore',
           }).unref()
-          await waitForProcess('oriandthewillofthewisps-pc')
+          await waitForProcess('oriandthewillofthewisps-pc.exe')
         } else {
-          spawn(`${settings.Paths.Steam} -applaunch 1057090`, {
+          spawn(`"${settings.Paths.Steam}" -applaunch 1057090`, {
             detached: true,
             shell: true,
             stdio: 'ignore',
           }).unref()
-          await waitForProcess('oriwotw', 60)
+          await waitForProcess('oriwotw.exe', 60)
         }
       }
     } catch (e) {

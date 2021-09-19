@@ -8,6 +8,7 @@ module.exports = {
       mainProcessWatch: [
         'src/api.js',
         ...fs.readdirSync('./src/api').map(f => `./src/api/${f}`),
+        ...fs.readdirSync('./src/lib').map(f => `./src/lib/${f}`),
       ],
       builderOptions: {
         linux: {

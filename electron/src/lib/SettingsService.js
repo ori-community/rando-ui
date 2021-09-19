@@ -25,9 +25,11 @@ export class SettingsService {
       console.log('Settings file not found, using default settings...')
       settingsCache = getDefaultSettings()
     } else {
+      const settings = await fs.promises.readFile(SETTINGS_PATH, { encoding: 'utf16le' })
+
       settingsCache = {
         ...getDefaultSettings(),
-        ...ini.parse(await fs.promises.readFile(SETTINGS_PATH, { encoding: 'utf16le' })),
+        ...ini.parse(settings.trimLeft()),
       }
     }
 

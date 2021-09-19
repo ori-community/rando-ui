@@ -43,6 +43,7 @@ async function createWindow() {
     width: 800,
     height: 600,
     autoHideMenuBar: true,
+    show: false,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -51,7 +52,6 @@ async function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
     },
   })
-  win.maximize()
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
@@ -63,6 +63,9 @@ async function createWindow() {
     // Load the index.html when not in development
     await win.loadURL('app://./index.html#/electron')
   }
+
+  win.show()
+  win.maximize()
 
   app.on('open-url', (event, url) => {
     url = new URL(url)

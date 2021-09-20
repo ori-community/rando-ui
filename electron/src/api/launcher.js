@@ -16,8 +16,18 @@ export default {
     const item = await download(BrowserWindow.getFocusedWindow(), url, {
       filename: fileName,
     })
-    console.log(item)
-    await LauncherService.launch(item.path)
+
+    await new Promise(((resolve, reject) => {
+      item.once('done', (event, state) => {
+        if (state === 'completed') {
+          resolve()
+        } else {
+          reject(new Error(`Error while downloading seed file. State = ${state}`))
+        }
+      })
+    }))
+
+    await LauncherService.launch(item.getSavePath())
   },
 
   openWiki() {

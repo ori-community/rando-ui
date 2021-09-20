@@ -6,6 +6,7 @@
 
 <script>
   import { isElectron } from '~/assets/lib/isElectron'
+  import { generateClientJwt } from '~/assets/electron/generateClientJwt'
 
   export default {
     name: 'Callback',
@@ -21,13 +22,10 @@
         app.store.commit('auth/setJwt', token)
 
         if (isElectron()) {
-          const clientToken = await app.$axios.$post('/tokens/', {
-            scopes: ['multiverses.connect'],
-          })
-          window.electronApi.invoke('auth.setClientJwt', clientToken)
-
-          await app.store.dispatch('user/updateUser')
+          await generateClientJwt(app.$axios)
         }
+
+        await app.store.dispatch('user/updateUser')
       }
 
       try {

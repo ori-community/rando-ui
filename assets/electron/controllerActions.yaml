@@ -140,8 +140,8 @@ ShowLastPickup:
 ShowProgressWithHints:
   displayName: ShowProgressWithHints
   composable: true
-WarpToCredits:
-  displayName: WarpToCredits
+WarpCredits:
+  displayName: WarpCredits
   composable: true
 ToggleCursorLock:
   displayName: ToggleCursorLock

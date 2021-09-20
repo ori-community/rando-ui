@@ -36,6 +36,8 @@
 
 <script>
   import { Octokit } from '@octokit/rest'
+  import { mapState } from 'vuex'
+  import { generateClientJwt } from '~/assets/electron/generateClientJwt'
 
   export default {
     name: 'Index',
@@ -53,6 +55,7 @@
       ],
     }),
     computed: {
+      ...mapState(['user/user']),
       updateAvailable() {
         return this.latestRelease !== null && this.currentVersion !== this.latestVersion
       },
@@ -67,6 +70,16 @@
           if (route.query.seedFile) {
             this.$router.replace({query: {}})
             this.launch(route.query.seedFile)
+          }
+        },
+      },
+      user: {
+        immediate: true,
+        async handler(user) {
+          if (user) {
+            if (!await window.electronApi.invoke('auth.hasClientJwt')) {
+              await generateClientJwt(this.$axios)
+            }
           }
         },
       }

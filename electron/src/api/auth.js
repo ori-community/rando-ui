@@ -42,4 +42,7 @@ export default {
   async deleteClientJwt() {
     await fs.promises.unlink(JWT_PATH)
   },
+  hasClientJwt() {
+    return fs.existsSync(JWT_PATH)
+  }
 }

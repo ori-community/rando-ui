@@ -16,16 +16,6 @@ export default {
       filename: fileName,
     })
 
-    await new Promise(((resolve, reject) => {
-      item.once('done', (event, state) => {
-        if (state === 'completed') {
-          resolve()
-        } else {
-          reject(new Error(`Error while downloading seed file. State = ${state}`))
-        }
-      })
-    }))
-
     await LauncherService.launch(item.getSavePath())
   },
 

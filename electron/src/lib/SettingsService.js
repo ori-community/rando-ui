@@ -22,6 +22,7 @@ const getDefaultSettings = () => ({
     WaterDashMouseControl: false,
     DisableNetcode: false,
     LaunchWithTracker: false,
+    DisableQuestFocus: false,
   },
 })
 

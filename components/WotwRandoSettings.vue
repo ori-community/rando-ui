@@ -36,6 +36,11 @@
           label='Always Show Warps'
           messages='Always show Spirit Wells on the in-game map, no matter what filter'
         />
+        <v-checkbox
+          v-model='settings.Flags.DisableQuestFocus'
+          label='Disable Quest Focus'
+          messages="Don't focus quests when hovering the quest list"
+        />
       </div>
     </v-col>
     <v-col cols='12' md='6'>

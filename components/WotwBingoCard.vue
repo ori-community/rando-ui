@@ -71,9 +71,9 @@
         const highlightSplitPercentage = 33
 
         const nonHighlightedColors = this.square.completedBy
-          .filter(team => !this.hiddenTeams.includes(team.id) && team.id !== this.highlightTeam)
-          .sort((a, b) => b.id - a.id)
-          .map(team => this.teamColors[team.id])
+          .filter(universeId => !this.hiddenTeams.includes(universeId) && universeId !== this.highlightTeam)
+          .sort((a, b) => b - a)
+          .map(universeId => this.teamColors[universeId])
         const stops = []
 
         const shouldHighlight = !!this.highlightTeam && !this.hiddenTeams.includes(this.highlightTeam)
@@ -89,7 +89,7 @@
         }
 
         if (this.highlightTeam) {
-          if (shouldHighlight && this.square.completedBy.some(t => t.id === this.highlightTeam)) {
+          if (shouldHighlight && this.square.completedBy.includes(this.highlightTeam)) {
             stops.push(`${this.teamColors[this.highlightTeam]} ${highlightSplitPercentage}% 100%`)
           } else {
             stops.push(`transparent ${highlightSplitPercentage}% 100%`)

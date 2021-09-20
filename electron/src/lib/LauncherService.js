@@ -37,58 +37,65 @@ export class LauncherService {
   }
 
   static async launch(seedFilePath = null) {
-    try {
-      if (seedFilePath) {
-        console.log('Launching seed', seedFilePath)
-        await fs.promises.writeFile(`${RANDOMIZER_BASE_PATH}/.currentseedpath`, seedFilePath.trim())
-      } else {
-        console.log('Launching last seed')
+    if (seedFilePath) {
+      console.log('Launching seed', seedFilePath)
+      await fs.promises.writeFile(`${RANDOMIZER_BASE_PATH}/.currentseedpath`, seedFilePath.trim())
+    } else {
+      console.log('Launching last seed')
+    }
+
+    await BindingsService.makeSureControllerBindingsFileExists()
+    await BindingsService.makeSureKeyboardBindingsFileExists()
+    await SettingsService.makeSureSettingsFileExists()
+    const settings = await SettingsService.readSettings()
+
+    if (await isProcessRunning('injector.exe')) {
+      await RandoIPCService.trySend('reload')
+    } else {
+      //                Why is windows a thing ↓
+      let command = `${RANDOMIZER_BASE_PATH.replaceAll('/', '\\')}\\Injector.exe`
+
+      if (!settings.Flags.Dev) {
+        console.log('Starting Injector hidden')
+        command = 'start /b /min ' + command
       }
 
-      await BindingsService.makeSureControllerBindingsFileExists()
-      await BindingsService.makeSureKeyboardBindingsFileExists()
-      await SettingsService.makeSureSettingsFileExists()
-      const settings = await SettingsService.readSettings()
+      // FIXME: Hiding the window does not work due to a node bug (?)
+      spawn(command, {
+        detached: true,
+        shell: true,
+        stdio: 'ignore',
+      }).unref()
 
-      if (await isProcessRunning('injector.exe')) {
-        await RandoIPCService.trySend('reload')
-      } else {
-        //                Why is windows a thing ↓
-        let command = `${RANDOMIZER_BASE_PATH.replaceAll('/', '\\')}\\Injector.exe`
+      await waitForProcess('injector.exe', 10)
 
-        if (!settings.Flags.Dev) {
-          console.log('Starting Injector hidden')
-          command = 'start /b /min ' + command
-        }
-
-        // FIXME: Hiding the window does not work due to a node bug (?)
-        spawn(command, {
+      if (settings.Flags.LaunchWithTracker) {
+        spawn(`${RANDOMIZER_BASE_PATH.replaceAll('/', '\\')}\\ItemTracker.exe`, {
           detached: true,
           shell: true,
           stdio: 'ignore',
         }).unref()
-
-        await waitForProcess('injector.exe', 10)
-
-        if (settings.Flags.UseWinStore) {
-          spawn('explorer.exe shell:AppsFolder\\Microsoft.Patagonia_8wekyb3d8bbwe!App', {
-            detached: true,
-            shell: true,
-            stdio: 'ignore',
-          }).unref()
-          await waitForProcess('oriandthewillofthewisps-pc.exe')
-        } else {
-          spawn(`"${settings.Paths.Steam}" -applaunch 1057090`, {
-            detached: true,
-            shell: true,
-            stdio: 'ignore',
-          }).unref()
-          await waitForProcess('oriwotw.exe', 60)
-        }
       }
-    } catch (e) {
-      console.error('Failed to launch randomizer:')
-      console.error(e)
+
+      if (settings.Flags.UseWinStore) {
+        spawn('explorer.exe shell:AppsFolder\\Microsoft.Patagonia_8wekyb3d8bbwe!App', {
+          detached: true,
+          shell: true,
+          stdio: 'ignore',
+        }).unref()
+        await waitForProcess('oriandthewillofthewisps-pc.exe')
+      } else {
+        if (!fs.existsSync(settings.Paths.Steam)) {
+          throw new Error(`Steam was not found at the specified path (${settings.Paths.Steam})`)
+        }
+
+        spawn(`"${settings.Paths.Steam}" -applaunch 1057090`, {
+          detached: true,
+          shell: true,
+          stdio: 'ignore',
+        }).unref()
+        await waitForProcess('oriwotw.exe', 60)
+      }
     }
   }
 }

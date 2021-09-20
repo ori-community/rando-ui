@@ -5,6 +5,10 @@
         <wotw-page-toolbar />
       </v-container>
 
+      <v-snackbar v-if='isElectron' v-model='showError' timeout='5000'>
+        {{ errorMessage }}
+      </v-snackbar>
+
       <Nuxt />
     </v-main>
 
@@ -19,14 +23,24 @@
   import { isElectron } from '~/assets/lib/isElectron'
 
   export default {
+    data: () => ({
+      showError: false,
+      errorMessage: '',
+    }),
     computed: {
       ...mapState(['user/user']),
+      isElectron,
       shouldHideToolbar() {
-        return !!this.$route.query.hideToolbar && !!this.user
+        return !!this.$route.query.hideToolbar && !!this.user && isElectron()
       }
     },
     beforeMount() {
       if (isElectron()) {
+        window.electronApi.on('main.error', (event, e) => {
+          this.errorMessage = String(e)
+          this.showError = true
+        })
+
         window.electronApi.on('main.openSeed', (event, seedFile) => {
           this.$router.push({ name: 'electron', query: { seedFile } })
         })

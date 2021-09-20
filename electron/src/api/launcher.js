@@ -8,7 +8,12 @@ export default {
   },
 
   async launch(event, seedPath = null) {
-    await LauncherService.launch(seedPath)
+    try {
+      await LauncherService.launch(seedPath)
+    } catch (e) {
+      console.error('Failed to launch:', e)
+      event.sender.send('main.error', e)
+    }
   },
 
   async launchSeedFromUrl(event, { url, fileName }) {
@@ -16,7 +21,12 @@ export default {
       filename: fileName,
     })
 
-    await LauncherService.launch(item.getSavePath())
+    try {
+      await LauncherService.launch(item.getSavePath())
+    } catch (e) {
+      console.error('Failed to launch:', e)
+      event.sender.send('main.error', e)
+    }
   },
 
   openWiki() {

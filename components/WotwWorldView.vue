@@ -4,6 +4,7 @@
     <v-card-text>
       <wotw-player-view v-for='player in world.members' :key='player.id' class='mb-1' :user='player' />
     </v-card-text>
+    <div class='spacer'></div>
     <v-btn v-if='canJoinInternal' :disabled='disabled' block color='accent' tile @click='$emit("join")'>
       Join
     </v-btn>
@@ -46,5 +47,11 @@
   .world-view {
     min-width: 15vw;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    .spacer {
+      flex-basis: 100%;
+    }
   }
 </style>

@@ -16,6 +16,7 @@ message UserInfo {
   string id = 1;
   string name = 2;
   optional string avatarId = 3;
+  optional int64 connectedMultiverseId = 4;
 }
 
 message WorldInfo {
@@ -39,7 +40,7 @@ message MultiverseInfoMessage {
 
 message BingoSquare {
   string text = 1;
-  repeated UniverseInfo completedBy = 2;
+  repeated int64 completedBy = 2;
   repeated BingoGoal goals = 3;
 }
 

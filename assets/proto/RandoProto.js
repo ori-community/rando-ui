@@ -479,6 +479,7 @@ export const RandoProto = $root.RandoProto = (() => {
          * @property {string|null} [id] UserInfo id
          * @property {string|null} [name] UserInfo name
          * @property {string|null} [avatarId] UserInfo avatarId
+         * @property {number|Long|null} [connectedMultiverseId] UserInfo connectedMultiverseId
          */
 
         /**
@@ -520,6 +521,14 @@ export const RandoProto = $root.RandoProto = (() => {
          */
         UserInfo.prototype.avatarId = null;
 
+        /**
+         * UserInfo connectedMultiverseId.
+         * @member {number|Long|null|undefined} connectedMultiverseId
+         * @memberof RandoProto.UserInfo
+         * @instance
+         */
+        UserInfo.prototype.connectedMultiverseId = null;
+
         // OneOf field names bound to virtual getters and setters
         let $oneOfFields;
 
@@ -531,6 +540,17 @@ export const RandoProto = $root.RandoProto = (() => {
          */
         Object.defineProperty(UserInfo.prototype, "_avatarId", {
             get: $util.oneOfGetter($oneOfFields = ["avatarId"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        /**
+         * UserInfo _connectedMultiverseId.
+         * @member {"connectedMultiverseId"|undefined} _connectedMultiverseId
+         * @memberof RandoProto.UserInfo
+         * @instance
+         */
+        Object.defineProperty(UserInfo.prototype, "_connectedMultiverseId", {
+            get: $util.oneOfGetter($oneOfFields = ["connectedMultiverseId"]),
             set: $util.oneOfSetter($oneOfFields)
         });
 
@@ -564,6 +584,8 @@ export const RandoProto = $root.RandoProto = (() => {
                 writer.uint32(/* id 2, wireType 2 =*/18).string(message.name);
             if (message.avatarId != null && Object.hasOwnProperty.call(message, "avatarId"))
                 writer.uint32(/* id 3, wireType 2 =*/26).string(message.avatarId);
+            if (message.connectedMultiverseId != null && Object.hasOwnProperty.call(message, "connectedMultiverseId"))
+                writer.uint32(/* id 4, wireType 0 =*/32).int64(message.connectedMultiverseId);
             return writer;
         };
 
@@ -606,6 +628,9 @@ export const RandoProto = $root.RandoProto = (() => {
                     break;
                 case 3:
                     message.avatarId = reader.string();
+                    break;
+                case 4:
+                    message.connectedMultiverseId = reader.int64();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -654,6 +679,11 @@ export const RandoProto = $root.RandoProto = (() => {
                 if (!$util.isString(message.avatarId))
                     return "avatarId: string expected";
             }
+            if (message.connectedMultiverseId != null && message.hasOwnProperty("connectedMultiverseId")) {
+                properties._connectedMultiverseId = 1;
+                if (!$util.isInteger(message.connectedMultiverseId) && !(message.connectedMultiverseId && $util.isInteger(message.connectedMultiverseId.low) && $util.isInteger(message.connectedMultiverseId.high)))
+                    return "connectedMultiverseId: integer|Long expected";
+            }
             return null;
         };
 
@@ -675,6 +705,15 @@ export const RandoProto = $root.RandoProto = (() => {
                 message.name = String(object.name);
             if (object.avatarId != null)
                 message.avatarId = String(object.avatarId);
+            if (object.connectedMultiverseId != null)
+                if ($util.Long)
+                    (message.connectedMultiverseId = $util.Long.fromValue(object.connectedMultiverseId)).unsigned = false;
+                else if (typeof object.connectedMultiverseId === "string")
+                    message.connectedMultiverseId = parseInt(object.connectedMultiverseId, 10);
+                else if (typeof object.connectedMultiverseId === "number")
+                    message.connectedMultiverseId = object.connectedMultiverseId;
+                else if (typeof object.connectedMultiverseId === "object")
+                    message.connectedMultiverseId = new $util.LongBits(object.connectedMultiverseId.low >>> 0, object.connectedMultiverseId.high >>> 0).toNumber();
             return message;
         };
 
@@ -703,6 +742,14 @@ export const RandoProto = $root.RandoProto = (() => {
                 object.avatarId = message.avatarId;
                 if (options.oneofs)
                     object._avatarId = "avatarId";
+            }
+            if (message.connectedMultiverseId != null && message.hasOwnProperty("connectedMultiverseId")) {
+                if (typeof message.connectedMultiverseId === "number")
+                    object.connectedMultiverseId = options.longs === String ? String(message.connectedMultiverseId) : message.connectedMultiverseId;
+                else
+                    object.connectedMultiverseId = options.longs === String ? $util.Long.prototype.toString.call(message.connectedMultiverseId) : options.longs === Number ? new $util.LongBits(message.connectedMultiverseId.low >>> 0, message.connectedMultiverseId.high >>> 0).toNumber() : message.connectedMultiverseId;
+                if (options.oneofs)
+                    object._connectedMultiverseId = "connectedMultiverseId";
             }
             return object;
         };
@@ -1620,7 +1667,7 @@ export const RandoProto = $root.RandoProto = (() => {
          * @memberof RandoProto
          * @interface IBingoSquare
          * @property {string|null} [text] BingoSquare text
-         * @property {Array.<RandoProto.IUniverseInfo>|null} [completedBy] BingoSquare completedBy
+         * @property {Array.<number|Long>|null} [completedBy] BingoSquare completedBy
          * @property {Array.<RandoProto.IBingoGoal>|null} [goals] BingoSquare goals
          */
 
@@ -1651,7 +1698,7 @@ export const RandoProto = $root.RandoProto = (() => {
 
         /**
          * BingoSquare completedBy.
-         * @member {Array.<RandoProto.IUniverseInfo>} completedBy
+         * @member {Array.<number|Long>} completedBy
          * @memberof RandoProto.BingoSquare
          * @instance
          */
@@ -1691,9 +1738,12 @@ export const RandoProto = $root.RandoProto = (() => {
                 writer = $Writer.create();
             if (message.text != null && Object.hasOwnProperty.call(message, "text"))
                 writer.uint32(/* id 1, wireType 2 =*/10).string(message.text);
-            if (message.completedBy != null && message.completedBy.length)
+            if (message.completedBy != null && message.completedBy.length) {
+                writer.uint32(/* id 2, wireType 2 =*/18).fork();
                 for (let i = 0; i < message.completedBy.length; ++i)
-                    $root.RandoProto.UniverseInfo.encode(message.completedBy[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    writer.int64(message.completedBy[i]);
+                writer.ldelim();
+            }
             if (message.goals != null && message.goals.length)
                 for (let i = 0; i < message.goals.length; ++i)
                     $root.RandoProto.BingoGoal.encode(message.goals[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
@@ -1737,7 +1787,12 @@ export const RandoProto = $root.RandoProto = (() => {
                 case 2:
                     if (!(message.completedBy && message.completedBy.length))
                         message.completedBy = [];
-                    message.completedBy.push($root.RandoProto.UniverseInfo.decode(reader, reader.uint32()));
+                    if ((tag & 7) === 2) {
+                        let end2 = reader.uint32() + reader.pos;
+                        while (reader.pos < end2)
+                            message.completedBy.push(reader.int64());
+                    } else
+                        message.completedBy.push(reader.int64());
                     break;
                 case 3:
                     if (!(message.goals && message.goals.length))
@@ -1785,11 +1840,9 @@ export const RandoProto = $root.RandoProto = (() => {
             if (message.completedBy != null && message.hasOwnProperty("completedBy")) {
                 if (!Array.isArray(message.completedBy))
                     return "completedBy: array expected";
-                for (let i = 0; i < message.completedBy.length; ++i) {
-                    let error = $root.RandoProto.UniverseInfo.verify(message.completedBy[i]);
-                    if (error)
-                        return "completedBy." + error;
-                }
+                for (let i = 0; i < message.completedBy.length; ++i)
+                    if (!$util.isInteger(message.completedBy[i]) && !(message.completedBy[i] && $util.isInteger(message.completedBy[i].low) && $util.isInteger(message.completedBy[i].high)))
+                        return "completedBy: integer|Long[] expected";
             }
             if (message.goals != null && message.hasOwnProperty("goals")) {
                 if (!Array.isArray(message.goals))
@@ -1821,11 +1874,15 @@ export const RandoProto = $root.RandoProto = (() => {
                 if (!Array.isArray(object.completedBy))
                     throw TypeError(".RandoProto.BingoSquare.completedBy: array expected");
                 message.completedBy = [];
-                for (let i = 0; i < object.completedBy.length; ++i) {
-                    if (typeof object.completedBy[i] !== "object")
-                        throw TypeError(".RandoProto.BingoSquare.completedBy: object expected");
-                    message.completedBy[i] = $root.RandoProto.UniverseInfo.fromObject(object.completedBy[i]);
-                }
+                for (let i = 0; i < object.completedBy.length; ++i)
+                    if ($util.Long)
+                        (message.completedBy[i] = $util.Long.fromValue(object.completedBy[i])).unsigned = false;
+                    else if (typeof object.completedBy[i] === "string")
+                        message.completedBy[i] = parseInt(object.completedBy[i], 10);
+                    else if (typeof object.completedBy[i] === "number")
+                        message.completedBy[i] = object.completedBy[i];
+                    else if (typeof object.completedBy[i] === "object")
+                        message.completedBy[i] = new $util.LongBits(object.completedBy[i].low >>> 0, object.completedBy[i].high >>> 0).toNumber();
             }
             if (object.goals) {
                 if (!Array.isArray(object.goals))
@@ -1864,7 +1921,10 @@ export const RandoProto = $root.RandoProto = (() => {
             if (message.completedBy && message.completedBy.length) {
                 object.completedBy = [];
                 for (let j = 0; j < message.completedBy.length; ++j)
-                    object.completedBy[j] = $root.RandoProto.UniverseInfo.toObject(message.completedBy[j], options);
+                    if (typeof message.completedBy[j] === "number")
+                        object.completedBy[j] = options.longs === String ? String(message.completedBy[j]) : message.completedBy[j];
+                    else
+                        object.completedBy[j] = options.longs === String ? $util.Long.prototype.toString.call(message.completedBy[j]) : options.longs === Number ? new $util.LongBits(message.completedBy[j].low >>> 0, message.completedBy[j].high >>> 0).toNumber() : message.completedBy[j];
             }
             if (message.goals && message.goals.length) {
                 object.goals = [];

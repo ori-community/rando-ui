@@ -1,7 +1,6 @@
 import { LauncherService } from '../lib/LauncherService'
-import { app, BrowserWindow, shell } from 'electron'
+import { BrowserWindow, shell } from 'electron'
 import { download } from 'electron-dl'
-import { spawn } from 'child_process'
 
 export default {
   getOpenedSeedPath() {

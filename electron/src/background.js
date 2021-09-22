@@ -6,6 +6,7 @@ import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import * as path from 'path'
 import { registerIpcApi } from './api.js'
 import fs from 'fs'
+import { SettingsService } from '~/electron/src/lib/SettingsService'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -33,6 +34,10 @@ app.setAsDefaultProtocolClient('ori-rando')
 
 async function createWindow() {
   registerIpcApi()
+
+  if (await SettingsService.importSettingsFromOldInstallation()) {
+    console.log('Successfully imported old settings.')
+  }
 
   // Create the browser window.
   const win = new BrowserWindow({

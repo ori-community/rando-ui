@@ -1,8 +1,11 @@
 import fs from 'fs'
 import ini from 'ini'
 import { RANDOMIZER_BASE_PATH } from './Constants'
+import path from 'path'
 
 const SETTINGS_PATH = `${RANDOMIZER_BASE_PATH}/settings.ini`
+const OLD_RANDO_PATH_FILE = path.join(process.env.LOCALAPPDATA, 'wotwrpath.tmp')
+
 const getDefaultSettings = () => ({
   Paths: {
     Steam: 'C:\\Program Files (x86)\\Steam\\steam.exe',
@@ -58,5 +61,38 @@ export class SettingsService {
 
   static async writeSettings() {
     await fs.promises.writeFile(SETTINGS_PATH, ini.encode(settingsCache), { encoding: 'utf16le' })
+  }
+
+  static async getOldInstallationPath() {
+    const oldPathFile = OLD_RANDO_PATH_FILE
+    if (!fs.existsSync(oldPathFile)) {
+      console.log('SettingsService: Did not find old Rando installation')
+      return null
+    }
+
+    const oldPath = await fs.promises.readFile(oldPathFile, { encoding: 'utf-8' })
+    if (!fs.existsSync(oldPath)) {
+      console.log(`SettingsService: Found old Rando path file, but the target path (${oldPath}) does not exist`)
+      return null
+    }
+
+    return oldPath
+  }
+
+  static async importSettingsFromOldInstallation() {
+    const oldPath = this.getOldInstallationPath()
+    if (oldPath) {
+      console.log('Importing settings.ini...')
+      await fs.promises.copyFile(path.join(oldPath, 'settings.ini'), SETTINGS_PATH)
+
+      console.log('Renaming old rando directory...')
+      await fs.promises.rename(oldPath, oldPath + '.old')
+
+      console.log('Deleting path file...')
+      await fs.promises.unlink(OLD_RANDO_PATH_FILE)
+      return true
+    }
+
+    return false
   }
 }

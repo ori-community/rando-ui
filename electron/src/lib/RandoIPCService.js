@@ -6,7 +6,11 @@ const PIPE_PATH = '\\\\.\\pipe\\'
 let socket = null
 
 export class RandoIPCService {
-  static _makeSureSocketIsConnected() {
+  /**
+   * @private
+   * @returns {Promise<void>}
+   */
+  static makeSureSocketIsConnected() {
     if (socket !== null && socket.readyState !== 'open') {
       console.log(`Destroying IPC socket, readyState = ${socket.readyState}`)
       socket.destroy()
@@ -29,7 +33,7 @@ export class RandoIPCService {
 
   static async trySend(message) {
     try {
-      await this._makeSureSocketIsConnected()
+      await this.makeSureSocketIsConnected()
       await this.send(message)
     } catch (e) {
       console.error('RandoIPC error:', e)

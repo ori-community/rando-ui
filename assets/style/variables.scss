@@ -10,3 +10,12 @@ $material-dark: (
   'background': var(--v-background-base),
   'cards': var(--v-background-lighten1),
 );
+
+// For when Vuetify 2.6 is out
+$tooltip-opacity: 1.0;
+
+// For now...
+.v-tooltip__content.menuable__content__active {
+  opacity: 1 !important;
+  background-color: var(--v-background-lighten3) !important;
+}

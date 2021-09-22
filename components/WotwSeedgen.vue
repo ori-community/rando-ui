@@ -375,7 +375,6 @@
         this.loading = false
       },
       applyPresets({ presets, override }) {
-        // eslint-disable-next-line no-unreachable
         if (override) {
           this.seedgenConfig = generateNewSeedgenConfig()
         }

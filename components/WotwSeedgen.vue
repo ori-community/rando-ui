@@ -372,8 +372,8 @@
 
         this.loading = false
       },
-      applyPresets({ presets, merge }) {
-        if (!merge) {
+      applyPresets({ presets, override }) {
+        if (override) {
           this.seedgenConfig = generateNewSeedgenConfig()
         }
 

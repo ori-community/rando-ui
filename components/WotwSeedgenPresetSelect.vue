@@ -30,14 +30,14 @@
     </div>
     <div class='text-center'>
       <div v-if='anyPresetSelected' class='mt-6'>
-        <v-tooltip bottom :disabled='mergeSettings'>
+        <v-tooltip bottom :disabled='overrideSettings'>
           <template #activator='{on}'>
             <v-btn color='accent' depressed x-large v-on='on' @click='onApplyPresetsButtonClick'>
-              <v-icon left>{{ mergeSettings ? 'mdi-call-merge' : 'mdi-file-replace-outline' }}</v-icon>
-              {{ mergeSettings ? 'Merge presets' : 'Apply Presets' }}
+              <v-icon left>{{ overrideSettings ? 'mdi-call-merge' : 'mdi-file-replace-outline' }}</v-icon>
+              {{ overrideSettings ? 'Override presets' : 'Apply Presets' }}
             </v-btn>
           </template>
-          <span>Hold <kbd>Ctrl</kbd> to merge settings</span>
+          <span>Hold <kbd>Ctrl</kbd> to override existing settings</span>
         </v-tooltip>
       </div>
       <div v-else-if='settingsApplied' class='mt-6'>
@@ -65,7 +65,7 @@
     },
     data: () => ({
       presetStates: {},
-      mergeSettings: false,
+      overrideSettings: false,
       settingsApplied: false,
       presetMeta,
       difficultyPresets,
@@ -118,26 +118,26 @@
       },
       onKeyDown(event) {
         if (event.key === 'Control') {
-          this.mergeSettings = true
+          this.overrideSettings = true
         }
       },
       onKeyUp(event) {
         if (event.key === 'Control') {
-          this.mergeSettings = false
+          this.overrideSettings = false
         }
       },
       onMouseMove(event) {
-        this.mergeSettings = event.ctrlKey
+        this.overrideSettings = event.ctrlKey
       },
       onMouseLeave() {
-        this.mergeSettings = false
+        this.overrideSettings = false
       },
       onWindowBlur() {
-        this.mergeSettings = false
+        this.overrideSettings = false
       },
       onApplyPresetsButtonClick(event) {
         if (event.ctrlKey) {
-          this.mergeSettings = true
+          this.overrideSettings = true
         }
 
         const selectedPresets = []
@@ -147,7 +147,7 @@
           }
         }
 
-        this.$emit('apply', { presets: selectedPresets, merge: this.mergeSettings })
+        this.$emit('apply', { presets: selectedPresets, override: this.overrideSettings })
         this.resetPresetStates()
         this.settingsApplied = true
       },

@@ -6,27 +6,31 @@ const PIPE_PATH = '\\\\.\\pipe\\'
 let socket = null
 
 export class RandoIPCService {
-  static connect() {
+  static _makeSureSocketIsConnected() {
     if (socket !== null && socket.readyState !== 'open') {
-      socket.destroy();
+      console.log(`Destroying IPC socket, readyState = ${socket.readyState}`)
+      socket.destroy()
+      socket = null
     }
 
-    return new Promise((resolve => {
-      socket = net.createConnection(PIPE_PATH + PIPE_NAME, () => {
-        console.log('RandoIPC: Connected')
-        resolve()
-      })
-    }))
+    if (socket === null) {
+      return new Promise((resolve => {
+        socket = net.createConnection(PIPE_PATH + PIPE_NAME, () => {
+          console.log('RandoIPC: Connected')
+          resolve()
+        })
+      }))
+    }
   }
 
-  static send(message) {
-    socket.write(message + '\r\n');
+  static async send(message) {
+    await new Promise(resolve => socket.write(message + '\r\n', 'utf-8', () => resolve()))
   }
 
   static async trySend(message) {
     try {
-      await this.connect()
-      this.send(message)
+      await this._makeSureSocketIsConnected()
+      await this.send(message)
     } catch (e) {
       console.error('RandoIPC error:', e)
     }

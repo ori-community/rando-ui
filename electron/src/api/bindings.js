@@ -1,4 +1,4 @@
-import { BindingsService } from '../lib/BindingsService'
+import { BindingsService } from '~/electron/src/lib/BindingsService'
 
 export default {
   async loadControllerBindings() {

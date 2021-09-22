@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, dialog, BrowserWindow, ipcMain, ipcRenderer } from 'electron'
+import { app, BrowserWindow, protocol } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import * as path from 'path'
@@ -29,8 +29,6 @@ protocol.registerSchemesAsPrivileged([
 ])
 
 app.setAsDefaultProtocolClient('ori-rando')
-
-// app.setAsDefaultProtocolClient('ori-rando')
 
 async function createWindow() {
   registerIpcApi()

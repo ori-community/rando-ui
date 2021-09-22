@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { RANDOMIZER_BASE_PATH } from '../lib/Constants'
+import { RANDOMIZER_BASE_PATH } from '~/electron/src/lib/Constants'
 
 const CONTROLLER_BINDINGS_FILE = `${RANDOMIZER_BASE_PATH}/controller_bindings.json`
 const KEYBOARD_BINDINGS_FILE = `${RANDOMIZER_BASE_PATH}/keyboard_bindings.json`

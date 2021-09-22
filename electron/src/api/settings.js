@@ -1,4 +1,4 @@
-import { SettingsService } from '../lib/SettingsService'
+import { SettingsService } from '~/electron/src/lib/SettingsService'
 
 export default {
   async readSettings() {

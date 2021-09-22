@@ -1,10 +1,10 @@
-import { SettingsService } from '../lib/SettingsService'
+import { SettingsService } from '~/electron/src/lib/SettingsService'
 import { spawn } from 'child_process'
 import fs from 'fs'
 import psList from 'ps-list'
-import { RandoIPCService } from '../lib/RandoIPCService'
+import { RandoIPCService } from '~/electron/src/lib/RandoIPCService'
 import { RANDOMIZER_BASE_PATH } from './Constants'
-import { BindingsService } from '../lib/BindingsService'
+import { BindingsService } from '~/electron/src/lib/BindingsService'
 
 
 const isProcessRunning = async (processName) => {

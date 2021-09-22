@@ -1,7 +1,6 @@
-import { LauncherService } from '../lib/LauncherService'
+import { LauncherService } from '~/electron/src/lib/LauncherService'
 import { BrowserWindow, shell } from 'electron'
 import { download } from 'electron-dl'
-import { RandoIPCService } from '~/electron/src/lib/RandoIPCService'
 
 export default {
   getOpenedSeedPath() {

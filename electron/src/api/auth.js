@@ -1,6 +1,6 @@
 import { app, BrowserWindow, shell } from 'electron'
 import fs from 'fs'
-import { RANDOMIZER_BASE_PATH } from '../lib/Constants'
+import { RANDOMIZER_BASE_PATH } from '~/electron/src/lib/Constants'
 
 const JWT_PATH = `${RANDOMIZER_BASE_PATH}/.jwt`
 

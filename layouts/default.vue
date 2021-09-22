@@ -5,8 +5,16 @@
         <wotw-page-toolbar />
       </v-container>
 
-      <v-snackbar v-if='isElectron' v-model='showError' timeout='5000'>
-        {{ errorMessage }}
+      <v-snackbar
+        v-model='showError'
+        timeout='7000'
+        top
+        centered
+        max-width='100%'
+        :multi-line='errorMessage.includes("\n")'
+        color='error'
+      >
+        <span class='error-text'>{{ errorMessage }}</span>
       </v-snackbar>
 
       <Nuxt />
@@ -21,6 +29,7 @@
 <script>
   import { mapState } from 'vuex'
   import { isElectron } from '~/assets/lib/isElectron'
+  import { EventBus } from '~/assets/lib/EventBus'
 
   export default {
     data: () => ({
@@ -35,10 +44,14 @@
       }
     },
     beforeMount() {
+      EventBus.$on('error', error => {
+        this.errorMessage = String(error)
+        this.showError = true
+      })
+
       if (isElectron()) {
         window.electronApi.on('main.error', (event, e) => {
-          this.errorMessage = String(e)
-          this.showError = true
+          EventBus.$emit('error', e)
         })
 
         window.electronApi.on('main.openSeed', (event, seedFile) => {
@@ -110,5 +123,9 @@
       width: 100vw;
       opacity: 0.5;
     }
+  }
+
+  .error-text {
+    white-space: pre-wrap;
   }
 </style>

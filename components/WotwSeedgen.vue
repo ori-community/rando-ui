@@ -212,6 +212,7 @@
   import { confettiFromElement } from '~/assets/lib/confettiFromElement'
   import { db } from '~/assets/db/database'
   import { isElectron } from '~/assets/lib/isElectron'
+  import { EventBus } from '~/assets/lib/EventBus'
 
   const generateNewSeedgenConfig = () => ({
     flags: [],
@@ -368,11 +369,13 @@
           }
         } catch (e) {
           console.error(e)
+          EventBus.$emit('error', 'Error while generating the seed.\n' + String(e.response?.data.message ?? e))
         }
 
         this.loading = false
       },
       applyPresets({ presets, override }) {
+        // eslint-disable-next-line no-unreachable
         if (override) {
           this.seedgenConfig = generateNewSeedgenConfig()
         }

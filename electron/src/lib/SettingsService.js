@@ -4,6 +4,7 @@ import { RANDOMIZER_BASE_PATH } from './Constants'
 import path from 'path'
 
 const SETTINGS_PATH = `${RANDOMIZER_BASE_PATH}/settings.ini`
+const CURRENT_SEED_PATH_FILE = `${RANDOMIZER_BASE_PATH}/.currentseedpath`
 const OLD_RANDO_PATH_FILE = path.join(process.env.LOCALAPPDATA, 'wotwrpath.tmp')
 
 const getDefaultSettings = () => ({
@@ -84,6 +85,11 @@ export class SettingsService {
     if (oldPath) {
       console.log('Importing settings.ini...')
       await fs.promises.copyFile(path.join(oldPath, 'settings.ini'), SETTINGS_PATH)
+
+      if (fs.existsSync(path.join(oldPath, '.currentseedpath'))) {
+        console.log('Importing .currentseedpath...')
+        await fs.promises.copyFile(path.join(oldPath, '.currentseedpath'), CURRENT_SEED_PATH_FILE)
+      }
 
       console.log('Renaming old rando directory...')
       await fs.promises.rename(oldPath, oldPath + '.old')

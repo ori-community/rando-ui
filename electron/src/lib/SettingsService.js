@@ -81,7 +81,7 @@ export class SettingsService {
   }
 
   static async importSettingsFromOldInstallation() {
-    const oldPath = this.getOldInstallationPath()
+    const oldPath = await this.getOldInstallationPath()
     if (oldPath) {
       console.log('Importing settings.ini...')
       await fs.promises.copyFile(path.join(oldPath, 'settings.ini'), SETTINGS_PATH)

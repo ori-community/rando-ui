@@ -59,7 +59,9 @@ export class LauncherService {
           'SetForegroundWindow': ['bool', ['long']],
         })
         const gameWindowHandle = user32.FindWindowA(null, 'OriAndTheWilloftheWisps')
-        user32.SetForegroundWindow(gameWindowHandle)
+        if (gameWindowHandle) {
+          user32.SetForegroundWindow(gameWindowHandle)
+        }
       }
     } else {
       //                Why is windows a thing ↓

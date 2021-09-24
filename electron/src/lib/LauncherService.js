@@ -5,6 +5,7 @@ import psList from 'ps-list'
 import { RandoIPCService } from '~/electron/src/lib/RandoIPCService'
 import { RANDOMIZER_BASE_PATH } from './Constants'
 import { BindingsService } from '~/electron/src/lib/BindingsService'
+import { Library as FFILibrary } from 'ffi-napi'
 
 
 const isProcessRunning = async (processName) => {
@@ -50,7 +51,16 @@ export class LauncherService {
     const settings = await SettingsService.readSettings()
 
     if (await isProcessRunning('injector.exe')) {
-      await RandoIPCService.trySend('reload')
+      if (!await RandoIPCService.trySend('reload')) {
+        throw new Error('Could not load the seed in running game.\nPlease wait a few seconds if you closed the game just now.')
+      } else {
+        const user32 = new FFILibrary('user32', {
+          'FindWindowA': ['long', ['string', 'string']],
+          'SetForegroundWindow': ['bool', ['long']],
+        })
+        const gameWindowHandle = user32.FindWindowA(null, 'OriAndTheWilloftheWisps')
+        user32.SetForegroundWindow(gameWindowHandle)
+      }
     } else {
       //                Why is windows a thing ↓
       let command = `${RANDOMIZER_BASE_PATH.replaceAll('/', '\\')}\\Injector.exe`

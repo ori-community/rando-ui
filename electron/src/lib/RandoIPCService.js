@@ -18,11 +18,15 @@ export class RandoIPCService {
     }
 
     if (socket === null) {
-      return new Promise((resolve => {
-        socket = net.createConnection(PIPE_PATH + PIPE_NAME, () => {
-          console.log('RandoIPC: Connected')
-          resolve()
-        })
+      return new Promise(((resolve, reject) => {
+        try {
+          socket = net.createConnection(PIPE_PATH + PIPE_NAME, () => {
+            console.log('RandoIPC: Connected')
+            resolve()
+          })
+        } catch (e) {
+          reject(e)
+        }
       }))
     }
   }
@@ -35,8 +39,10 @@ export class RandoIPCService {
     try {
       await this.makeSureSocketIsConnected()
       await this.send(message)
+      return true
     } catch (e) {
       console.error('RandoIPC error:', e)
+      return false
     }
   }
 }

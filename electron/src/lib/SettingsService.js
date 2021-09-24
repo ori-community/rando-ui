@@ -110,8 +110,50 @@ export class SettingsService {
         await fs.promises.copyFile(path.join(oldPath, '.currentseedpath'), CURRENT_SEED_PATH_FILE)
       }
 
-      console.log('Deleting old WotwRando.exe...')
-      await fs.promises.unlink(path.join(oldPath, 'WotwRando.exe'))
+      console.log('Cleaning up old rando...')
+      const files = [
+        'WotwRando.exe',
+        'ItemTracker.exe',
+        'RandoSettings.exe',
+        'areas.wotw',
+        'state_data.csv',
+        'settings.ini',
+        'loader_log.txt',
+        'controller_bindings.cfg',
+        'discord_game_sdk.dll',
+        'headers_presets.zip',
+        'Il2CppModLoader.dll',
+        'InjectDLL.dll',
+        'Injector.exe',
+        'modloader_config.json',
+        'RandoMainDLL.dll',
+        'seedgen.exe',
+        'VERSION',
+        '.messagelog',
+        'cs_log.txt',
+        'inject_log.csv',
+        'reach_log.txt',
+        'trackfile.json',
+        '.currentseedpath',
+        'manager_error.log',
+        'SeeGen.jar',
+        'loc_data.csv',
+        'rando_binds.ahk',
+      ]
+      for (const file of files) {
+        const filePath = path.join(oldPath, file)
+        if (fs.existsSync(filePath)) {
+          try {
+            await fs.promises.unlink(filePath)
+            console.log(` - ${file} → deleted`)
+          } catch (e) {
+            console.error(e)
+            console.log(` - ${file} → error`)
+          }
+        } else {
+          console.log(` - ${file} → does not exist`)
+        }
+      }
 
       console.log('Deleting path file...')
       await fs.promises.unlink(OLD_RANDO_PATH_FILE)

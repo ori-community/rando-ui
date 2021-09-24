@@ -42,4 +42,8 @@ export default {
   openGitHub() {
     shell.openExternal('https://github.com/ori-rando')
   },
+
+  openDiscord() {
+    shell.openExternal('https://discord.gg/SUS57PWWnA')
+  },
 }

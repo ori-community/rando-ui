@@ -3,6 +3,7 @@ import ini from 'ini'
 import { RANDOMIZER_BASE_PATH } from './Constants'
 import path from 'path'
 import { BrowserWindow } from 'electron'
+import merge from 'lodash.merge'
 
 const SETTINGS_PATH = `${RANDOMIZER_BASE_PATH}/settings.ini`
 const CURRENT_SEED_PATH_FILE = `${RANDOMIZER_BASE_PATH}/.currentseedpath`
@@ -11,6 +12,8 @@ const OLD_RANDO_PATH_FILE = path.join(process.env.LOCALAPPDATA || '', 'wotwrpath
 const getDefaultSettings = () => ({
   Paths: {
     Steam: 'C:\\Program Files (x86)\\Steam\\steam.exe',
+    UdpPort: 31415,
+    URL: 'wotw.orirando.com',
   },
   Flags: {
     UseWinStore: false,
@@ -57,10 +60,10 @@ export class SettingsService {
     } else {
       const settings = await fs.promises.readFile(SETTINGS_PATH, { encoding: 'utf16le' })
 
-      settingsCache = {
-        ...getDefaultSettings(),
-        ...ini.parse(settings.trimLeft()),
-      }
+      settingsCache = merge(
+        getDefaultSettings(),
+        ini.parse(settings.trimLeft()),
+      )
     }
 
     console.log('Settings loaded', settingsCache)

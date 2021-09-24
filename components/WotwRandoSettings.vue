@@ -124,6 +124,15 @@
           label='Wait for Debugger'
           messages='The Randomizer will wait for a debugger to attach before initialization'
         />
+        <v-text-field
+          v-model='settings.Paths.URL'
+          label='Server URL'
+          class='mt-4'
+        />
+        <v-text-field
+          v-model='settings.Paths.UdpPort'
+          label='UDP Port'
+        />
       </div>
     </v-col>
   </v-row>

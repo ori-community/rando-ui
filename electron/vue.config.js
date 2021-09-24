@@ -4,6 +4,7 @@ const path = require('path')
 module.exports = {
   pluginOptions: {
     electronBuilder: {
+      buildDependenciesFromSource: true,
       chainWebpackMainProcess: config => {
         config.resolve.alias.set('~', path.resolve(__dirname, '../'))
       },

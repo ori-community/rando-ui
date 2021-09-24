@@ -7,6 +7,7 @@ module.exports = {
       chainWebpackMainProcess: config => {
         config.resolve.alias.set('~', path.resolve(__dirname, '../'))
       },
+      externals: ['ffi-napi'],
       preload: 'src/preload.js',
       rendererProcessFile: 'src/renderer.js',
       mainProcessWatch: [

@@ -2,10 +2,11 @@ import fs from 'fs'
 import ini from 'ini'
 import { RANDOMIZER_BASE_PATH } from './Constants'
 import path from 'path'
+import { BrowserWindow } from 'electron'
 
 const SETTINGS_PATH = `${RANDOMIZER_BASE_PATH}/settings.ini`
 const CURRENT_SEED_PATH_FILE = `${RANDOMIZER_BASE_PATH}/.currentseedpath`
-const OLD_RANDO_PATH_FILE = path.join(process.env.LOCALAPPDATA, 'wotwrpath.tmp')
+const OLD_RANDO_PATH_FILE = path.join(process.env.LOCALAPPDATA || '', 'wotwrpath.tmp')
 
 const getDefaultSettings = () => ({
   Paths: {
@@ -21,16 +22,27 @@ const getDefaultSettings = () => ({
     HideWarpFilter: false,
     HideCollectableFilter: false,
     AlwaysShowWarps: false,
+    AlwaysShowKeystones: false,
+    WorldMapEnabled: true,
     GrappleMouseControl: false,
     BurrowMouseControl: false,
     WaterDashMouseControl: false,
     DisableNetcode: false,
     LaunchWithTracker: false,
     DisableQuestFocus: false,
+    BoringMoney: true,
+    WaitForDebugger: false,
+    InvertSwim: false,
   },
 })
 
 let settingsCache = null
+const sendSettingsToUI = () => {
+  const window = BrowserWindow.getFocusedWindow()
+  if (window) {
+    window.webContents.send('main.settingsChanged', settingsCache)
+  }
+}
 
 export class SettingsService {
   static async makeSureSettingsFileExists() {
@@ -52,12 +64,14 @@ export class SettingsService {
     }
 
     console.log('Settings loaded', settingsCache)
+    sendSettingsToUI()
 
     return settingsCache
   }
 
   static setSettings(settings) {
     settingsCache = settings
+    sendSettingsToUI()
   }
 
   static async writeSettings() {

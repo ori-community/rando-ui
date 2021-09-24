@@ -1,6 +1,8 @@
 import { LauncherService } from '~/electron/src/lib/LauncherService'
 import { BrowserWindow, shell } from 'electron'
 import { download } from 'electron-dl'
+import { RANDOMIZER_BASE_PATH } from '~/electron/src/lib/Constants'
+import path from 'path'
 
 export default {
   getOpenedSeedPath() {
@@ -31,5 +33,13 @@ export default {
 
   openWiki() {
     shell.openExternal('https://wiki.orirando.com')
+  },
+
+  openRandomizerDirectory() {
+    shell.openPath(path.resolve(process.cwd(), RANDOMIZER_BASE_PATH))
+  },
+
+  openGitHub() {
+    shell.openExternal('https://github.com/ori-rando')
   },
 }

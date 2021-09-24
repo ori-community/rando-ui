@@ -29,6 +29,25 @@
           <v-icon left>mdi-book-outline</v-icon>
           Read the Wiki
         </v-btn>
+
+        <div v-if='settingsLoaded && settings.Flags.Dev' class='py-4 text-center hoverable'>
+          <v-tooltip bottom>
+            <span>Open randomizer directory</span>
+            <template #activator='{on}'>
+              <v-btn icon v-on='on' @click='openRandomizerDirectory'>
+                <v-icon>mdi-folder-eye-outline</v-icon>
+              </v-btn>
+            </template>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <span>GitHub</span>
+            <template #activator='{on}'>
+              <v-btn icon v-on='on' @click='openGitHub'>
+                <v-icon>mdi-github</v-icon>
+              </v-btn>
+            </template>
+          </v-tooltip>
+        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -55,20 +74,24 @@
       ],
     }),
     computed: {
-      ...mapState(['user/user']),
+      ...mapState({
+        user: state => state.user.user,
+        settings: state => state.electron.settings,
+        settingsLoaded: state => state.electron.settingsLoaded,
+      }),
       updateAvailable() {
         return this.latestRelease !== null && this.currentVersion !== this.latestVersion
       },
       latestVersion() {
         return this.latestRelease?.name?.replaceAll(/[^[0-9.]/g, '')
-      }
+      },
     },
     watch: {
       $route: {
         immediate: true,
         handler(route) {
           if (route.query.seedFile) {
-            this.$router.replace({query: {}})
+            this.$router.replace({ query: {} })
             this.launch(route.query.seedFile)
           }
         },
@@ -82,7 +105,7 @@
             }
           }
         },
-      }
+      },
     },
     mounted() {
       this.checkForUpdates()
@@ -117,8 +140,14 @@
       },
       openWiki() {
         window.electronApi.invoke('launcher.openWiki')
-      }
-    }
+      },
+      openRandomizerDirectory() {
+        window.electronApi.invoke('launcher.openRandomizerDirectory')
+      },
+      openGitHub() {
+        window.electronApi.invoke('launcher.openGitHub')
+      },
+    },
   }
 </script>
 
@@ -128,5 +157,14 @@
     width: auto;
     margin-right: 0.25em;
     margin-left: -0.5em;
+  }
+
+  .hoverable {
+    opacity: 0.5;
+    transition: opacity 300ms;
+
+    &:hover {
+      opacity: 1;
+    }
   }
 </style>

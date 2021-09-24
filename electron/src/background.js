@@ -11,8 +11,8 @@ import { SettingsService } from '~/electron/src/lib/SettingsService'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 if (isDevelopment) {
-  if (!fs.existsSync('./work-dir')) {
-    fs.mkdirSync('./work-dir')
+  if (!fs.existsSync('./work-dir/randomizer')) {
+    fs.mkdirSync('./work-dir/randomizer', {recursive: true})
   }
   process.chdir('./work-dir')
 } else {

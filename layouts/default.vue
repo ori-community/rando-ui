@@ -43,7 +43,7 @@
         return !!this.$route.query.hideToolbar && !!this.user && isElectron()
       }
     },
-    beforeMount() {
+    async beforeMount() {
       EventBus.$on('error', error => {
         this.errorMessage = String(error)
         this.showError = true
@@ -52,6 +52,10 @@
       if (isElectron()) {
         window.electronApi.on('main.error', (event, e) => {
           EventBus.$emit('error', e)
+        })
+
+        window.electronApi.on('main.settingsChanged', (event, settings) => {
+          this.$store.commit('electron/setSettings', settings)
         })
 
         window.electronApi.on('main.openSeed', (event, seedFile) => {
@@ -74,6 +78,8 @@
             }
           }
         })
+
+        this.$store.commit('electron/setSettings', await window.electronApi.invoke('settings.readSettings'))
       }
     },
     mounted() {

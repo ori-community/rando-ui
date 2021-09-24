@@ -26,4 +26,7 @@ export default {
 
     return null
   },
+  shouldShowImportInfoDialog() {
+    return SettingsService.shouldShowImportInfoDialog()
+  }
 }

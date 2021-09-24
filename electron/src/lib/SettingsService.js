@@ -39,13 +39,15 @@ const getDefaultSettings = () => ({
   },
 })
 
-let settingsCache = null
 const sendSettingsToUI = () => {
   const window = BrowserWindow.getFocusedWindow()
   if (window) {
     window.webContents.send('main.settingsChanged', settingsCache)
   }
 }
+
+let settingsCache = null
+let shouldShowImportInfoDialog = false
 
 export class SettingsService {
   static async makeSureSettingsFileExists() {
@@ -108,14 +110,22 @@ export class SettingsService {
         await fs.promises.copyFile(path.join(oldPath, '.currentseedpath'), CURRENT_SEED_PATH_FILE)
       }
 
-      console.log('Renaming old rando directory...')
-      await fs.promises.rename(oldPath, oldPath + '.old')
+      console.log('Deleting old WotwRando.exe...')
+      await fs.promises.unlink(path.join(oldPath, 'WotwRando.exe'))
 
       console.log('Deleting path file...')
       await fs.promises.unlink(OLD_RANDO_PATH_FILE)
+
+      shouldShowImportInfoDialog = true
       return true
     }
 
     return false
+  }
+
+  static shouldShowImportInfoDialog() {
+    const value = shouldShowImportInfoDialog
+    shouldShowImportInfoDialog = false
+    return value
   }
 }

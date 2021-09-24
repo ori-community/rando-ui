@@ -22,7 +22,7 @@ export default {
       },
       onCompleted: item => {
         console.log('Spawning process: ', item.path)
-        spawn(item.path, [], {
+        spawn(`${item.path} /SILENT`, [], {
           detached: true,
           stdio: 'ignore',
         }).unref()

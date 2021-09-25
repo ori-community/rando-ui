@@ -2,23 +2,26 @@
   <v-container>
     <v-row>
       <v-col cols='12' md='9' order-md='0' order='1'>
-        <v-card class='mb-6 motd' color='background lighten-2'>
-          <v-card-text class='motd-text'>
-            <h2 class='mb-2'>Rando Weeklies</h2>
-            <ul>
-              <li>we currently do 2 community races saturdays and sundays (people are always welcome to setup races on their own!)</li>
-              <li>current race times are Saturday at 12:00 pm pacific time and Sunday at 2 pm pacific time</li>
-              <li>these races are open to everyone of any skill level! We use racetime.gg to time and record results; ask here for help getting that set up</li>
-              <li>we play these races on the latest rando version</li>
-            </ul>
-          </v-card-text>
-          <img class='motd-ori' src='~/assets/images/ori_lurk.png'>
-        </v-card>
+        <template v-if='offlineMode'>
+          <div class='pa-6 text-center'>
+            <v-icon size='64'>mdi-cloud-off-outline</v-icon>
+            <div>
+              You appear to be offline<br>
+              <span class='text-lurk'>(or we broke the server)</span>
+            </div>
+          </div>
+        </template>
+        <template v-else>
+          <v-card v-if='!!motd' class='mb-6 motd' color='background lighten-2'>
+            <v-card-text class='motd-text' v-html='motd' />
+            <img class='motd-ori' src='~/assets/images/ori_lurk.png'>
+          </v-card>
 
-        <v-card v-for='release in availableReleases' :key='release.id' class='mb-2'>
-          <v-card-title>Version {{ release.name }} <v-chip v-if='isNewVersion(release.name)' class='ml-2' small color='accent'>New</v-chip></v-card-title>
-          <v-card-text class='text-pre-wrap'>{{ release.body }}</v-card-text>
-        </v-card>
+          <v-card v-for='release in availableReleases' :key='release.id' class='mb-2'>
+            <v-card-title>Version {{ release.name }} <v-chip v-if='isNewVersion(release.name)' class='ml-2' small color='accent'>New</v-chip></v-card-title>
+            <v-card-text class='text-pre-wrap'>{{ release.body }}</v-card-text>
+          </v-card>
+        </template>
       </v-col>
       <v-col cols='12' md='3' order-md='1' order='0'>
         <v-card :color='updateAvailable ? `warning darken-4` : `background lighten-1`' class='pa-4'>
@@ -114,9 +117,9 @@
 </template>
 
 <script>
-  import { Octokit } from '@octokit/rest'
   import { mapState } from 'vuex'
   import semver from 'semver'
+  import sanitizeHtml from 'sanitize-html'
   import { generateClientJwt } from '~/assets/electron/generateClientJwt'
 
   export default {
@@ -131,6 +134,7 @@
       availableReleases: null,
       offlineMode: false,
       currentSeedPath: null,
+      motd: '',
     }),
     head: () => ({
       title: 'Home',
@@ -190,13 +194,10 @@
       async checkForUpdates() {
         try {
           this.currentVersion = await window.electronApi.invoke('updater.getVersion')
-          const octokit = new Octokit
-          this.availableReleases = (await octokit.rest.repos.listReleases({
-            owner: 'ori-rando',
-            repo: 'build',
-          })).data
+          this.availableReleases = (await this.$axios.$get('/update-proxy/releases'))
             .filter(release => !release.draft && !release.prerelease)
             .sort((a, b) => semver.compareLoose(b.name, a.name))
+          this.motd = sanitizeHtml((await this.$axios.$get('/update-proxy/motd/wotw')).motd)
 
           if (this.availableReleases.length > 0) {
             this.latestRelease = this.availableReleases[0]
@@ -303,5 +304,9 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .text-lurk {
+    opacity: 0.2;
   }
 </style>

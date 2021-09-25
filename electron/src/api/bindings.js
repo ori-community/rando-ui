@@ -8,4 +8,12 @@ export default {
   async saveControllerBindings(event, bindings) {
     await BindingsService.saveControllerBindings(bindings)
   },
+
+  async loadKeyboardBindings() {
+    return await BindingsService.loadKeyboardBindings()
+  },
+
+  async saveKeyboardBindings(event, bindings) {
+    await BindingsService.saveKeyboardBindings(bindings)
+  },
 }

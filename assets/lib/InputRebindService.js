@@ -1,7 +1,8 @@
 import controllerButtons from '~/assets/electron/controllerButtons.yaml'
+import keyboardButtons from '~/assets/electron/keyboardButtons.yaml'
 
-export class GamepadService {
-  static getPressedButtons(gamepad) {
+export class InputRebindService {
+  static getPressedGamepadButtonsUnityIds(gamepad) {
     const pressedButtons = []
     for (const button of Object.values(controllerButtons)) {
       if (button.jsId >= 0 && gamepad.buttons[button.jsId].pressed) {
@@ -20,5 +21,24 @@ export class GamepadService {
     if (gamepad.axes[3] > 0.5) pressedButtons.push(controllerButtons.RightStickDown.unityId)
 
     return pressedButtons
+  }
+
+  static getKbmEventUnityId(event) {
+    let jsId = null
+
+    if (event instanceof KeyboardEvent) {
+      jsId = event.code
+    } else if (event instanceof MouseEvent) {
+      jsId = `Mouse${event.button}`
+    }
+
+    if (jsId) {
+      const button = Object.values(keyboardButtons).find(b => b.jsId === jsId)
+      if (button) {
+        return button.unityId
+      }
+    }
+
+    return null
   }
 }

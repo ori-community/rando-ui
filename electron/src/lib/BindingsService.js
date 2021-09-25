@@ -48,7 +48,7 @@ const getDefaultControllerBindings = () => ({
 
 const getDefaultKeyboardBindings = () => ({
   OpenRandoWheel: [
-    { keys: [118] },
+    { keys: [118], respects_modifiers: false },
   ],
   Binding1: [
     { keys: [306, 308, 49], respects_modifiers: true },

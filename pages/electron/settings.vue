@@ -12,10 +12,10 @@
           <wotw-rando-settings />
         </v-tab-item>
         <v-tab-item class='pa-5'>
-          <wotw-controller-rebind-settings />
+          <wotw-rebind-settings type='controller' />
         </v-tab-item>
         <v-tab-item class='pa-5'>
-          soon™
+          <wotw-rebind-settings type='kbm' />
         </v-tab-item>
       </v-tabs>
     </v-card>

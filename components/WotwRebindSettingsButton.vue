@@ -6,7 +6,7 @@
 
 <script>
   export default {
-    name: 'WotwControllerButton',
+    name: 'WotwRebindSettingsButton',
     props: {
       button: {
         type: String,

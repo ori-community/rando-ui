@@ -40,10 +40,13 @@
           </template>
         </v-card>
 
-        <v-btn x-large color='accent' block class='mt-6' :loading='launching' @click='launch()'>
+        <v-btn x-large color='accent' block class='mt-6' :class='{"bottom-border-radius-0": currentSeedPath !== null}' :loading='launching' @click='launch()'>
           <img class='launch-icon' src='../../assets/images/launch.png' alt=''>
           Launch
         </v-btn>
+        <v-card v-if='currentSeedPath !== null' outlined class='pa-2 text-center top-border-radius-0 current-seed-path'>
+          {{ currentSeedPathBasename }}
+        </v-card>
 
         <v-btn color='background lighten-1' block class='mt-3' @click='openWiki'>
           <v-icon left>mdi-book-outline</v-icon>
@@ -111,6 +114,7 @@
 </template>
 
 <script>
+  import path from 'path'
   import { Octokit } from '@octokit/rest'
   import { mapState } from 'vuex'
   import semver from 'semver'
@@ -127,6 +131,7 @@
       shouldShowImportInfoDialog: false,
       availableReleases: null,
       offlineMode: false,
+      currentSeedPath: null,
     }),
     head: () => ({
       title: 'Home',
@@ -146,6 +151,13 @@
       latestVersion() {
         return this.latestRelease?.name?.replaceAll(/[^[0-9.]/g, '')
       },
+      currentSeedPathBasename() {
+        if (!this.currentSeedPath) {
+          return null
+        }
+
+        return path.basename(this.currentSeedPath)
+      }
     },
     watch: {
       $route: {
@@ -154,6 +166,7 @@
           if (route.query.seedFile) {
             this.$router.replace({ query: {} })
             this.launch(route.query.seedFile)
+            this.currentSeedPath = route.query.seedFile
           }
         },
       },
@@ -170,6 +183,7 @@
     },
     async mounted() {
       this.shouldShowImportInfoDialog = await window.electronApi.invoke('settings.shouldShowImportInfoDialog')
+      this.currentSeedPath = await window.electronApi.invoke('launcher.getCurrentSeedPath')
       await this.checkForUpdates()
     },
     methods: {
@@ -273,5 +287,21 @@
       bottom: 0;
       right: 0;
     }
+  }
+
+  .top-border-radius-0 {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  .bottom-border-radius-0 {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .current-seed-path {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 </style>

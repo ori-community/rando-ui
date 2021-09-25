@@ -9,6 +9,10 @@ export default {
     return LauncherService.getOpenedSeedPath()
   },
 
+  async getCurrentSeedPath() {
+    return await LauncherService.getCurrentSeedPath()
+  },
+
   async launch(event, seedPath = null) {
     try {
       await LauncherService.launch(seedPath)

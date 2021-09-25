@@ -8,6 +8,8 @@ import { BindingsService } from '~/electron/src/lib/BindingsService'
 import { Library as FFILibrary } from 'ffi-napi'
 
 
+const CURRENT_SEED_PATH_FILE = `${RANDOMIZER_BASE_PATH}/.currentseedpath`
+
 const isProcessRunning = async (processName) => {
   const processes = await psList({ all: true })
   return processes.some(p => p.name.toLowerCase() === processName.toLowerCase())
@@ -37,10 +39,18 @@ export class LauncherService {
     return process.argv[1] || null
   }
 
+  static async getCurrentSeedPath() {
+    if (fs.existsSync(CURRENT_SEED_PATH_FILE)) {
+      return await fs.promises.readFile(CURRENT_SEED_PATH_FILE, {encoding: 'utf-8'})
+    }
+
+    return null
+  }
+
   static async launch(seedFilePath = null) {
     if (seedFilePath) {
       console.log('Launching seed', seedFilePath)
-      await fs.promises.writeFile(`${RANDOMIZER_BASE_PATH}/.currentseedpath`, seedFilePath.trim())
+      await fs.promises.writeFile(CURRENT_SEED_PATH_FILE, seedFilePath.trim())
     } else {
       console.log('Launching last seed')
     }

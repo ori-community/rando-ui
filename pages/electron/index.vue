@@ -114,7 +114,6 @@
 </template>
 
 <script>
-  import path from 'path'
   import { Octokit } from '@octokit/rest'
   import { mapState } from 'vuex'
   import semver from 'semver'
@@ -156,7 +155,8 @@
           return null
         }
 
-        return path.basename(this.currentSeedPath)
+        const parts = this.currentSeedPath.split(/[/\\]/)
+        return parts[parts.length - 1]
       }
     },
     watch: {

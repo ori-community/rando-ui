@@ -18,7 +18,9 @@
           </v-card>
 
           <v-card v-for='release in availableReleases' :key='release.id' class='mb-2'>
-            <v-card-title>Version {{ release.name }} <v-chip v-if='isNewVersion(release.name)' class='ml-2' small color='accent'>New</v-chip></v-card-title>
+            <v-card-title>Version {{ release.name }}
+              <v-chip v-if='isNewVersion(release.name)' class='ml-2' small color='accent'>New</v-chip>
+            </v-card-title>
             <v-card-text class='text-pre-wrap'>{{ release.body }}</v-card-text>
           </v-card>
         </template>
@@ -43,7 +45,15 @@
           </template>
         </v-card>
 
-        <v-btn x-large color='accent' block class='mt-6' :class='{"bottom-border-radius-0": currentSeedPath !== null}' :loading='launching' @click='launch()'>
+        <v-btn
+          x-large
+          color='accent'
+          block
+          class='mt-6'
+          :class='{"bottom-border-radius-0": currentSeedPath !== null}'
+          :loading='launching'
+          @click='launch()'
+        >
           <img class='launch-icon' src='../../assets/images/launch.png' alt=''>
           Launch
         </v-btn>
@@ -100,11 +110,17 @@
 
         <h2>Important changes</h2>
         <ul>
-          <li>We <b>imported your old settings</b> and <b>removed</b> the old randomizer. There may be some files left in your old randomizer folder, which you can delete if you want.</li>
-          <li>The randomizer is now installed like any other application. Start it through the <b>Start Menu</b>, uninstall in in the Windows Settings app.</li>
+          <li>We <b>imported your old settings</b> and <b>removed</b> the old randomizer. There may be some files left
+            in your old randomizer folder, which you can delete if you want.
+          </li>
+          <li>The randomizer is now installed like any other application. Start it through the <b>Start Menu</b>,
+            uninstall in in the Windows Settings app.
+          </li>
           <li>Generate and play seeds <b>directly in the launcher</b>.</li>
           <li>You now need to <b>log in</b> to the launcher to play online games</li>
-          <li>Online games have <b>Multiverses</b>. To play Co-Op, play in the same World. To play Multiworld, create multiple worlds in the same Universe.</li>
+          <li>Online games have <b>Multiverses</b>. To play Co-Op, play in the same World. To play Multiworld, create
+            multiple worlds in the same Universe.
+          </li>
           <li>Configure <b>Controller and Keyboard rebindings</b> interactively in the launcher settings.</li>
         </ul>
 
@@ -161,7 +177,7 @@
 
         const parts = this.currentSeedPath.split(/[/\\]/)
         return parts[parts.length - 1]
-      }
+      },
     },
     watch: {
       $route: {
@@ -194,10 +210,18 @@
       async checkForUpdates() {
         try {
           this.currentVersion = await window.electronApi.invoke('updater.getVersion')
-          this.availableReleases = (await this.$axios.$get('/update-proxy/releases'))
+          this.availableReleases = (await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/releases`))
             .filter(release => !release.draft && !release.prerelease)
             .sort((a, b) => semver.compareLoose(b.name, a.name))
-          this.motd = sanitizeHtml((await this.$axios.$get('/update-proxy/motd/wotw')).motd)
+          this.motd = sanitizeHtml((await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/motd/wotw`, {
+            params: {
+              version: this.currentVersion,
+            },
+          })).motd, {
+            allowedClasses: {
+              '*': ['mb-*'],
+            },
+          })
 
           if (this.availableReleases.length > 0) {
             this.latestRelease = this.availableReleases[0]
@@ -304,6 +328,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    border-top-width: 0;
   }
 
   .text-lurk {

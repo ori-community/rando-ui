@@ -6,6 +6,7 @@ import { RandoIPCService } from '~/electron/src/lib/RandoIPCService'
 import { RANDOMIZER_BASE_PATH } from './Constants'
 import { BindingsService } from '~/electron/src/lib/BindingsService'
 import { Library as FFILibrary } from 'ffi-napi'
+import { UCS2String } from '~/electron/src/lib/UCS2String'
 
 
 const CURRENT_SEED_PATH_FILE = `${RANDOMIZER_BASE_PATH}/.currentseedpath`
@@ -65,12 +66,15 @@ export class LauncherService {
         throw new Error('Could not load the seed in running game.\nPlease wait a few seconds if you closed the game just now.')
       } else {
         const user32 = new FFILibrary('user32', {
-          'FindWindowA': ['long', ['string', 'string']],
+          'FindWindowA': ['long', [UCS2String, UCS2String]],
           'SetForegroundWindow': ['bool', ['long']],
         })
-        const gameWindowHandle = user32.FindWindowA(null, 'OriAndTheWilloftheWisps')
+        const gameWindowHandle = user32.FindWindowW(null, 'OriAndTheWilloftheWisps')
         if (gameWindowHandle) {
+          console.log('Focusing game...')
           user32.SetForegroundWindow(gameWindowHandle)
+        } else {
+          console.log('Could not focud game. Handle not found.')
         }
       }
     } else {

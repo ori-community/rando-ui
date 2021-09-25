@@ -175,7 +175,7 @@
     methods: {
       async checkForUpdates() {
         try {
-          this.currentVersion = '0.16.0' // await window.electronApi.invoke('updater.getVersion')
+          this.currentVersion = await window.electronApi.invoke('updater.getVersion')
           const octokit = new Octokit
           this.availableReleases = (await octokit.rest.repos.listReleases({
             owner: 'ori-rando',

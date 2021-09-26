@@ -88,10 +88,10 @@ export class LauncherService {
 
       // FIXME: Hiding the window does not work due to a node bug (?)
       spawn(command, {
-        detached: true,
-        shell: 'powershell.exe',
-        stdio: 'ignore',
-      }).unref()
+        // detached: true,
+        shell: true,
+        stdio: 'inherit',
+      }) //.unref()
 
       await waitForProcess('injector.exe', 10)
 

@@ -83,13 +83,13 @@ export class LauncherService {
 
       if (!settings.Flags.Dev) {
         console.log('Starting Injector hidden')
-        command = `start /b /min "${command}" /nowait`
+        command = `start -WindowStyle "Hidden" -FilePath "${command}" -ArgumentList "/nowait"`
       }
 
       // FIXME: Hiding the window does not work due to a node bug (?)
       spawn(command, {
         detached: true,
-        shell: true,
+        shell: 'powershell.exe',
         stdio: 'ignore',
       }).unref()
 

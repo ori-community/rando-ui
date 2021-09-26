@@ -79,7 +79,7 @@
             <p>
               Headers let you customize the seed further.
             </p>
-            <wotw-seedgen-header-select v-model='seedgenConfig.headers' :headers='availableHeaders' />
+            <wotw-seedgen-header-select v-model='seedgenConfig.headers' :headers='availableHeaders' :header-args.sync='seedgenConfig.headerArgs' />
 
             <h3 class='mt-5 mb-2'>Custom headers</h3>
             <wotw-seedgen-custom-header-select v-model='seedgenConfig.customHeaders' />
@@ -223,7 +223,7 @@
     goals: [],
     multiNames: [],
     seed: null,
-    headerArgs: [],
+    headerArgs: {},
     spawn: 'MarshSpawn.Main',
   })
 

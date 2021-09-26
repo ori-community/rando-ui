@@ -28,12 +28,56 @@
         <span class='text-pre-wrap'>{{ header.description.join('\n') }}</span>
       </v-tooltip>
 
-<!--      <v-badge overlap offset-x='16' content='2' color='accent lighten-1'>-->
-<!--        <v-btn icon small class='mx-2'>-->
-<!--          <v-icon>mdi-tune</v-icon>-->
-<!--        </v-btn>-->
-<!--      </v-badge>-->
+      <v-badge v-if='header.params.length > 0' overlap offset-x='16' :value='getModifiedHeaderArgCount(header) > 0' :content='getModifiedHeaderArgCount(header)' color='accent lighten-1'>
+        <v-btn :disabled='!headerStates[header.headerName]' icon small class='mx-2' @click='editHeaderArgs(header)'>
+          <v-icon>mdi-tune</v-icon>
+        </v-btn>
+      </v-badge>
     </v-card>
+
+    <v-dialog v-model='headerArgEditor.isOpen' max-width='600'>
+      <v-card v-if='!!headerArgEditor.header' class='pa-5'>
+        <h3>Configure {{ headerArgEditor.header.name }}</h3>
+
+        <template v-for='param in headerArgEditor.header.params'>
+          <template v-if='param.type === "string"'>
+            <v-text-field
+              :key='param.name'
+              v-model='headerArgStates[headerArgEditor.header.headerName][param.name]'
+              :label='param.name'
+              :hint='param.description.join(" ")'
+              persistent-hint
+            />
+          </template>
+          <template v-else-if='param.type === "int"'>
+            <v-text-field
+              :key='param.name'
+              v-model='headerArgStates[headerArgEditor.header.headerName][param.name]'
+              type='number'
+              :label='param.name'
+              :hint='param.description.join(" ")'
+              persistent-hint
+            />
+          </template>
+          <template v-else-if='param.type === "bool"'>
+            <v-checkbox
+              :key='param.name'
+              v-model='headerArgStates[headerArgEditor.header.headerName][param.name]'
+              :label='param.name'
+              :hint='param.description.join(" ")'
+              persistent-hint
+            />
+          </template>
+        </template>
+
+        <div class='d-flex'>
+          <v-spacer />
+          <v-btn color='accent' depressed @click='headerArgEditor.isOpen = false'>
+            Done
+          </v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -49,12 +93,27 @@
         type: Array,
         required: true,
       },
+      headerArgs: {
+        type: Object,
+        required: true,
+      }
     },
     data: vm => ({
       headerStates: {},
       inputValue: vm.value ?? [],
+      headerArgEditor: {
+        isOpen: false,
+        header: null,
+      },
+      headerArgStates: {},
     }),
     watch: {
+      headerArgs: {
+        deep: true,
+        handler() {
+          this.updateArgStates()
+        },
+      },
       headerStates: {
         deep: true,
         handler(value) {
@@ -67,6 +126,18 @@
           this.$emit('input', value)
         },
       },
+      headerArgStates: {
+        deep: true,
+        handler(headerArgStates) {
+          const headerArgs = {}
+          for (const headerName of Object.keys(headerArgStates)) {
+            for (const paramName of Object.keys(headerArgStates[headerName])) {
+              headerArgs[paramName] = String(headerArgStates[headerName][paramName])
+            }
+          }
+          this.$emit('update:headerArgs', headerArgs)
+        },
+      },
       value: {
         deep: true,
         handler(value) {
@@ -77,12 +148,44 @@
     },
     created() {
       this.updateStates()
+      this.updateArgStates()
     },
     methods: {
+      getTypedValue(value, type) {
+        switch (type) {
+          case 'int':
+          case 'float': return Number(value)
+          case 'bool': return value === 'true'
+          default: return String(value)
+        }
+      },
+      getModifiedHeaderArgCount(header) {
+        const headerArgState = this.headerArgStates[header.headerName]
+        let count = 0
+        for (const param of header.params) {
+          if (String(headerArgState[param.name]) !== param.default) {
+            count++
+          }
+        }
+        return count
+      },
       updateStates() {
         for (const header of this.headers) {
           this.$set(this.headerStates, header.headerName, this.inputValue.includes(header.headerName))
         }
+      },
+      updateArgStates() {
+        for (const header of this.headers) {
+          const headerArgState = {}
+          for (const param of header.params) {
+            headerArgState[param.name] = this.getTypedValue(param.default, param.type)
+          }
+          this.$set(this.headerArgStates, header.headerName, headerArgState)
+        }
+      },
+      editHeaderArgs(header) {
+        this.headerArgEditor.header = header
+        this.headerArgEditor.isOpen = true
       },
     },
   }

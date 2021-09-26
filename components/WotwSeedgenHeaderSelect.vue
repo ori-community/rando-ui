@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card
-      v-for='header in headers'
+      v-for='header in visibleHeaders'
       :key='header.headerName'
       class='d-inline-flex align-center mr-1 mb-1'
       color='background lighten-3'
@@ -107,6 +107,11 @@
       },
       headerArgStates: {},
     }),
+    computed: {
+      visibleHeaders() {
+        return this.headers.filter(h => !h.hidden)
+      },
+    },
     watch: {
       headerArgs: {
         deep: true,

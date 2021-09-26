@@ -164,8 +164,8 @@ TeleportCheat:
 UnlockSpoilers:
   displayName: UnlockSpoilers
   composable: true
-TogglePickupdisplayNamesOnSpoiler:
-  displayName: TogglePickupdisplayNamesOnSpoiler
+TogglePickupDisplayNamesOnSpoiler:
+  displayName: TogglePickupDisplayNamesOnSpoiler
   composable: true
 ForceExit:
   displayName: ForceExit

@@ -88,7 +88,7 @@ const getDefaultKeyboardBindings = () => ({
     { keys: [308, 112], respects_modifiers: true },
     { keys: [307, 112], respects_modifiers: true },
   ],
-  WarpToCredits: [
+  WarpCredits: [
     { keys: [308, 99], respects_modifiers: true },
     { keys: [307, 99], respects_modifiers: true },
   ],

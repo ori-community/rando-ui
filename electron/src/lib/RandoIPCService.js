@@ -32,7 +32,13 @@ export class RandoIPCService {
   }
 
   static async send(message) {
-    await new Promise(resolve => socket.write(message + '\r\n', 'utf-8', () => resolve()))
+    await new Promise((resolve, reject) => {
+      try {
+        socket.write(message + '\r\n', 'utf-8', () => resolve())
+      } catch (e) {
+        reject(e)
+      }
+    })
   }
 
   static async trySend(message) {

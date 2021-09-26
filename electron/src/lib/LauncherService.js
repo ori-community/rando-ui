@@ -89,7 +89,7 @@ export class LauncherService {
       // FIXME: Hiding the window does not work due to a node bug (?)
       spawn(command, {
         // detached: true,
-        shell: true,
+        shell: 'powershell.exe',
         stdio: 'inherit',
       }) //.unref()
 

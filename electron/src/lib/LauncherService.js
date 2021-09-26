@@ -66,7 +66,7 @@ export class LauncherService {
         throw new Error('Could not load the seed in running game.\nPlease wait a few seconds if you closed the game just now.')
       } else {
         const user32 = new FFILibrary('user32', {
-          'FindWindowW': ['long', [UCS2String, UCS2String]],
+          'FindWindowW': ['long', ['string', UCS2String]],
           'SetForegroundWindow': ['bool', ['long']],
         })
         const gameWindowHandle = user32.FindWindowW(null, 'OriAndTheWilloftheWisps')
@@ -86,12 +86,10 @@ export class LauncherService {
         command = `start -WindowStyle "Hidden" -FilePath "${command}" -ArgumentList "/nowait"`
       }
 
-      // FIXME: Hiding the window does not work due to a node bug (?)
       spawn(command, {
-        // detached: true,
         shell: 'powershell.exe',
         stdio: 'inherit',
-      }) //.unref()
+      }).unref()
 
       await waitForProcess('injector.exe', 10)
 

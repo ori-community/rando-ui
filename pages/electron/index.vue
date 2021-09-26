@@ -96,27 +96,30 @@
     </v-row>
 
     <v-dialog :value='currentCrashZipName !== null' max-width='600' persistent>
-      <v-card class='pa-6'>
-        <h1 class='text-center'>Uh oh!</h1>
-        <h3 class='text-center mb-4'>Something went oribly wrong</h3>
+      <v-card>
+        <div class='pa-6'>
+          <h1 class='text-center'>Uh oh!</h1>
+          <h3 class='text-center mb-4'>Something went oribly wrong</h3>
 
-        <div>
-          It seems like the game crashed... We collected some information and important files that would help us
-          to find the issue. Please reach out to one of the developers on our Discord and send them the file.
-        </div>
+          <div>
+            It seems like the game crashed... We collected some information and important files that would help us
+            to find the issue. Please reach out to one of the developers on our Discord and send them the file.
+          </div>
 
-        <div class='text-center my-8'>
-          <code class='title'>{{ currentCrashZipName }}</code>
-        </div>
+          <div class='text-center my-8'>
+            <code class='title'>{{ currentCrashZipName }}</code>
+          </div>
 
-        <div class='d-flex justify-end'>
-          <v-btn text depressed @click='currentCrashZipName = null'>
-            Close
-          </v-btn>
-          <v-btn depressed color='accent' @click='showCrashZipInExplorer' class='ml-2'>
-            Show in Explorer
-          </v-btn>
+          <div class='d-flex justify-end'>
+            <v-btn text depressed @click='currentCrashZipName = null'>
+              Close
+            </v-btn>
+            <v-btn depressed color='accent' @click='showCrashZipInExplorer' class='ml-2'>
+              Show in Explorer
+            </v-btn>
+          </div>
         </div>
+        <img class='crash-ori' src='~/assets/images/ori_sus.png' alt=''>
       </v-card>
     </v-dialog>
 
@@ -367,5 +370,12 @@
 
   .text-lurk {
     opacity: 0.2;
+  }
+
+  .crash-ori {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 96px;
   }
 </style>

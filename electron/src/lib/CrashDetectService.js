@@ -27,7 +27,7 @@ export class CrashDetectService {
 
       try {
         for (const crashDirectory of foundCrashDumpDirectories) {
-          if (!this.availableCrashDumpDirectories.includes(crashDirectory)) {
+          if (!this.availableCrashDumpDirectories.includes(crashDirectory) && fs.existsSync(`${CRASH_DUMPS_PATH}/${crashDirectory}/crash.dmp`)) {
             console.log(`CrashDetectService: New crash dump detected: ${crashDirectory}`)
             const crashZip = await this.collectCrashInfo(crashDirectory)
             this.onCrashCallback && this.onCrashCallback(crashZip)

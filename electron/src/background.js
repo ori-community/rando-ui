@@ -7,6 +7,7 @@ import * as path from 'path'
 import { registerIpcApi } from './api.js'
 import fs from 'fs'
 import { SettingsService } from '~/electron/src/lib/SettingsService'
+import { CrashDetectService } from '~/electron/src/lib/CrashDetectService'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -89,6 +90,11 @@ async function createWindow() {
 
   app.on('second-instance', (event, args) => commandLineArgumentHandler(args))
   commandLineArgumentHandler(process.argv)
+
+  CrashDetectService.setOnCrashCallback(crashZipName => {
+    win.webContents.send('main.crashDetected', crashZipName)
+  })
+  await CrashDetectService.start()
 }
 
 // Quit when all windows are closed.
@@ -118,7 +124,12 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
-  createWindow()
+
+  try {
+    await createWindow()
+  } catch (e) {
+    console.error(e)
+  }
 })
 
 // Exit cleanly on request from parent process in development mode.

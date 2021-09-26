@@ -62,6 +62,10 @@
           this.$router.push({ name: 'electron', query: { seedFile } })
         })
 
+        window.electronApi.on('main.crashDetected', (event, crashZipName) => {
+          this.$router.push({ name: 'electron', query: { crashZipName } })
+        })
+
         window.electronApi.on('main.openUrl', async (event, url) => {
           url = new URL(url)
 

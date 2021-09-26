@@ -66,7 +66,7 @@ export class LauncherService {
         throw new Error('Could not load the seed in running game.\nPlease wait a few seconds if you closed the game just now.')
       } else {
         const user32 = new FFILibrary('user32', {
-          'FindWindowA': ['long', [UCS2String, UCS2String]],
+          'FindWindowW': ['long', [UCS2String, UCS2String]],
           'SetForegroundWindow': ['bool', ['long']],
         })
         const gameWindowHandle = user32.FindWindowW(null, 'OriAndTheWilloftheWisps')
@@ -83,7 +83,7 @@ export class LauncherService {
 
       if (!settings.Flags.Dev) {
         console.log('Starting Injector hidden')
-        command = 'start /b /min ' + command
+        command = `start /b /min "${command}" /nowait`
       }
 
       // FIXME: Hiding the window does not work due to a node bug (?)

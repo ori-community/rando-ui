@@ -131,11 +131,19 @@
         handler(headerArgStates) {
           const headerArgs = {}
           for (const headerName of Object.keys(headerArgStates)) {
-            for (const paramName of Object.keys(headerArgStates[headerName])) {
-              headerArgs[paramName] = String(headerArgStates[headerName][paramName])
+            if (this.headerStates[headerName]) {
+              for (const paramName of Object.keys(headerArgStates[headerName])) {
+                headerArgs[headerName + '.' + paramName] = String(headerArgStates[headerName][paramName])
+              }
             }
           }
-          this.$emit('update:headerArgs', headerArgs)
+
+          if (
+            Object.keys(headerArgs).length !== Object.keys(this.headerArgs).length ||
+            Object.keys(headerArgs).some(arg => this.headerArgs[arg] !== headerArgs[arg])
+          ) {
+            this.$emit('update:headerArgs', headerArgs)
+          }
         },
       },
       value: {
@@ -178,7 +186,7 @@
         for (const header of this.headers) {
           const headerArgState = {}
           for (const param of header.params) {
-            headerArgState[param.name] = this.getTypedValue(param.default, param.type)
+            headerArgState[param.name] = this.getTypedValue(this.headerArgs[header.headerName + '.' + param.name] ?? param.default, param.type)
           }
           this.$set(this.headerArgStates, header.headerName, headerArgState)
         }

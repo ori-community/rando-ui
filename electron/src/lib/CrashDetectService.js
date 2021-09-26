@@ -24,7 +24,6 @@ export class CrashDetectService {
 
     setInterval(async () => {
       const foundCrashDumpDirectories = await this.getAvailableCrashDumpDirectories()
-      console.log(foundCrashDumpDirectories)
 
       try {
         for (const crashDirectory of foundCrashDumpDirectories) {

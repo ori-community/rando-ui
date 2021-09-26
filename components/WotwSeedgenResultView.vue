@@ -123,7 +123,10 @@
         }
       },
       async copyLink() {
-        await navigator.clipboard.writeText(window.location.href)
+        const url = new URL(process.env.API_BASE_URL)
+        url.pathname = '/seedgen'
+        url.searchParams.append('result', JSON.stringify(this.result))
+        await navigator.clipboard.writeText(url.toString())
         this.linkCopied = true
 
         setTimeout(() => {

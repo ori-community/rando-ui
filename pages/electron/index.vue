@@ -197,7 +197,7 @@
         return this.latestRelease !== null && this.isNewVersion(this.latestVersion)
       },
       latestVersion() {
-        return this.latestRelease?.name?.replaceAll(/[^[0-9.]/g, '')
+        return this.latestRelease?.name
       },
       currentSeedPathBasename() {
         if (!this.currentSeedPath) {

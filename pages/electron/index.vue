@@ -377,5 +377,6 @@
     bottom: 0;
     left: 0;
     width: 96px;
+    transform: scaleX(-1);
   }
 </style>

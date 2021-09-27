@@ -20,7 +20,7 @@
             :color='headerStates[header.headerName] ? "secondary" : "background lighten-2"'
             depressed
             v-on='on'
-            @click='headerStates[header.headerName] = !headerStates[header.headerName]'
+            @click='toggleHeaderState(header)'
           >
             {{ header.name }}
           </v-btn>
@@ -47,6 +47,8 @@
               :label='param.name'
               :hint='param.description.join(" ")'
               persistent-hint
+              :append-icon='isHeaderParamModified(headerArgEditor.header, param) ? "mdi-restore" : ""'
+              @click:append='restoreDefaultHeaderParam(headerArgEditor.header, param)'
             />
           </template>
           <template v-else-if='param.type === "int"'>
@@ -57,6 +59,8 @@
               :label='param.name'
               :hint='param.description.join(" ")'
               persistent-hint
+              :append-icon='isHeaderParamModified(headerArgEditor.header, param) ? "mdi-arrow-u-left-top" : ""'
+              @click:append='restoreDefaultHeaderParam(headerArgEditor.header, param)'
             />
           </template>
           <template v-else-if='param.type === "bool"'>
@@ -66,6 +70,8 @@
               :label='param.name'
               :hint='param.description.join(" ")'
               persistent-hint
+              :append-icon='isHeaderParamModified(headerArgEditor.header, param) ? "mdi-arrow-u-left-top" : ""'
+              @click:append='restoreDefaultHeaderParam(headerArgEditor.header, param)'
             />
           </template>
         </template>
@@ -172,15 +178,23 @@
           default: return String(value)
         }
       },
+      toggleHeaderState(header) {
+        this.headerStates[header.headerName] = !this.headerStates[header.headerName]
+      },
+      restoreDefaultHeaderParam(header, param) {
+        this.headerArgStates[header.headerName][param.name] = this.getTypedValue(param.default, param.type)
+      },
       getModifiedHeaderArgCount(header) {
-        const headerArgState = this.headerArgStates[header.headerName]
         let count = 0
         for (const param of header.params) {
-          if (String(headerArgState[param.name]) !== param.default) {
+          if (this.isHeaderParamModified(header, param)) {
             count++
           }
         }
         return count
+      },
+      isHeaderParamModified(header, param) {
+        return String(this.headerArgStates[header.headerName][param.name]) !== param.default
       },
       updateStates() {
         for (const header of this.headers) {

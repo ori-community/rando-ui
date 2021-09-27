@@ -20,14 +20,25 @@ export class CrashDetectService {
 
     this.availableCrashDumpDirectories = await this.getAvailableCrashDumpDirectories()
 
-    console.log(`CrashDetectService: Found ${this.availableCrashDumpDirectories.length} existing crash dumps`)
+    console.log(`CrashDetectService: Found ${this.availableCrashDumpDirectories.length} existing crash dump(s)`)
 
     setInterval(async () => {
       const foundCrashDumpDirectories = await this.getAvailableCrashDumpDirectories()
 
       try {
         for (const crashDirectory of foundCrashDumpDirectories) {
-          if (!this.availableCrashDumpDirectories.includes(crashDirectory) && fs.existsSync(`${CRASH_DUMPS_PATH}/${crashDirectory}/crash.dmp`)) {
+          if (
+            !this.availableCrashDumpDirectories.includes(crashDirectory) &&
+
+            // This monstrosity is for not detecting exit crashes
+            fs.existsSync(`${CRASH_DUMPS_PATH}/${crashDirectory}/crash.dmp`) &&
+            fs.existsSync(`${CRASH_DUMPS_PATH}/${crashDirectory}/error.log`) &&
+            !(
+              (await fs.promises.readFile(`${CRASH_DUMPS_PATH}/${crashDirectory}/error.log`, {encoding: 'utf-8'}))
+                .split('\n')[41] || ''
+            )
+              .includes('(gameoverlayrenderer64) VulkanSteamOverlayProcessCapturedFrame')
+          ) {
             console.log(`CrashDetectService: New crash dump detected: ${crashDirectory}`)
             const crashZip = await this.collectCrashInfo(crashDirectory)
             this.onCrashCallback && this.onCrashCallback(crashZip)

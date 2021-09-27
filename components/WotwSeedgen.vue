@@ -369,7 +369,7 @@
           }
         } catch (e) {
           console.error(e)
-          EventBus.$emit('error', 'Error while generating the seed.\n' + String(e.response?.data.message ?? e))
+          EventBus.$emit('error', 'Error while generating the seed.\n' + String(e.response?.data ?? e))
         }
 
         this.loading = false

@@ -21,7 +21,7 @@
             <v-card-title>Version {{ release.name }}
               <v-chip v-if='isNewVersion(release.name)' class='ml-2' small color='accent'>New</v-chip>
             </v-card-title>
-            <v-card-text class='text-pre-wrap'>{{ release.body }}</v-card-text>
+            <v-card-text class='release-changelog' v-html='release.bodyHtml' />
           </v-card>
         </template>
       </v-col>
@@ -164,6 +164,7 @@
   import { mapState } from 'vuex'
   import semver from 'semver'
   import sanitizeHtml from 'sanitize-html'
+  import * as commonmark from 'commonmark'
   import { generateClientJwt } from '~/assets/electron/generateClientJwt'
 
   export default {
@@ -247,6 +248,16 @@
           this.availableReleases = (await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/releases`))
             .filter(release => !release.draft && !release.prerelease)
             .sort((a, b) => semver.compareLoose(b.name, a.name))
+            .map(release => {
+              const parser = new commonmark.Parser()
+              const writer = new commonmark.HtmlRenderer()
+
+              return {
+                ...release,
+                bodyHtml: sanitizeHtml(writer.render(parser.parse(release.body))),
+              }
+            })
+
           this.motd = sanitizeHtml((await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/motd/wotw`, {
             params: {
               version: this.currentVersion,
@@ -310,7 +321,7 @@
       },
       showCrashZipInExplorer() {
         window.electronApi.invoke('crash.showCrashZipInExplorer', this.currentCrashZipName)
-      }
+      },
     },
   }
 </script>
@@ -378,5 +389,17 @@
     left: 0;
     width: 96px;
     transform: scaleX(-1);
+  }
+</style>
+
+<style lang='scss'>
+  .release-changelog {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+      margin-bottom: 0.4em;
+    }
   }
 </style>

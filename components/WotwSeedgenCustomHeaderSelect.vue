@@ -44,45 +44,51 @@
       </v-card>
     </v-dialog>
 
-    <v-btn
-      v-for='header in customHeaders'
-      :key='header.id'
-      class='text-none mr-1 mb-1'
-      :color='customHeaderStates[header.id] ? "secondary" : "background lighten-2"'
-      depressed
-      @contextmenu.native='e => showContextMenu(e, header)'
-      @click='customHeaderStates[header.id] = !customHeaderStates[header.id]'
-    >
-      {{ header.name }}
-    </v-btn>
+    <div @dragenter.capture='onDragEnter' @dragleave.capture='onDragLeave' @dragover.capture.prevent @drop.capture.prevent.stop='onDrop'>
+      <v-btn
+        v-for='header in customHeaders'
+        :key='header.id'
+        class='text-none mr-1 mb-1'
+        :color='customHeaderStates[header.id] ? "secondary" : "background lighten-2"'
+        depressed
+        @contextmenu.native='e => showContextMenu(e, header)'
+        @click='customHeaderStates[header.id] = !customHeaderStates[header.id]'
+      >
+        {{ header.name }}
+      </v-btn>
 
-    <v-btn
-      class='text-none mr-1 mb-1'
-      depressed
-      color='accent'
-      @click='editNewCustomHeader'
-    >
-      <v-icon>mdi-plus</v-icon>
-    </v-btn>
+      <v-btn v-if='dragEnterCount > 0' outlined color='background lighten-4' class='text-none mr-1 mb-1'><em>Drop to add</em></v-btn>
 
-    <v-menu
-      v-model='contextMenuOpen'
-      :position-x='contextMenuX'
-      :position-y='contextMenuY'
-      absolute
-      offset-y
-    >
-      <v-list>
-        <v-list-item @click='editHeader'>
-          <v-icon left color='inherit'>mdi-pencil</v-icon>
-          <v-list-item-title>Edit</v-list-item-title>
-        </v-list-item>
-        <v-list-item @click='deleteHeader'>
-          <v-icon left color='inherit'>mdi-delete</v-icon>
-          <v-list-item-title>Delete</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
+      <v-btn
+        class='text-none mr-1 mb-1'
+        depressed
+        color='accent'
+        @click='editNewCustomHeader'
+      >
+        <v-icon>mdi-plus</v-icon>
+      </v-btn>
+
+      <div class='text-caption'>You can also drop header files here.</div>
+
+      <v-menu
+        v-model='contextMenuOpen'
+        :position-x='contextMenuX'
+        :position-y='contextMenuY'
+        absolute
+        offset-y
+      >
+        <v-list>
+          <v-list-item @click='editHeader'>
+            <v-icon left color='inherit'>mdi-pencil</v-icon>
+            <v-list-item-title>Edit</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click='deleteHeader'>
+            <v-icon left color='inherit'>mdi-delete</v-icon>
+            <v-list-item-title>Delete</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </div>
   </div>
 </template>
 
@@ -108,6 +114,7 @@
       editingHeaderContent: '',
       customHeaders: [],
       editDialogOpen: false,
+      dragEnterCount: 0,
     }),
     watch: {
       customHeaderStates: {
@@ -180,6 +187,25 @@
       },
       async deleteHeader() {
         await db.customHeaders.delete(this.editingHeaderId)
+      },
+      onDragEnter(event) {
+        if (event.dataTransfer.types.includes('Files')) {
+          this.dragEnterCount++
+        }
+      },
+      onDragLeave() {
+        if (this.dragEnterCount > 0) {
+          this.dragEnterCount--
+        }
+      },
+      async onDrop(event) {
+        this.dragEnterCount = 0
+        for (const file of event.dataTransfer.files) {
+          await db.customHeaders.add({
+            name: file.name.replace(/\.wotwrh$/, ''),
+            content: await file.text()
+          })
+        }
       },
     },
   }

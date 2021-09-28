@@ -9,6 +9,7 @@
         :world='world'
         :disabled='disabled'
         :can-join='canJoin'
+        :multiverse-id='multiverseId'
         @join='$emit("join-world", world.id)'
       />
     </v-card-text>
@@ -39,6 +40,11 @@
       canJoin: {
         type: Boolean,
         default: true,
+      },
+      multiverseId: {
+        type: Number,
+        required: false,
+        default: null,
       }
     },
     computed: {

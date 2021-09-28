@@ -12,6 +12,7 @@
               :color='universeColors[universe.id]'
               :disabled='loading'
               :universe='universe'
+              :multiverse-id='multiverseId'
               class='universe-view'
               @join-world='worldId => join(worldId)'
               @new-world='createWorld(universe.id)'

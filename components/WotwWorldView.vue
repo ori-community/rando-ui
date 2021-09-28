@@ -2,7 +2,7 @@
   <v-card class='world-view' outlined color='background lighten-2'>
     <v-card-title>{{ world.name }}</v-card-title>
     <v-card-text>
-      <wotw-player-view v-for='player in world.members' :key='player.id' class='mb-1' :user='player' />
+      <wotw-player-view v-for='player in world.members' :key='player.id' class='mb-1' :user='player' :multiverse-id='multiverseId' />
     </v-card-text>
     <div class='spacer'></div>
     <v-btn v-if='canJoinInternal' :disabled='disabled' block color='accent' tile @click='$emit("join")'>
@@ -32,6 +32,11 @@
       canJoin: {
         type: Boolean,
         default: true,
+      },
+      multiverseId: {
+        type: Number,
+        required: false,
+        default: null,
       }
     },
     computed: {

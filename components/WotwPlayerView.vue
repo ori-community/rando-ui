@@ -1,6 +1,6 @@
 <template>
   <div class='player-view'>
-    <discord-avatar :user='user' class='mr-1' v-bind='$attrs' />
+    <discord-avatar :user='user' class='mr-1' :multiverse-id='multiverseId' v-bind='$attrs' />
     {{ user.name }}
   </div>
 </template>
@@ -13,6 +13,11 @@
         type: Object,
         required: true,
       },
+      multiverseId: {
+        type: Number,
+        required: false,
+        default: null,
+      }
     },
   }
 </script>

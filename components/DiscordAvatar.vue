@@ -1,8 +1,13 @@
 <template>
   <v-badge :value='!!user.connectedMultiverseId && user.connectedMultiverseId === multiverseId' color='green' bottom bordered dot offset-x='8' offset-y='8'>
     <v-avatar color='accent' :size='$attrs.size || "32"' v-bind='$attrs'>
-      <v-img v-if='discordAvatarUrl !== null' :src='discordAvatarUrl' />
-      <v-icon v-else>mdi-account</v-icon>
+      <v-img v-if='discordAvatarUrl !== null' :src='discordAvatarUrl'>
+        <template #placeholder>
+          <div class='d-flex align-center justify-center fill-height'>
+            <v-icon :size='$attrs.size * 0.6 || "19"'>mdi-account</v-icon>
+          </div>
+        </template>
+      </v-img>
     </v-avatar>
   </v-badge>
 </template>

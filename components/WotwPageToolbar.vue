@@ -24,6 +24,10 @@
           </v-btn>
         </template>
         <v-list v-if='isLoggedIn'>
+          <v-list-item @click='openChangeNicknameDialog'>
+            <v-icon left>mdi-account-edit-outline</v-icon>
+            Change Nickname
+          </v-list-item>
           <v-list-item @click='logout'>
             <v-icon left>mdi-logout-variant</v-icon>
             Log out
@@ -37,6 +41,31 @@
         Log in
       </v-btn>
     </template>
+
+    <v-dialog v-model='changeNicknameDialogIsOpen' :persistent='nicknameDialogLoading' max-width='500'>
+      <v-card>
+        <v-card-title>Change Nickname</v-card-title>
+        <v-card-text>
+          <v-text-field v-model='currentNickname' autofocus label='Nickname' @keydown.enter='saveNickname' />
+
+          <div class='d-flex'>
+            <v-spacer />
+            <v-btn text :disabled='nicknameDialogLoading' @click='changeNicknameDialogIsOpen = false'>
+              Cancel
+            </v-btn>
+            <v-btn
+              depressed
+              color='accent'
+              :disabled='!nicknameIsValid'
+              :loading='nicknameDialogLoading'
+              @click='saveNickname'
+            >
+              Save
+            </v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -46,10 +75,18 @@
 
   export default {
     name: 'WotwPageToolbar',
+    data: () => ({
+      changeNicknameDialogIsOpen: false,
+      currentNickname: '',
+      nicknameDialogLoading: false,
+    }),
     computed: {
       ...mapGetters('user', ['isLoggedIn']),
       ...mapState('user', ['user']),
       isElectron,
+      nicknameIsValid() {
+        return this.currentNickname.trim().length > 0
+      },
     },
     methods: {
       buildAbsoluteUrl(relativeUrl) {
@@ -72,6 +109,27 @@
 
         this.$store.commit('auth/setJwt', null)
         this.$store.commit('user/setUser', null)
+      },
+      openChangeNicknameDialog() {
+        this.currentNickname = this.user.name
+        this.changeNicknameDialogIsOpen = true
+      },
+      async saveNickname() {
+        if (!this.nicknameIsValid) {
+          return
+        }
+
+        this.nicknameDialogLoading = true
+
+        const user = await this.$axios.$put('/users/me/nickname', this.currentNickname, {
+          headers: {
+            'Content-Type': 'text/plain; charset=utf-8'
+          }
+        })
+        this.$store.commit('user/setUser', user)
+
+        this.nicknameDialogLoading = false
+        this.changeNicknameDialogIsOpen = false
       },
     },
   }

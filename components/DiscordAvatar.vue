@@ -1,5 +1,5 @@
 <template>
-  <v-badge :value='!!user.connectedMultiverseId && user.connectedMultiverseId === multiverseId' mode='1' color='green' bottom bordered dot offset-x='8' offset-y='8'>
+  <v-badge :value='!!user.connectedMultiverseId && user.connectedMultiverseId === multiverseId' color='green' bottom bordered dot offset-x='8' offset-y='8'>
     <v-avatar color='accent' :size='$attrs.size || "32"' v-bind='$attrs'>
       <v-img v-if='discordAvatarUrl !== null' :src='discordAvatarUrl' />
       <v-icon v-else>mdi-account</v-icon>

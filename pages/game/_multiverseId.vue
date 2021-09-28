@@ -245,7 +245,7 @@
         return isOBS()
       },
       multiverseId() {
-        return this.$route.params.multiverseId
+        return Number(this.$route.params.multiverseId)
       },
       multiverse() {
         return this.multiverses[this.multiverseId]

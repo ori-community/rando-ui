@@ -1,6 +1,6 @@
 <template>
   <v-card class='universe-view'>
-    <v-sheet :color='color' height='0.5em' />
+    <v-sheet v-if='!hideColor' :color='universe.color' height='0.5em' />
     <v-card-title>{{ universe.name }}</v-card-title>
     <v-card-text class='d-flex worlds'>
       <wotw-world-view
@@ -33,10 +33,6 @@
         type: Boolean,
         default: false,
       },
-      color: {
-        type: String,
-        default: '',
-      },
       canJoin: {
         type: Boolean,
         default: true,
@@ -45,7 +41,12 @@
         type: Number,
         required: false,
         default: null,
-      }
+      },
+      hideColor: {
+        type: Boolean,
+        required: false,
+        default: false,
+      },
     },
     computed: {
       ...mapState('user', ['user']),

@@ -480,6 +480,7 @@ export const RandoProto = $root.RandoProto = (() => {
          * @property {string|null} [name] UserInfo name
          * @property {string|null} [avatarId] UserInfo avatarId
          * @property {number|Long|null} [connectedMultiverseId] UserInfo connectedMultiverseId
+         * @property {number|Long|null} [currentMultiverseId] UserInfo currentMultiverseId
          */
 
         /**
@@ -529,6 +530,14 @@ export const RandoProto = $root.RandoProto = (() => {
          */
         UserInfo.prototype.connectedMultiverseId = null;
 
+        /**
+         * UserInfo currentMultiverseId.
+         * @member {number|Long|null|undefined} currentMultiverseId
+         * @memberof RandoProto.UserInfo
+         * @instance
+         */
+        UserInfo.prototype.currentMultiverseId = null;
+
         // OneOf field names bound to virtual getters and setters
         let $oneOfFields;
 
@@ -551,6 +560,17 @@ export const RandoProto = $root.RandoProto = (() => {
          */
         Object.defineProperty(UserInfo.prototype, "_connectedMultiverseId", {
             get: $util.oneOfGetter($oneOfFields = ["connectedMultiverseId"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        /**
+         * UserInfo _currentMultiverseId.
+         * @member {"currentMultiverseId"|undefined} _currentMultiverseId
+         * @memberof RandoProto.UserInfo
+         * @instance
+         */
+        Object.defineProperty(UserInfo.prototype, "_currentMultiverseId", {
+            get: $util.oneOfGetter($oneOfFields = ["currentMultiverseId"]),
             set: $util.oneOfSetter($oneOfFields)
         });
 
@@ -586,6 +606,8 @@ export const RandoProto = $root.RandoProto = (() => {
                 writer.uint32(/* id 3, wireType 2 =*/26).string(message.avatarId);
             if (message.connectedMultiverseId != null && Object.hasOwnProperty.call(message, "connectedMultiverseId"))
                 writer.uint32(/* id 4, wireType 0 =*/32).int64(message.connectedMultiverseId);
+            if (message.currentMultiverseId != null && Object.hasOwnProperty.call(message, "currentMultiverseId"))
+                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.currentMultiverseId);
             return writer;
         };
 
@@ -631,6 +653,9 @@ export const RandoProto = $root.RandoProto = (() => {
                     break;
                 case 4:
                     message.connectedMultiverseId = reader.int64();
+                    break;
+                case 5:
+                    message.currentMultiverseId = reader.int64();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -684,6 +709,11 @@ export const RandoProto = $root.RandoProto = (() => {
                 if (!$util.isInteger(message.connectedMultiverseId) && !(message.connectedMultiverseId && $util.isInteger(message.connectedMultiverseId.low) && $util.isInteger(message.connectedMultiverseId.high)))
                     return "connectedMultiverseId: integer|Long expected";
             }
+            if (message.currentMultiverseId != null && message.hasOwnProperty("currentMultiverseId")) {
+                properties._currentMultiverseId = 1;
+                if (!$util.isInteger(message.currentMultiverseId) && !(message.currentMultiverseId && $util.isInteger(message.currentMultiverseId.low) && $util.isInteger(message.currentMultiverseId.high)))
+                    return "currentMultiverseId: integer|Long expected";
+            }
             return null;
         };
 
@@ -714,6 +744,15 @@ export const RandoProto = $root.RandoProto = (() => {
                     message.connectedMultiverseId = object.connectedMultiverseId;
                 else if (typeof object.connectedMultiverseId === "object")
                     message.connectedMultiverseId = new $util.LongBits(object.connectedMultiverseId.low >>> 0, object.connectedMultiverseId.high >>> 0).toNumber();
+            if (object.currentMultiverseId != null)
+                if ($util.Long)
+                    (message.currentMultiverseId = $util.Long.fromValue(object.currentMultiverseId)).unsigned = false;
+                else if (typeof object.currentMultiverseId === "string")
+                    message.currentMultiverseId = parseInt(object.currentMultiverseId, 10);
+                else if (typeof object.currentMultiverseId === "number")
+                    message.currentMultiverseId = object.currentMultiverseId;
+                else if (typeof object.currentMultiverseId === "object")
+                    message.currentMultiverseId = new $util.LongBits(object.currentMultiverseId.low >>> 0, object.currentMultiverseId.high >>> 0).toNumber();
             return message;
         };
 
@@ -751,6 +790,14 @@ export const RandoProto = $root.RandoProto = (() => {
                 if (options.oneofs)
                     object._connectedMultiverseId = "connectedMultiverseId";
             }
+            if (message.currentMultiverseId != null && message.hasOwnProperty("currentMultiverseId")) {
+                if (typeof message.currentMultiverseId === "number")
+                    object.currentMultiverseId = options.longs === String ? String(message.currentMultiverseId) : message.currentMultiverseId;
+                else
+                    object.currentMultiverseId = options.longs === String ? $util.Long.prototype.toString.call(message.currentMultiverseId) : options.longs === Number ? new $util.LongBits(message.currentMultiverseId.low >>> 0, message.currentMultiverseId.high >>> 0).toNumber() : message.currentMultiverseId;
+                if (options.oneofs)
+                    object._currentMultiverseId = "currentMultiverseId";
+            }
             return object;
         };
 
@@ -787,6 +834,7 @@ export const RandoProto = $root.RandoProto = (() => {
          * @interface IWorldInfo
          * @property {number|Long|null} [id] WorldInfo id
          * @property {string|null} [name] WorldInfo name
+         * @property {string|null} [color] WorldInfo color
          * @property {Array.<RandoProto.IUserInfo>|null} [members] WorldInfo members
          */
 
@@ -821,6 +869,14 @@ export const RandoProto = $root.RandoProto = (() => {
          * @instance
          */
         WorldInfo.prototype.name = "";
+
+        /**
+         * WorldInfo color.
+         * @member {string} color
+         * @memberof RandoProto.WorldInfo
+         * @instance
+         */
+        WorldInfo.prototype.color = "";
 
         /**
          * WorldInfo members.
@@ -858,9 +914,11 @@ export const RandoProto = $root.RandoProto = (() => {
                 writer.uint32(/* id 1, wireType 0 =*/8).int64(message.id);
             if (message.name != null && Object.hasOwnProperty.call(message, "name"))
                 writer.uint32(/* id 2, wireType 2 =*/18).string(message.name);
+            if (message.color != null && Object.hasOwnProperty.call(message, "color"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.color);
             if (message.members != null && message.members.length)
                 for (let i = 0; i < message.members.length; ++i)
-                    $root.RandoProto.UserInfo.encode(message.members[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                    $root.RandoProto.UserInfo.encode(message.members[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             return writer;
         };
 
@@ -902,6 +960,9 @@ export const RandoProto = $root.RandoProto = (() => {
                     message.name = reader.string();
                     break;
                 case 3:
+                    message.color = reader.string();
+                    break;
+                case 4:
                     if (!(message.members && message.members.length))
                         message.members = [];
                     message.members.push($root.RandoProto.UserInfo.decode(reader, reader.uint32()));
@@ -947,6 +1008,9 @@ export const RandoProto = $root.RandoProto = (() => {
             if (message.name != null && message.hasOwnProperty("name"))
                 if (!$util.isString(message.name))
                     return "name: string expected";
+            if (message.color != null && message.hasOwnProperty("color"))
+                if (!$util.isString(message.color))
+                    return "color: string expected";
             if (message.members != null && message.hasOwnProperty("members")) {
                 if (!Array.isArray(message.members))
                     return "members: array expected";
@@ -982,6 +1046,8 @@ export const RandoProto = $root.RandoProto = (() => {
                     message.id = new $util.LongBits(object.id.low >>> 0, object.id.high >>> 0).toNumber();
             if (object.name != null)
                 message.name = String(object.name);
+            if (object.color != null)
+                message.color = String(object.color);
             if (object.members) {
                 if (!Array.isArray(object.members))
                     throw TypeError(".RandoProto.WorldInfo.members: array expected");
@@ -1017,6 +1083,7 @@ export const RandoProto = $root.RandoProto = (() => {
                 } else
                     object.id = options.longs === String ? "0" : 0;
                 object.name = "";
+                object.color = "";
             }
             if (message.id != null && message.hasOwnProperty("id"))
                 if (typeof message.id === "number")
@@ -1025,6 +1092,8 @@ export const RandoProto = $root.RandoProto = (() => {
                     object.id = options.longs === String ? $util.Long.prototype.toString.call(message.id) : options.longs === Number ? new $util.LongBits(message.id.low >>> 0, message.id.high >>> 0).toNumber() : message.id;
             if (message.name != null && message.hasOwnProperty("name"))
                 object.name = message.name;
+            if (message.color != null && message.hasOwnProperty("color"))
+                object.color = message.color;
             if (message.members && message.members.length) {
                 object.members = [];
                 for (let j = 0; j < message.members.length; ++j)
@@ -1066,6 +1135,7 @@ export const RandoProto = $root.RandoProto = (() => {
          * @interface IUniverseInfo
          * @property {number|Long|null} [id] UniverseInfo id
          * @property {string|null} [name] UniverseInfo name
+         * @property {string|null} [color] UniverseInfo color
          * @property {Array.<RandoProto.IWorldInfo>|null} [worlds] UniverseInfo worlds
          */
 
@@ -1100,6 +1170,14 @@ export const RandoProto = $root.RandoProto = (() => {
          * @instance
          */
         UniverseInfo.prototype.name = "";
+
+        /**
+         * UniverseInfo color.
+         * @member {string} color
+         * @memberof RandoProto.UniverseInfo
+         * @instance
+         */
+        UniverseInfo.prototype.color = "";
 
         /**
          * UniverseInfo worlds.
@@ -1137,9 +1215,11 @@ export const RandoProto = $root.RandoProto = (() => {
                 writer.uint32(/* id 1, wireType 0 =*/8).int64(message.id);
             if (message.name != null && Object.hasOwnProperty.call(message, "name"))
                 writer.uint32(/* id 2, wireType 2 =*/18).string(message.name);
+            if (message.color != null && Object.hasOwnProperty.call(message, "color"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.color);
             if (message.worlds != null && message.worlds.length)
                 for (let i = 0; i < message.worlds.length; ++i)
-                    $root.RandoProto.WorldInfo.encode(message.worlds[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                    $root.RandoProto.WorldInfo.encode(message.worlds[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
             return writer;
         };
 
@@ -1181,6 +1261,9 @@ export const RandoProto = $root.RandoProto = (() => {
                     message.name = reader.string();
                     break;
                 case 3:
+                    message.color = reader.string();
+                    break;
+                case 4:
                     if (!(message.worlds && message.worlds.length))
                         message.worlds = [];
                     message.worlds.push($root.RandoProto.WorldInfo.decode(reader, reader.uint32()));
@@ -1226,6 +1309,9 @@ export const RandoProto = $root.RandoProto = (() => {
             if (message.name != null && message.hasOwnProperty("name"))
                 if (!$util.isString(message.name))
                     return "name: string expected";
+            if (message.color != null && message.hasOwnProperty("color"))
+                if (!$util.isString(message.color))
+                    return "color: string expected";
             if (message.worlds != null && message.hasOwnProperty("worlds")) {
                 if (!Array.isArray(message.worlds))
                     return "worlds: array expected";
@@ -1261,6 +1347,8 @@ export const RandoProto = $root.RandoProto = (() => {
                     message.id = new $util.LongBits(object.id.low >>> 0, object.id.high >>> 0).toNumber();
             if (object.name != null)
                 message.name = String(object.name);
+            if (object.color != null)
+                message.color = String(object.color);
             if (object.worlds) {
                 if (!Array.isArray(object.worlds))
                     throw TypeError(".RandoProto.UniverseInfo.worlds: array expected");
@@ -1296,6 +1384,7 @@ export const RandoProto = $root.RandoProto = (() => {
                 } else
                     object.id = options.longs === String ? "0" : 0;
                 object.name = "";
+                object.color = "";
             }
             if (message.id != null && message.hasOwnProperty("id"))
                 if (typeof message.id === "number")
@@ -1304,6 +1393,8 @@ export const RandoProto = $root.RandoProto = (() => {
                     object.id = options.longs === String ? $util.Long.prototype.toString.call(message.id) : options.longs === Number ? new $util.LongBits(message.id.low >>> 0, message.id.high >>> 0).toNumber() : message.id;
             if (message.name != null && message.hasOwnProperty("name"))
                 object.name = message.name;
+            if (message.color != null && message.hasOwnProperty("color"))
+                object.color = message.color;
             if (message.worlds && message.worlds.length) {
                 object.worlds = [];
                 for (let j = 0; j < message.worlds.length; ++j)

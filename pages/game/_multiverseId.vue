@@ -4,42 +4,7 @@
       <h1 class='text-center mt-12 mb-6'>Game <small>#</small>{{ multiverseId }}</h1>
       <throttled-spinner>
         <div v-if='isLoggedIn && multiverseReady'>
-          <div class='universes'>
-            <wotw-universe-view
-              v-for='universe in multiverse.universes'
-              :key='universe.id'
-              :can-join='!isSpectating'
-              :color='universeColors[universe.id]'
-              :disabled='loading'
-              :universe='universe'
-              :multiverse-id='multiverseId'
-              class='universe-view'
-              @join-world='worldId => join(worldId)'
-              @new-world='createWorld(universe.id)'
-            />
-          </div>
-
-          <div v-if='!isSpectating' class='text-center mt-4'>
-            <v-tooltip :disabled='canCreateUniverse' bottom>
-              <span>
-                You ran out of space in your multiverse.
-              </span>
-              <template #activator='{on}'>
-                <div class='d-inline-block' v-on='on'>
-                  <v-btn :disabled='loading || !canCreateUniverse' large text @click='createWorld()'>
-                    <v-icon left>mdi-plus</v-icon>
-                    New Universe
-                  </v-btn>
-                </div>
-              </template>
-            </v-tooltip>
-          </div>
-          <div v-else class='text-center mt-4'>
-            <v-alert class='d-inline-block' color='info darken'>
-              <v-icon left>mdi-monitor-eye</v-icon>
-              You are spectating this game.
-            </v-alert>
-          </div>
+          <wotw-multiverse-view :multiverse='multiverse' />
         </div>
         <div v-if='!isLoggedIn && userLoaded' class='text-center'>
           <v-alert class='d-inline-block' color='error darken-3'>
@@ -102,7 +67,6 @@
             :multiverse='multiverse'
             :hidden-universes='hiddenUniverses'
             :highlight-universe='highlightedUniverseId'
-            :universe-colors='universeColors'
             class='board'
           />
           <div class='sidebar px-5'>
@@ -115,7 +79,6 @@
               >
                 <wotw-bingo-universe-view
                   :bingo-universe='bingoUniverse'
-                  :color='universeColors[bingoUniverse.universeId]'
                   :universe='multiverse.universes.find(u => u.id === bingoUniverse.universeId)'
                   :universe-hidden='hiddenUniverses.includes(bingoUniverse.universeId)'
                   @click='toggleUniverseVisibility(bingoUniverse.universeId)'
@@ -201,7 +164,6 @@
 
 <script>
   import { mapGetters, mapState } from 'vuex'
-  import { colors } from 'vuetify/lib'
 
   const isOBS = () => !!window?.obsstudio?.pluginVersion
 
@@ -268,30 +230,6 @@
 
           return rankDifference
         })
-      },
-      universeColors() {
-        if (!this.multiverse) {
-          return {}
-        }
-
-        const universeIds = this.multiverse.universes.map(u => u.id).sort()
-        const universeColors = {}
-        const colorPool = [
-          colors.brown.darken1,
-          colors.indigo.darken2,
-          colors.teal.darken2,
-          colors.orange.darken2,
-          colors.red.darken2,
-          colors.pink.darken3,
-          colors.green.darken2,
-          colors.blue.darken3,
-        ]
-
-        for (const universeId of universeIds) {
-          universeColors[universeId] = colorPool.pop() ?? 'transparent'
-        }
-
-        return universeColors
       },
       canCreateUniverse() {
         return this.multiverse.universes.length < 8

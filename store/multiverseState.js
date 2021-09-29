@@ -14,6 +14,7 @@ export const state = () => ({
 const ensureMultiverseExists = (state, multiverseId) => {
   if (!hasOwnProperty(state.multiverses, multiverseId)) {
     Vue.set(state.multiverses, multiverseId, {
+      id: multiverseId,
       universes: [],
       spectators: [],
       bingoBoard: null,

@@ -37,15 +37,15 @@
         type: Boolean,
         default: false,
       },
-      teamColors: {
+      universeColors: {
         type: Object,
         required: true,
       },
-      hiddenTeams: {
+      hiddenUniverses: {
         type: Array,
         default: () => ([]),
       },
-      highlightTeam: {
+      highlightUniverse: {
         type: Number,
         default: null,
       }
@@ -71,12 +71,12 @@
         const highlightSplitPercentage = 33
 
         const nonHighlightedColors = this.square.completedBy
-          .filter(universeId => !this.hiddenTeams.includes(universeId) && universeId !== this.highlightTeam)
+          .filter(universeId => !this.hiddenUniverses.includes(universeId) && universeId !== this.highlightUniverse)
           .sort((a, b) => b - a)
-          .map(universeId => this.teamColors[universeId])
+          .map(universeId => this.universeColors[universeId])
         const stops = []
 
-        const shouldHighlight = !!this.highlightTeam && !this.hiddenTeams.includes(this.highlightTeam)
+        const shouldHighlight = !!this.highlightUniverse && !this.hiddenUniverses.includes(this.highlightUniverse)
 
         for (let i = 0; i < nonHighlightedColors.length; i++) {
           const stopStart = (i / nonHighlightedColors.length) * (shouldHighlight ? highlightSplitPercentage : 100)
@@ -88,9 +88,9 @@
           stops.push(`transparent 0% ${highlightSplitPercentage}%`)
         }
 
-        if (this.highlightTeam) {
-          if (shouldHighlight && this.square.completedBy.includes(this.highlightTeam)) {
-            stops.push(`${this.teamColors[this.highlightTeam]} ${highlightSplitPercentage}% 100%`)
+        if (this.highlightUniverse) {
+          if (shouldHighlight && this.square.completedBy.includes(this.highlightUniverse)) {
+            stops.push(`${this.universeColors[this.highlightUniverse]} ${highlightSplitPercentage}% 100%`)
           } else {
             stops.push(`transparent ${highlightSplitPercentage}% 100%`)
           }

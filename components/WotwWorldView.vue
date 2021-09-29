@@ -1,5 +1,6 @@
 <template>
   <v-card class='world-view' outlined color='background lighten-2'>
+    <v-sheet :color='world.color' class='flex-shrink-0' height='0.5em' />
     <v-card-title>{{ world.name }}</v-card-title>
     <v-card-text>
       <wotw-player-view v-for='player in world.members' :key='player.id' class='mb-1' :user='player' :multiverse-id='multiverseId' />
@@ -24,10 +25,6 @@
       disabled: {
         type: Boolean,
         default: false,
-      },
-      color: {
-        type: String,
-        default: '',
       },
       canJoin: {
         type: Boolean,

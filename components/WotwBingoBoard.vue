@@ -18,7 +18,7 @@
           :key='`${x}${y}`'
           :force-flip='x + y > unveilProgress'
           :square='hasSquare(x, y) ? squaresByPosition[x][y].square : null'
-          :team-colors='universeColors'
+          :universe-colors='universeColors'
           :hidden-teams='hiddenUniverses'
           :highlight-team='highlightUniverse'
         />
@@ -46,10 +46,6 @@
     name: 'WotwBingoBoard',
     props: {
       multiverse: {
-        type: Object,
-        required: true,
-      },
-      universeColors: {
         type: Object,
         required: true,
       },
@@ -99,6 +95,13 @@
 
         return squares
       },
+      universeColors() {
+        const colorMap = {}
+        for (const universe of this.multiverse.universe) {
+          colorMap[universe.id] = universe.color
+        }
+        return colorMap
+      }
     },
     mounted() {
       const intervalId = setInterval(() => {

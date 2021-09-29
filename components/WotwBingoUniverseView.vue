@@ -1,6 +1,6 @@
 <template>
   <v-card class='universe-view' :class='{"universe-hidden": universeHidden}' @click='$emit("click")'>
-    <v-sheet :color='universeHidden ? "" : color' class='color-stripe'>
+    <v-sheet :color='universeHidden ? "" : universe.color' class='color-stripe'>
       <div v-if='!!bingoUniverse' class='squares px-2'>
         {{ bingoUniverse.squares }}
       </div>
@@ -37,10 +37,6 @@
       bingoUniverse: {
         type: Object,
         default: null,
-      },
-      color: {
-        type: String,
-        default: '',
       },
       universeHidden: {
         type: Boolean,

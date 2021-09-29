@@ -79,7 +79,11 @@
             <p>
               Headers let you customize the seed further.
             </p>
-            <wotw-seedgen-header-select v-model='seedgenConfig.headers' :headers='availableHeaders' :header-args.sync='seedgenConfig.headerArgs' />
+            <wotw-seedgen-header-select
+              v-model='seedgenConfig.headers'
+              :headers='availableHeaders'
+              :header-args.sync='seedgenConfig.headerArgs'
+            />
 
             <h3 class='mt-5 mb-2'>Custom headers</h3>
             <wotw-seedgen-custom-header-select v-model='seedgenConfig.customHeaders' />
@@ -121,7 +125,7 @@
                     <div class='mt-4'>
                       <v-select
                         v-model='createOnlineGame'
-                          :items="[
+                        :items="[
                             {text: 'None', value: 'none'},
                             {text: 'Normal', value: 'normal'},
                             {text: 'Bingo', value: 'bingo'},
@@ -205,6 +209,7 @@
 
 <script>
   import { saveAs } from 'file-saver'
+  import base64url from 'base64url'
   import glitches from '~/assets/seedgen/glitches.yaml'
   import goals from '~/assets/seedgen/goals.yaml'
   import spawns from '~/assets/seedgen/spawns.yaml'
@@ -267,7 +272,7 @@
           id: d[0].toLowerCase(),
           ...d[1],
         }))
-      }
+      },
     },
     watch: {
       'seedgenConfig.multiNames'(multiNames) {
@@ -326,10 +331,10 @@
                 result.multiverseId = await this.$axios.$post('/bingo')
                 break
               case 'discovery_bingo':
-                result.multiverseId = await this.$axios.$post('/bingo', {discovery: 2})
+                result.multiverseId = await this.$axios.$post('/bingo', { discovery: 2 })
                 break
               case 'lockout_bingo':
-                result.multiverseId = await this.$axios.$post('/bingo', {lockout: true})
+                result.multiverseId = await this.$axios.$post('/bingo', { lockout: true })
                 break
             }
           }
@@ -358,13 +363,13 @@
             } else {
               saveAs(url, fileName)
             }
-          } else {
+          } else if (this.seedgenResult.multiverseId === null) {
             await this.$router.replace({ query: { result: JSON.stringify(result) } })
-
-            await this.$nextTick()
-            confettiFromElement(this.$refs.resultView.$el, {
-              disableForReducedMotion: true,
-              zIndex: 100000,
+          } else {
+            await this.$router.push({
+              name: 'game-multiverseId',
+              params: { multiverseId: this.seedgenResult.multiverseId },
+              query: { seedgenResult: base64url.encode(JSON.stringify(result)) },
             })
           }
         } catch (e) {
@@ -446,7 +451,7 @@
       },
       updateSeedgenResultDialogState() {
         if (this.$route.query.result) {
-          this.seedgenResult = JSON.parse(String(this.$route.query.result))
+          this.seedgenResult = JSON.parse(base64url.decode(String(this.$route.query.result)))
           this.showResultDialog = true
         } else {
           this.seedgenResult = null

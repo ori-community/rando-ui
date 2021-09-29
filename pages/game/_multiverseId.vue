@@ -2,6 +2,13 @@
   <div>
     <v-container>
       <h1 class='text-center mt-12 mb-6'>Game <small>#</small>{{ multiverseId }}</h1>
+
+      <v-slide-y-reverse-transition>
+        <floating-overlay-dialog v-if='seedgenResultDialogEnabled' v-model='seedgenResultVisible' :hide-completely='hideSeedgenResultCompletely'>
+          <wotw-seedgen-result-view :result='seedgenResult' max-width='400' hide-go-to-game-button />
+        </floating-overlay-dialog>
+      </v-slide-y-reverse-transition>
+
       <throttled-spinner>
         <div v-if='isLoggedIn && multiverseReady'>
           <wotw-multiverse-view :multiverse='multiverse' />
@@ -164,6 +171,7 @@
 
 <script>
   import { mapGetters, mapState } from 'vuex'
+  import base64url from 'base64url'
 
   const isOBS = () => !!window?.obsstudio?.pluginVersion
 
@@ -198,6 +206,9 @@
       },
       spectateDialogOpen: false,
       spectateLoading: false,
+      seedgenResultVisible: false,
+      seedgenResultDialogEnabled: false,
+      hideSeedgenResultCompletely: false,
     }),
     computed: {
       ...mapGetters('user', ['isLoggedIn']),
@@ -260,6 +271,17 @@
 
         return this.multiverse.spectators.some(s => s.id === this.user.id)
       },
+      seedgenResult() {
+        try {
+          if (this.$route.query.seedgenResult) {
+            return JSON.parse(base64url.decode(this.$route.query.seedgenResult))
+          }
+        } catch (e) {
+          console.error('Error parsing seedgen result', e)
+        }
+
+        return null
+      }
     },
     watch: {
       userLoaded: {
@@ -323,6 +345,24 @@
       } catch (e) {
         console.error('Could not load board settings', e)
       }
+
+      this.$store.commit('nav/setLastMultiverseId', {
+        id: this.multiverseId,
+        seedgenResult: this.$route.query.seedgenResult ?? null,
+      })
+
+      if (this.seedgenResult) {
+        this.seedgenResultVisible = true
+        this.seedgenResultDialogEnabled = true
+        setTimeout(() => {
+          this.seedgenResultVisible = false
+        }, 600)
+      }
+
+      window.addEventListener('scroll', this.onScroll)
+    },
+    beforeDestroy() {
+      window.removeEventListener('scroll', this.onScroll)
     },
     methods: {
       async join(worldId) {
@@ -388,6 +428,9 @@
         }
 
         this.spectateLoading = false
+      },
+      onScroll() {
+        this.hideSeedgenResultCompletely = document.scrollingElement.scrollTop > 200
       },
     },
   }

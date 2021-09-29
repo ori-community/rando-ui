@@ -14,6 +14,11 @@ export const mutations = {
     state.user = user
     state.userLoaded = true
   },
+  setCurrentMultiverseId(state, currentMultiverseId) {
+    if (state.user) {
+      state.user.currentMultiverseId = currentMultiverseId
+    }
+  },
 }
 
 export const actions = {

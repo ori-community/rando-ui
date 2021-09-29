@@ -97,7 +97,7 @@
       },
       universeColors() {
         const colorMap = {}
-        for (const universe of this.multiverse.universe) {
+        for (const universe of this.multiverse.universes) {
           colorMap[universe.id] = universe.color
         }
         return colorMap

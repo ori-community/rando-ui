@@ -37,7 +37,7 @@
       errorMessage: '',
     }),
     computed: {
-      ...mapState(['user/user']),
+      ...mapState('user', ['user']),
       isElectron,
       shouldHideToolbar() {
         return !!this.$route.query.hideToolbar && !!this.user && isElectron()
@@ -90,8 +90,12 @@
         this.$store.commit('electron/setSettings', await window.electronApi.invoke('settings.readSettings'))
       }
     },
-    mounted() {
-      this.$store.dispatch('user/updateUser')
+    async mounted() {
+      await this.$store.dispatch('user/updateUser')
+      this.$store.commit('nav/setLastMultiverseId', {
+        id: this.user?.currentMultiverseId ?? null,
+        seedgenResult: null,
+      })
     },
   }
 </script>

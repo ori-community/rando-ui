@@ -4,6 +4,12 @@
       <v-icon left>mdi-home-outline</v-icon>
       Home
     </v-btn>
+    <v-scale-transition v-if='isElectron'>
+      <v-btn v-if='lastMultiverseId !== null' exact x-large depressed text :to='{name: "game-multiverseId", params: {multiverseId: lastMultiverseId}, query: {seedgenResult: lastSeedgenResult}}'>
+        <v-icon left>mdi-gamepad-variant-outline</v-icon>
+        Game {{ lastMultiverseId }}
+      </v-btn>
+    </v-scale-transition>
     <v-btn x-large depressed text to='/seedgen'>
       <v-icon left>mdi-dice-multiple</v-icon>
       Seed generator
@@ -13,34 +19,38 @@
       Settings
     </v-btn>
     <v-spacer />
-    <template v-if='isLoggedIn'>
-      <div class='mr-4'>
-        Hi, {{ user.name }}!
-      </div>
-      <v-menu offset-y>
-        <template #activator='{on}'>
-          <v-btn x-large class='ma-0 mr-1' icon v-on='on'>
-            <discord-avatar :user='user' size='48' />
+    <throttled-spinner>
+      <div v-if='userLoaded' class='d-flex align-center'>
+        <template v-if='isLoggedIn'>
+          <div class='mr-4'>
+            Hi, {{ user.name }}!
+          </div>
+          <v-menu offset-y>
+            <template #activator='{on}'>
+              <v-btn x-large class='ma-0 mr-1' icon v-on='on'>
+                <discord-avatar :user='user' size='48' />
+              </v-btn>
+            </template>
+            <v-list v-if='isLoggedIn'>
+              <v-list-item @click='openChangeNicknameDialog'>
+                <v-icon left>mdi-account-edit-outline</v-icon>
+                Change Nickname
+              </v-list-item>
+              <v-list-item @click='logout'>
+                <v-icon left>mdi-logout-variant</v-icon>
+                Log out
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </template>
+        <template v-else>
+          <v-btn x-large depressed text @click='login'>
+            <v-icon left>mdi-login-variant</v-icon>
+            Log in
           </v-btn>
         </template>
-        <v-list v-if='isLoggedIn'>
-          <v-list-item @click='openChangeNicknameDialog'>
-            <v-icon left>mdi-account-edit-outline</v-icon>
-            Change Nickname
-          </v-list-item>
-          <v-list-item @click='logout'>
-            <v-icon left>mdi-logout-variant</v-icon>
-            Log out
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </template>
-    <template v-else>
-      <v-btn x-large depressed text @click='login'>
-        <v-icon left>mdi-login-variant</v-icon>
-        Log in
-      </v-btn>
-    </template>
+      </div>
+    </throttled-spinner>
 
     <v-dialog v-model='changeNicknameDialogIsOpen' :persistent='nicknameDialogLoading' max-width='500'>
       <v-card>
@@ -82,7 +92,8 @@
     }),
     computed: {
       ...mapGetters('user', ['isLoggedIn']),
-      ...mapState('user', ['user']),
+      ...mapState('user', ['user', 'userLoaded']),
+      ...mapState('nav', ['lastMultiverseId', 'lastSeedgenResult']),
       isElectron,
       nicknameIsValid() {
         return this.currentNickname.trim().length > 0

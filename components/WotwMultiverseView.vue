@@ -15,7 +15,7 @@
       />
     </div>
 
-    <div v-if='!isSpectating' class='text-center mt-4'>
+    <div v-if='!isSpectating' class='action-buttons mt-4'>
       <v-tooltip :disabled='canCreateUniverse' bottom>
         <span>
           You ran out of space in your multiverse.
@@ -29,6 +29,8 @@
           </div>
         </template>
       </v-tooltip>
+
+      <slot name='additional-buttons' />
     </div>
     <div v-else class='text-center mt-4'>
       <v-alert class='d-inline-block' color='info darken'>
@@ -122,9 +124,11 @@
           multiverseId: this.multiverseId,
           reconnect: true,
         })
+        this.$store.commit('user/setCurrentMultiverseId', this.multiverseId)
       },
       async createWorld(universeId = null) {
         await this.$axios.post(`/multiverses/${this.multiverseId}/${universeId}/worlds`)
+        this.$store.commit('user/setCurrentMultiverseId', this.multiverseId)
       },
     },
   }
@@ -141,5 +145,12 @@
     .universe-view {
       min-width: 15vw;
     }
+  }
+
+  .action-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
   }
 </style>

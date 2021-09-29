@@ -12,85 +12,95 @@
           </div>
         </template>
         <template v-else>
-          <v-card v-if='!!motd' class='mb-6 motd' color='background lighten-2'>
-            <v-card-text class='motd-text' v-html='motd' />
-            <img class='motd-ori' src='~/assets/images/ori_lurk.png'>
-          </v-card>
+          <v-scroll-x-transition>
+            <v-card v-if='!!motd' class='mb-6 motd' color='background lighten-2'>
+              <v-card-text class='motd-text' v-html='motd' />
+              <img class='motd-ori' src='~/assets/images/ori_lurk.png'>
+            </v-card>
+          </v-scroll-x-transition>
 
-          <v-card v-for='release in availableReleases' :key='release.id' class='mb-2'>
-            <v-card-title>Version {{ release.name }}
-              <v-chip v-if='isNewVersion(release.name)' class='ml-2' small color='accent'>New</v-chip>
-            </v-card-title>
-            <v-card-text class='release-changelog' v-html='release.bodyHtml' />
-          </v-card>
+          <v-scroll-x-transition group>
+            <v-card v-for='release in availableReleases' :key='release.id' class='mb-2'>
+              <v-card-title>Version {{ release.name }}
+                <v-chip v-if='isNewVersion(release.name)' class='ml-2' small color='accent'>New</v-chip>
+              </v-card-title>
+              <v-card-text class='release-changelog' v-html='release.bodyHtml' />
+            </v-card>
+          </v-scroll-x-transition>
         </template>
       </v-col>
       <v-col cols='12' md='3' order-md='1' order='0'>
-        <v-card :color='updateAvailable ? `warning darken-4` : `background lighten-1`' class='pa-4'>
-          <h3>Version: {{ currentVersion }}</h3>
-          <template v-if='currentVersion === "develop"'>
-            You are running a development build. Download the latest stable version
-            to get automatic updates.
-          </template>
-          <template v-else-if='updateAvailable'>
-            Version {{ latestVersion }} is available!
-
-            <div v-if='updateDownloading'>
-              <v-progress-linear class='mt-3' :value='updateDownloadProgress' />
-            </div>
-            <v-btn v-else class='mt-3' depressed block @click='downloadAndInstallUpdate'>Install update</v-btn>
-          </template>
-          <template v-else>
-            You are running the latest version.
-          </template>
-        </v-card>
-
-        <v-btn
-          x-large
-          color='accent'
-          block
-          class='mt-6'
-          :class='{"bottom-border-radius-0": currentSeedPath !== null}'
-          :loading='launching'
-          @click='launch()'
-        >
-          <img class='launch-icon' src='../../assets/images/launch.png' alt=''>
-          Launch
-        </v-btn>
-        <v-card v-if='currentSeedPath !== null' outlined class='pa-2 text-center top-border-radius-0 current-seed-path'>
-          {{ currentSeedPathBasename }}
-        </v-card>
-
-        <v-btn color='background lighten-1' block class='mt-3' @click='openWiki'>
-          <v-icon left>mdi-book-outline</v-icon>
-          Read the Wiki
-        </v-btn>
-
-        <div class='py-4 text-center hoverable'>
-          <v-tooltip bottom>
-            <span>Open randomizer directory</span>
-            <template #activator='{on}'>
-              <v-btn icon v-on='on' @click='openRandomizerDirectory'>
-                <v-icon>mdi-folder-eye-outline</v-icon>
-              </v-btn>
+        <div class='sticky'>
+          <v-card :color='updateAvailable ? `warning darken-4` : `background lighten-1`' class='pa-4'>
+            <h3>Version: {{ currentVersion }}</h3>
+            <template v-if='currentVersion === "develop"'>
+              You are running a development build. Download the latest stable version
+              to get automatic updates.
             </template>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <span>GitHub</span>
-            <template #activator='{on}'>
-              <v-btn icon v-on='on' @click='openGitHub'>
-                <v-icon>mdi-github</v-icon>
-              </v-btn>
+            <template v-else-if='updateAvailable'>
+              Version {{ latestVersion }} is available!
+
+              <div v-if='updateDownloading'>
+                <v-progress-linear class='mt-3' :value='updateDownloadProgress' />
+              </div>
+              <v-btn v-else class='mt-3' depressed block @click='downloadAndInstallUpdate'>Install update</v-btn>
             </template>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <span>Discord</span>
-            <template #activator='{on}'>
-              <v-btn icon v-on='on' @click='openDiscord'>
-                <v-icon>mdi-discord</v-icon>
-              </v-btn>
+            <template v-else>
+              You are running the latest version.
             </template>
-          </v-tooltip>
+          </v-card>
+
+          <v-btn
+            x-large
+            color='accent'
+            block
+            class='mt-6'
+            :class='{"bottom-border-radius-0": currentSeedPath !== null}'
+            :loading='launching'
+            @click='launch()'
+          >
+            <img class='launch-icon' src='../../assets/images/launch.png' alt=''>
+            Launch
+          </v-btn>
+          <v-card v-if='currentSeedPath !== null' class='pa-2 text-center top-border-radius-0 current-seed-path'>
+            {{ currentSeedPathBasename }}
+          </v-card>
+
+          <div class='text-center mt-5'>
+            <wotw-new-game-menu block />
+          </div>
+
+          <v-btn text block class='mt-3' @click='openWiki'>
+            <v-icon left>mdi-book-outline</v-icon>
+            Read the Wiki
+          </v-btn>
+
+          <div class='py-4 text-center hoverable'>
+            <v-tooltip bottom>
+              <span>Open randomizer directory</span>
+              <template #activator='{on}'>
+                <v-btn icon v-on='on' @click='openRandomizerDirectory'>
+                  <v-icon>mdi-folder-eye-outline</v-icon>
+                </v-btn>
+              </template>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <span>GitHub</span>
+              <template #activator='{on}'>
+                <v-btn icon v-on='on' @click='openGitHub'>
+                  <v-icon>mdi-github</v-icon>
+                </v-btn>
+              </template>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <span>Discord</span>
+              <template #activator='{on}'>
+                <v-btn icon v-on='on' @click='openDiscord'>
+                  <v-icon>mdi-discord</v-icon>
+                </v-btn>
+              </template>
+            </v-tooltip>
+          </div>
         </div>
       </v-col>
     </v-row>
@@ -114,7 +124,7 @@
             <v-btn text depressed @click='currentCrashZipName = null'>
               Close
             </v-btn>
-            <v-btn depressed color='accent' @click='showCrashZipInExplorer' class='ml-2'>
+            <v-btn depressed color='accent' class='ml-2' @click='showCrashZipInExplorer'>
               Show in Explorer
             </v-btn>
           </div>
@@ -194,6 +204,7 @@
         settings: state => state.electron.settings,
         settingsLoaded: state => state.electron.settingsLoaded,
       }),
+      ...mapState('multiverseState', ['multiverses']),
       updateAvailable() {
         return this.latestRelease !== null && this.isNewVersion(this.latestVersion)
       },
@@ -245,6 +256,17 @@
       async checkForUpdates() {
         try {
           this.currentVersion = await window.electronApi.invoke('updater.getVersion')
+
+          this.motd = sanitizeHtml((await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/motd/wotw`, {
+            params: {
+              version: this.currentVersion,
+            },
+          })).motd, {
+            allowedClasses: {
+              '*': ['mb-*'],
+            },
+          })
+
           this.availableReleases = (await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/releases`))
             .filter(release => !release.draft && !release.prerelease)
             .sort((a, b) => semver.compareLoose(b.name, a.name))
@@ -257,16 +279,6 @@
                 bodyHtml: sanitizeHtml(writer.render(parser.parse(release.body))),
               }
             })
-
-          this.motd = sanitizeHtml((await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/motd/wotw`, {
-            params: {
-              version: this.currentVersion,
-            },
-          })).motd, {
-            allowedClasses: {
-              '*': ['mb-*'],
-            },
-          })
 
           if (this.availableReleases.length > 0) {
             this.latestRelease = this.availableReleases[0]
@@ -377,6 +389,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     border-top-width: 0;
+    color: rgba(255, 255, 255, 0.5)
   }
 
   .text-lurk {
@@ -389,6 +402,11 @@
     left: 0;
     width: 96px;
     transform: scaleX(-1);
+  }
+
+  .sticky {
+    position: sticky;
+    top: 1em;
   }
 </style>
 

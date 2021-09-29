@@ -1,5 +1,5 @@
 <template>
-  <v-card class='pa-6'>
+  <div>
     <div class='text-center mb-6'>
       <v-btn color='primary' text outlined depressed :disabled='linkCopied' @click='copyLink'>
         <v-icon left>{{ linkCopied ? 'mdi-check' : 'mdi-share-outline' }}</v-icon>
@@ -28,26 +28,28 @@
           </v-sheet>
         </template>
 
-        <h3 class='mb-1'>1. Join the game</h3>
+        <template v-if='!hideGoToGameButton'>
+          <h3 class='mb-1'>1. Join the game</h3>
 
-        <v-btn
-          :to='{
-          name: "game-multiverseId",
-          params: {
-            multiverseId: result.multiverseId
-          },
-          query: {
-            ...(isElectron ? {hideToolbar: true} : {})
-          }
-        }'
-          target='_blank'
-          color='primary'
-          text
-          outlined
-        >Go to game</v-btn>
+          <v-btn
+            :to='{
+              name: "game-multiverseId",
+              params: {
+                multiverseId: result.multiverseId
+              },
+              query: {
+                ...(isElectron ? {hideToolbar: true} : {})
+              }
+            }'
+            target='_blank'
+            color='primary'
+            text
+            outlined
+          >Go to game</v-btn>
+        </template>
       </div>
 
-      <h3 class='mb-1'><template v-if='result.gameId !== null'>2. </template>{{ isElectron ? 'Launch' : 'Download' }} your seed</h3>
+      <h3 class='mb-1'><template v-if='result.gameId !== null && !hideGoToGameButton'>2. </template>{{ isElectron ? 'Launch' : 'Download' }} your seed</h3>
       <div>
         <v-btn
           v-for='seed in seedsToDisplay'
@@ -64,11 +66,12 @@
         </v-btn>
       </div>
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script>
   import { saveAs } from 'file-saver'
+  import base64url from 'base64url'
   import { isElectron } from '~/assets/lib/isElectron'
 
   export default {
@@ -77,6 +80,11 @@
       result: {
         type: Object,
         required: true,
+      },
+      hideGoToGameButton: {
+        type: Boolean,
+        required: false,
+        default: false,
       }
     },
     data: () => ({
@@ -87,7 +95,11 @@
     computed: {
       isElectron,
       launcherUrl() {
-        return `ori-rando://seedgen?result=${JSON.stringify(this.result)}`
+        if (this.result.multiverseId) {
+          return `ori-rando://game/${this.result.multiverseId}?seedgenResult=${JSON.stringify(this.result)}`
+        } else {
+          return `ori-rando://seedgen?result=${JSON.stringify(this.result)}`
+        }
       }
     },
     created() {
@@ -124,8 +136,14 @@
       },
       async copyLink() {
         const url = new URL(process.env.API_BASE_URL)
-        url.pathname = '/seedgen'
-        url.searchParams.append('result', JSON.stringify(this.result))
+
+        if (this.result.multiverseId) {
+          url.pathname = `/game/${this.result.multiverseId}`
+          url.searchParams.append('seedgenResult', base64url.encode(JSON.stringify(this.result)))
+        } else {
+          url.pathname = '/seedgen'
+          url.searchParams.append('result', base64url.encode(JSON.stringify(this.result)))
+        }
         await navigator.clipboard.writeText(url.toString())
         this.linkCopied = true
 

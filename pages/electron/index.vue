@@ -215,8 +215,8 @@
         handler(route) {
           if (route.query.seedFile) {
             this.$router.replace({ query: {} })
-            this.launch(route.query.seedFile)
             this.currentSeedPath = route.query.seedFile
+            this.launch(route.query.seedFile)
           }
 
           if (route.query.crashZipName) {

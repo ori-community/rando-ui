@@ -66,6 +66,10 @@
           this.$router.push({ name: 'electron', query: { crashZipName } })
         })
 
+        window.electronApi.on('main.goToSettings', () => {
+          this.$router.push({ name: 'electron-settings' })
+        })
+
         window.electronApi.on('main.openUrl', async (event, url) => {
           url = new URL(url)
 

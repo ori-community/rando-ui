@@ -7,6 +7,7 @@ import { RANDOMIZER_BASE_PATH } from './Constants'
 import { BindingsService } from '~/electron/src/lib/BindingsService'
 import { Library as FFILibrary } from 'ffi-napi'
 import { UCS2String } from '~/electron/src/lib/UCS2String'
+import { BrowserWindow } from 'electron'
 
 
 const CURRENT_SEED_PATH_FILE = `${RANDOMIZER_BASE_PATH}/.currentseedpath`
@@ -35,6 +36,20 @@ const waitForProcess = (processName, maxTries = 20) => new Promise((resolve, rej
   check()
 })
 
+const focusGameWindow = () => {
+  const user32 = new FFILibrary('user32', {
+    'FindWindowW': ['long', ['string', UCS2String]],
+    'SetForegroundWindow': ['bool', ['long']],
+  })
+  const gameWindowHandle = user32.FindWindowW(null, 'OriAndTheWilloftheWisps')
+  if (gameWindowHandle) {
+    console.log('Focusing game...')
+    user32.SetForegroundWindow(gameWindowHandle)
+  } else {
+    console.log('Could not focud game. Handle not found.')
+  }
+}
+
 export class LauncherService {
   static getOpenedSeedPath() {
     return process.argv[1] || null
@@ -61,21 +76,20 @@ export class LauncherService {
     await SettingsService.makeSureSettingsFileExists()
     const settings = await SettingsService.readSettings()
 
+    if (!fs.existsSync(settings.Paths.Steam)) {
+      BrowserWindow.getFocusedWindow().webContents.send('main.goToSettings')
+      throw new Error(`Steam was not found at the specified path (${settings.Paths.Steam}). Please set it in "Launch settings" and launch again.`)
+    }
+
+    if (!fs.existsSync(`${RANDOMIZER_BASE_PATH}/Injector.exe`)) {
+      throw new Error(`Injector.exe not found. Your antivirus software has probably eaten it. You might need to add an exception for it to run the randomizer.`)
+    }
+
     if (await isProcessRunning('injector.exe')) {
       if (!await RandoIPCService.trySend('reload')) {
         throw new Error('Could not load the seed in running game.\nPlease wait a few seconds if you closed the game just now.')
       } else {
-        const user32 = new FFILibrary('user32', {
-          'FindWindowW': ['long', ['string', UCS2String]],
-          'SetForegroundWindow': ['bool', ['long']],
-        })
-        const gameWindowHandle = user32.FindWindowW(null, 'OriAndTheWilloftheWisps')
-        if (gameWindowHandle) {
-          console.log('Focusing game...')
-          user32.SetForegroundWindow(gameWindowHandle)
-        } else {
-          console.log('Could not focud game. Handle not found.')
-        }
+        focusGameWindow()
       }
     } else {
       //                Why is windows a thing ↓
@@ -109,16 +123,13 @@ export class LauncherService {
         }).unref()
         await waitForProcess('oriandthewillofthewisps-pc.exe')
       } else {
-        if (!fs.existsSync(settings.Paths.Steam)) {
-          throw new Error(`Steam was not found at the specified path (${settings.Paths.Steam})`)
-        }
-
         spawn(`"${settings.Paths.Steam}" -applaunch 1057090`, {
           detached: true,
           shell: true,
           stdio: 'ignore',
         }).unref()
         await waitForProcess('oriwotw.exe', 60)
+        focusGameWindow()
       }
     }
   }

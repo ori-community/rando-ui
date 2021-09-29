@@ -11,7 +11,7 @@ export class RandoIPCService {
    * @returns {Promise<void>}
    */
   static makeSureSocketIsConnected() {
-    if (socket !== null && socket.readyState !== 'open') {
+    if (socket !== null && (socket.readyState !== 'open' || socket.destroyed)) {
       console.log(`Destroying IPC socket, readyState = ${socket.readyState}`)
       socket.destroy()
       socket = null
@@ -24,6 +24,7 @@ export class RandoIPCService {
             console.log('RandoIPC: Connected')
             resolve()
           })
+
         } catch (e) {
           reject(e)
         }
@@ -34,6 +35,7 @@ export class RandoIPCService {
   static async send(message) {
     await new Promise((resolve, reject) => {
       try {
+
         socket.write(message + '\r\n', 'utf-8', () => resolve())
       } catch (e) {
         reject(e)

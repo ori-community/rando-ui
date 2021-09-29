@@ -50,7 +50,7 @@
 
           <div class='d-flex'>
             <v-spacer />
-            <v-btn text :disabled='nicknameDialogLoading' @click='changeNicknameDialogIsOpen = false'>
+            <v-btn class='mr-1' text :disabled='nicknameDialogLoading' @click='changeNicknameDialogIsOpen = false'>
               Cancel
             </v-btn>
             <v-btn

@@ -13,7 +13,7 @@ export const UCS2String = {
     return _buf.readCString(0)
   },
   set: function(buffer, offset, value) {
-    const _buf = new Buffer(Buffer.byteLength(value, 'ucs2') + 2)
+    const _buf = Buffer.alloc(Buffer.byteLength(value, 'ucs2') + 2)
     _buf.write(value, 'ucs2')
     _buf[_buf.length - 2] = 0
     _buf[_buf.length - 1] = 0

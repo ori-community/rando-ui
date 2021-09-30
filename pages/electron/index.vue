@@ -223,15 +223,15 @@
     watch: {
       $route: {
         immediate: true,
-        handler(route) {
+        async handler(route) {
           if (route.query.seedFile) {
-            this.$router.replace({ query: {} })
+            await this.$router.replace({ query: {} })
             this.currentSeedPath = route.query.seedFile
-            this.launch(route.query.seedFile)
+            await this.launch(route.query.seedFile)
           }
 
           if (route.query.crashZipName) {
-            this.$router.replace({ query: {} })
+            await this.$router.replace({ query: {} })
             this.currentCrashZipName = route.query.crashZipName
           }
         },

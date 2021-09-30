@@ -1,7 +1,6 @@
 <template>
   <div>
-    <throttled-spinner>
-      <v-card v-if='loadedServerConfig' class='mb-4'>
+    <v-card v-if='loadedServerConfig' class='mb-4'>
         <v-tabs centered grow color='primary' show-arrows>
           <v-tab>
             <v-icon left>mdi-star-outline</v-icon>
@@ -169,7 +168,6 @@
           </v-tab-item>
         </v-tabs>
       </v-card>
-    </throttled-spinner>
 
     <div class='text-center'>
       <v-tooltip :disabled='!anyPresetSelected' bottom>
@@ -284,9 +282,11 @@
         this.updateSeedgenResultDialogState()
       },
     },
-    mounted() {
-      this.fetchServerConfig()
+    async mounted() {
+      await this.fetchServerConfig()
       this.updateSeedgenResultDialogState()
+
+      this.$emit('loaded')
     },
     methods: {
       async fetchServerConfig() {

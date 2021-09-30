@@ -58,6 +58,14 @@
           this.$store.commit('electron/setSettings', settings)
         })
 
+        window.electronApi.on('main.currentSeedChanged', (event, {currentSeedInfo}) => {
+          if (currentSeedInfo) {
+            if (!currentSeedInfo.webConn) {
+              this.$store.commit('nav/setLastMultiverseId', { id: null, seedgenResult: null })
+            }
+          }
+        })
+
         window.electronApi.on('main.openSeed', (event, seedFile) => {
           this.$router.push({ name: 'electron', query: { seedFile } })
         })
@@ -92,10 +100,16 @@
     },
     async mounted() {
       await this.$store.dispatch('user/updateUser')
-      this.$store.commit('nav/setLastMultiverseId', {
-        id: this.user?.currentMultiverseId ?? null,
-        seedgenResult: null,
-      })
+
+      if (isElectron()) {
+        const currentSeedInfo = window.electronApi.invoke('launcher.getCurrentSeedInfo')
+        if (currentSeedInfo && currentSeedInfo.webConn) {
+          this.$store.commit('nav/setLastMultiverseId', {
+            id: this.user?.currentMultiverseId ?? null,
+            seedgenResult: null,
+          })
+        }
+      }
     },
   }
 </script>
@@ -130,6 +144,7 @@
 <style lang='scss' scoped>
   .main {
     z-index: 1;
+    min-height: 100vh;
   }
 
   footer {

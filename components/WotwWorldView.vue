@@ -3,7 +3,15 @@
     <v-sheet :color='world.color' class='flex-shrink-0' height='0.5em' />
     <v-card-title>{{ world.name }}</v-card-title>
     <v-card-text>
-      <wotw-player-view v-for='player in world.members' :key='player.id' class='mb-1' :user='player' :multiverse-id='multiverseId' />
+      <v-scroll-x-transition leave-absolute group tag='div'>
+        <wotw-player-view
+          v-for='player in world.members'
+          :key='player.id'
+          class='mb-1'
+          :user='player'
+          :multiverse-id='multiverseId'
+        />
+      </v-scroll-x-transition>
     </v-card-text>
     <div class='spacer'></div>
     <v-btn v-if='canJoinInternal' :disabled='disabled' block color='accent' tile @click='$emit("join")'>

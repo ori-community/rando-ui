@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class='universes'>
+    <v-scroll-y-reverse-transition leave-absolute group tag='div' class='universes'>
       <wotw-universe-view
         v-for='universe in multiverse.universes'
         :key='universe.id'
@@ -13,7 +13,7 @@
         @join-world='worldId => join(worldId)'
         @new-world='createWorld(universe.id)'
       />
-    </div>
+    </v-scroll-y-reverse-transition>
 
     <div v-if='!isSpectating' class='action-buttons mt-4'>
       <v-tooltip :disabled='canCreateUniverse' bottom>

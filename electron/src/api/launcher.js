@@ -13,6 +13,10 @@ export default {
     return await LauncherService.getCurrentSeedPath()
   },
 
+  async getCurrentSeedInfo() {
+    return await LauncherService.getCurrentSeedInfo()
+  },
+
   async launch(event, seedPath = null) {
     try {
       await LauncherService.launch(seedPath)

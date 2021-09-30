@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h2 class='text-center mb-8'>Settings</h2>
+    <h1 class='text-center mt-12 mb-6'>Settings</h1>
 
     <v-scroll-y-transition>
       <v-card v-show='settingsLoaded'>

@@ -8,6 +8,7 @@ import { BindingsService } from '~/electron/src/lib/BindingsService'
 import { Library as FFILibrary } from 'ffi-napi'
 import { UCS2String } from '~/electron/src/lib/UCS2String'
 import { BrowserWindow } from 'electron'
+import { SeedParser } from '~/assets/lib/SeedParser'
 
 
 const CURRENT_SEED_PATH_FILE = `${RANDOMIZER_BASE_PATH}/.currentseedpath`
@@ -55,18 +56,37 @@ export class LauncherService {
     return process.argv[1] || null
   }
 
-  static async getCurrentSeedPath() {
+  static async getCurrentSeedPath(returnNonExisting = false) {
     if (fs.existsSync(CURRENT_SEED_PATH_FILE)) {
-      return await fs.promises.readFile(CURRENT_SEED_PATH_FILE, {encoding: 'utf-8'})
+      const path = await fs.promises.readFile(CURRENT_SEED_PATH_FILE, { encoding: 'utf-8' })
+
+      if (returnNonExisting) {
+        return path
+      } else if (fs.existsSync(path)) {
+        return path
+      }
     }
 
     return null
   }
 
+  static async getCurrentSeedInfo() {
+    const path = await this.getCurrentSeedPath()
+    const content = await fs.promises.readFile(path, { encoding: 'utf-8' })
+    return SeedParser.parse(content)
+  }
+
   static async launch(seedFilePath = null) {
     if (seedFilePath) {
       console.log('Launching seed', seedFilePath)
-      await fs.promises.writeFile(CURRENT_SEED_PATH_FILE, seedFilePath.trim())
+
+      if (await this.getCurrentSeedPath() !== seedFilePath.trim()) {
+        await fs.promises.writeFile(CURRENT_SEED_PATH_FILE, seedFilePath.trim())
+        BrowserWindow.getFocusedWindow().webContents.send('main.currentSeedChanged', {
+          currentSeedPath: seedFilePath.trim(),
+          currentSeedInfo: SeedParser.parse(await fs.promises.readFile(seedFilePath.trim(), {encoding: 'utf-8'})),
+        })
+      }
     } else {
       console.log('Launching last seed')
     }

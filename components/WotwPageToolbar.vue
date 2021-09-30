@@ -1,23 +1,23 @@
 <template>
   <div class='page-toolbar d-flex align-center my-4'>
-    <v-btn v-if='isElectron' exact x-large depressed text to='/electron'>
-      <v-icon left>mdi-home-outline</v-icon>
-      Home
-    </v-btn>
-    <v-scale-transition v-if='isElectron'>
-      <v-btn v-if='lastMultiverseId !== null' exact x-large depressed text :to='{name: "game-multiverseId", params: {multiverseId: lastMultiverseId}, query: {seedgenResult: lastSeedgenResult}}'>
+    <v-scale-transition group tag='div' class='flex-gap'>
+      <v-btn v-if='isElectron' key='home' depressed exact text to='/electron' x-large>
+        <v-icon left>mdi-home-outline</v-icon>
+        Home
+      </v-btn>
+      <v-btn v-if='isElectron && lastMultiverseId !== null' key='game' exact x-large depressed text :to='{name: "game-multiverseId", params: {multiverseId: lastMultiverseId}, query: lastSeedgenResult ? {seedgenResult: lastSeedgenResult} : {}}'>
         <v-icon left>mdi-gamepad-variant-outline</v-icon>
         Game {{ lastMultiverseId }}
       </v-btn>
+      <v-btn key='seedgen' x-large depressed text to='/seedgen'>
+        <v-icon left>mdi-dice-multiple</v-icon>
+        Seed generator
+      </v-btn>
+      <v-btn v-if='isElectron' key='settings' exact x-large depressed text to='/electron/settings'>
+        <v-icon left>mdi-application-cog-outline</v-icon>
+        Settings
+      </v-btn>
     </v-scale-transition>
-    <v-btn x-large depressed text to='/seedgen'>
-      <v-icon left>mdi-dice-multiple</v-icon>
-      Seed generator
-    </v-btn>
-    <v-btn v-if='isElectron' exact x-large depressed text to='/electron/settings'>
-      <v-icon left>mdi-application-cog-outline</v-icon>
-      Settings
-    </v-btn>
     <v-spacer />
     <throttled-spinner>
       <div v-if='userLoaded' class='d-flex align-center'>
@@ -149,5 +149,10 @@
 <style lang='scss' scoped>
   .page-toolbar {
     gap: 0.2em
+  }
+
+  .flex-gap {
+    display: flex;
+    gap: 0.2em;
   }
 </style>

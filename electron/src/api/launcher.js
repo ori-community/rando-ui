@@ -1,7 +1,7 @@
 import { LauncherService } from '~/electron/src/lib/LauncherService'
 import { BrowserWindow, shell } from 'electron'
 import { download } from 'electron-dl'
-import { RANDOMIZER_BASE_PATH } from '~/electron/src/lib/Constants'
+import { RANDOMIZER_BASE_PATH, SEEDS_PATH } from '~/electron/src/lib/Constants'
 import path from 'path'
 
 export default {
@@ -32,6 +32,7 @@ export default {
 
   async launchSeedFromUrl(event, { url, fileName }) {
     const item = await download(BrowserWindow.getFocusedWindow(), url, {
+      directory: SEEDS_PATH,
       filename: fileName,
     })
 
@@ -49,6 +50,10 @@ export default {
 
   openRandomizerDirectory() {
     shell.openPath(path.resolve(process.cwd(), RANDOMIZER_BASE_PATH))
+  },
+
+  openSeedsDirectory() {
+    shell.openPath(path.resolve(process.cwd(), SEEDS_PATH))
   },
 
   openGitHub() {

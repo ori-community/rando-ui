@@ -8,15 +8,18 @@ import { registerIpcApi } from './api.js'
 import fs from 'fs'
 import { SettingsService } from '~/electron/src/lib/SettingsService'
 import { CrashDetectService } from '~/electron/src/lib/CrashDetectService'
+import { SEEDS_PATH, UPDATE_PATH } from '~/electron/src/lib/Constants'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 if (isDevelopment) {
-  if (!fs.existsSync('./work-dir/randomizer')) {
-    fs.mkdirSync('./work-dir/randomizer', {recursive: true})
-  }
+  fs.mkdirSync('./work-dir/randomizer', {recursive: true})
+  fs.mkdirSync('./work-dir/seeds', {recursive: true})
+  fs.mkdirSync('./work-dir/update', {recursive: true})
   process.chdir('./work-dir')
 } else {
+  fs.mkdirSync(SEEDS_PATH, {recursive: true})
+  fs.mkdirSync(UPDATE_PATH, {recursive: true})
   process.chdir(path.dirname(process.argv0))
 }
 

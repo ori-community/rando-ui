@@ -77,10 +77,18 @@
 
           <div class='py-4 text-center hoverable'>
             <v-tooltip bottom>
+              <span>Open seeds directory</span>
+              <template #activator='{on}'>
+                <v-btn icon v-on='on' @click='openSeedsDirectory'>
+                  <v-icon>mdi-folder-eye-outline</v-icon>
+                </v-btn>
+              </template>
+            </v-tooltip>
+            <v-tooltip bottom>
               <span>Open randomizer directory</span>
               <template #activator='{on}'>
                 <v-btn icon v-on='on' @click='openRandomizerDirectory'>
-                  <v-icon>mdi-folder-eye-outline</v-icon>
+                  <v-icon>mdi-folder-cog-outline</v-icon>
                 </v-btn>
               </template>
             </v-tooltip>
@@ -358,6 +366,9 @@
       },
       openRandomizerDirectory() {
         window.electronApi.invoke('launcher.openRandomizerDirectory')
+      },
+      openSeedsDirectory() {
+        window.electronApi.invoke('launcher.openSeedsDirectory')
       },
       openGitHub() {
         window.electronApi.invoke('launcher.openGitHub')

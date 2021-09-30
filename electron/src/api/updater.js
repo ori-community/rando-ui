@@ -3,7 +3,7 @@ import { download } from 'electron-dl'
 import { BrowserWindow } from 'electron'
 import { app } from 'electron'
 import { spawn } from 'child_process'
-import { RANDOMIZER_BASE_PATH } from '~/electron/src/lib/Constants'
+import { RANDOMIZER_BASE_PATH, UPDATE_PATH } from '~/electron/src/lib/Constants'
 
 const VERSION_FILE = `${RANDOMIZER_BASE_PATH}/VERSION`
 
@@ -29,6 +29,9 @@ export default {
         app.quit()
         process.exit()
       },
+      filename: 'WotwRandoSetup.exe',
+      directory: UPDATE_PATH,
+      overwrite: true,
     })
   },
 }

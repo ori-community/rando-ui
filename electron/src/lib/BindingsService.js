@@ -51,30 +51,24 @@ const getDefaultKeyboardBindings = () => ({
     { keys: [118], respects_modifiers: false },
   ],
   Binding1: [
-    { keys: [306, 308, 49], respects_modifiers: true },
-    { keys: [305, 307, 49], respects_modifiers: true },
-    { keys: [313, 49], respects_modifiers: true },
+    { keys: [308, 49], respects_modifiers: true },
+    { keys: [307, 49], respects_modifiers: true },
   ],
-  Binding2: [{
-    keys: [306, 308, 50], respects_modifiers: true,
-  },
-    { keys: [305, 307, 50], respects_modifiers: true },
-    { keys: [313, 50], respects_modifiers: true },
+  Binding2: [
+    { keys: [308, 50], respects_modifiers: true, },
+    { keys: [307, 50], respects_modifiers: true },
   ],
   Binding3: [
-    { keys: [306, 308, 51], respects_modifiers: true },
-    { keys: [305, 307, 51], respects_modifiers: true },
-    { keys: [313, 51], respects_modifiers: true },
+    { keys: [308, 51], respects_modifiers: true },
+    { keys: [307, 51], respects_modifiers: true },
   ],
   Binding4: [
-    { keys: [306, 308, 52], respects_modifiers: true },
-    { keys: [305, 307, 52], respects_modifiers: true },
-    { keys: [313, 52], respects_modifiers: true },
+    { keys: [308, 52], respects_modifiers: true },
+    { keys: [307, 52], respects_modifiers: true },
   ],
   Binding5: [
-    { keys: [306, 308, 53], respects_modifiers: true },
-    { keys: [305, 307, 53], respects_modifiers: true },
-    { keys: [313, 53], respects_modifiers: true },
+    { keys: [308, 53], respects_modifiers: true },
+    { keys: [307, 53], respects_modifiers: true },
   ],
   Reload: [
     { keys: [308, 108], respects_modifiers: true },
@@ -93,38 +87,20 @@ const getDefaultKeyboardBindings = () => ({
     { keys: [307, 99], respects_modifiers: true },
   ],
   ToggleCursorLock: [
-    { keys: [306, 308, 108], respects_modifiers: true },
-    { keys: [305, 307, 108], respects_modifiers: true },
-    { keys: [313, 108], respects_modifiers: true },
+    { keys: [308, 111], respects_modifiers: true },
+    { keys: [307, 111], respects_modifiers: true },
   ],
   ShowDevFlag: [
     { keys: [308, 106], respects_modifiers: true },
     { keys: [307, 106], respects_modifiers: true },
   ],
-  ToggleDebug: [
-    { keys: [306, 308, 100], respects_modifiers: true },
-    { keys: [305, 307, 100], respects_modifiers: true },
-    { keys: [313, 100], respects_modifiers: true },
-  ],
-  PrintCoordinates: [
-    { keys: [306, 308, 99], respects_modifiers: true },
-    { keys: [305, 307, 99], respects_modifiers: true },
-    { keys: [313, 99], respects_modifiers: true },
-  ],
-  TeleportCheat: [
-    { keys: [304, 308, 116], respects_modifiers: true },
-    { keys: [303, 307, 116], respects_modifiers: true },
-    { keys: [303, 313, 116], respects_modifiers: true },
-  ],
-  UnlockSpoilers: [
-    { keys: [306, 308, 117], respects_modifiers: true },
-    { keys: [305, 307, 117], respects_modifiers: true },
-    { keys: [313, 117], respects_modifiers: true },
-  ],
+  ToggleDebug: [],
+  PrintCoordinates: [],
+  TeleportCheat: [],
+  UnlockSpoilers: [],
   TogglePickupNamesOnSpoiler: [
-    { keys: [306, 308, 110], respects_modifiers: true },
-    { keys: [305, 307, 110], respects_modifiers: true },
-    { keys: [313, 110], respects_modifiers: true },
+    { keys: [308, 110], respects_modifiers: true },
+    { keys: [307, 110], respects_modifiers: true },
   ],
   ForceExit: [
     { keys: [308, 47], respects_modifiers: true },

@@ -72,8 +72,11 @@ export class LauncherService {
 
   static async getCurrentSeedInfo() {
     const path = await this.getCurrentSeedPath()
-    const content = await fs.promises.readFile(path, { encoding: 'utf-8' })
-    return SeedParser.parse(content)
+    if (path) {
+      const content = await fs.promises.readFile(path, { encoding: 'utf-8' })
+      return SeedParser.parse(content)
+    }
+    return null
   }
 
   static async setCurrentSeedPath(seedFilePath) {

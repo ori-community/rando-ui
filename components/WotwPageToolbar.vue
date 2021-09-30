@@ -25,7 +25,7 @@
           <div class='mr-4'>
             Hi, {{ user.name }}!
           </div>
-          <v-menu offset-y>
+          <v-menu offset-y left nudge-bottom='6'>
             <template #activator='{on}'>
               <v-btn x-large class='ma-0 mr-1' icon v-on='on'>
                 <discord-avatar :user='user' size='48' />

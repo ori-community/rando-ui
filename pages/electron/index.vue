@@ -271,7 +271,7 @@
     async mounted() {
       this.shouldShowImportInfoDialog = await window.electronApi.invoke('settings.shouldShowImportInfoDialog')
       this.currentSeedPath = await window.electronApi.invoke('launcher.getCurrentSeedPath')
-      await this.checkForUpdates()
+      await this.checkForUpdatesOnce()
     },
     methods: {
       async checkForUpdatesOnce() {

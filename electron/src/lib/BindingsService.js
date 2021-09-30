@@ -128,6 +128,9 @@ export class BindingsService {
     await fs.promises.writeFile(CONTROLLER_BINDINGS_FILE, JSON.stringify(bindings, null, 2), { encoding: 'utf-8' })
   }
 
+  static async resetControllerBindings() {
+    await this.saveControllerBindings(getDefaultControllerBindings())
+  }
 
   static async makeSureKeyboardBindingsFileExists() {
     await this.saveKeyboardBindings(await this.loadKeyboardBindings())
@@ -146,5 +149,9 @@ export class BindingsService {
 
   static async saveKeyboardBindings(bindings) {
     await fs.promises.writeFile(KEYBOARD_BINDINGS_FILE, JSON.stringify(bindings, null, 2), { encoding: 'utf-8' })
+  }
+
+  static async resetKeyboardBindings() {
+    await this.saveKeyboardBindings(getDefaultKeyboardBindings())
   }
 }

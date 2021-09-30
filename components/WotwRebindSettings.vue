@@ -66,6 +66,14 @@
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
+      <v-list-item>
+        <v-list-item-icon />
+        <v-list-item-content class='d-block'>
+          <v-btn color='error' :disabled='allBindingsReset' depressed @click='resetAllToDefault'>
+            Reset all to default
+          </v-btn>
+        </v-list-item-content>
+      </v-list-item>
     </v-list>
 
     <v-dialog v-model='bindingEditor.dialogOpen' max-width='300px'>
@@ -130,7 +138,8 @@
         exactlyMatchModifierKeys: false,
         editingActionName: '',
         pressedButtons: [],
-      }
+      },
+      allBindingsReset: false,
     }),
     computed: {
       gamepadId() {
@@ -179,6 +188,12 @@
           this.registerBindingForAction(selectedActionName)
         }
       },
+      boundActions: {
+        deep: true,
+        handler() {
+          this.allBindingsReset = false
+        }
+      }
     },
     beforeMount() {
       for (const action of this.availableActionsList) {
@@ -293,6 +308,17 @@
           }
         }
       },
+      async resetAllToDefault() {
+        if (this.type === 'controller') {
+          await window.electronApi.invoke('bindings.resetControllerBindings')
+        } else {
+          await window.electronApi.invoke('bindings.resetKeyboardBindings')
+        }
+
+        await this.loadBindings()
+
+        this.allBindingsReset = true
+      }
     }
   }
 </script>

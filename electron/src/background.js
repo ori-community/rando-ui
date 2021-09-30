@@ -43,7 +43,6 @@ async function createWindow() {
     width: 800,
     height: 600,
     autoHideMenuBar: true,
-    show: false,
     backgroundColor: '#050e17',
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
@@ -52,6 +51,7 @@ async function createWindow() {
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
     },
+    frame: true,
   })
 
   win.maximize()
@@ -66,10 +66,6 @@ async function createWindow() {
     // Load the index.html when not in development
     await win.loadURL('app://./index.html#/electron')
   }
-
-  win.on('ready-to-show', () => {
-    win.show()
-  })
 
   const commandLineArgumentHandler = (args) => {
     const lastArg = args[args.length - 1]

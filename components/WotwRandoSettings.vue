@@ -161,6 +161,7 @@
     async mounted() {
       this.settings = await window.electronApi.invoke('settings.readSettings')
       document.addEventListener('keydown', this.onKeyDown)
+      this.$emit('loaded')
     },
     beforeDestroy() {
       document.removeEventListener('keydown', this.onKeyDown)

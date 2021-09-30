@@ -76,17 +76,21 @@ export class LauncherService {
     return SeedParser.parse(content)
   }
 
+  static async setCurrentSeedPath(seedFilePath) {
+    if (await this.getCurrentSeedPath() !== seedFilePath.trim()) {
+      console.log(`Setting current seed path to ${seedFilePath.trim()}`)
+      await fs.promises.writeFile(CURRENT_SEED_PATH_FILE, seedFilePath.trim())
+      BrowserWindow.getFocusedWindow().webContents.send('main.currentSeedChanged', {
+        currentSeedPath: seedFilePath.trim(),
+        currentSeedInfo: SeedParser.parse(await fs.promises.readFile(seedFilePath.trim(), {encoding: 'utf-8'})),
+      })
+    }
+  }
+
   static async launch(seedFilePath = null) {
     if (seedFilePath) {
       console.log('Launching seed', seedFilePath)
-
-      if (await this.getCurrentSeedPath() !== seedFilePath.trim()) {
-        await fs.promises.writeFile(CURRENT_SEED_PATH_FILE, seedFilePath.trim())
-        BrowserWindow.getFocusedWindow().webContents.send('main.currentSeedChanged', {
-          currentSeedPath: seedFilePath.trim(),
-          currentSeedInfo: SeedParser.parse(await fs.promises.readFile(seedFilePath.trim(), {encoding: 'utf-8'})),
-        })
-      }
+      await this.setCurrentSeedPath(seedFilePath)
     } else {
       console.log('Launching last seed')
     }

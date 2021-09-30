@@ -133,6 +133,25 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog v-model='showUpdateAvailableDialog' max-width='500' persistent>
+      <v-card>
+        <v-card-title>Update available ({{ latestVersion }})</v-card-title>
+        <v-card-text>
+          An update for the randomizer is ready to be downloaded and installed.
+          We recommend to always play on the latest version.
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text @click='launch(null, true)' class='mr-1'>
+            Launch anyway
+          </v-btn>
+          <v-btn depressed color='accent' @click='downloadAndInstallUpdate'>
+            Install update
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-dialog v-model='shouldShowImportInfoDialog' max-width='600' persistent>
       <v-card class='pa-6'>
         <h1 class='text-center mb-4'>Hi there! Welcome to 1.0</h1>
@@ -191,6 +210,8 @@
       currentSeedPath: null,
       motd: '',
       currentCrashZipName: null,
+      updateCheckPromise: null,
+      showUpdateAvailableDialog: false,
     }),
     head: () => ({
       title: 'Home',
@@ -253,6 +274,15 @@
       await this.checkForUpdates()
     },
     methods: {
+      async checkForUpdatesOnce() {
+        await new Promise(resolve => {
+          if (this.updateCheckPromise === null) {
+            this.updateCheckPromise = this.checkForUpdates()
+          }
+
+          this.updateCheckPromise.finally(resolve)
+        })
+      },
       async checkForUpdates() {
         try {
           this.currentVersion = await window.electronApi.invoke('updater.getVersion')
@@ -289,6 +319,7 @@
         }
       },
       async downloadAndInstallUpdate() {
+        this.showUpdateAvailableDialog = false
         this.updateDownloadProgress = 0
         this.updateDownloading = true
         window.electronApi.on('updater.downloadProgress', (event, progress) => {
@@ -298,13 +329,28 @@
           url: this.latestRelease.assets.find(a => a.name === 'WotwRandoSetup.exe').browser_download_url,
         })
       },
-      async launch(seedFile = null) {
+      async launch(seedFile = null, forceLaunch = false) {
         if (this.launching) {
           return
         }
 
+        this.showUpdateAvailableDialog = false
         this.launching = true
-        await window.electronApi.invoke('launcher.launch', seedFile)
+
+        if (seedFile !== null) {
+          await window.electronApi.invoke('launcher.setCurrentSeedPath', seedFile)
+        }
+
+        if (!forceLaunch) {
+          await this.checkForUpdatesOnce()
+        }
+
+        if (forceLaunch || this.updateAvailable) {
+          this.showUpdateAvailableDialog = true
+        } else {
+          await window.electronApi.invoke('launcher.launch', seedFile)
+        }
+
         this.launching = false
       },
       openWiki() {

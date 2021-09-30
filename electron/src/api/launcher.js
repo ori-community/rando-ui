@@ -17,6 +17,10 @@ export default {
     return await LauncherService.getCurrentSeedInfo()
   },
 
+  async setCurrentSeedPath(event, seedPath) {
+    await LauncherService.setCurrentSeedPath(seedPath)
+  },
+
   async launch(event, seedPath = null) {
     try {
       await LauncherService.launch(seedPath)

@@ -56,6 +56,7 @@ async function createWindow() {
     },
     frame: true,
     show: false,
+    title: 'Ori and the Will of the Wisps Randomizer',
   })
 
   win.maximize()

@@ -31,10 +31,14 @@ export default {
   },
 
   async launchSeedFromUrl(event, { url, fileName }) {
+    console.log(`Launching seed from URL: ${url}`)
+
     const item = await download(BrowserWindow.getFocusedWindow(), url, {
       directory: SEEDS_PATH,
       filename: fileName,
     })
+
+    console.log(`Downloaded seed to ${item.getSavePath()}`)
 
     try {
       await LauncherService.launch(item.getSavePath())

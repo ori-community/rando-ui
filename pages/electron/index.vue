@@ -150,7 +150,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn text @click='launch(null, true)' class='mr-1'>
+          <v-btn text class='mr-1' @click='launch(null, true)'>
             Launch anyway
           </v-btn>
           <v-btn depressed color='accent' @click='downloadAndInstallUpdate'>

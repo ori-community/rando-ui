@@ -111,7 +111,7 @@
       await this.$store.dispatch('user/updateUser')
 
       if (isElectron()) {
-        const currentSeedInfo = window.electronApi.invoke('launcher.getCurrentSeedInfo')
+        const currentSeedInfo = await window.electronApi.invoke('launcher.getCurrentSeedInfo')
         if (currentSeedInfo && currentSeedInfo.webConn) {
           this.$store.commit('nav/setLastMultiverseId', {
             id: this.user?.currentMultiverseId ?? null,

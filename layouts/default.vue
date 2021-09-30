@@ -82,12 +82,21 @@
           url = new URL(url)
 
           if (url.protocol === 'ori-rando:') {
-            switch (url.pathname) {
-              case '//authenticate/':
+            const topPath = url.pathname.match(/\/\/(?<topPath>[^/]*)\//)?.groups.topPath
+            switch (topPath) {
+              case 'authenticate':
                 await this.$router.push({ name: 'auth-callback', query: { jwt: url.searchParams.get('jwt') } })
                 break
-              case '//seedgen/':
+              case 'seedgen':
                 await this.$router.push({ name: 'seedgen', query: { result: url.searchParams.get('result') } })
+                break
+              case 'game':
+                const gameId = url.pathname.match(/.*\/(?<gameId>\d*)$/)?.groups.gameId
+                if (gameId) {
+                  await this.$router.push({ name: 'seedgen', query: { result: url.searchParams.get('result') } })
+                } else {
+                  console.warn('Could not read game ID from URL', url)
+                }
                 break
               default:
                 console.warn('Could not handle URL', url)

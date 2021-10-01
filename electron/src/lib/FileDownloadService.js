@@ -1,7 +1,5 @@
 import axios from 'axios'
 import fs from 'fs'
-import path from 'path'
-import { SEEDS_PATH } from '~/electron/src/lib/Constants'
 
 export class FileDownloadService {
   static async download(url, targetFile, progressCallback = () => {}) {

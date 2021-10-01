@@ -150,7 +150,9 @@ export class LauncherService {
         }).unref()
         await waitForProcess('oriandthewillofthewisps-pc.exe')
       } else {
-        spawn(`start -FilePath "${settings.Paths.Steam}" -ArgumentList "-applaunch", "1057090"`, {
+        const steamCommand = `start -FilePath "${settings.Paths.Steam}" -ArgumentList "-applaunch", "1057090"`
+        console.log('Starting game with command', steamCommand)
+        spawn(steamCommand, {
           detached: true,
           shell: 'powershell.exe',
           stdio: 'inherit',

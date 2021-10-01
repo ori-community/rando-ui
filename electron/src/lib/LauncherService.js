@@ -136,15 +136,13 @@ export class LauncherService {
 
       if (settings.Flags.LaunchWithTracker) {
         spawn(`start -FilePath "${RANDOMIZER_BASE_PATH.replaceAll('/', '\\')}\\ItemTracker.exe"`, {
-          detached: true,
           shell: 'powershell.exe',
-          stdio: 'ignore',
+          stdio: 'inherit',
         }).unref()
       }
 
       if (settings.Flags.UseWinStore) {
         spawn('explorer.exe shell:AppsFolder\\Microsoft.Patagonia_8wekyb3d8bbwe!App', {
-          detached: true,
           shell: 'powershell.exe',
           stdio: 'inherit',
         }).unref()
@@ -153,7 +151,6 @@ export class LauncherService {
         const steamCommand = `start -FilePath "${settings.Paths.Steam}" -ArgumentList "-applaunch", "1057090"`
         console.log('Starting game with command', steamCommand)
         spawn(steamCommand, {
-          detached: true,
           shell: 'powershell.exe',
           stdio: 'inherit',
         }).unref()

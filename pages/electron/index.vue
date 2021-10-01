@@ -21,10 +21,18 @@
 
           <v-scroll-x-transition group>
             <v-card v-for='release in availableReleases' :key='release.id' class='mb-2'>
-              <v-card-title>Version {{ release.name }}
+              <v-card-title class='d-block'>
+                Version {{ release.name }}
                 <v-chip v-if='isNewVersion(release.name)' class='ml-2' small color='accent'>New</v-chip>
               </v-card-title>
-              <v-card-text class='release-changelog' v-html='release.bodyHtml' />
+              <v-card-text class='release-changelog'>
+                <div v-html='release.bodyHtml' />
+                <div class='d-flex justify-end'>
+                  <em class='text-caption grey--text'>
+                    {{ formatDateRelative(release.published_at) }}
+                  </em>
+                </div>
+              </v-card-text>
             </v-card>
           </v-scroll-x-transition>
         </template>
@@ -203,9 +211,11 @@
   import sanitizeHtml from 'sanitize-html'
   import * as commonmark from 'commonmark'
   import { generateClientJwt } from '~/assets/electron/generateClientJwt'
+  import { formatsDates } from '~/assets/lib/formatsDates'
 
   export default {
     name: 'Index',
+    mixins: [formatsDates],
     data: () => ({
       currentVersion: '',
       latestRelease: null, // contains new version string if available

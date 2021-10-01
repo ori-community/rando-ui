@@ -96,9 +96,9 @@
       isElectron,
       launcherUrl() {
         if (this.result.multiverseId) {
-          return `ori-rando://game/${this.result.multiverseId}?seedgenResult=${JSON.stringify(this.result)}`
+          return `ori-rando://game/${this.result.multiverseId}?seedgenResult=${base64url.encode(JSON.stringify(this.result))}`
         } else {
-          return `ori-rando://seedgen?result=${JSON.stringify(this.result)}`
+          return `ori-rando://seedgen?result=${base64url.encode(JSON.stringify(this.result))}`
         }
       }
     },

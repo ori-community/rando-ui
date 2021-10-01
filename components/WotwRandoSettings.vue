@@ -39,25 +39,25 @@
         <v-checkbox
           v-model='settings.Flags.AlwaysShowKeystones'
           label='Always Show Keystones'
-          messages='Always show Keystones on the in-game map, no matter what filter'
+          messages='Keep your keystone count visible while playing'
         />
         <v-checkbox
-          v-model='settings.Flags.WorldMapEnabled'
-          label='Enable World Map'
-          messages='Enable the World Overview Map (the one when you zoom the map out far)'
+          v-model='disableWorldMap'
+          label='Disable World Map'
+          messages='Disables the world map that opens when zooming out'
         />
         <v-checkbox
           v-model='settings.Flags.DisableQuestFocus'
           label='Disable Quest Focus'
-          messages="Don't focus quests when hovering the quest list"
+          messages="Don't snap the map to quest nodes when mousing over the quest list"
         />
       </div>
       <div class='mb-8'>
         <h3>Miscellaneous</h3>
         <v-checkbox
-          v-model='settings.Flags.BoringMoney'
-          label='Boring Money'
-          messages='Be classy and call Ori Money by its real name'
+          v-model='useRandomCurrencyNames'
+          label='Random Currency Names'
+          messages='Bored of seeing "X Spirit Light"? This setting is for you!'
         />
       </div>
     </v-col>
@@ -76,13 +76,13 @@
         />
         <v-checkbox
           v-model='settings.Flags.WaterDashMouseControl'
-          label='Water Dash'
-          messages='Enables aiming Water Dash with your mouse cursor'
+          label='Swimming'
+          messages='Enable Swimming and Water Dashing towards your mouse cursor'
         />
         <v-checkbox
           v-model='settings.Flags.InvertSwim'
           label='Invert swim speeds'
-          messages='Swim fast by default, hold the Jump button to swim slower'
+          messages='Swim fast by default. Hold jump to swim slower instead'
         />
       </div>
       <div class='mb-8'>
@@ -148,6 +148,24 @@
       return {
         title: 'WotwRandoSettings',
       }
+    },
+    computed: {
+      useRandomCurrencyNames: {
+        get() {
+          return !this.settings.Flags.BoringMoney
+        },
+        set(value) {
+          this.settings.Flags.BoringMoney = !value
+        }
+      },
+      disableWorldMap: {
+        get() {
+          return !this.settings.Flags.WorldMapEnabled
+        },
+        set(value) {
+          this.settings.Flags.WorldMapEnabled = !value
+        }
+      },
     },
     watch: {
       settings: {

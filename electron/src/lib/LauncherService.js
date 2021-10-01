@@ -146,14 +146,14 @@ export class LauncherService {
         spawn('explorer.exe shell:AppsFolder\\Microsoft.Patagonia_8wekyb3d8bbwe!App', {
           detached: true,
           shell: 'powershell.exe',
-          stdio: 'ignore',
+          stdio: 'inherit',
         }).unref()
         await waitForProcess('oriandthewillofthewisps-pc.exe')
       } else {
-        spawn(`start -FilePath "${settings.Paths.Steam}" -ArgumentList "-applaunch 1057090"`, {
+        spawn(`start -FilePath "${settings.Paths.Steam}" -ArgumentList "-applaunch", "1057090"`, {
           detached: true,
           shell: 'powershell.exe',
-          stdio: 'ignore',
+          stdio: 'inherit',
         }).unref()
         await waitForProcess('oriwotw.exe', 60)
         focusGameWindow()

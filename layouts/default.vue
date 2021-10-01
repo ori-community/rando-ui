@@ -93,7 +93,7 @@
               case 'game': {
                 const gameId = url.pathname.match(/.*\/(?<gameId>\d*)$/)?.groups.gameId
                 if (gameId) {
-                  await this.$router.push({ name: 'game-multiverseId', query: { seedgenResult: url.searchParams.get('seedgenResult') } })
+                  await this.$router.push({ name: 'game-multiverseId', params: { multiverseId: gameId }, query: { seedgenResult: url.searchParams.get('seedgenResult') } })
                 } else {
                   console.warn('Could not read game ID from URL', url)
                 }

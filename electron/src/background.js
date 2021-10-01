@@ -18,9 +18,9 @@ if (isDevelopment) {
   fs.mkdirSync('./work-dir/update', {recursive: true})
   process.chdir('./work-dir')
 } else {
+  process.chdir(path.dirname(process.argv0))
   fs.mkdirSync(SEEDS_PATH, {recursive: true})
   fs.mkdirSync(UPDATE_PATH, {recursive: true})
-  process.chdir(path.dirname(process.argv0))
 }
 
 if (!app.requestSingleInstanceLock()) {

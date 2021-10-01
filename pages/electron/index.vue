@@ -363,7 +363,7 @@
           await this.checkForUpdatesOnce()
         }
 
-        if (forceLaunch || this.updateAvailable) {
+        if (!forceLaunch && this.updateAvailable) {
           this.showUpdateAvailableDialog = true
         } else {
           await window.electronApi.invoke('launcher.launch', seedFile)

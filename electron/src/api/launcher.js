@@ -1,8 +1,9 @@
 import { LauncherService } from '~/electron/src/lib/LauncherService'
-import { BrowserWindow, shell } from 'electron'
-import { download } from 'electron-dl'
 import { RANDOMIZER_BASE_PATH, SEEDS_PATH } from '~/electron/src/lib/Constants'
 import path from 'path'
+import fs from 'fs'
+import { FileDownloadService } from '~/electron/src/lib/FileDownloadService'
+import { shell } from 'electron'
 
 export default {
   getOpenedSeedPath() {
@@ -33,15 +34,19 @@ export default {
   async launchSeedFromUrl(event, { url, fileName }) {
     console.log(`Launching seed from URL: ${url}`)
 
-    const item = await download(BrowserWindow.getFocusedWindow(), url, {
-      directory: SEEDS_PATH,
-      filename: fileName,
-    })
+    const originalFilenameParts = fileName.match(/(?<name>.*)\.(?<extension>[^.]*)/).groups
+    let count = 1
+    while (fs.existsSync(path.join(SEEDS_PATH, fileName))) {
+      fileName = `${originalFilenameParts.name}_${count++}.${originalFilenameParts.extension}`
+    }
 
-    console.log(`Downloaded seed to ${item.getSavePath()}`)
+    const targetFile = path.join(SEEDS_PATH, fileName)
+    await FileDownloadService.download(url, targetFile)
+
+    console.log(`Downloaded seed to ${targetFile}`)
 
     try {
-      await LauncherService.launch(item.getSavePath())
+      await LauncherService.launch(targetFile)
     } catch (e) {
       console.error('Failed to launch:', e)
       event.sender.send('main.error', e)

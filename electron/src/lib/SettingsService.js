@@ -68,7 +68,6 @@ export class SettingsService {
       )
     }
 
-    console.log('Settings loaded', settingsCache)
     sendSettingsToUI()
 
     return settingsCache

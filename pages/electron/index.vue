@@ -331,7 +331,7 @@
         this.updateDownloadProgress = 0
         this.updateDownloading = true
         window.electronApi.on('updater.downloadProgress', (event, progress) => {
-          this.updateDownloadProgress = progress.percent * 100
+          this.updateDownloadProgress = progress * 100
         })
         await window.electronApi.invoke('updater.downloadAndInstallUpdate', {
           url: this.latestRelease.assets.find(a => a.name === 'WotwRandoSetup.exe').browser_download_url,

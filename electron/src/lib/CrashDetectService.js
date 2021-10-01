@@ -32,6 +32,7 @@ export class CrashDetectService {
             fs.existsSync(`${CRASH_DUMPS_PATH}/${crashDirectory}/crash.dmp`)
           ) {
             console.log(`CrashDetectService: New crash dump detected: ${crashDirectory}`)
+            this.availableCrashDumpDirectories.push(crashDirectory)
             const crashZip = await this.collectCrashInfo(crashDirectory)
             this.onCrashCallback && this.onCrashCallback(crashZip)
             break
@@ -40,8 +41,6 @@ export class CrashDetectService {
       } catch (e) {
         console.error(e)
       }
-
-      this.availableCrashDumpDirectories = foundCrashDumpDirectories
     }, 2000)
   }
 

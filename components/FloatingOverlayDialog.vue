@@ -54,6 +54,7 @@
     right: 0;
     bottom: 0;
     pointer-events: none;
+    z-index: 1001;
   }
 
   .floating-overlay-dialog-backdrop {
@@ -70,7 +71,7 @@
   }
 
   .floating-overlay-dialog {
-    z-index: 1001;
+    z-index: 1002;
     position: fixed;
     top: 50%;
     left: 0;

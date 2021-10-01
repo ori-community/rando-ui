@@ -135,7 +135,7 @@ export class LauncherService {
       await waitForProcess('injector.exe', 10)
 
       if (settings.Flags.LaunchWithTracker) {
-        spawn(`${RANDOMIZER_BASE_PATH.replaceAll('/', '\\')}\\ItemTracker.exe`, {
+        spawn(`start -FilePath "${RANDOMIZER_BASE_PATH.replaceAll('/', '\\')}\\ItemTracker.exe"`, {
           detached: true,
           shell: true,
           stdio: 'ignore',
@@ -150,7 +150,7 @@ export class LauncherService {
         }).unref()
         await waitForProcess('oriandthewillofthewisps-pc.exe')
       } else {
-        spawn(`"${settings.Paths.Steam}" -applaunch 1057090`, {
+        spawn(`start -FilePath "${settings.Paths.Steam}" -ArgumentList "-applaunch 1057090"`, {
           detached: true,
           shell: true,
           stdio: 'ignore',

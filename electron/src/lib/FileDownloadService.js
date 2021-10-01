@@ -9,7 +9,7 @@ export class FileDownloadService {
       responseType: 'stream',
     })
 
-    const total = headers['content-length']
+    const total = Number(headers['content-length'] || 0)
 
     data.pipe(fs.createWriteStream(targetFile))
 

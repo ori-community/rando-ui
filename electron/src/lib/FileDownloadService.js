@@ -9,7 +9,8 @@ export class FileDownloadService {
 
     const total = Number(headers['content-length'] || 0)
 
-    data.pipe(fs.createWriteStream(targetFile))
+    const writeStream = fs.createWriteStream(targetFile)
+    data.pipe(writeStream)
 
     await new Promise((resolve, reject) => {
       let progress = 0
@@ -23,7 +24,11 @@ export class FileDownloadService {
         reject(error)
       })
 
-      data.on('close', () => {
+      writeStream.on('error', error => {
+        reject(error)
+      })
+
+      writeStream.on('close', () => {
         resolve()
       })
     })

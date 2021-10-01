@@ -119,14 +119,14 @@ export class LauncherService {
         focusGameWindow()
       }
     } else {
-      //                Why is windows a thing ↓
-      let command = `${RANDOMIZER_BASE_PATH.replaceAll('/', '\\')}\\Injector.exe`
+      //                                                    Why is windows a thing ↓
+      const injectorPathWithWonkySlashes = `${RANDOMIZER_BASE_PATH.replaceAll('/', '\\')}\\Injector.exe`
 
-      if (!settings.Flags.Dev) {
-        console.log('Starting Injector hidden')
-        command = `start -WindowStyle "Hidden" -FilePath "${command}" -ArgumentList "/nowait"`
-      }
+      const command = settings.Flags.Dev
+        ? `start -FilePath "${injectorPathWithWonkySlashes}"`
+        : `start -WindowStyle "Hidden" -FilePath "${injectorPathWithWonkySlashes}" -ArgumentList "/nowait"`
 
+      console.log('Starting Injector with command:', command)
       spawn(command, {
         shell: 'powershell.exe',
         stdio: 'inherit',

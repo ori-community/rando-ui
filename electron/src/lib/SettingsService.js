@@ -89,7 +89,7 @@ export class SettingsService {
       return null
     }
 
-    const oldPath = await fs.promises.readFile(oldPathFile, { encoding: 'utf-8' })
+    const oldPath = (await fs.promises.readFile(oldPathFile, { encoding: 'utf-8' })).trim()
     if (!fs.existsSync(oldPath)) {
       console.log(`SettingsService: Found old Rando path file, but the target path (${oldPath}) does not exist`)
       return null
@@ -101,8 +101,15 @@ export class SettingsService {
   static async importSettingsFromOldInstallation() {
     const oldPath = await this.getOldInstallationPath()
     if (oldPath) {
+      console.log('Found old Rando installation at', oldPath)
+
       console.log('Importing settings.ini...')
-      await fs.promises.copyFile(path.join(oldPath, 'settings.ini'), SETTINGS_PATH)
+      const oldSettingsPath = path.join(oldPath, 'settings.ini')
+      if (!fs.existsSync(oldSettingsPath)) {
+        console.log('Could not import old settings.ini. File does not exist.')
+        return false
+      }
+      await fs.promises.copyFile(oldSettingsPath, SETTINGS_PATH)
 
       if (fs.existsSync(path.join(oldPath, '.currentseedpath'))) {
         console.log('Importing .currentseedpath...')
@@ -146,7 +153,7 @@ export class SettingsService {
             await fs.promises.unlink(filePath)
             console.log(` - ${file} → deleted`)
           } catch (e) {
-            console.error(e)
+            console.log(e)
             console.log(` - ${file} → error`)
           }
         } else {

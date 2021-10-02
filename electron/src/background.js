@@ -127,14 +127,14 @@ app.on('ready', async () => {
     try {
       await installExtension(VUEJS3_DEVTOOLS)
     } catch (e) {
-      console.error('Vue Devtools failed to install:', e.toString())
+      console.log('Vue Devtools failed to install:', e.toString())
     }
   }
 
   try {
     await createWindow()
   } catch (e) {
-    console.error(e)
+    console.log(e)
   }
 })
 

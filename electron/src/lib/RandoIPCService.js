@@ -49,7 +49,7 @@ export class RandoIPCService {
       await this.send(message)
       return true
     } catch (e) {
-      console.error('RandoIPC error:', e)
+      console.log('RandoIPC error:', e)
       return false
     }
   }

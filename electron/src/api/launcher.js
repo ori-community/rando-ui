@@ -26,7 +26,7 @@ export default {
     try {
       await LauncherService.launch(seedPath)
     } catch (e) {
-      console.error('Failed to launch:', e)
+      console.log('Failed to launch:', e)
       event.sender.send('main.error', e)
     }
   },
@@ -48,7 +48,7 @@ export default {
     try {
       await LauncherService.launch(targetFile)
     } catch (e) {
-      console.error('Failed to launch:', e)
+      console.log('Failed to launch:', e)
       event.sender.send('main.error', e)
     }
   },

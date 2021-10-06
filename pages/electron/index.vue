@@ -288,7 +288,12 @@
     },
     async mounted() {
       this.shouldShowImportInfoDialog = await window.electronApi.invoke('settings.shouldShowImportInfoDialog')
-      this.currentSeedPath = await window.electronApi.invoke('launcher.getCurrentSeedPath')
+      
+      // We might already have a seed path from launching...
+      if (this.currentSeedPath === null) {
+        this.currentSeedPath = await window.electronApi.invoke('launcher.getCurrentSeedPath')
+      }
+
       await this.checkForUpdatesOnce()
     },
     methods: {

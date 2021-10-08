@@ -325,16 +325,16 @@
           if (this.seedgenConfig.flags.includes('--multiplayer')) {
             switch (this.createOnlineGame) {
               case 'normal':
-                response.multiverseId = await this.$axios.$post('/multiverses')
+                response.result.multiverseId = await this.$axios.$post('/multiverses')
                 break
               case 'bingo':
-                response.multiverseId = await this.$axios.$post('/bingo')
+                response.result.multiverseId = await this.$axios.$post('/bingo')
                 break
               case 'discovery_bingo':
-                response.multiverseId = await this.$axios.$post('/bingo', { discovery: 2 })
+                response.result.multiverseId = await this.$axios.$post('/bingo', { discovery: 2 })
                 break
               case 'lockout_bingo':
-                response.multiverseId = await this.$axios.$post('/bingo', { lockout: true })
+                response.result.multiverseId = await this.$axios.$post('/bingo', { lockout: true })
                 break
             }
           }

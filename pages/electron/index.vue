@@ -101,6 +101,14 @@
               </template>
             </v-tooltip>
             <v-tooltip bottom>
+              <span>Create support bundle</span>
+              <template #activator='{on}'>
+                <v-btn icon :loading='supportBundleLoading' v-on='on' @click='createSupportBundle'>
+                  <v-icon>mdi-bug-outline</v-icon>
+                </v-btn>
+              </template>
+            </v-tooltip>
+            <v-tooltip bottom>
               <span>GitHub</span>
               <template #activator='{on}'>
                 <v-btn icon v-on='on' @click='openGitHub'>
@@ -121,7 +129,7 @@
       </v-col>
     </v-row>
 
-    <v-dialog :value='currentCrashZipName !== null' max-width='600' persistent>
+    <v-dialog :value='currentSupportBundleName !== null' max-width='600' persistent>
       <v-card>
         <div class='pa-6'>
           <h1 class='text-center'>Uh oh!</h1>
@@ -133,14 +141,14 @@
           </div>
 
           <div class='text-center my-8'>
-            <code class='title'>{{ currentCrashZipName }}</code>
+            <code class='title'>{{ currentSupportBundleName }}</code>
           </div>
 
           <div class='d-flex justify-end'>
-            <v-btn text depressed @click='currentCrashZipName = null'>
+            <v-btn text depressed @click='currentSupportBundleName = null'>
               Close
             </v-btn>
-            <v-btn depressed color='accent' class='ml-2' @click='showCrashZipInExplorer'>
+            <v-btn depressed color='accent' class='ml-2' @click='showSupportBundleInExplorer'>
               Show in Explorer
             </v-btn>
           </div>
@@ -227,9 +235,10 @@
       offlineMode: false,
       currentSeedPath: null,
       motd: '',
-      currentCrashZipName: null,
+      currentSupportBundleName: null,
       updateCheckPromise: null,
       showUpdateAvailableDialog: false,
+      supportBundleLoading: false,
     }),
     head: () => ({
       title: 'Home',
@@ -269,9 +278,9 @@
             await this.launch(route.query.seedFile)
           }
 
-          if (route.query.crashZipName) {
+          if (route.query.supportBundleName) {
             await this.$router.replace({ query: {} })
-            this.currentCrashZipName = route.query.crashZipName
+            this.currentSupportBundleName = route.query.supportBundleName
           }
         },
       },
@@ -288,7 +297,7 @@
     },
     async mounted() {
       this.shouldShowImportInfoDialog = await window.electronApi.invoke('settings.shouldShowImportInfoDialog')
-      
+
       // We might already have a seed path from launching...
       if (this.currentSeedPath === null) {
         this.currentSeedPath = await window.electronApi.invoke('launcher.getCurrentSeedPath')
@@ -403,9 +412,21 @@
           return false
         }
       },
-      showCrashZipInExplorer() {
-        window.electronApi.invoke('crash.showCrashZipInExplorer', this.currentCrashZipName)
+      showSupportBundleInExplorer() {
+        window.electronApi.invoke('crash.showSupportBundleInExplorer', this.currentSupportBundleName)
       },
+      async createSupportBundle() {
+        this.supportBundleLoading = true
+
+        try {
+          const supportBundleName = await window.electronApi.invoke('crash.createSupportBundle')
+          window.electronApi.invoke('crash.showSupportBundleInExplorer', supportBundleName)
+        } catch (e) {
+          console.error(e)
+        }
+
+        this.supportBundleLoading = false
+      }
     },
   }
 </script>

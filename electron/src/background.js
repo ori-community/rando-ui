@@ -12,6 +12,75 @@ import { SEEDS_PATH, UPDATE_PATH } from '~/electron/src/lib/Constants'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
+async function createWindow() {
+  registerIpcApi()
+
+  if (await SettingsService.importSettingsFromOldInstallation()) {
+    console.log('Successfully imported old settings.')
+  }
+
+  // Create the browser window.
+  const win = new BrowserWindow({
+    width: 800,
+    height: 600,
+    autoHideMenuBar: true,
+    backgroundColor: '#050e17',
+    webPreferences: {
+      // Use pluginOptions.nodeIntegration, leave this alone
+      // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
+      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js'),
+    },
+    frame: true,
+    show: false,
+    title: 'Ori and the Will of the Wisps Randomizer',
+  })
+
+  win.maximize()
+  win.show()
+
+  if (process.env.WEBPACK_DEV_SERVER_URL) {
+    // Load the url of the dev server if in development mode
+    // await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
+    await win.loadURL('http://localhost:3000/electron')
+    if (!process.env.IS_TEST) win.webContents.openDevTools()
+  } else {
+    createProtocol('app')
+    // Load the index.html when not in development
+    await win.loadURL('app://./index.html#/electron')
+  }
+
+  const commandLineArgumentHandler = (args) => {
+    const lastArg = args[args.length - 1]
+
+    if (lastArg.endsWith('.wotwr') && fs.existsSync(lastArg)) {
+      // We got a seed!
+      win.focus()
+      win.webContents.send('main.openSeed', lastArg)
+    } else {
+      // Maybe an URL?
+      try {
+        const url = new URL(lastArg)
+        if (url.protocol === 'ori-rando:') {
+          win.focus()
+          win.webContents.send('main.openUrl', url.toString())
+        }
+      } catch (e) {
+        console.warn('Could not parse URL', e)
+      }
+    }
+  }
+
+  app.on('second-instance', (event, args) => commandLineArgumentHandler(args))
+  commandLineArgumentHandler(process.argv)
+
+  CrashDetectService.setOnCrashCallback(supportBundleName => {
+    win.webContents.send('main.crashDetected', supportBundleName)
+  })
+  await CrashDetectService.start()
+}
+
 if (isDevelopment) {
   fs.mkdirSync('./work-dir/randomizer', {recursive: true})
   fs.mkdirSync('./work-dir/seeds', {recursive: true})
@@ -32,75 +101,6 @@ if (!app.requestSingleInstanceLock()) {
   ])
 
   app.setAsDefaultProtocolClient('ori-rando')
-
-  async function createWindow() {
-    registerIpcApi()
-
-    if (await SettingsService.importSettingsFromOldInstallation()) {
-      console.log('Successfully imported old settings.')
-    }
-
-    // Create the browser window.
-    const win = new BrowserWindow({
-      width: 800,
-      height: 600,
-      autoHideMenuBar: true,
-      backgroundColor: '#050e17',
-      webPreferences: {
-        // Use pluginOptions.nodeIntegration, leave this alone
-        // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-        nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
-        contextIsolation: true,
-        preload: path.join(__dirname, 'preload.js'),
-      },
-      frame: true,
-      show: false,
-      title: 'Ori and the Will of the Wisps Randomizer',
-    })
-
-    win.maximize()
-    win.show()
-
-    if (process.env.WEBPACK_DEV_SERVER_URL) {
-      // Load the url of the dev server if in development mode
-      // await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-      await win.loadURL('http://localhost:3000/electron')
-      if (!process.env.IS_TEST) win.webContents.openDevTools()
-    } else {
-      createProtocol('app')
-      // Load the index.html when not in development
-      await win.loadURL('app://./index.html#/electron')
-    }
-
-    const commandLineArgumentHandler = (args) => {
-      const lastArg = args[args.length - 1]
-
-      if (lastArg.endsWith('.wotwr') && fs.existsSync(lastArg)) {
-        // We got a seed!
-        win.focus()
-        win.webContents.send('main.openSeed', lastArg)
-      } else {
-        // Maybe an URL?
-        try {
-          const url = new URL(lastArg)
-          if (url.protocol === 'ori-rando:') {
-            win.focus()
-            win.webContents.send('main.openUrl', url.toString())
-          }
-        } catch (e) {
-          console.warn('Could not parse URL', e)
-        }
-      }
-    }
-
-    app.on('second-instance', (event, args) => commandLineArgumentHandler(args))
-    commandLineArgumentHandler(process.argv)
-
-    CrashDetectService.setOnCrashCallback(crashZipName => {
-      win.webContents.send('main.crashDetected', crashZipName)
-    })
-    await CrashDetectService.start()
-  }
 
   // Quit when all windows are closed.
   app.on('window-all-closed', () => {

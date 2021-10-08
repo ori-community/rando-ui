@@ -5,7 +5,7 @@ import path from 'path'
 import { LauncherService } from '~/electron/src/lib/LauncherService'
 
 const CRASH_DUMPS_PATH = `${process.env.LOCALAPPDATA || '.'}/Temp/Moon Studios/OriAndTheWilloftheWisps/Crashes`
-const CRASH_ZIP_PATH = `${RANDOMIZER_BASE_PATH}/game-crashes`
+const CRASH_ZIP_PATH = `${RANDOMIZER_BASE_PATH}/support-bundles`
 
 export class CrashDetectService {
   constructor() {
@@ -33,8 +33,8 @@ export class CrashDetectService {
           ) {
             console.log(`CrashDetectService: New crash dump detected: ${crashDirectory}`)
             this.availableCrashDumpDirectories.push(crashDirectory)
-            const crashZip = await this.collectCrashInfo(crashDirectory)
-            this.onCrashCallback && this.onCrashCallback(crashZip)
+            const supportBundleName = await this.createSupportBundle(crashDirectory)
+            this.onCrashCallback && this.onCrashCallback(supportBundleName)
             break
           }
         }
@@ -60,13 +60,16 @@ export class CrashDetectService {
     }
   }
 
-  static async collectCrashInfo(crashDumpDirectory) {
+  static async createSupportBundle(crashDumpDirectory = null) {
     console.log('CrashDetectService: Collecting crash dumps and logs...')
 
     const zip = new Zip()
-    await zip.addLocalFolderPromise(`${CRASH_DUMPS_PATH}/${crashDumpDirectory}`, {
-      zipPath: 'dump',
-    })
+
+    if (crashDumpDirectory) {
+      await zip.addLocalFolderPromise(`${CRASH_DUMPS_PATH}/${crashDumpDirectory}`, {
+        zipPath: 'dump',
+      })
+    }
 
     // Collect logs and Git revisions
     const logFiles = ['cs_log.txt', 'injector.csv', 'VERSION', 'settings.ini', 'run_id']
@@ -86,15 +89,15 @@ export class CrashDetectService {
       await zip.addFile('seed.wotwr', await fs.promises.readFile(currentSeedPath))
     }
 
-    const crashZipName = `${Date.now()}.zip`
-    const targetZipPath = this.getFullPathToCrashZip(crashZipName)
+    const supportBundleName = `${Date.now()}.zip`
+    const targetZipPath = this.getFullPathToSupportBundle(supportBundleName)
     await zip.writeZipPromise(targetZipPath)
-    console.log(`CrashDetectService: Wrote crash dump to ${targetZipPath}`)
+    console.log(`CrashDetectService: Wrote support bundle to ${targetZipPath}`)
 
-    return crashZipName
+    return supportBundleName
   }
 
-  static getFullPathToCrashZip(crashZipName) {
-    return path.resolve(process.cwd(), `${CRASH_ZIP_PATH}/${crashZipName}`)
+  static getFullPathToSupportBundle(supportBundleName) {
+    return path.resolve(process.cwd(), `${CRASH_ZIP_PATH}/${supportBundleName}`)
   }
 }

@@ -5,17 +5,11 @@
         <wotw-page-toolbar />
       </v-container>
 
-      <v-snackbar
-        v-model='showError'
-        timeout='7000'
-        top
-        centered
-        max-width='100%'
-        :multi-line='errorMessage.includes("\n")'
-        color='error'
-      >
-        <span class='error-text'>{{ errorMessage }}</span>
-      </v-snackbar>
+      <v-snackbars :objects.sync='notifications'>
+        <template #default='{message}'>
+          <span class='notification-text'>{{ message }}</span>
+        </template>
+      </v-snackbars>
 
       <Nuxt />
     </v-main>
@@ -27,14 +21,17 @@
 </template>
 
 <script>
+  import VSnackbars from 'v-snackbars'
   import { mapState } from 'vuex'
   import { isElectron } from '~/assets/lib/isElectron'
   import { EventBus } from '~/assets/lib/EventBus'
 
   export default {
+    components: {
+      VSnackbars,
+    },
     data: () => ({
-      showError: false,
-      errorMessage: '',
+      notifications: [],
     }),
     computed: {
       ...mapState('user', ['user']),
@@ -44,14 +41,25 @@
       }
     },
     async beforeMount() {
-      EventBus.$on('error', error => {
-        this.errorMessage = String(error)
-        this.showError = true
+      EventBus.$on('notification', ({message, color = 'accent', timeout = 10000}) => {
+        this.notifications.push({
+          message,
+          color,
+          timeout,
+          multiLine: message.includes("\n"),
+          top: true,
+          centered: true,
+        })
+
+        console.log(this.notifications)
       })
 
       if (isElectron()) {
         window.electronApi.on('main.error', (event, e) => {
-          EventBus.$emit('error', e)
+          EventBus.$emit('notification', {
+            message: String(e),
+            color: 'error',
+          })
         })
 
         window.electronApi.on('main.settingsChanged', (event, settings) => {
@@ -168,7 +176,7 @@
     }
   }
 
-  .error-text {
+  .notification-text {
     white-space: pre-wrap;
   }
 </style>

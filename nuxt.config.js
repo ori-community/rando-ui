@@ -103,7 +103,7 @@ export default {
           accent: '#533CA6',
           accent2: '#D989D3',
           info: '#5199CD',
-          warning: colors.amber.base,
+          warning: colors.orange.base,
           error: colors.deepOrange.accent4,
           success: colors.green.accent3,
         },

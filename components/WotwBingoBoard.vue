@@ -19,8 +19,8 @@
           :force-flip='x + y > unveilProgress'
           :square='hasSquare(x, y) ? squaresByPosition[x][y].square : null'
           :universe-colors='universeColors'
-          :hidden-teams='hiddenUniverses'
-          :highlight-team='highlightUniverse'
+          :hidden-universes='hiddenUniverses'
+          :highlight-universe='highlightUniverse'
         />
       </template>
 

@@ -72,7 +72,7 @@ export class CrashDetectService {
     }
 
     // Collect logs and Git revisions
-    const logFiles = ['cs_log.txt', 'injector.csv', 'VERSION', 'settings.ini', 'run_id']
+    const logFiles = ['cs_log.txt', 'injector.csv', 'VERSION', 'settings.ini', 'run_id', 'reach.log']
     for (const file of await fs.promises.readdir(RANDOMIZER_BASE_PATH)) {
       if (logFiles.includes(file) || file.endsWith('.revision')) {
         const fullPath = path.join(RANDOMIZER_BASE_PATH, file)
@@ -84,7 +84,7 @@ export class CrashDetectService {
     }
 
     // Collect current seed
-    const currentSeedPath = LauncherService.getCurrentSeedPath()
+    const currentSeedPath = await LauncherService.getCurrentSeedPath()
     if (currentSeedPath && fs.existsSync(currentSeedPath)) {
       await zip.addFile('seed.wotwr', await fs.promises.readFile(currentSeedPath))
     }

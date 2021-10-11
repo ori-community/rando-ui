@@ -125,13 +125,15 @@
                       <v-select
                         v-model='createOnlineGame'
                         :items="[
-                            {text: 'None', value: 'none'},
-                            {text: 'Normal', value: 'normal'},
-                            {text: 'Bingo', value: 'bingo'},
-                            {text: 'Discovery Bingo', value: 'discovery_bingo'},
-                            {text: 'Lockout Bingo', value: 'lockout_bingo'},
-                          ]"
-                        hide-details
+                          {text: 'None', value: 'none'},
+                          {text: 'Normal', value: 'normal'},
+                          {text: 'Bingo', value: 'bingo'},
+                          {text: 'Discovery Bingo', value: 'discovery_bingo'},
+                          {text: 'Lockout Bingo', value: 'lockout_bingo'},
+                        ]"
+                        :disabled='!isLoggedIn'
+                        :persistent-hint='!isLoggedIn'
+                        :hint='!isLoggedIn ? "Only available when logged in" : ""'
                         label='Automatically create online game'
                       />
                     </div>
@@ -208,6 +210,7 @@
 <script>
   import { saveAs } from 'file-saver'
   import base64url from 'base64url'
+  import { mapGetters } from 'vuex'
   import glitches from '~/assets/seedgen/glitches.yaml'
   import goals from '~/assets/seedgen/goals.yaml'
   import spawns from '~/assets/seedgen/spawns.yaml'
@@ -239,7 +242,7 @@
       availableDifficulties: difficulties,
       availableHeaders: null, // Fetched from server
       availablePresets: null, // Fetched from server
-      createOnlineGame: 'normal',
+      createOnlineGame: 'none',
       loading: false,
       showResultDialog: false,
       seedgenResult: null,
@@ -247,6 +250,7 @@
     }),
     computed: {
       isElectron,
+      ...mapGetters('user', ['isLoggedIn']),
       loadedServerConfig() {
         return !!this.availableHeaders && !!this.availablePresets
       },
@@ -280,6 +284,13 @@
       },
       '$route.query.result'() {
         this.updateSeedgenResultDialogState()
+      },
+      isLoggedIn(isLoggedIn) {
+        if (isLoggedIn && this.createOnlineGame === 'none') {
+          this.createOnlineGame = 'normal'
+        } else if (!isLoggedIn) {
+          this.createOnlineGame = 'none'
+        }
       },
     },
     async mounted() {

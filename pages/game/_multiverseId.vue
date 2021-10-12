@@ -416,6 +416,10 @@
         this.embedUrlLoading = false
 
         this.embedUrlCopied = true
+
+        setTimeout(() => {
+          this.embedUrlCopied = false
+        }, 4000)
       },
       async spectate() {
         this.spectateLoading = true

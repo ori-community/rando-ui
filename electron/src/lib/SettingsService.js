@@ -36,6 +36,8 @@ const getDefaultSettings = () => ({
     BoringMoney: true,
     WaitForDebugger: false,
     InvertSwim: false,
+    DisableDebugControls: true,
+    CursorLock: false,
   },
 })
 

@@ -37,11 +37,6 @@
           messages='Always show Spirit Wells on the in-game map, no matter what filter'
         />
         <v-checkbox
-          v-model='settings.Flags.AlwaysShowKeystones'
-          label='Always Show Keystones'
-          messages='Keep your keystone count visible while playing'
-        />
-        <v-checkbox
           v-model='disableWorldMap'
           label='Disable World Map'
           messages='Disables the world map that opens when zooming out'
@@ -59,30 +54,40 @@
           label='Random Currency Names'
           messages='Bored of seeing "X Spirit Light"? This setting is for you!'
         />
+        <v-checkbox
+          v-model='settings.Flags.AlwaysShowKeystones'
+          label='Always Show Keystones'
+          messages='Keep your keystone count visible while playing'
+        />
       </div>
     </v-col>
     <v-col cols='12' md='6'>
       <div class='mb-8'>
-        <h3>General Controls</h3>
+        <h3>Control Options</h3>
         <v-checkbox
           v-model='settings.Flags.GrappleMouseControl'
-          label='Grapple'
+          label='Grapple Mouse Aiming'
           messages='Enables aiming Grapple with your mouse cursor'
         />
         <v-checkbox
           v-model='settings.Flags.BurrowMouseControl'
-          label='Burrow'
+          label='Burrow Mouse Aiming'
           messages='Enables aiming Burrow with your mouse cursor'
         />
         <v-checkbox
           v-model='settings.Flags.WaterDashMouseControl'
-          label='Swimming'
+          label='Swimming Mouse Aiming'
           messages='Enable Swimming and Water Dashing towards your mouse cursor'
         />
         <v-checkbox
           v-model='settings.Flags.InvertSwim'
           label='Invert swim speeds'
           messages='Swim fast by default. Hold jump to swim slower instead'
+        />
+        <v-checkbox
+          v-model='settings.Flags.CursorLock'
+          label='Lock Cursor to Window'
+          messages='Prevents the mouse cursor from moving outside the game window'
         />
       </div>
       <div class='mb-8'>
@@ -104,7 +109,7 @@
         <v-checkbox
           v-model='settings.Flags.DisableNetcode'
           label='Disable Netcode'
-          messages='Checking this option prevents the randomizer from communicating with the rando server.`nWith netcode disabled, bingo autotracking and other networked features will be unavailable.'
+          messages='Checking this option prevents the randomizer from communicating with the rando server. With netcode disabled, bingo autotracking and other networked features will be unavailable.'
         />
         <v-checkbox
           v-model='settings.Flags.UseWinStore'
@@ -123,6 +128,11 @@
           v-model='settings.Flags.WaitForDebugger'
           label='Wait for Debugger'
           messages='The Randomizer will wait for a debugger to attach before initialization'
+        />
+        <v-checkbox
+          v-model='enableDebugControls'
+          label='Enable Debug Controls'
+          messages='Enable Debug Controls by default'
         />
         <v-text-field
           v-model='settings.Paths.URL'
@@ -164,6 +174,14 @@
         },
         set(value) {
           this.settings.Flags.WorldMapEnabled = !value
+        }
+      },
+      enableDebugControls: {
+        get() {
+          return !this.settings.Flags.DisableDebugControls
+        },
+        set(value) {
+          this.settings.Flags.DisableDebugControls = !value
         }
       },
     },

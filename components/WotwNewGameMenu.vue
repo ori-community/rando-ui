@@ -1,27 +1,35 @@
 <template>
-  <v-menu offset-y>
-    <template #activator='{on}'>
-      <v-btn depressed text v-bind='$attrs' v-on='on'>
-        <v-icon left>mdi-plus</v-icon>
-        New game
-      </v-btn>
+  <v-tooltip :disabled='isLoggedIn'>
+    <template #activator='{on: onTooltip}'>
+      <v-menu offset-y :disabled='!isLoggedIn' v-on='onTooltip'>
+        <template #activator='{on: onMenu}'>
+          <v-btn depressed text :disabled='!isLoggedIn' v-bind='$attrs' v-on='onMenu'>
+            <v-icon left>mdi-plus</v-icon>
+            New game
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item @click='createNewGame("normal")'>Normal</v-list-item>
+          <v-list-item @click='createNewGame("bingo")'>Bingo</v-list-item>
+          <v-list-item @click='createNewGame("discovery_bingo")'>Discovery Bingo</v-list-item>
+          <v-list-item @click='createNewGame("lockout_bingo")'>Lockout Bingo</v-list-item>
+        </v-list>
+      </v-menu>
     </template>
-    <v-list>
-      <v-list-item @click='createNewGame("normal")'>Normal</v-list-item>
-      <v-list-item @click='createNewGame("bingo")'>Bingo</v-list-item>
-      <v-list-item @click='createNewGame("discovery_bingo")'>Discovery Bingo</v-list-item>
-      <v-list-item @click='createNewGame("lockout_bingo")'>Lockout Bingo</v-list-item>
-    </v-list>
-  </v-menu>
+  </v-tooltip>
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
 
   export default {
     name: 'WotwNewGameMenu',
     data: () => ({
       newGameLoading: false,
     }),
+    computed: {
+      ...mapGetters('user', ['isLoggedIn']),
+    },
     methods: {
       async createNewGame(type) {
         if (this.newGameLoading) {

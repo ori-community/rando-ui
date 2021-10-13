@@ -60,7 +60,7 @@
               Embed (OBS)
             </template>
           </v-btn>
-          <v-btn text @click='spectateDialogOpen = true'>
+          <v-btn :disabled='isSpectating' text @click='spectateDialogOpen = true'>
             <v-icon left>mdi-monitor-eye</v-icon>
             Spectate
           </v-btn>

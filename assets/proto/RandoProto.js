@@ -3228,6 +3228,7 @@ export const RandoProto = $root.RandoProto = (() => {
          * @interface IBingoBoard
          * @property {Array.<RandoProto.IPositionedBingoSquare>|null} [squares] BingoBoard squares
          * @property {number|null} [size] BingoBoard size
+         * @property {boolean|null} [lockout] BingoBoard lockout
          */
 
         /**
@@ -3263,6 +3264,14 @@ export const RandoProto = $root.RandoProto = (() => {
         BingoBoard.prototype.size = 0;
 
         /**
+         * BingoBoard lockout.
+         * @member {boolean} lockout
+         * @memberof RandoProto.BingoBoard
+         * @instance
+         */
+        BingoBoard.prototype.lockout = false;
+
+        /**
          * Creates a new BingoBoard instance using the specified properties.
          * @function create
          * @memberof RandoProto.BingoBoard
@@ -3291,6 +3300,8 @@ export const RandoProto = $root.RandoProto = (() => {
                     $root.RandoProto.PositionedBingoSquare.encode(message.squares[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
             if (message.size != null && Object.hasOwnProperty.call(message, "size"))
                 writer.uint32(/* id 2, wireType 0 =*/16).int32(message.size);
+            if (message.lockout != null && Object.hasOwnProperty.call(message, "lockout"))
+                writer.uint32(/* id 3, wireType 0 =*/24).bool(message.lockout);
             return writer;
         };
 
@@ -3332,6 +3343,9 @@ export const RandoProto = $root.RandoProto = (() => {
                     break;
                 case 2:
                     message.size = reader.int32();
+                    break;
+                case 3:
+                    message.lockout = reader.bool();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -3380,6 +3394,9 @@ export const RandoProto = $root.RandoProto = (() => {
             if (message.size != null && message.hasOwnProperty("size"))
                 if (!$util.isInteger(message.size))
                     return "size: integer expected";
+            if (message.lockout != null && message.hasOwnProperty("lockout"))
+                if (typeof message.lockout !== "boolean")
+                    return "lockout: boolean expected";
             return null;
         };
 
@@ -3407,6 +3424,8 @@ export const RandoProto = $root.RandoProto = (() => {
             }
             if (object.size != null)
                 message.size = object.size | 0;
+            if (object.lockout != null)
+                message.lockout = Boolean(object.lockout);
             return message;
         };
 
@@ -3425,8 +3444,10 @@ export const RandoProto = $root.RandoProto = (() => {
             let object = {};
             if (options.arrays || options.defaults)
                 object.squares = [];
-            if (options.defaults)
+            if (options.defaults) {
                 object.size = 0;
+                object.lockout = false;
+            }
             if (message.squares && message.squares.length) {
                 object.squares = [];
                 for (let j = 0; j < message.squares.length; ++j)
@@ -3434,6 +3455,8 @@ export const RandoProto = $root.RandoProto = (() => {
             }
             if (message.size != null && message.hasOwnProperty("size"))
                 object.size = message.size;
+            if (message.lockout != null && message.hasOwnProperty("lockout"))
+                object.lockout = message.lockout;
             return object;
         };
 

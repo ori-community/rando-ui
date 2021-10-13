@@ -21,6 +21,7 @@
           :universe-colors='universeColors'
           :hidden-universes='hiddenUniverses'
           :highlight-universe='highlightUniverse'
+          :is-lockout='multiverse.bingoBoard.lockout'
         />
       </template>
 

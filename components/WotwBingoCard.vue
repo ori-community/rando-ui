@@ -29,6 +29,10 @@
   export default {
     name: 'WotwBingoCard',
     props: {
+      isLockout: {
+        type: Boolean,
+        default: false,
+      },
       square: {
         type: Object,
         default: () => null,
@@ -76,7 +80,10 @@
           .map(universeId => this.universeColors[universeId])
         const stops = []
 
-        const shouldHighlight = !!this.highlightUniverse && !this.hiddenUniverses.includes(this.highlightUniverse)
+        const shouldHighlight =
+          !!this.highlightUniverse &&
+          !this.hiddenUniverses.includes(this.highlightUniverse) &&
+          !this.isLockout
 
         for (let i = 0; i < nonHighlightedColors.length; i++) {
           const stopStart = (i / nonHighlightedColors.length) * (shouldHighlight ? highlightSplitPercentage : 100)

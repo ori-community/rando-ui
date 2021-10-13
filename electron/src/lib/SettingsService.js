@@ -2,12 +2,14 @@ import fs from 'fs'
 import ini from 'ini'
 import { RANDOMIZER_BASE_PATH } from './Constants'
 import path from 'path'
-import { BrowserWindow } from 'electron'
 import merge from 'lodash.merge'
 import { getWindow } from '~/electron/src/background'
+import updater from '~/electron/src/api/updater'
+import semver from 'semver'
 
 const SETTINGS_PATH = `${RANDOMIZER_BASE_PATH}/settings.ini`
 const CURRENT_SEED_PATH_FILE = `${RANDOMIZER_BASE_PATH}/.currentseedpath`
+const LAST_VERSION_FILE = `${RANDOMIZER_BASE_PATH}/LAST_VERSION`
 const OLD_RANDO_PATH_FILE = path.join(process.env.LOCALAPPDATA || '', 'wotwrpath.tmp')
 
 const getDefaultSettings = () => ({
@@ -54,6 +56,43 @@ let settingsCache = null
 let shouldShowImportInfoDialog = false
 
 export class SettingsService {
+  static async migrateSettingsVersion() {
+    const currentVersion = (await updater.getVersion()).trim()
+
+    if (fs.existsSync(LAST_VERSION_FILE) && currentVersion !== 'develop') {
+      const lastVersion = (await fs.promises.readFile(LAST_VERSION_FILE, { encoding: 'utf-8' })).trim()
+
+      if (lastVersion !== currentVersion && lastVersion !== 'develop') {
+        const settings = await SettingsService.readSettings()
+
+        const migrations = {
+          '1.0.0'() {
+            // Revert URL back for all the beta players
+            settings.Paths.URL = 'wotw.orirando.com'
+            settings.Flags.Dev = false
+          },
+        }
+
+        for (const migrationVersion of Object.keys(migrations)) {
+          if (semver.gt(migrationVersion, lastVersion, true) && semver.lte(migrationVersion, currentVersion, true)) {
+            console.log(`SettingsService: Running migration ${migrationVersion}`)
+            migrations[migrationVersion]()
+          }
+        }
+        console.log(`SettingsService: Migrations finished`)
+
+        await SettingsService.setSettings(settings)
+        await SettingsService.writeSettings()
+      } else {
+        console.log(`SettingsService: Nothing to migrate`)
+      }
+    } else {
+      console.log(`SettingsService: Fresh installation, nothing to migrate`)
+    }
+
+    await fs.promises.writeFile(LAST_VERSION_FILE, currentVersion)
+  }
+
   static async makeSureSettingsFileExists() {
     await this.readSettings()
     await this.writeSettings()

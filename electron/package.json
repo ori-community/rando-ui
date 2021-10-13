@@ -24,6 +24,7 @@
     "lodash.throttle": "^4.1.1",
     "ps-list": "^7.2.0",
     "ref-napi": "^3.0.3",
+    "semver": "^7.3.5",
     "vue": "^3.0.0"
   },
   "devDependencies": {

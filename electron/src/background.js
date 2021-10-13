@@ -86,6 +86,7 @@ async function createWindow() {
     window.webContents.send('main.crashDetected', supportBundleName)
   })
   await CrashDetectService.start()
+  await SettingsService.migrateSettingsVersion()
 }
 
 if (isDevelopment) {

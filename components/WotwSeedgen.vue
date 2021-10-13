@@ -352,16 +352,18 @@
 
           this.seedgenResult = response.result
 
-          if (response.warnings) {
+          if (response.warnings && response.warnings.includes('WARN')) {
             EventBus.$emit('notification', {
               message: response.warnings,
               color: 'warning',
             })
           }
 
+          const hasMultiverse = typeof this.seedgenResult.multiverseId === 'number'
+
           // Download the seed instantly for single player, non-networked games
           // and show the download dialog otherwise
-          if (this.seedgenResult.multiverseId === null && response.result.worldList.length === 0) {
+          if (!hasMultiverse && response.result.worldList.length === 0) {
             const url = `${this.$axios.defaults.baseURL}/seeds/${response.result.seedId}`
             const fileName = `seed_${response.result.seedId}.wotwr`
 
@@ -381,7 +383,7 @@
             } else {
               saveAs(url, fileName)
             }
-          } else if (this.seedgenResult.multiverseId === null) {
+          } else if (!hasMultiverse) {
             await this.$router.replace({ query: { result: JSON.stringify(response.result) } })
           } else {
             await this.$router.push({

@@ -120,6 +120,11 @@
         }
       }
     },
+    mounted() {
+      if (!isElectron() && this.launcherUrl) {
+        window.location.href = this.launcherUrl
+      }
+    },
     methods: {
       async downloadSeed(seed) {
         if (isElectron()) {

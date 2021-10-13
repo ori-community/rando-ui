@@ -70,6 +70,7 @@ export class SettingsService {
             // Revert URL back for all the beta players
             settings.Paths.URL = 'wotw.orirando.com'
             settings.Flags.Dev = false
+            settings.Flags.DisableDebugControls = true
           },
         }
 

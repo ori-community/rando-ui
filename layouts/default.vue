@@ -80,16 +80,19 @@
 
         window.electronApi.on('main.crashDetected', (event, crashZipName) => {
           this.$router.push({ name: 'electron', query: { crashZipName } })
+          window.electronApi.invoke('launcher.focusMainWindow')
         })
 
         window.electronApi.on('main.goToSettings', () => {
           this.$router.push({ name: 'electron-settings' })
+          window.electronApi.invoke('launcher.focusMainWindow')
         })
 
         window.electronApi.on('main.openUrl', async (event, url) => {
           url = new URL(url)
 
           if (url.protocol === 'ori-rando:') {
+            window.electronApi.invoke('launcher.focusMainWindow')
             const topPath = url.pathname.match(/\/\/(?<topPath>[^/]*)\//)?.groups.topPath
             switch (topPath) {
               case 'authenticate':

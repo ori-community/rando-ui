@@ -9,6 +9,7 @@ import { Library as FFILibrary } from 'ffi-napi'
 import { UCS2String } from '~/electron/src/lib/UCS2String'
 import { BrowserWindow } from 'electron'
 import { SeedParser } from '~/assets/lib/SeedParser'
+import { getWindow } from '~/electron/src/background'
 
 
 const CURRENT_SEED_PATH_FILE = `${RANDOMIZER_BASE_PATH}/.currentseedpath`
@@ -83,7 +84,7 @@ export class LauncherService {
     if (await this.getCurrentSeedPath() !== seedFilePath.trim()) {
       console.log(`Setting current seed path to ${seedFilePath.trim()}`)
       await fs.promises.writeFile(CURRENT_SEED_PATH_FILE, seedFilePath.trim())
-      BrowserWindow.getFocusedWindow().webContents.send('main.currentSeedChanged', {
+      getWindow().webContents.send('main.currentSeedChanged', {
         currentSeedPath: seedFilePath.trim(),
         currentSeedInfo: SeedParser.parse(await fs.promises.readFile(seedFilePath.trim(), {encoding: 'utf-8'})),
       })
@@ -104,7 +105,7 @@ export class LauncherService {
     const settings = await SettingsService.readSettings()
 
     if (!fs.existsSync(settings.Paths.Steam)) {
-      BrowserWindow.getFocusedWindow().webContents.send('main.goToSettings')
+      getWindow().webContents.send('main.goToSettings')
       throw new Error(`Steam was not found at the specified path (${settings.Paths.Steam}). Please set it in "Launch settings" and launch again.`)
     }
 

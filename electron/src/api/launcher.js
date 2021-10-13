@@ -4,6 +4,7 @@ import path from 'path'
 import fs from 'fs'
 import { FileDownloadService } from '~/electron/src/lib/FileDownloadService'
 import { shell } from 'electron'
+import { getWindow } from '~/electron/src/background'
 
 export default {
   getOpenedSeedPath() {
@@ -72,4 +73,8 @@ export default {
   openDiscord() {
     shell.openExternal('https://discord.gg/SUS57PWWnA')
   },
+
+  focusMainWindow() {
+    getWindow().focus()
+  }
 }

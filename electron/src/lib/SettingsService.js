@@ -4,6 +4,7 @@ import { RANDOMIZER_BASE_PATH } from './Constants'
 import path from 'path'
 import { BrowserWindow } from 'electron'
 import merge from 'lodash.merge'
+import { getWindow } from '~/electron/src/background'
 
 const SETTINGS_PATH = `${RANDOMIZER_BASE_PATH}/settings.ini`
 const CURRENT_SEED_PATH_FILE = `${RANDOMIZER_BASE_PATH}/.currentseedpath`
@@ -42,9 +43,10 @@ const getDefaultSettings = () => ({
 })
 
 const sendSettingsToUI = () => {
-  const window = BrowserWindow.getFocusedWindow()
-  if (window) {
-    window.webContents.send('main.settingsChanged', settingsCache)
+  try {
+    getWindow().webContents.send('main.settingsChanged', settingsCache)
+  } catch (e) {
+    console.error(e)
   }
 }
 

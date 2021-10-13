@@ -12,6 +12,15 @@ import { SEEDS_PATH, UPDATE_PATH } from '~/electron/src/lib/Constants'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
+let window = null
+
+/**
+ * @returns {BrowserWindow}
+ */
+export function getWindow() {
+  return window
+}
+
 async function createWindow() {
   registerIpcApi()
 
@@ -20,7 +29,7 @@ async function createWindow() {
   }
 
   // Create the browser window.
-  const win = new BrowserWindow({
+  window = new BrowserWindow({
     width: 800,
     height: 600,
     autoHideMenuBar: true,
@@ -37,18 +46,18 @@ async function createWindow() {
     title: 'Ori and the Will of the Wisps Randomizer',
   })
 
-  win.maximize()
-  win.show()
+  window.maximize()
+  window.show()
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
-    // await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-    await win.loadURL('http://localhost:3000/electron')
-    if (!process.env.IS_TEST) win.webContents.openDevTools()
+    // await window.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
+    await window.loadURL('http://localhost:3000/electron')
+    if (!process.env.IS_TEST) window.webContents.openDevTools()
   } else {
     createProtocol('app')
     // Load the index.html when not in development
-    await win.loadURL('app://./index.html#/electron')
+    await window.loadURL('app://./index.html#/electron')
   }
 
   const commandLineArgumentHandler = (args) => {
@@ -56,15 +65,13 @@ async function createWindow() {
 
     if (lastArg.endsWith('.wotwr') && fs.existsSync(lastArg)) {
       // We got a seed!
-      win.focus()
-      win.webContents.send('main.openSeed', lastArg)
+      window.webContents.send('main.openSeed', lastArg)
     } else {
       // Maybe an URL?
       try {
         const url = new URL(lastArg)
         if (url.protocol === 'ori-rando:') {
-          win.focus()
-          win.webContents.send('main.openUrl', url.toString())
+          window.webContents.send('main.openUrl', url.toString())
         }
       } catch (e) {
         console.warn('Could not parse URL', e)
@@ -76,7 +83,7 @@ async function createWindow() {
   commandLineArgumentHandler(process.argv)
 
   CrashDetectService.setOnCrashCallback(supportBundleName => {
-    win.webContents.send('main.crashDetected', supportBundleName)
+    window.webContents.send('main.crashDetected', supportBundleName)
   })
   await CrashDetectService.start()
 }

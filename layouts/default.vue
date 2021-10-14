@@ -78,8 +78,8 @@
           this.$router.push({ name: 'electron', query: { seedFile } })
         })
 
-        window.electronApi.on('main.crashDetected', (event, crashZipName) => {
-          this.$router.push({ name: 'electron', query: { crashZipName } })
+        window.electronApi.on('main.crashDetected', (event, supportBundleName) => {
+          this.$router.push({ name: 'electron', query: { supportBundleName } })
           window.electronApi.invoke('launcher.focusMainWindow')
         })
 

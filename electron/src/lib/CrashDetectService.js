@@ -33,6 +33,10 @@ export class CrashDetectService {
           ) {
             console.log(`CrashDetectService: New crash dump detected: ${crashDirectory}`)
             this.availableCrashDumpDirectories.push(crashDirectory)
+
+            // Wait two seconds in case the dump is still being written...
+            await new Promise(resolve => setTimeout(resolve, 2000))
+
             const supportBundleName = await this.createSupportBundle(crashDirectory)
             this.onCrashCallback && this.onCrashCallback(supportBundleName)
             break

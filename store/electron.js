@@ -144,17 +144,19 @@ export const actions = {
       checkForUpdatesOncePromise.finally(resolve)
     })
   },
-  async downloadAndInstallUpdate({ commit, state }) {
-    commit('setShowUpdateAvailableDialog', false)
-    commit('setUpdateDownloadProgress', 0)
-    commit('setUpdateDownloading', true)
+  async downloadAndInstallUpdate({ commit, getters }) {
+    if (getters.latestVisibleRelease) {
+      commit('setShowUpdateAvailableDialog', false)
+      commit('setUpdateDownloadProgress', 0)
+      commit('setUpdateDownloading', true)
 
-    window.electronApi.on('updater.downloadProgress', (event, progress) => {
-      commit('setUpdateDownloadProgress', progress * 100)
-    })
-    await window.electronApi.invoke('updater.downloadAndInstallUpdate', {
-      url: state.latestVisibleRelease.assets.find(a => a.name === 'WotwRandoSetup.exe').browser_download_url,
-    })
+      window.electronApi.on('updater.downloadProgress', (event, progress) => {
+        commit('setUpdateDownloadProgress', progress * 100)
+      })
+      await window.electronApi.invoke('updater.downloadAndInstallUpdate', {
+        url: getters.latestVisibleRelease.assets.find(a => a.name === 'WotwRandoSetup.exe').browser_download_url,
+      })
+    }
   },
   async launch({ commit, state, getters, dispatch }, { seedFile = null, forceLaunch = false } = {}) {
     if (state.launching) {

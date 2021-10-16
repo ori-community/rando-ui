@@ -39,7 +39,7 @@ export default {
     }
   },
 
-  async launchSeedFromUrl(event, { url, fileName }) {
+  async downloadSeedFromUrl(event, { url, fileName }) {
     console.log(`Launching seed from URL: ${url}`)
 
     const originalFilenameParts = fileName.match(/(?<name>.*)\.(?<extension>[^.]*)/).groups
@@ -52,13 +52,7 @@ export default {
     await FileDownloadService.download(url, targetFile)
 
     console.log(`Downloaded seed to ${targetFile}`)
-
-    try {
-      await LauncherService.launch(targetFile)
-    } catch (e) {
-      console.log('Failed to launch:', e)
-      event.sender.send('main.error', e)
-    }
+    await LauncherService.setCurrentSeedPath(targetFile)
   },
 
   openWiki() {

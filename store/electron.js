@@ -156,7 +156,7 @@ export const actions = {
       url: state.latestVisibleRelease.assets.find(a => a.name === 'WotwRandoSetup.exe').browser_download_url,
     })
   },
-  async launch({ commit, state, getters, dispatch }, { seedFile = null, forceLaunch = false }) {
+  async launch({ commit, state, getters, dispatch }, { seedFile = null, forceLaunch = false } = {}) {
     if (state.launching) {
       return
     }

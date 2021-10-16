@@ -130,7 +130,8 @@
         if (isElectron()) {
           this.seedLaunching = true
           try {
-            await window.electronApi.invoke('launcher.launchSeedFromUrl', seed)
+            await window.electronApi.invoke('launcher.downloadSeedFromUrl', seed)
+            await this.$store.dispatch('electron/launch')
           } catch (e) {
             console.error(e)
           }

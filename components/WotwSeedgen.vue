@@ -374,9 +374,10 @@
 
             if (isElectron()) {
               try {
-                await window.electronApi.invoke('launcher.launchSeedFromUrl', {
+                await window.electronApi.invoke('launcher.downloadSeedFromUrl', {
                   url, fileName,
                 })
+                await this.$store.dispatch('electron/launch')
               } catch (e) {
                 console.error(e)
               }

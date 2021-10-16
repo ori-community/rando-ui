@@ -24,7 +24,7 @@ export const getters = {
     return version => {
       const updateToPrereleaseVersions = state.settingsLoaded && (state.settings.Flags.UpdateToPrereleaseVersions ?? false)
       const prerelease = semver.prerelease(version)
-      return updateToPrereleaseVersions || prerelease?.length === 0
+      return updateToPrereleaseVersions || prerelease === null
     }
   },
   isNewVersion(state, getters) {

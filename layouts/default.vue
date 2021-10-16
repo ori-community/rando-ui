@@ -14,6 +14,8 @@
       <Nuxt />
     </v-main>
 
+    <global-dialogs />
+
     <footer>
       <img src='../assets/images/footer.png'>
     </footer>
@@ -75,11 +77,13 @@
         })
 
         window.electronApi.on('main.openSeed', (event, seedFile) => {
-          this.$router.push({ name: 'electron', query: { seedFile } })
+          this.$store.dispatch('electron/launch', {
+            seedFile,
+          })
         })
 
         window.electronApi.on('main.crashDetected', (event, supportBundleName) => {
-          this.$router.push({ name: 'electron', query: { supportBundleName } })
+          this.$store.commit('electron/setCurrentSupportBundleName', supportBundleName)
           window.electronApi.invoke('launcher.focusMainWindow')
         })
 
@@ -130,6 +134,8 @@
             seedgenResult: null,
           })
         }
+
+        await this.$store.dispatch('electron/checkForUpdatesOnce')
       }
     },
   }

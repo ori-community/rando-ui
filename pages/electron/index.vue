@@ -129,53 +129,6 @@
       </v-col>
     </v-row>
 
-    <v-dialog :value='currentSupportBundleName !== null' max-width='600' persistent>
-      <v-card>
-        <div class='pa-6'>
-          <h1 class='text-center'>Uh oh!</h1>
-          <h3 class='text-center mb-4'>Something went oribly wrong</h3>
-
-          <div>
-            It seems like the game crashed... We collected some information and important files that would help us
-            to find the issue. Please reach out to one of the developers on our Discord and send them the file.
-          </div>
-
-          <div class='text-center my-8'>
-            <code class='title'>{{ currentSupportBundleName }}</code>
-          </div>
-
-          <div class='d-flex justify-end'>
-            <v-btn text depressed @click='currentSupportBundleName = null'>
-              Close
-            </v-btn>
-            <v-btn depressed color='accent' class='ml-2' @click='showSupportBundleInExplorer'>
-              Show in Explorer
-            </v-btn>
-          </div>
-        </div>
-        <img class='crash-ori' src='~/assets/images/ori_sus.png' alt=''>
-      </v-card>
-    </v-dialog>
-
-    <v-dialog v-model='showUpdateAvailableDialog' max-width='500' persistent>
-      <v-card>
-        <v-card-title>Update available ({{ latestVersion }})</v-card-title>
-        <v-card-text>
-          An update for the randomizer is ready to be downloaded and installed.
-          We recommend to always play on the latest version.
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn text class='mr-1' @click='launch(null, true)'>
-            Launch anyway
-          </v-btn>
-          <v-btn depressed color='accent' @click='downloadAndInstallUpdate'>
-            Install update
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
     <v-dialog v-model='shouldShowImportInfoDialog' max-width='600' persistent>
       <v-card class='pa-6'>
         <h1 class='text-center mb-4'>Hi there! Welcome to 1.0</h1>
@@ -214,30 +167,16 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex'
-  import semver from 'semver'
-  import sanitizeHtml from 'sanitize-html'
-  import * as commonmark from 'commonmark'
-  import { generateClientJwt } from '~/assets/electron/generateClientJwt'
+  import { mapGetters, mapMutations, mapState } from 'vuex'
   import { formatsDates } from '~/assets/lib/formatsDates'
 
   export default {
     name: 'Index',
     mixins: [formatsDates],
     data: () => ({
-      currentVersion: '',
-      latestRelease: null, // contains new version string if available
-      updateDownloading: false,
-      updateDownloadProgress: 0,
-      launching: false,
       shouldShowImportInfoDialog: false,
-      availableReleases: null,
-      offlineMode: false,
-      currentSeedPath: null,
       motd: '',
-      currentSupportBundleName: null,
       updateCheckPromise: null,
-      showUpdateAvailableDialog: false,
       supportBundleLoading: false,
     }),
     head: () => ({
@@ -247,143 +186,52 @@
       ],
     }),
     computed: {
-      ...mapState({
-        user: state => state.user.user,
-        settings: state => state.electron.settings,
-        settingsLoaded: state => state.electron.settingsLoaded,
-      }),
-      ...mapState('multiverseState', ['multiverses']),
-      updateAvailable() {
-        return this.latestRelease !== null && this.isNewVersion(this.latestVersion)
-      },
-      latestVersion() {
-        return this.latestRelease?.name
-      },
-      currentSeedPathBasename() {
-        if (!this.currentSeedPath) {
-          return null
-        }
-
-        const parts = this.currentSeedPath.split(/[/\\]/)
-        return parts[parts.length - 1]
-      },
-    },
-    watch: {
-      $route: {
-        immediate: true,
-        async handler(route) {
-          if (route.query.seedFile) {
-            await this.$router.replace({ query: {} })
-            this.currentSeedPath = route.query.seedFile
-            await this.launch(route.query.seedFile)
-          }
-
-          if (route.query.supportBundleName) {
-            await this.$router.replace({ query: {} })
-            this.currentSupportBundleName = route.query.supportBundleName
-          }
-        },
-      },
-      user: {
-        immediate: true,
-        async handler(user) {
-          if (user) {
-            if (!await window.electronApi.invoke('auth.hasClientJwt')) {
-              await generateClientJwt(this.$axios)
-            }
-          }
-        },
-      },
+      ...mapState('user', [
+        'user'
+      ]),
+      ...mapState('electron', [
+        'settings',
+        'settingsLoaded',
+        'currentVersion',
+        'latestRelease',
+        'updateDownloading',
+        'updateDownloadProgress',
+        'availableReleases',
+        'launching',
+        'offlineMode',
+        'currentSeedPath',
+        'currentSupportBundleName',
+        'showUpdateAvailableDialog',
+      ]),
+      ...mapState('multiverseState', [
+        'multiverses'
+      ]),
+      ...mapGetters('electron', [
+        'updateAvailable',
+        'latestVersion',
+        'currentSeedPathBasename',
+        'isNewVersion',
+      ]),
     },
     async mounted() {
       this.shouldShowImportInfoDialog = await window.electronApi.invoke('settings.shouldShowImportInfoDialog')
 
       // We might already have a seed path from launching...
       if (this.currentSeedPath === null) {
-        this.currentSeedPath = await window.electronApi.invoke('launcher.getCurrentSeedPath')
+        this.$store.commit('electron/setCurrentSeedPath', await window.electronApi.invoke('launcher.getCurrentSeedPath'))
       }
-
-      await this.checkForUpdatesOnce()
     },
     methods: {
-      async checkForUpdatesOnce() {
-        await new Promise(resolve => {
-          if (this.updateCheckPromise === null) {
-            this.updateCheckPromise = this.checkForUpdates()
-          }
-
-          this.updateCheckPromise.finally(resolve)
-        })
-      },
-      async checkForUpdates() {
-        try {
-          this.currentVersion = await window.electronApi.invoke('updater.getVersion')
-
-          this.motd = sanitizeHtml((await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/motd/wotw`, {
-            params: {
-              version: this.currentVersion,
-            },
-          })).motd, {
-            allowedClasses: {
-              '*': ['mb-*'],
-            },
-          })
-
-          this.availableReleases = (await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/releases`))
-            .filter(release => !release.draft && !release.prerelease)
-            .sort((a, b) => semver.compareLoose(b.name, a.name))
-            .map(release => {
-              const parser = new commonmark.Parser()
-              const writer = new commonmark.HtmlRenderer()
-
-              return {
-                ...release,
-                bodyHtml: sanitizeHtml(writer.render(parser.parse(release.body))),
-              }
-            })
-
-          if (this.availableReleases.length > 0) {
-            this.latestRelease = this.availableReleases[0]
-          }
-        } catch (e) {
-          this.offlineMode = true
-          console.error(e)
-        }
-      },
+      ...mapMutations('electron', [
+        'setCurrentSeedPath',
+      ]),
       async downloadAndInstallUpdate() {
-        this.showUpdateAvailableDialog = false
-        this.updateDownloadProgress = 0
-        this.updateDownloading = true
-        window.electronApi.on('updater.downloadProgress', (event, progress) => {
-          this.updateDownloadProgress = progress * 100
-        })
-        await window.electronApi.invoke('updater.downloadAndInstallUpdate', {
-          url: this.latestRelease.assets.find(a => a.name === 'WotwRandoSetup.exe').browser_download_url,
-        })
+        await this.$store.dispatch('electron/downloadAndInstallUpdate')
       },
       async launch(seedFile = null, forceLaunch = false) {
-        if (this.launching) {
-          return
-        }
-
-        this.showUpdateAvailableDialog = false
-        this.launching = true
-
-        if (seedFile !== null) {
-          await window.electronApi.invoke('launcher.setCurrentSeedPath', seedFile)
-        }
-
-        if (!forceLaunch) {
-          await this.checkForUpdatesOnce()
-        }
-
-        if (!forceLaunch && this.updateAvailable) {
-          this.showUpdateAvailableDialog = true
-        } else {
-          await window.electronApi.invoke('launcher.launch', seedFile)
-        }
-
-        this.launching = false
+        await this.$store.dispatch('electron/launch', {
+          seedFile, forceLaunch
+        })
       },
       openWiki() {
         window.electronApi.invoke('launcher.openWiki')
@@ -399,21 +247,6 @@
       },
       openDiscord() {
         window.electronApi.invoke('launcher.openDiscord')
-      },
-      isNewVersion(version) {
-        if (this.currentVersion === '' || this.currentVersion === 'develop') {
-          return false
-        }
-
-        try {
-          return semver.gt(version, this.currentVersion, true)
-        } catch (e) {
-          console.error(e)
-          return false
-        }
-      },
-      showSupportBundleInExplorer() {
-        window.electronApi.invoke('crash.showSupportBundleInExplorer', this.currentSupportBundleName)
       },
       async createSupportBundle() {
         this.supportBundleLoading = true

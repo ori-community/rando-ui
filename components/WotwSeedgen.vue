@@ -1,7 +1,6 @@
 <template>
   <div>
-    <throttled-spinner>
-      <v-card v-if='loadedServerConfig' class='mb-4'>
+    <v-card v-if='loadedServerConfig' class='mb-4'>
         <v-tabs centered grow color='primary' show-arrows>
           <v-tab>
             <v-icon left>mdi-star-outline</v-icon>
@@ -79,7 +78,11 @@
             <p>
               Headers let you customize the seed further.
             </p>
-            <wotw-seedgen-header-select v-model='seedgenConfig.headers' :headers='availableHeaders' />
+            <wotw-seedgen-header-select
+              v-model='seedgenConfig.headers'
+              :headers='availableHeaders'
+              :header-args.sync='seedgenConfig.headerArgs'
+            />
 
             <h3 class='mt-5 mb-2'>Custom headers</h3>
             <wotw-seedgen-custom-header-select v-model='seedgenConfig.customHeaders' />
@@ -121,15 +124,16 @@
                     <div class='mt-4'>
                       <v-select
                         v-model='createOnlineGame'
-                          :items="[
-                            {text: 'None', value: 'none'},
-                            {text: 'Co-op', value: 'coop'},
-                            {text: 'Multiworld', value: 'multi'},
-                            {text: 'Bingo', value: 'bingo'},
-                            {text: 'Discovery Bingo', value: 'discovery_bingo'},
-                            {text: 'Lockout Bingo', value: 'lockout_bingo'},
-                          ]"
-                        hide-details
+                        :items="[
+                          {text: 'None', value: 'none'},
+                          {text: 'Normal', value: 'normal'},
+                          {text: 'Bingo', value: 'bingo'},
+                          {text: 'Discovery Bingo', value: 'discovery_bingo'},
+                          {text: 'Lockout Bingo', value: 'lockout_bingo'},
+                        ]"
+                        :disabled='!isLoggedIn'
+                        :persistent-hint='!isLoggedIn'
+                        :hint='!isLoggedIn ? "Only available when logged in" : ""'
                         label='Automatically create online game'
                       />
                     </div>
@@ -137,8 +141,8 @@
                     <v-combobox
                       v-model='seedgenConfig.multiNames'
                       :items='[]'
-                      hint='If you specify player names here, this seed will be a multiworld seed. Press Enter to add players.'
-                      label='Multiworld player names'
+                      hint='If you specify world names here, this seed will be a multiworld seed. Press Enter to add players.'
+                      label='Multiworld world names'
                       multiple
                       persistent-hint
                     >
@@ -166,7 +170,6 @@
           </v-tab-item>
         </v-tabs>
       </v-card>
-    </throttled-spinner>
 
     <div class='text-center'>
       <v-tooltip :disabled='!anyPresetSelected' bottom>
@@ -180,7 +183,7 @@
               x-large
               @click='generateSeed'
             >
-              Generate
+              {{ isElectron && !seedgenConfig.flags.includes('--multiplayer') ? 'Generate and Launch' : 'Generate' }}
             </v-btn>
           </div>
         </template>
@@ -206,12 +209,16 @@
 
 <script>
   import { saveAs } from 'file-saver'
+  import base64url from 'base64url'
+  import { mapGetters } from 'vuex'
   import glitches from '~/assets/seedgen/glitches.yaml'
   import goals from '~/assets/seedgen/goals.yaml'
   import spawns from '~/assets/seedgen/spawns.yaml'
   import difficulties from '~/assets/seedgen/difficulties.yaml'
   import { confettiFromElement } from '~/assets/lib/confettiFromElement'
   import { db } from '~/assets/db/database'
+  import { isElectron } from '~/assets/lib/isElectron'
+  import { EventBus } from '~/assets/lib/EventBus'
 
   const generateNewSeedgenConfig = () => ({
     flags: [],
@@ -222,7 +229,7 @@
     goals: [],
     multiNames: [],
     seed: null,
-    headerArgs: [],
+    headerArgs: {},
     spawn: 'MarshSpawn.Main',
   })
 
@@ -235,13 +242,15 @@
       availableDifficulties: difficulties,
       availableHeaders: null, // Fetched from server
       availablePresets: null, // Fetched from server
-      createOnlineGame: 'coop',
+      createOnlineGame: 'none',
       loading: false,
       showResultDialog: false,
       seedgenResult: null,
       anyPresetSelected: false,
     }),
     computed: {
+      isElectron,
+      ...mapGetters('user', ['isLoggedIn']),
       loadedServerConfig() {
         return !!this.availableHeaders && !!this.availablePresets
       },
@@ -265,21 +274,30 @@
           id: d[0].toLowerCase(),
           ...d[1],
         }))
-      }
+      },
     },
     watch: {
       'seedgenConfig.multiNames'(multiNames) {
-        if (multiNames && multiNames.length > 0) {
-          this.createOnlineGame = 'multi'
+        if (multiNames && multiNames.length > 0 && this.createOnlineGame === 'none') {
+          this.createOnlineGame = 'normal'
         }
       },
       '$route.query.result'() {
         this.updateSeedgenResultDialogState()
       },
+      isLoggedIn(isLoggedIn) {
+        if (isLoggedIn && this.createOnlineGame === 'none') {
+          this.createOnlineGame = 'normal'
+        } else if (!isLoggedIn) {
+          this.createOnlineGame = 'none'
+        }
+      },
     },
-    mounted() {
-      this.fetchServerConfig()
+    async mounted() {
+      await this.fetchServerConfig()
       this.updateSeedgenResultDialogState()
+
+      this.$emit('loaded')
     },
     methods: {
       async fetchServerConfig() {
@@ -310,59 +328,83 @@
           additionalParameters.customHeaders = (await db.customHeaders.bulkGet(this.seedgenConfig.customHeaders))
             .map(h => h.content)
 
-          const result = await this.$axios.$post('/seeds', {
+          const response = await this.$axios.$post('/seeds', {
             ...this.seedgenConfig,
             ...additionalParameters,
           })
 
           if (this.seedgenConfig.flags.includes('--multiplayer')) {
             switch (this.createOnlineGame) {
-              case 'coop':
-                result.gameId = await this.$axios.$post('/games', {isCoop: true})
-                break
-              case 'multi':
-                result.gameId = await this.$axios.$post('/games', {isMulti: true})
+              case 'normal':
+                response.result.multiverseId = await this.$axios.$post('/multiverses')
                 break
               case 'bingo':
-                result.gameId = await this.$axios.$post('/bingo')
+                response.result.multiverseId = await this.$axios.$post('/bingo')
                 break
               case 'discovery_bingo':
-                result.gameId = await this.$axios.$post('/bingo', {discovery: 2})
+                response.result.multiverseId = await this.$axios.$post('/bingo', { discovery: 2 })
                 break
               case 'lockout_bingo':
-                result.gameId = await this.$axios.$post('/bingo', {lockout: true})
+                response.result.multiverseId = await this.$axios.$post('/bingo', { lockout: true })
                 break
             }
           }
 
-          this.seedgenResult = result
+          this.seedgenResult = response.result
+
+          if (response.warnings && response.warnings.includes('WARN')) {
+            EventBus.$emit('notification', {
+              message: response.warnings,
+              color: 'warning',
+            })
+          }
+
+          const hasMultiverse = typeof this.seedgenResult.multiverseId === 'number'
 
           // Download the seed instantly for single player, non-networked games
           // and show the download dialog otherwise
-          if (this.seedgenResult.gameId === null && result.playerList.length === 0) {
-            saveAs(`${this.$axios.defaults.baseURL}/seeds/${result.seedId}`, `seed_${result.seedId}.wotwr`)
+          if (!hasMultiverse && response.result.worldList.length === 0) {
+            const url = `${this.$axios.defaults.baseURL}/seeds/${response.result.seedId}`
+            const fileName = `seed_${response.result.seedId}.wotwr`
+
             confettiFromElement(this.$refs.generateButton.$el, {
               disableForReducedMotion: true,
               zIndex: 100000,
             })
 
+            if (isElectron()) {
+              try {
+                await window.electronApi.invoke('launcher.downloadSeedFromUrl', {
+                  url, fileName,
+                })
+                await this.$store.dispatch('electron/launch')
+              } catch (e) {
+                console.error(e)
+              }
+            } else {
+              saveAs(url, fileName)
+            }
+          } else if (!hasMultiverse) {
+            await this.$router.replace({ query: { result: JSON.stringify(response.result) } })
           } else {
-            await this.$router.replace({ query: { result: JSON.stringify(result) } })
-
-            await this.$nextTick()
-            confettiFromElement(this.$refs.resultView.$el, {
-              disableForReducedMotion: true,
-              zIndex: 100000,
+            await this.$router.push({
+              name: 'game-multiverseId',
+              params: { multiverseId: this.seedgenResult.multiverseId },
+              query: { seedgenResult: base64url.encode(JSON.stringify(response.result)) },
             })
           }
         } catch (e) {
           console.error(e)
+          EventBus.$emit('notification', {
+            message: 'Error while generating the seed.\n' + String(e.response?.data ?? e),
+            color: 'error',
+          })
         }
 
         this.loading = false
       },
-      applyPresets({ presets, merge }) {
-        if (!merge) {
+      applyPresets({ presets, override }) {
+        if (override) {
           this.seedgenConfig = generateNewSeedgenConfig()
         }
 
@@ -433,7 +475,7 @@
       },
       updateSeedgenResultDialogState() {
         if (this.$route.query.result) {
-          this.seedgenResult = JSON.parse(String(this.$route.query.result))
+          this.seedgenResult = JSON.parse(base64url.decode(String(this.$route.query.result)))
           this.showResultDialog = true
         } else {
           this.seedgenResult = null

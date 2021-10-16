@@ -1,0 +1,172 @@
+MainMenuSaveCopy:
+  displayName: MainMenuSaveCopy
+  composable: false
+MainMenuSaveDelete:
+  displayName: MainMenuSaveDelete
+  composable: false
+Interact:
+  displayName: Interact
+  composable: false
+Jump:
+  displayName: Jump
+  composable: false
+Ability1:
+  displayName: Ability1
+  composable: false
+Ability2:
+  displayName: Ability2
+  composable: false
+Ability3:
+  displayName: Ability3
+  composable: false
+Glide:
+  displayName: Glide
+  composable: false
+Grab:
+  displayName: Grab
+  composable: false
+Dash:
+  displayName: Dash
+  composable: false
+Burrow:
+  displayName: Burrow
+  composable: false
+Bash:
+  displayName: Bash
+  composable: false
+Grapple:
+  displayName: Grapple
+  composable: false
+DialogueAdvance:
+  displayName: DialogueAdvance
+  composable: false
+DialogueOption1:
+  displayName: DialogueOption1
+  composable: false
+DialogueOption2:
+  displayName: DialogueOption2
+  composable: false
+DialogueOption3:
+  displayName: DialogueOption3
+  composable: false
+DialogueExit:
+  displayName: DialogueExit
+  composable: false
+OpenMapsShardsInventory:
+  displayName: OpenMapsShardsInventory
+  composable: false
+OpenWeaponWheel:
+  displayName: OpenWeaponWheel
+  composable: false
+PauseScreen:
+  displayName: PauseScreen
+  composable: false
+LiveSignIn:
+  displayName: LiveSignIn
+  composable: false
+MapZoomIn:
+  displayName: MapZoomIn
+  composable: false
+MapZoomOut:
+  displayName: MapZoomOut
+  composable: false
+MenuSelect:
+  displayName: MenuSelect
+  composable: false
+MenuBack:
+  displayName: MenuBack
+  composable: false
+MenuClose:
+  displayName: MenuClose
+  composable: false
+MenuDown:
+  displayName: MenuDown
+  composable: false
+MenuUp:
+  displayName: MenuUp
+  composable: false
+MenuLeft:
+  displayName: MenuLeft
+  composable: false
+MenuRight:
+  displayName: MenuRight
+  composable: false
+MenuPageLeft:
+  displayName: MenuPageLeft
+  composable: false
+MenuPageRight:
+  displayName: MenuPageRight
+  composable: false
+LeaderboardCycleFilter:
+  displayName: LeaderboardCycleFilter
+  composable: false
+MapFilter:
+  displayName: MapFilter
+  composable: false
+MapDetails:
+  displayName: MapDetails
+  composable: false
+MapFocusOri:
+  displayName: MapFocusOri
+  composable: false
+MapFocusObjective:
+  displayName: MapFocusObjective
+  composable: false
+
+OpenRandoWheel:
+  displayName: OpenRandoWheel
+  composable: true
+Binding1:
+  displayName: Binding1
+  composable: true
+Binding2:
+  displayName: Binding2
+  composable: true
+Binding3:
+  displayName: Binding3
+  composable: true
+Binding4:
+  displayName: Binding4
+  composable: true
+Binding5:
+  displayName: Binding5
+  composable: true
+Reload:
+  displayName: Reload
+  composable: true
+ShowLastPickup:
+  displayName: ShowLastPickup
+  composable: true
+ShowProgressWithHints:
+  displayName: ShowProgressWithHints
+  composable: true
+WarpCredits:
+  displayName: WarpCredits
+  composable: true
+ToggleCursorLock:
+  displayName: ToggleCursorLock
+  composable: true
+ToggleAlwaysShowKeystones:
+  displayName: ToggleAlwaysShowKeystones
+  composable: true
+ShowDevFlag:
+  displayName: ShowDevFlag
+  composable: true
+ToggleDebug:
+  displayName: ToggleDebug
+  composable: true
+PrintCoordinates:
+  displayName: PrintCoordinates
+  composable: true
+TeleportCheat:
+  displayName: TeleportCheat
+  composable: true
+UnlockSpoilers:
+  displayName: UnlockSpoilers
+  composable: true
+TogglePickupDisplayNamesOnSpoiler:
+  displayName: TogglePickupDisplayNamesOnSpoiler
+  composable: true
+ForceExit:
+  displayName: ForceExit
+  composable: true

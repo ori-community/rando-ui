@@ -1,30 +1,78 @@
 <template>
-  <v-card class='pa-6'>
+  <div>
     <div class='text-center mb-6'>
-      <v-btn color='accent' depressed :disabled='linkCopied' @click='copyLink'>
+      <v-btn color='primary' text outlined depressed :disabled='linkCopied' @click='copyLink'>
         <v-icon left>{{ linkCopied ? 'mdi-check' : 'mdi-share-outline' }}</v-icon>
         {{ linkCopied ? 'Link copied' : 'Share' }}
       </v-btn>
     </div>
 
-    <div v-if='result.gameId !== null' class='mb-6'>
-      <h3>1. Join the game</h3>
+    <div class='text-center'>
+      <div v-if='result.multiverseId !== null' class='mb-6'>
+        <template v-if='!isElectron'>
+          <v-btn
+            :href='launcherUrl'
+            color='accent'
+            block
+            x-large
+            class='my-5'
+          >
+            <v-icon left>mdi-launch</v-icon>
+            Open in Launcher
+          </v-btn>
 
-      <v-btn :href='`/game/${result.gameId}`' target='_blank' color='primary' text outlined>Go to game</v-btn>
-    </div>
+          <v-sheet height='1' color='background lighten-2' class='separator my-12'>
+            <v-sheet color='background lighten-1' class='text px-2'>
+              or
+            </v-sheet>
+          </v-sheet>
+        </template>
 
-    <h3><template v-if='result.gameId !== null'>2. </template>Download your seed</h3>
-    <div>
-      <v-btn v-for='seed in seedsToDisplay' :key='seed.url' color='primary' text outlined class='mb-1 mr-1' @click='downloadSeed(seed)'>
-        <v-icon left>mdi-download-outline</v-icon>
-        {{ seed.label }}
-      </v-btn>
+        <template v-if='!hideGoToGameButton'>
+          <h3 class='mb-1'>1. Join the game</h3>
+
+          <v-btn
+            :to='{
+              name: "game-multiverseId",
+              params: {
+                multiverseId: result.multiverseId
+              },
+              query: {
+                ...(isElectron ? {hideToolbar: true} : {})
+              }
+            }'
+            target='_blank'
+            color='primary'
+            text
+            outlined
+          >Go to game</v-btn>
+        </template>
+      </div>
+
+      <h3 class='mb-1'><template v-if='result.gameId !== null && !hideGoToGameButton'>2. </template>{{ isElectron ? 'Launch' : 'Download' }} your seed</h3>
+      <div>
+        <v-btn
+          v-for='seed in seedsToDisplay'
+          :key='seed.url'
+          :disabled='seedLaunching'
+          color='primary'
+          text
+          outlined
+          class='mb-1 mr-1'
+          @click='downloadSeed(seed)'
+        >
+          <v-icon left>{{ isElectron ? 'mdi-play-outline' : 'mdi-download-outline' }}</v-icon>
+          {{ seed.label }}
+        </v-btn>
+      </div>
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script>
   import { saveAs } from 'file-saver'
+  import base64url from 'base64url'
+  import { isElectron } from '~/assets/lib/isElectron'
 
   export default {
     name: 'WotwSeedgenResultView',
@@ -32,36 +80,77 @@
       result: {
         type: Object,
         required: true,
+      },
+      hideGoToGameButton: {
+        type: Boolean,
+        required: false,
+        default: false,
       }
     },
     data: () => ({
       seedsToDisplay: [],
       linkCopied: false,
+      seedLaunching: false,
     }),
+    computed: {
+      isElectron,
+      launcherUrl() {
+        if (this.result.multiverseId) {
+          return `ori-rando://game/${this.result.multiverseId}?seedgenResult=${base64url.encode(JSON.stringify(this.result))}`
+        } else {
+          return `ori-rando://seedgen?result=${base64url.encode(JSON.stringify(this.result))}`
+        }
+      }
+    },
     created() {
-      if (this.result.playerList.length < 2) {
+      if (this.result.worldList.length <= 1) {
         this.seedsToDisplay = [{
-          label: 'Download seed',
+          label: isElectron() ? 'Launch seed' : 'Download seed',
           url: `${this.$axios.defaults.baseURL}/seeds/${this.result.seedId}`,
           fileName: `seed_${this.result.seedId}.wotwr`,
         }]
       } else {
         this.seedsToDisplay = []
-        for (const player of this.result.playerList) {
+        for (const world of this.result.worldList) {
           this.seedsToDisplay.push({
-            label: player,
-            url: `${this.$axios.defaults.baseURL}/seeds/${this.result.seedId}/${player}`,
-            fileName: `seed_${this.result.seedId}_${player}.wotwr`,
+            label: world,
+            url: `${this.$axios.defaults.baseURL}/seeds/${this.result.seedId}/${world}`,
+            fileName: `seed_${this.result.seedId}_${world}.wotwr`,
           })
         }
       }
     },
+    mounted() {
+      if (!isElectron() && this.launcherUrl) {
+        window.location.href = this.launcherUrl
+      }
+    },
     methods: {
-      downloadSeed(seed) {
-        saveAs(seed.url, seed.fileName)
+      async downloadSeed(seed) {
+        if (isElectron()) {
+          this.seedLaunching = true
+          try {
+            await window.electronApi.invoke('launcher.downloadSeedFromUrl', seed)
+            await this.$store.dispatch('electron/launch')
+          } catch (e) {
+            console.error(e)
+          }
+          this.seedLaunching = false
+        } else {
+          saveAs(seed.url, seed.fileName)
+        }
       },
       async copyLink() {
-        await navigator.clipboard.writeText(window.location.href)
+        const url = new URL(process.env.API_BASE_URL)
+
+        if (this.result.multiverseId) {
+          url.pathname = `/game/${this.result.multiverseId}`
+          url.searchParams.append('seedgenResult', base64url.encode(JSON.stringify(this.result)))
+        } else {
+          url.pathname = '/seedgen'
+          url.searchParams.append('result', base64url.encode(JSON.stringify(this.result)))
+        }
+        await navigator.clipboard.writeText(url.toString())
         this.linkCopied = true
 
         setTimeout(() => {
@@ -72,6 +161,17 @@
   }
 </script>
 
-<style scoped>
+<style lang='scss' scoped>
+  .separator {
+    display: flex;
+    justify-content: center;
+    overflow: visible;
+    height: 1px;
 
+    .text {
+      display: inline-block;
+      position: absolute;
+      transform: translateY(-50%);
+    }
+  }
 </style>

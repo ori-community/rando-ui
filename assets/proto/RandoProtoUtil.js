@@ -4,8 +4,10 @@ import { hasOwnProperty } from '~/assets/lib/hasOwnProperty'
 const packetTypes = {
   1: RandoProto.SyncBoardMessage,
   2: RandoProto.RequestUpdatesMessage,
-  4: RandoProto.SyncBingoTeamsMessage,
-  8: RandoProto.GameInfo,
+  4: RandoProto.SyncBingoUniversesMessage,
+  8: RandoProto.MultiverseInfoMessage,
+  9: RandoProto.AuthenticateMessage,
+  12: null,
 }
 
 const getPacketId = (content) => {
@@ -21,6 +23,11 @@ export const decodePacket = async (blob) => {
 
   if (!hasOwnProperty(packetTypes, packet.id)) {
     throw new Error(`Invalid packet ID ${packet.id}`)
+  }
+
+  if (packetTypes[packet.id] === null) {
+    console.debug(`Ignored packet with packed id ${packet.id}`)
+    return null
   }
 
   return packetTypes[packet.id].decode(packet.packet)

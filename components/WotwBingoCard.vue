@@ -29,6 +29,10 @@
   export default {
     name: 'WotwBingoCard',
     props: {
+      isLockout: {
+        type: Boolean,
+        default: false,
+      },
       square: {
         type: Object,
         default: () => null,
@@ -37,15 +41,15 @@
         type: Boolean,
         default: false,
       },
-      teamColors: {
+      universeColors: {
         type: Object,
         required: true,
       },
-      hiddenTeams: {
+      hiddenUniverses: {
         type: Array,
         default: () => ([]),
       },
-      highlightTeam: {
+      highlightUniverse: {
         type: Number,
         default: null,
       }
@@ -71,12 +75,15 @@
         const highlightSplitPercentage = 33
 
         const nonHighlightedColors = this.square.completedBy
-          .filter(team => !this.hiddenTeams.includes(team.id) && team.id !== this.highlightTeam)
-          .sort((a, b) => b.id - a.id)
-          .map(team => this.teamColors[team.id])
+          .filter(universeId => !this.hiddenUniverses.includes(universeId) && universeId !== this.highlightUniverse)
+          .sort((a, b) => b - a)
+          .map(universeId => this.universeColors[universeId])
         const stops = []
 
-        const shouldHighlight = !!this.highlightTeam && !this.hiddenTeams.includes(this.highlightTeam)
+        const shouldHighlight =
+          !!this.highlightUniverse &&
+          !this.hiddenUniverses.includes(this.highlightUniverse) &&
+          !this.isLockout
 
         for (let i = 0; i < nonHighlightedColors.length; i++) {
           const stopStart = (i / nonHighlightedColors.length) * (shouldHighlight ? highlightSplitPercentage : 100)
@@ -88,9 +95,9 @@
           stops.push(`transparent 0% ${highlightSplitPercentage}%`)
         }
 
-        if (this.highlightTeam) {
-          if (shouldHighlight && this.square.completedBy.some(t => t.id === this.highlightTeam)) {
-            stops.push(`${this.teamColors[this.highlightTeam]} ${highlightSplitPercentage}% 100%`)
+        if (this.highlightUniverse) {
+          if (shouldHighlight && this.square.completedBy.includes(this.highlightUniverse)) {
+            stops.push(`${this.universeColors[this.highlightUniverse]} ${highlightSplitPercentage}% 100%`)
           } else {
             stops.push(`transparent ${highlightSplitPercentage}% 100%`)
           }
@@ -196,6 +203,7 @@
             flex-grow: 1;
             display: flex;
             align-items: center;
+            justify-content: center;
             font-size: 1.2em;
 
             &::before {

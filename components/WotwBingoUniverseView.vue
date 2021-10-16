@@ -1,23 +1,25 @@
 <template>
-  <v-card class='team-view' :class='{"team-hidden": teamHidden}' @click='$emit("click")'>
-    <v-sheet :color='teamHidden ? "" : color' class='color-stripe'>
-      <div v-if='!!bingoTeam' class='squares px-2'>
-        {{ bingoTeam.squares }}
+  <v-card class='universe-view' :class='{"universe-hidden": universeHidden}' @click='$emit("click")'>
+    <v-sheet :color='universeHidden ? "" : universe.color' class='color-stripe'>
+      <div v-if='!!bingoUniverse' class='squares px-2'>
+        {{ bingoUniverse.squares }}
       </div>
     </v-sheet>
-    <div v-if='!!team' class='pa-2 players'>
-      <wotw-player-view
-        v-for='player in team.members'
-        :key='player.id'
-        class='player-view'
-        :user='player'
-        :size='24'
-      />
+    <div v-if='!!universe' class='pa-2 players'>
+      <template v-for='world in universe.worlds'>
+        <wotw-player-view
+          v-for='player in world.members'
+          :key='player.id'
+          class='player-view'
+          :user='player'
+          :size='24'
+        />
+      </template>
     </div>
     <v-spacer />
-    <div v-if='!!bingoTeam' class='lines px-3'>
+    <div v-if='!!bingoUniverse' class='lines px-3'>
       <v-icon size='16'>mdi-vector-line</v-icon>
-      {{ bingoTeam.lines }}
+      {{ bingoUniverse.lines }}
     </div>
   </v-card>
 </template>
@@ -26,21 +28,17 @@
   import { mapState } from 'vuex'
 
   export default {
-    name: 'WotwBingoTeamView',
+    name: 'WotwBingoUniverseView',
     props: {
-      team: {
+      universe: {
         type: Object,
         required: true,
       },
-      bingoTeam: {
+      bingoUniverse: {
         type: Object,
         default: null,
       },
-      color: {
-        type: String,
-        default: '',
-      },
-      teamHidden: {
+      universeHidden: {
         type: Boolean,
         default: false,
       }
@@ -52,13 +50,13 @@
 </script>
 
 <style lang='scss' scoped>
-  .team-view {
+  .universe-view {
     overflow: hidden;
     display: flex;
     flex-direction: row;
     position: relative;
 
-    &.team-hidden {
+    &.universe-hidden {
       .squares {
         opacity: 0.5;
       }

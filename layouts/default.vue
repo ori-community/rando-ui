@@ -1,12 +1,20 @@
 <template>
   <v-app dark>
     <v-main class='main'>
-      <v-container>
+      <v-container v-if='!shouldHideToolbar'>
         <wotw-page-toolbar />
       </v-container>
 
+      <v-snackbars :objects.sync='notifications'>
+        <template #default='{message}'>
+          <span class='notification-text'>{{ message }}</span>
+        </template>
+      </v-snackbars>
+
       <Nuxt />
     </v-main>
+
+    <global-dialogs />
 
     <footer>
       <img src='../assets/images/footer.png'>
@@ -15,10 +23,121 @@
 </template>
 
 <script>
+  import VSnackbars from 'v-snackbars'
+  import { mapState } from 'vuex'
+  import { isElectron } from '~/assets/lib/isElectron'
+  import { EventBus } from '~/assets/lib/EventBus'
+
   export default {
-    mounted() {
-      this.$store.dispatch('user/updateUser')
-    }
+    components: {
+      VSnackbars,
+    },
+    data: () => ({
+      notifications: [],
+    }),
+    computed: {
+      ...mapState('user', ['user']),
+      isElectron,
+      shouldHideToolbar() {
+        return !!this.$route.query.hideToolbar && !!this.user && isElectron()
+      }
+    },
+    async beforeMount() {
+      EventBus.$on('notification', ({message, color = 'accent', timeout = 10000}) => {
+        this.notifications.push({
+          message,
+          color,
+          timeout,
+          multiLine: message.includes("\n"),
+          top: true,
+          centered: true,
+        })
+
+        console.log(this.notifications)
+      })
+
+      if (isElectron()) {
+        window.electronApi.on('main.error', (event, e) => {
+          EventBus.$emit('notification', {
+            message: String(e),
+            color: 'error',
+          })
+        })
+
+        window.electronApi.on('main.settingsChanged', (event, settings) => {
+          this.$store.commit('electron/setSettings', settings)
+        })
+
+        window.electronApi.on('main.currentSeedChanged', (event, {currentSeedInfo}) => {
+          if (currentSeedInfo) {
+            if (!currentSeedInfo.webConn) {
+              this.$store.commit('nav/setLastMultiverseId', { id: null, seedgenResult: null })
+            }
+          }
+        })
+
+        window.electronApi.on('main.openSeed', (event, seedFile) => {
+          this.$store.dispatch('electron/launch', {
+            seedFile,
+          })
+        })
+
+        window.electronApi.on('main.crashDetected', (event, supportBundleName) => {
+          this.$store.commit('electron/setCurrentSupportBundleName', supportBundleName)
+          window.electronApi.invoke('launcher.focusMainWindow')
+        })
+
+        window.electronApi.on('main.goToSettings', () => {
+          this.$router.push({ name: 'electron-settings' })
+          window.electronApi.invoke('launcher.focusMainWindow')
+        })
+
+        window.electronApi.on('main.openUrl', async (event, url) => {
+          url = new URL(url)
+
+          if (url.protocol === 'ori-rando:') {
+            window.electronApi.invoke('launcher.focusMainWindow')
+            const topPath = url.pathname.match(/\/\/(?<topPath>[^/]*)\//)?.groups.topPath
+            switch (topPath) {
+              case 'authenticate':
+                await this.$router.push({ name: 'auth-callback', query: { jwt: url.searchParams.get('jwt') } })
+                break
+              case 'seedgen':
+                await this.$router.push({ name: 'seedgen', query: { result: url.searchParams.get('result') } })
+                break
+              case 'game': {
+                const gameId = url.pathname.match(/.*\/(?<gameId>\d*)$/)?.groups.gameId
+                if (gameId) {
+                  await this.$router.push({ name: 'game-multiverseId', params: { multiverseId: gameId }, query: { seedgenResult: url.searchParams.get('seedgenResult') } })
+                } else {
+                  console.warn('Could not read game ID from URL', url)
+                }
+                break
+              }
+              default:
+                console.warn('Could not handle URL', url)
+            }
+          }
+        })
+
+        this.$store.commit('electron/setSettings', await window.electronApi.invoke('settings.readSettings'))
+      }
+    },
+    async mounted() {
+      await this.$store.dispatch('user/updateUser')
+
+      if (isElectron()) {
+        const currentSeedInfo = await window.electronApi.invoke('launcher.getCurrentSeedInfo')
+        if (currentSeedInfo && currentSeedInfo.webConn) {
+          this.$store.commit('nav/setLastMultiverseId', {
+            id: this.user?.currentMultiverseId ?? null,
+            seedgenResult: null,
+          })
+        }
+
+        await this.$store.dispatch('electron/checkForUpdatesOnce')
+      }
+    },
   }
 </script>
 
@@ -32,11 +151,11 @@
   }
 
   ::-webkit-scrollbar-track {
-    background-color: var(--color-background);
+    background-color: var(--v-background-base);
   }
 
   ::-webkit-scrollbar-thumb {
-    background-color: var(--color-background-light);
+    background-color: var(--v-background-lighten1);
   }
 
   .inherit--text {
@@ -52,6 +171,7 @@
 <style lang='scss' scoped>
   .main {
     z-index: 1;
+    min-height: 100vh;
   }
 
   footer {
@@ -63,5 +183,9 @@
       width: 100vw;
       opacity: 0.5;
     }
+  }
+
+  .notification-text {
+    white-space: pre-wrap;
   }
 </style>

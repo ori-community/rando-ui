@@ -1,5 +1,7 @@
 <template>
-  <v-checkbox v-model='inputValue' v-bind='$attrs' />
+  <div>
+    <v-checkbox v-model='inputValue' v-bind='$attrs' class='d-inline-block' />
+  </div>
 </template>
 
 <script>

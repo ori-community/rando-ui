@@ -1,0 +1,440 @@
+Backspace:
+  unityId: 8
+  jsId: Backspace
+Delete:
+  unityId: 127
+  jsId: Delete
+Tab:
+  unityId: 9
+  jsId: Tab
+Clear:
+  unityId: 12
+  jsId: Clear
+Return:
+  unityId: 13
+  jsId: Enter
+Pause:
+  unityId: 19
+  jsId: Pause
+Escape:
+  unityId: 27
+  jsId: Escape
+Space:
+  unityId: 32
+  jsId: Space
+Keypad0:
+  unityId: 256
+  jsId: Numpad0
+Keypad1:
+  unityId: 257
+  jsId: Numpad1
+Keypad2:
+  unityId: 258
+  jsId: Numpad2
+Keypad3:
+  unityId: 259
+  jsId: Numpad3
+Keypad4:
+  unityId: 260
+  jsId: Numpad4
+Keypad5:
+  unityId: 261
+  jsId: Numpad5
+Keypad6:
+  unityId: 262
+  jsId: Numpad6
+Keypad7:
+  unityId: 263
+  jsId: Numpad7
+Keypad8:
+  unityId: 264
+  jsId: Numpad8
+Keypad9:
+  unityId: 265
+  jsId: Numpad9
+KeypadPeriod:
+  unityId: 266
+  jsId: NumpadDecimal
+KeypadDivide:
+  unityId: 267
+  jsId: NumpadDivide
+KeypadMultiply:
+  unityId: 268
+  jsId: NumpadMultiply
+KeypadMinus:
+  unityId: 269
+  jsId: NumpadSubtract
+KeypadPlus:
+  unityId: 270
+  jsId: NumpadAdd
+KeypadEnter:
+  unityId: 271
+  jsId: NumpadEnter
+KeypadEquals:
+  unityId: 272
+  jsId: NumpadEquals
+UpArrow:
+  unityId: 273
+  jsId: ArrowUp
+DownArrow:
+  unityId: 274
+  jsId: ArrowDown
+RightArrow:
+  unityId: 275
+  jsId: ArrowRight
+LeftArrow:
+  unityId: 276
+  jsId: ArrowLeft
+Insert:
+  unityId: 277
+  jsId: Insert
+Home:
+  unityId: 278
+  jsId: Home
+End:
+  unityId: 279
+  jsId: End
+PageUp:
+  unityId: 280
+  jsId: PageUp
+PageDown:
+  unityId: 281
+  jsId: PageDown
+F1:
+  unityId: 282
+  jsId: F1
+F2:
+  unityId: 283
+  jsId: F2
+F3:
+  unityId: 284
+  jsId: F3
+F4:
+  unityId: 285
+  jsId: F4
+F5:
+  unityId: 286
+  jsId: F5
+F6:
+  unityId: 287
+  jsId: F6
+F7:
+  unityId: 288
+  jsId: F7
+F8:
+  unityId: 289
+  jsId: F8
+F9:
+  unityId: 290
+  jsId: F9
+F10:
+  unityId: 291
+  jsId: F10
+F11:
+  unityId: 292
+  jsId: F11
+F12:
+  unityId: 293
+  jsId: F12
+F13:
+  unityId: 294
+  jsId: F13
+F14:
+  unityId: 295
+  jsId: F14
+F15:
+  unityId: 296
+  jsId: F15
+Alpha0:
+  unityId: 48
+  jsId: Digit0
+Alpha1:
+  unityId: 49
+  jsId: Digit1
+Alpha2:
+  unityId: 50
+  jsId: Digit2
+Alpha3:
+  unityId: 51
+  jsId: Digit3
+Alpha4:
+  unityId: 52
+  jsId: Digit4
+Alpha5:
+  unityId: 53
+  jsId: Digit5
+Alpha6:
+  unityId: 54
+  jsId: Digit6
+Alpha7:
+  unityId: 55
+  jsId: Digit7
+Alpha8:
+  unityId: 56
+  jsId: Digit8
+Alpha9:
+  unityId: 57
+  jsId: Digit9
+Exclaim:
+  unityId: 33
+  jsId: Exclaim
+DoubleQuote:
+  unityId: 34
+  jsId: DoubleQuote
+Hash:
+  unityId: 35
+  jsId: Hash
+Dollar:
+  unityId: 36
+  jsId: Dollar
+Percent:
+  unityId: 37
+  jsId: Percent
+Ampersand:
+  unityId: 38
+  jsId: Ampersand
+Quote:
+  unityId: 39
+  jsId: Quote
+LeftParen:
+  unityId: 40
+  jsId: LeftParen
+RightParen:
+  unityId: 41
+  jsId: RightParen
+Asterisk:
+  unityId: 42
+  jsId: Asterisk
+Plus:
+  unityId: 43
+  jsId: Plus
+Comma:
+  unityId: 44
+  jsId: Comma
+Minus:
+  unityId: 45
+  jsId: Minus
+Period:
+  unityId: 46
+  jsId: Period
+Slash:
+  unityId: 47
+  jsId: Slash
+Colon:
+  unityId: 58
+  jsId: Colon
+Semicolon:
+  unityId: 59
+  jsId: Semicolon
+Less:
+  unityId: 60
+  jsId: Less
+Equals:
+  unityId: 61
+  jsId: Equals
+Greater:
+  unityId: 62
+  jsId: Greater
+Question:
+  unityId: 63
+  jsId: Question
+At:
+  unityId: 64
+  jsId: At
+LeftBracket:
+  unityId: 91
+  jsId: BracketLeft
+Backslash:
+  unityId: 92
+  jsId: Backslash
+RightBracket:
+  unityId: 93
+  jsId: BracketRight
+Caret:
+  unityId: 94
+  jsId: Caret
+Underscore:
+  unityId: 95
+  jsId: Underscore
+BackQuote:
+  unityId: 96
+  jsId: BackQuote
+A:
+  unityId: 97
+  jsId: KeyA
+B:
+  unityId: 98
+  jsId: KeyB
+C:
+  unityId: 99
+  jsId: KeyC
+D:
+  unityId: 100
+  jsId: KeyD
+E:
+  unityId: 101
+  jsId: KeyE
+F:
+  unityId: 102
+  jsId: KeyF
+G:
+  unityId: 103
+  jsId: KeyG
+H:
+  unityId: 104
+  jsId: KeyH
+I:
+  unityId: 105
+  jsId: KeyI
+J:
+  unityId: 106
+  jsId: KeyJ
+K:
+  unityId: 107
+  jsId: KeyK
+L:
+  unityId: 108
+  jsId: KeyL
+M:
+  unityId: 109
+  jsId: KeyM
+N:
+  unityId: 110
+  jsId: KeyN
+O:
+  unityId: 111
+  jsId: KeyO
+P:
+  unityId: 112
+  jsId: KeyP
+Q:
+  unityId: 113
+  jsId: KeyQ
+R:
+  unityId: 114
+  jsId: KeyR
+S:
+  unityId: 115
+  jsId: KeyS
+T:
+  unityId: 116
+  jsId: KeyT
+U:
+  unityId: 117
+  jsId: KeyU
+V:
+  unityId: 118
+  jsId: KeyV
+W:
+  unityId: 119
+  jsId: KeyW
+X:
+  unityId: 120
+  jsId: KeyX
+Y:
+  unityId: 121
+  jsId: KeyY
+Z:
+  unityId: 122
+  jsId: KeyZ
+LeftCurlyBracket:
+  unityId: 123
+  jsId: LeftCurlyBracket
+Pipe:
+  unityId: 124
+  jsId: Pipe
+RightCurlyBracket:
+  unityId: 125
+  jsId: RightCurlyBracket
+Tilde:
+  unityId: 126
+  jsId: Tilde
+Numlock:
+  unityId: 300
+  jsId: NumLock
+CapsLock:
+  unityId: 301
+  jsId: CapsLock
+ScrollLock:
+  unityId: 302
+  jsId: ScrollLock
+RightShift:
+  unityId: 303
+  jsId: ShiftRight
+LeftShift:
+  unityId: 304
+  jsId: ShiftLeft
+RightControl:
+  unityId: 305
+  jsId: ControlRight
+LeftControl:
+  unityId: 306
+  jsId: ControlLeft
+RightAlt:
+  unityId: 307
+  jsId: AltRight
+LeftAlt:
+  unityId: 308
+  jsId: AltLeft
+LeftCommand:
+  unityId: 310
+  jsId: OSLeft
+LeftApple:
+  unityId: 310
+  jsId: OSLeft
+LeftWindows:
+  unityId: 311
+  jsId: OSLeft
+RightCommand:
+  unityId: 309
+  jsId: OSRight
+RightApple:
+  unityId: 309
+  jsId: OSRight
+RightWindows:
+  unityId: 312
+  jsId: OSRight
+AltGr:
+  unityId: 313
+  jsId: AltRight
+Help:
+  unityId: 315
+  jsId: Help
+Print:
+  unityId: 316
+  jsId: PrintScreen
+SysReq:
+  unityId: 317
+  jsId: SysReq
+Break:
+  unityId: 318
+  jsId: Break
+Menu:
+  unityId: 319
+  jsId: Menu
+
+# Mouse events
+Mouse0:
+  unityId: 323
+  jsId: Mouse0
+  displayName: Left Mouse
+Mouse1:
+  unityId: 324
+  jsId: Mouse2 # Yes, this is correct
+  displayName: Right Mouse
+Mouse2:
+  unityId: 325
+  jsId: Mouse1 # Yes, this is correct
+  displayName: Middle Mouse
+Mouse3:
+  unityId: 326
+  jsId: Mouse3
+Mouse4:
+  unityId: 327
+  jsId: Mouse4
+Mouse5:
+  unityId: 328
+  jsId: Mouse5
+Mouse6:
+  unityId: 329
+  jsId: Mouse6

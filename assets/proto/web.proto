@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+package RandoProto;
+
+message Packet {
+  int32 id = 1;
+  bytes packet = 2;
+}
+
+message BingoGoal {
+  string text = 1;
+  bool completed = 2;
+}
+
+message UserInfo {
+  string id = 1;
+  string name = 2;
+  optional string avatarId = 3;
+  optional int64 connectedMultiverseId = 4;
+  optional int64 currentMultiverseId = 5;
+}
+
+message WorldInfo {
+  int64 id = 1;
+  string name = 2;
+  string color = 3;
+  repeated UserInfo members = 4;
+}
+
+message UniverseInfo {
+  int64 id = 1;
+  string name = 2;
+  string color = 3;
+  repeated WorldInfo worlds = 4;
+}
+
+message MultiverseInfoMessage {
+  int64 id = 1;
+  repeated UniverseInfo universes = 2;
+  bool hasBingoBoard = 3;
+  repeated UserInfo spectators = 4;
+}
+
+message BingoSquare {
+  string text = 1;
+  repeated int64 completedBy = 2;
+  repeated BingoGoal goals = 3;
+}
+
+message RequestUpdatesMessage {
+  string playerId = 1;
+}
+
+message BingoUniverseInfo {
+  int64 universeId = 1;
+  string score = 3;
+  int32 rank = 4;
+  int32 squares = 5;
+  int32 lines = 6;
+}
+
+message SyncBingoUniversesMessage {
+  repeated BingoUniverseInfo bingoUniverses = 1;
+}
+
+message Position {
+  int32 x = 1;
+  int32 y = 2;
+}
+
+message PositionedBingoSquare {
+  Position position = 1;
+  BingoSquare square = 2;
+}
+
+message BingoBoard {
+  repeated PositionedBingoSquare squares = 1;
+  int32 size = 2;
+  bool lockout = 3;
+}
+
+message SyncBoardMessage {
+  BingoBoard board = 1;
+  bool replace = 2;
+}
+
+message AuthenticateMessage {
+  string jwt = 1;
+}
+
+
+// Unused in web
+message AuthenticatedMessage {
+  UserInfo user = 1;
+  int32 udpId = 2;
+  bytes udpKey = 3;
+}
+
+message PlayerPositionMessage  {
+  float x = 1;
+  float y = 2;
+}
+
+message UpdatePlayerPositionMessage  {
+  string playerId = 1;
+  float x = 2;
+  float y = 3;
+}
+
+message UdpPacket {
+  int32 udpId = 1;
+  bytes encryptedPacket = 2;
+}

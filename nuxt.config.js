@@ -2,8 +2,9 @@ import colors from 'vuetify/es5/util/colors'
 import MonacoEditorWebpackPlugin from 'monaco-editor-webpack-plugin'
 
 const env = {
-  API_HOST: process.env.API_HOST || 'ori-rando.localhost',
+  API_HOST: process.env.API_HOST || '127.0.0.1:8081',
   API_SECURE: process.env.API_SECURE === 'true',
+  UPDATE_PROXY_URL: process.env.UPDATE_PROXY_URL || 'https://ori-rando-update.schwarzer.dev', // TODO: Move to update.orirando.com
 }
 
 // Computed envs...
@@ -47,7 +48,9 @@ export default {
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [],
+  plugins: [
+    '~/plugins/restoreAuthState.js'
+  ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -58,6 +61,7 @@ export default {
     '@nuxtjs/eslint-module',
     // https://go.nuxtjs.dev/vuetify
     '@nuxtjs/vuetify',
+    '@nuxtjs/pwa',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
@@ -99,7 +103,7 @@ export default {
           accent: '#533CA6',
           accent2: '#D989D3',
           info: '#5199CD',
-          warning: colors.amber.base,
+          warning: colors.orange.base,
           error: colors.deepOrange.accent4,
           success: colors.green.accent3,
         },
@@ -120,5 +124,9 @@ export default {
         use: 'js-yaml-loader',
       })
     },
+  },
+
+  router: {
+    mode: process.env.IS_ELECTRON === 'true' ? 'hash' : 'history'
   },
 }

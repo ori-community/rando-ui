@@ -19,21 +19,23 @@
             </v-card>
           </v-scroll-x-transition>
 
-          <v-scroll-x-transition group>
-            <v-card v-for='release in visibleReleases' :key='release.id' class='mb-2'>
-              <v-card-title class='d-block'>
-                Version {{ release.name }}
-                <v-chip v-if='isNewVersion(release.name)' class='ml-2' small color='accent'>New</v-chip>
-              </v-card-title>
-              <v-card-text class='release-changelog'>
-                <div v-html='release.bodyHtml' />
-                <div class='d-flex justify-end'>
-                  <em class='text-caption grey--text'>
-                    {{ formatDateRelative(release.published_at) }}
-                  </em>
-                </div>
-              </v-card-text>
-            </v-card>
+          <v-scroll-x-transition>
+            <div v-if='!!motd && !!visibleReleases'>
+              <v-card v-for='release in visibleReleases' :key='release.id' class='mb-2'>
+                <v-card-title class='d-block'>
+                  Version {{ release.name }}
+                  <v-chip v-if='isNewVersion(release.name)' class='ml-2' small color='accent'>New</v-chip>
+                </v-card-title>
+                <v-card-text class='release-changelog'>
+                  <div v-html='release.bodyHtml' />
+                  <div class='d-flex justify-end'>
+                    <em class='text-caption grey--text'>
+                      {{ formatDateRelative(release.published_at) }}
+                    </em>
+                  </div>
+                </v-card-text>
+              </v-card>
+            </div>
           </v-scroll-x-transition>
         </template>
       </v-col>

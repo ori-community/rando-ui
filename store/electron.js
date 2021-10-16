@@ -166,7 +166,7 @@ export const actions = {
       url: state.latestRelease.assets.find(a => a.name === 'WotwRandoSetup.exe').browser_download_url,
     })
   },
-  async launch({ commit, state, dispatch }, { seedFile = null, forceLaunch = false }) {
+  async launch({ commit, state, getters, dispatch }, { seedFile = null, forceLaunch = false }) {
     if (state.launching) {
       return
     }
@@ -183,7 +183,7 @@ export const actions = {
         await dispatch('checkForUpdatesOnce')
       }
 
-      if (!forceLaunch && state.updateAvailable) {
+      if (!forceLaunch && getters.updateAvailable) {
         commit('setShowUpdateAvailableDialog', true)
       } else {
         await window.electronApi.invoke('launcher.launch', seedFile)

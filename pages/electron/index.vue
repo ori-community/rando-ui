@@ -20,7 +20,7 @@
           </v-scroll-x-transition>
 
           <v-scroll-x-transition group>
-            <v-card v-for='release in availableReleases' :key='release.id' class='mb-2'>
+            <v-card v-for='release in visibleReleases' :key='release.id' class='mb-2'>
               <v-card-title class='d-block'>
                 Version {{ release.name }}
                 <v-chip v-if='isNewVersion(release.name)' class='ml-2' small color='accent'>New</v-chip>
@@ -46,7 +46,7 @@
               to get automatic updates.
             </template>
             <template v-else-if='updateAvailable'>
-              Version {{ latestVersion }} is available!
+              Version {{ latestVisibleVersion }} is available!
 
               <div v-if='updateDownloading'>
                 <v-progress-linear class='mt-3' :value='updateDownloadProgress' />
@@ -176,7 +176,6 @@
     data: () => ({
       shouldShowImportInfoDialog: false,
       motd: '',
-      updateCheckPromise: null,
       supportBundleLoading: false,
     }),
     head: () => ({
@@ -193,10 +192,8 @@
         'settings',
         'settingsLoaded',
         'currentVersion',
-        'latestRelease',
         'updateDownloading',
         'updateDownloadProgress',
-        'availableReleases',
         'launching',
         'offlineMode',
         'currentSeedPath',
@@ -208,7 +205,8 @@
       ]),
       ...mapGetters('electron', [
         'updateAvailable',
-        'latestVersion',
+        'visibleReleases',
+        'latestVisibleVersion',
         'currentSeedPathBasename',
         'isNewVersion',
       ]),

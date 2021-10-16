@@ -30,7 +30,7 @@
 
     <v-dialog v-model='showUpdateAvailableDialog' max-width='500' persistent>
       <v-card>
-        <v-card-title>Update available ({{ latestVersion }})</v-card-title>
+        <v-card-title>Update available ({{ latestVisibleVersion }})</v-card-title>
         <v-card-text>
           An update for the randomizer is ready to be downloaded and installed.
           We recommend to always play on the latest version.
@@ -50,16 +50,13 @@
 </template>
 
 <script>
-  import { mapGetters, mapState } from 'vuex'
+  import { mapGetters } from 'vuex'
 
   export default {
     name: 'GlobalDialogs',
     computed: {
-      ...mapState('electron', [
-        'latestRelease',
-      ]),
       ...mapGetters('electron', [
-        'latestVersion',
+        'latestVisibleVersion',
       ]),
       currentSupportBundleName: {
         set(value) {

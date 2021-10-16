@@ -3,11 +3,12 @@ import semver from 'semver'
 import * as commonmark from 'commonmark'
 import { EventBus } from '~/assets/lib/EventBus'
 
+window.semver = semver
+
 export const state = () => ({
   settings: {},
   settingsLoaded: false,
   currentVersion: '',
-  latestRelease: null, // contains new version string if available
   availableReleases: null,
   updateDownloading: false,
   updateDownloadProgress: 0,
@@ -19,9 +20,20 @@ export const state = () => ({
 })
 
 export const getters = {
-  isNewVersion(state) {
+  shouldShowVersion(state) {
+    return version => {
+      const updateToPrereleaseVersions = state.settings?.Flags?.UpdateToPrereleaseVersions ?? false
+      const prerelease = semver.prerelease(version)
+      return updateToPrereleaseVersions || prerelease.length === 0
+    }
+  },
+  isNewVersion(state, getters) {
     return version => {
       if (state.currentVersion === '' || state.currentVersion === 'develop') {
+        return false
+      }
+
+      if (!getters.shouldShowVersion(version)) {
         return false
       }
 
@@ -33,11 +45,27 @@ export const getters = {
       }
     }
   },
-  updateAvailable(state, getters) {
-    return state.latestRelease !== null && getters.isNewVersion(getters.latestVersion)
+  latestAvailableRelease(state) {
+    return state.availableReleases?.length > 0
+      ? state.availableReleases[0]
+      : null
   },
-  latestVersion(state) {
-    return state.latestRelease?.name
+  latestAvailableVersion(state) {
+    return state.latestAvailableRelease?.name
+  },
+  visibleReleases(state, getters) {
+    return state.availableReleases?.filter(r => getters.shouldShowVersion(r.name))
+  },
+  latestVisibleRelease(state, getters) {
+    return getters.visibleReleases?.length > 0
+      ? getters.visibleReleases[0]
+      : null
+  },
+  latestVisibleVersion(state, getters) {
+    return getters.latestVisibleRelease?.name
+  },
+  updateAvailable(state, getters) {
+    return state.latestVisibleRelease !== null && getters.isNewVersion(getters.latestVisibleVersion)
   },
   currentSeedPathBasename(state) {
     if (!state.currentSeedPath) {
@@ -59,9 +87,6 @@ export const mutations = {
   },
   setAvailableReleases(state, value) {
     state.availableReleases = value
-  },
-  setLatestRelease(state, value) {
-    state.latestRelease = value
   },
   setOfflineMode(state, value) {
     state.offlineMode = value
@@ -115,10 +140,6 @@ export const actions = {
             bodyHtml: sanitizeHtml(writer.render(parser.parse(release.body))),
           }
         }))
-
-      if (state.availableReleases.length > 0) {
-        commit('setLatestRelease', state.availableReleases[0])
-      }
     } catch (e) {
       commit('setOfflineMode', true)
       console.error(e)

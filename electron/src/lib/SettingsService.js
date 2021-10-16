@@ -41,6 +41,7 @@ const getDefaultSettings = () => ({
     InvertSwim: false,
     DisableDebugControls: true,
     CursorLock: false,
+    UpdateToPrereleaseVersions: false,
   },
 })
 

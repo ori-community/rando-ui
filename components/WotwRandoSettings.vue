@@ -125,6 +125,11 @@
           messages='Welcome to the world of fun'
         />
         <v-checkbox
+          v-model='settings.Flags.UpdateToPrereleaseVersions'
+          label='Update to prerelease versions'
+          messages='Search for and ask to update to unreleased unstable versions'
+        />
+        <v-checkbox
           v-model='settings.Flags.WaitForDebugger'
           label='Wait for Debugger'
           messages='The Randomizer will wait for a debugger to attach before initialization'

@@ -8,7 +8,7 @@
           <v-tab>General</v-tab>
           <v-tab>Controller</v-tab>
           <v-tab>Keyboard</v-tab>
-          <v-tab>Misc</v-tab>
+          <v-tab>System</v-tab>
 
           <v-tab-item class='pa-5'>
             <wotw-rando-settings @loaded='settingsLoaded = true' />

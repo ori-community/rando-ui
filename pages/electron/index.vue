@@ -39,7 +39,7 @@
       </v-col>
       <v-col cols='12' md='3' order-md='1' order='0'>
         <div class='sticky'>
-          <v-card :color='updateAvailable ? `warning darken-4` : `background lighten-1`' class='pa-4'>
+          <v-card :color='updateAvailable ? `warning darken-1` : `background lighten-1`' class='pa-4'>
             <h3>Version: {{ currentVersion }}</h3>
             <template v-if='currentVersion === "develop"'>
               You are running a development build. Download the latest stable version

@@ -118,16 +118,6 @@ export const actions = {
     try {
       commit('setCurrentVersion', await window.electronApi.invoke('updater.getVersion'))
 
-      this.motd = sanitizeHtml((await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/motd/wotw`, {
-        params: {
-          version: state.currentVersion,
-        },
-      })).motd, {
-        allowedClasses: {
-          '*': ['mb-*'],
-        },
-      })
-
       commit('setAvailableReleases', (await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/releases`))
         .filter(release => !release.draft && !release.prerelease)
         .sort((a, b) => semver.compareLoose(b.name, a.name))

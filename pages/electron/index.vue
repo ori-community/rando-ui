@@ -168,6 +168,7 @@
 
 <script>
   import { mapGetters, mapMutations, mapState } from 'vuex'
+  import sanitizeHtml from 'sanitize-html'
   import { formatsDates } from '~/assets/lib/formatsDates'
 
   export default {
@@ -210,6 +211,24 @@
         'currentSeedPathBasename',
         'isNewVersion',
       ]),
+    },
+    watch: {
+      currentVersion: {
+        immediate: true,
+        async handler(version) {
+          if (version) {
+            this.motd = sanitizeHtml((await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/motd/wotw`, {
+              params: {
+                version,
+              },
+            })).motd, {
+              allowedClasses: {
+                '*': ['mb-*'],
+              },
+            })
+          }
+        },
+      }
     },
     async mounted() {
       this.shouldShowImportInfoDialog = await window.electronApi.invoke('settings.shouldShowImportInfoDialog')

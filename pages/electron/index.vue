@@ -320,14 +320,6 @@
     opacity: 0.2;
   }
 
-  .crash-ori {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 96px;
-    transform: scaleX(-1);
-  }
-
   .sticky {
     position: sticky;
     top: 1em;

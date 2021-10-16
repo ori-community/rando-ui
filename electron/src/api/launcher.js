@@ -5,8 +5,15 @@ import fs from 'fs'
 import { FileDownloadService } from '~/electron/src/lib/FileDownloadService'
 import { shell } from 'electron'
 import { getWindow } from '~/electron/src/background'
+import { spawn } from 'child_process'
 
 export default {
+  addExceptionForWindowsDefender() {
+    spawn(`Start-Process powershell -ArgumentList "if (Add-MpPreference -ExclusionPath '${RANDOMIZER_BASE_PATH}') { echo 'Done, you can close this window' } else { echo 'Could not add an exception for Windows Defender. If you are using an Antivirus other than Windows Defender, you have to add an exception manually if it blocks the Randomizer.' }; sleep 100000" -Verb RunAs`, {
+      shell: 'powershell.exe',
+    }).unref()
+  },
+
   getOpenedSeedPath() {
     return LauncherService.getOpenedSeedPath()
   },

@@ -7,7 +7,6 @@ import { RANDOMIZER_BASE_PATH } from './Constants'
 import { BindingsService } from '~/electron/src/lib/BindingsService'
 import { Library as FFILibrary } from 'ffi-napi'
 import { UCS2String } from '~/electron/src/lib/UCS2String'
-import { BrowserWindow } from 'electron'
 import { SeedParser } from '~/assets/lib/SeedParser'
 import { getWindow } from '~/electron/src/background'
 

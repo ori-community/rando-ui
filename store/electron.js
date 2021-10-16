@@ -163,7 +163,7 @@ export const actions = {
       commit('setUpdateDownloadProgress', progress * 100)
     })
     await window.electronApi.invoke('updater.downloadAndInstallUpdate', {
-      url: state.latestRelease.assets.find(a => a.name === 'WotwRandoSetup.exe').browser_download_url,
+      url: state.latestVisibleRelease.assets.find(a => a.name === 'WotwRandoSetup.exe').browser_download_url,
     })
   },
   async launch({ commit, state, getters, dispatch }, { seedFile = null, forceLaunch = false }) {

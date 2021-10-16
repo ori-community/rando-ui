@@ -22,7 +22,7 @@ export const state = () => ({
 export const getters = {
   shouldShowVersion(state) {
     return version => {
-      const updateToPrereleaseVersions = state.settings?.Flags?.UpdateToPrereleaseVersions ?? false
+      const updateToPrereleaseVersions = state.settingsLoaded && (state.settings.Flags.UpdateToPrereleaseVersions ?? false)
       const prerelease = semver.prerelease(version)
       return updateToPrereleaseVersions || prerelease?.length === 0
     }
@@ -114,7 +114,7 @@ export const mutations = {
 let checkForUpdatesOncePromise = null
 
 export const actions = {
-  async checkForUpdates({ commit, state }) {
+  async checkForUpdates({ commit }) {
     try {
       commit('setCurrentVersion', await window.electronApi.invoke('updater.getVersion'))
 

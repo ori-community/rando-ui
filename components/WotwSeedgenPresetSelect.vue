@@ -29,23 +29,27 @@
       />
     </div>
     <div class='text-center'>
-      <div v-if='anyPresetSelected' class='mt-6'>
-        <v-tooltip bottom :disabled='overrideSettings'>
-          <template #activator='{on}'>
-            <v-btn color='accent' depressed x-large v-on='on' @click='onApplyPresetsButtonClick'>
-              <v-icon left>{{ overrideSettings ? 'mdi-call-merge' : 'mdi-file-replace-outline' }}</v-icon>
-              {{ overrideSettings ? 'Override presets' : 'Apply Presets' }}
+      <v-expand-transition>
+        <div v-show='anyPresetSelected || presetsApplied'>
+          <div v-if='anyPresetSelected || !presetsApplied' class='mt-6'>
+            <v-tooltip bottom :disabled='overrideSettings'>
+              <template #activator='{on}'>
+                <v-btn color='accent' depressed x-large v-on='on' @click='onApplyPresetsButtonClick'>
+                  <v-icon left>{{ overrideSettings ? 'mdi-call-merge' : 'mdi-file-replace-outline' }}</v-icon>
+                  {{ overrideSettings ? 'Override presets' : 'Apply Presets' }}
+                </v-btn>
+              </template>
+              <span>Hold <kbd>Ctrl</kbd> to override existing settings</span>
+            </v-tooltip>
+          </div>
+          <div v-else class='mt-6'>
+            <v-btn x-large disabled>
+              <v-icon left>mdi-check</v-icon>
+              Presets applied
             </v-btn>
-          </template>
-          <span>Hold <kbd>Ctrl</kbd> to override existing settings</span>
-        </v-tooltip>
-      </div>
-      <div v-else-if='settingsApplied' class='mt-6'>
-        <v-btn x-large disabled>
-          <v-icon left>mdi-check</v-icon>
-          Settings applied
-        </v-btn>
-      </div>
+          </div>
+        </div>
+      </v-expand-transition>
     </div>
   </div>
 </template>
@@ -66,7 +70,7 @@
     data: () => ({
       presetStates: {},
       overrideSettings: false,
-      settingsApplied: false,
+      presetsApplied: false,
       presetMeta,
       difficultyPresets,
     }),
@@ -149,7 +153,7 @@
 
         this.$emit('apply', { presets: selectedPresets, override: this.overrideSettings })
         this.resetPresetStates()
-        this.settingsApplied = true
+        this.presetsApplied = true
       },
       setDifficultyPreset(name) {
         for (const difficultyPreset of difficultyPresets) {

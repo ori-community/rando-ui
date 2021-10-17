@@ -313,11 +313,12 @@
           window.localStorage.setItem('boardSettings', JSON.stringify(boardSettings))
         },
       },
-      'multiverse.universes'() { // TODO: Temporary workaround for orirando/wotw-server#5
-        if (this.multiverse.bingoBoard) {
-          this.$store.dispatch('multiverseState/fetchBingoBoard', this.multiverseId)
-        }
-      },
+      // Probably solved?
+      // 'multiverse.universes'() { // TO DO: Temporary workaround for orirando/wotw-server#5
+      //   if (this.multiverse.bingoBoard) {
+      //     this.$store.dispatch('multiverseState/fetchBingoBoard', this.multiverseId)
+      //   }
+      // },
       multiverseReady: {
         immediate: true,
         handler(multiverseReady) {

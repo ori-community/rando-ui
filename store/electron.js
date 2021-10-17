@@ -175,7 +175,7 @@ export const actions = {
         await dispatch('checkForUpdatesOnce')
       }
 
-      if (!forceLaunch && getters.updateAvailable) {
+      if (!forceLaunch && getters.updateAvailable && !window.electronApi.invoke('launcher.isRandomizerRunning')) {
         commit('setShowUpdateAvailableDialog', true)
       } else {
         await window.electronApi.invoke('launcher.launch', seedFile)

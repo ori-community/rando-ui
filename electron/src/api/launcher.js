@@ -30,6 +30,10 @@ export default {
     await LauncherService.setCurrentSeedPath(seedPath)
   },
 
+  async isRandomizerRunning() {
+    return await LauncherService.isRandomizerRunning()
+  },
+
   async launch(event, seedPath = null) {
     try {
       await LauncherService.launch(seedPath)

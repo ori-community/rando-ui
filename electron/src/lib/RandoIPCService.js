@@ -24,7 +24,6 @@ export class RandoIPCService {
             console.log('RandoIPC: Connected')
             resolve()
           })
-
         } catch (e) {
           reject(e)
         }
@@ -35,8 +34,13 @@ export class RandoIPCService {
   static async send(message) {
     await new Promise((resolve, reject) => {
       try {
+        const errorCallback = error => {
+          throw error
+        }
 
+        socket.once('error', errorCallback)
         socket.write(message + '\r\n', 'utf-8', () => resolve())
+        socket.off('error', errorCallback)
       } catch (e) {
         reject(e)
       }

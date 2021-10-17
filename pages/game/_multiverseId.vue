@@ -258,7 +258,7 @@
         return this.ownUniverse?.id
       },
       highlightedUniverseId() {
-        if (!this.boardSettings.highlightOwnUniverse) {
+        if (!this.boardSettings.highlightOwnUniverse || this.multiverse.universes.length <= 1) {
           return null
         }
 

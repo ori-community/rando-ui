@@ -90,6 +90,10 @@ export class LauncherService {
     }
   }
 
+  static async isRandomizerRunning() {
+    return await isProcessRunning('injector.exe')
+  }
+
   static async launch(seedFilePath = null) {
     if (seedFilePath) {
       console.log('Launching seed', seedFilePath)
@@ -112,7 +116,7 @@ export class LauncherService {
       throw new Error(`Injector.exe not found. Your antivirus software has probably eaten it. You might need to add an exception for it to run the randomizer.`)
     }
 
-    if (await isProcessRunning('injector.exe')) {
+    if (await this.isRandomizerRunning()) {
       if (!await RandoIPCService.trySend('reload')) {
         throw new Error('Could not load the seed in running game.\nPlease wait a few seconds if you closed the game just now.')
       } else {

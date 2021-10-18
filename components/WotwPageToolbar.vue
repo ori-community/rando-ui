@@ -56,7 +56,7 @@
       <v-card>
         <v-card-title>Change Nickname</v-card-title>
         <v-card-text>
-          <v-text-field v-model='currentNickname' autofocus label='Nickname' @keydown.enter='saveNickname' />
+          <v-text-field v-model='currentNickname' autofocus label='Nickname' counter='32' @keydown.enter='saveNickname' />
 
           <div class='d-flex'>
             <v-spacer />
@@ -96,7 +96,8 @@
       ...mapState('nav', ['lastMultiverseId', 'lastSeedgenResult']),
       isElectron,
       nicknameIsValid() {
-        return this.currentNickname.trim().length > 0
+        const trimmedNickname = this.currentNickname.trim()
+        return trimmedNickname.length > 0 && trimmedNickname.length <= 32
       },
     },
     methods: {

@@ -68,7 +68,9 @@
           this.$store.commit('electron/setSettings', settings)
         })
 
-        window.electronApi.on('main.currentSeedChanged', (event, {currentSeedInfo}) => {
+        window.electronApi.on('main.currentSeedChanged', (event, { currentSeedInfo, currentSeedPath }) => {
+          this.$store.commit('electron/setCurrentSeedPath', currentSeedPath)
+
           if (currentSeedInfo) {
             if (!currentSeedInfo.webConn) {
               this.$store.commit('nav/setLastMultiverseId', { id: null, seedgenResult: null })

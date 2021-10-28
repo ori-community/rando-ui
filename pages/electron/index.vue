@@ -354,7 +354,12 @@
     h3,
     h4,
     h5 {
+      font-size: 1.3em;
       margin-bottom: 0.4em;
+    }
+
+    ul:not(:last-of-type) {
+      margin-bottom: 0.75em;
     }
   }
 </style>

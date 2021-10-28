@@ -1,5 +1,5 @@
 # Stage 1
-FROM node:alpine as build
+FROM node:16-alpine as build
 
 ARG API_HOST=wotw.orirando.com
 ARG API_SECURE=true

@@ -65,7 +65,7 @@ export const getters = {
     return getters.latestVisibleRelease?.name
   },
   updateAvailable(state, getters) {
-    return state.latestVisibleRelease !== null && getters.isNewVersion(getters.latestVisibleVersion)
+    return getters.latestVisibleRelease !== null && getters.isNewVersion(getters.latestVisibleVersion)
   },
   currentSeedPathBasename(state) {
     if (!state.currentSeedPath) {

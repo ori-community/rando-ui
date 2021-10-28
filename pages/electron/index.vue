@@ -311,7 +311,7 @@
       height: 64px;
       width: 64px;
       position: absolute;
-      opacity: 50%;
+      opacity: 0.5;
       pointer-events: none;
       transform: translateY(8%);
       bottom: 0;

@@ -75,7 +75,7 @@
         const highlightSplitPercentage = 33
 
         const nonHighlightedColors = this.square.completedBy
-          .filter(universeId => !this.hiddenUniverses.includes(universeId) && universeId !== this.highlightUniverse)
+          .filter(universeId => (!this.hiddenUniverses.includes(universeId) && universeId !== this.highlightUniverse) || this.isLockout)
           .sort((a, b) => b - a)
           .map(universeId => this.universeColors[universeId])
         const stops = []
@@ -95,13 +95,15 @@
           stops.push(`transparent 0% ${highlightSplitPercentage}%`)
         }
 
-        if (this.highlightUniverse) {
+        if (this.highlightUniverse && !this.isLockout) {
           if (shouldHighlight && this.square.completedBy.includes(this.highlightUniverse)) {
             stops.push(`${this.universeColors[this.highlightUniverse]} ${highlightSplitPercentage}% 100%`)
           } else {
             stops.push(`transparent ${highlightSplitPercentage}% 100%`)
           }
         }
+
+        console.log(stops)
 
         if (stops.length === 0) {
           return {}

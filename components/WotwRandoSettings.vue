@@ -143,6 +143,7 @@
           v-model='settings.Paths.URL'
           label='Server URL'
           class='mt-4'
+          messages='Press Ctrl+R after changing this setting for it to apply in the launcher'
         />
         <v-text-field
           v-model='settings.Paths.UdpPort'

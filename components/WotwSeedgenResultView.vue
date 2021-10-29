@@ -120,7 +120,7 @@
         }
       },
       async copyLink() {
-        const url = new URL(process.env.API_BASE_URL)
+        const url = new URL(this.$axios.defaults.baseURL)
 
         if (this.multiverseId) {
           url.pathname = `/game/${this.multiverseId}`

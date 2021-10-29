@@ -81,7 +81,7 @@ export const actions = {
 
     if (reconnect || (ws?.readyState !== WebSocket.OPEN && ws?.readyState !== WebSocket.CONNECTING)) {
       ws?.close()
-      webSockets[multiverseId] = await WebSocketFactory.create(`/observers/${multiverseId}`)
+      webSockets[multiverseId] = await WebSocketFactory.create(`/observers/${multiverseId}`, this.$websocket)
       ws = webSockets[multiverseId]
 
       retries = 0

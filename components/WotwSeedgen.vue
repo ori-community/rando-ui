@@ -1,175 +1,175 @@
 <template>
   <div>
     <v-card v-if='loadedServerConfig' class='mb-4'>
-        <v-tabs centered grow color='primary' show-arrows>
-          <v-tab>
-            <v-icon left>mdi-star-outline</v-icon>
-            Presets
-          </v-tab>
-          <v-tab>
-            <v-icon left>mdi-map-marker-path</v-icon>
-            Paths
-            <v-chip class='ml-1' x-small>{{ seedgenConfig.glitches.length }}</v-chip>
-          </v-tab>
-          <v-tab>
-            <v-icon left>mdi-flag-checkered</v-icon>
-            Goals
-            <v-chip class='ml-1' x-small>{{ seedgenConfig.goals.length }}</v-chip>
-          </v-tab>
-          <v-tab>
-            <v-icon left>mdi-cog-outline</v-icon>
-            Headers
-            <v-chip class='ml-1' x-small>{{ seedgenConfig.headers.length }}</v-chip>
-          </v-tab>
-          <v-tab>
-            <v-icon left>mdi-tune-vertical</v-icon>
-            Generator
-          </v-tab>
-          <v-tab-item class='pa-4'>
-            <p>
-              These presets are collections of <b>recommended randomizer options</b>.
-              First, select a base preset and choose additional options as you like,
-              apply them and hit "Generate".<br>
-              If you want more granular control of your seed's settings, take a look
-              at the other tabs.
-            </p>
+      <v-tabs centered grow color='primary' show-arrows>
+        <v-tab>
+          <v-icon left>mdi-star-outline</v-icon>
+          Presets
+        </v-tab>
+        <v-tab>
+          <v-icon left>mdi-map-marker-path</v-icon>
+          Paths
+          <v-chip class='ml-1' x-small>{{ seedgenConfig.glitches.length }}</v-chip>
+        </v-tab>
+        <v-tab>
+          <v-icon left>mdi-flag-checkered</v-icon>
+          Goals
+          <v-chip class='ml-1' x-small>{{ seedgenConfig.goals.length }}</v-chip>
+        </v-tab>
+        <v-tab>
+          <v-icon left>mdi-cog-outline</v-icon>
+          Headers
+          <v-chip class='ml-1' x-small>{{ seedgenConfig.headers.length }}</v-chip>
+        </v-tab>
+        <v-tab>
+          <v-icon left>mdi-tune-vertical</v-icon>
+          Generator
+        </v-tab>
+        <v-tab-item class='pa-4'>
+          <p>
+            These presets are collections of <b>recommended randomizer options</b>.
+            First, select a base preset and choose additional options as you like,
+            apply them and hit "Generate".<br>
+            If you want more granular control of your seed's settings, take a look
+            at the other tabs.
+          </p>
 
-            <wotw-seedgen-preset-select
-              :presets='availablePresets'
-              @apply='applyPresets'
-              @any-preset-selected='v => anyPresetSelected = v'
-            />
-          </v-tab-item>
-          <v-tab-item class='pa-4'>
-            <v-select
-              v-model='seedgenConfig.difficulty'
-              :items='availableDifficultiesArray'
-              label='Difficulty'
-              item-value='id'
-              item-text='name'
-            >
-              <template #item='{item}'>
-                <div>
-                  <v-list-item-title>{{ item.name }}</v-list-item-title>
-                  <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle>
-                </div>
-              </template>
-            </v-select>
+          <wotw-seedgen-preset-select
+            :presets='availablePresets'
+            @apply='applyPresets'
+            @any-preset-selected='v => anyPresetSelected = v'
+          />
+        </v-tab-item>
+        <v-tab-item class='pa-4'>
+          <v-select
+            v-model='seedgenConfig.difficulty'
+            :items='availableDifficultiesArray'
+            label='Difficulty'
+            item-value='id'
+            item-text='name'
+          >
+            <template #item='{item}'>
+              <div>
+                <v-list-item-title>{{ item.name }}</v-list-item-title>
+                <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle>
+              </div>
+            </template>
+          </v-select>
 
-            <p>
-              Select which glitches should be required to complete the seed and where you would like to spawn.
-            </p>
-            <wotw-seedgen-glitch-select v-model='seedgenConfig.glitches' class='mb-6' :glitches='availableGlitches' />
+          <p>
+            Select which glitches should be required to complete the seed and where you would like to spawn.
+          </p>
+          <wotw-seedgen-glitch-select v-model='seedgenConfig.glitches' class='mb-6' :glitches='availableGlitches' />
 
-            <v-select v-model='seedgenConfig.spawn' :items='availableSpawns' label='Spawn'>
-              <template #item='{item}'>
-                <v-icon v-if='!!item.icon' left>{{ item.icon }}</v-icon>
-                <span>{{ item.text }}</span>
-              </template>
-            </v-select>
-          </v-tab-item>
-          <v-tab-item class='pa-4'>
-            <p>
-              Select goals you want to be required to complete the seed.
-            </p>
-            <wotw-seedgen-goal-select v-model='seedgenConfig.goals' :goals='availableGoals' />
-          </v-tab-item>
-          <v-tab-item class='pa-4'>
-            <p>
-              Headers let you customize the seed further.
-            </p>
-            <wotw-seedgen-header-select
-              v-model='seedgenConfig.headers'
-              :headers='availableHeaders'
-              :header-args.sync='seedgenConfig.headerArgs'
-            />
+          <v-select v-model='seedgenConfig.spawn' :items='availableSpawns' label='Spawn'>
+            <template #item='{item}'>
+              <v-icon v-if='!!item.icon' left>{{ item.icon }}</v-icon>
+              <span>{{ item.text }}</span>
+            </template>
+          </v-select>
+        </v-tab-item>
+        <v-tab-item class='pa-4'>
+          <p>
+            Select goals you want to be required to complete the seed.
+          </p>
+          <wotw-seedgen-goal-select v-model='seedgenConfig.goals' :goals='availableGoals' />
+        </v-tab-item>
+        <v-tab-item class='pa-4'>
+          <p>
+            Headers let you customize the seed further.
+          </p>
+          <wotw-seedgen-header-select
+            v-model='seedgenConfig.headers'
+            :headers='availableHeaders'
+            :header-args.sync='seedgenConfig.headerArgs'
+          />
 
-            <h3 class='mt-5 mb-2'>Custom headers</h3>
-            <wotw-seedgen-custom-header-select v-model='seedgenConfig.customHeaders' />
-          </v-tab-item>
-          <v-tab-item class='pa-4'>
-            <v-row>
-              <v-col cols='12' md='6'>
-                <v-text-field
-                  v-model='seedgenConfig.seed'
-                  label='Seed'
-                  persistent-placeholder
-                  placeholder='leave empty for random seed'
-                />
-                <wotw-seedgen-flag-checkbox
-                  v-model='seedgenConfig.flags'
-                  flag='--hard'
-                  hint='The seed generator will adjust damage boosts for you'
-                  label='I want to play on Hard Mode'
-                  persistent-hint
-                />
-                <wotw-seedgen-flag-checkbox
-                  v-model='seedgenConfig.flags'
-                  flag='--race'
-                  hint='Useful for races'
-                  label='Disable Spoilers'
-                  persistent-hint
-                />
-              </v-col>
-              <v-col cols='12' md='6'>
-                <wotw-seedgen-flag-checkbox
-                  v-model='seedgenConfig.flags'
-                  flag='--multiplayer'
-                  hint='Enable this if you want to play with friends (Co-op, Multiworld) or Bingo and select the appropriate game type below'
-                  label='Multiplayer / Bingo'
-                  persistent-hint
-                />
-                <v-expand-transition>
-                  <div v-if='seedgenConfig.flags.includes("--multiplayer")'>
-                    <div class='mt-4'>
-                      <v-select
-                        v-model='createOnlineGame'
-                        :items="[
+          <h3 class='mt-5 mb-2'>Custom headers</h3>
+          <wotw-seedgen-custom-header-select v-model='seedgenConfig.customHeaders' />
+        </v-tab-item>
+        <v-tab-item class='pa-4'>
+          <v-row>
+            <v-col cols='12' md='6'>
+              <v-text-field
+                v-model='seedgenConfig.seed'
+                label='Seed'
+                persistent-placeholder
+                placeholder='leave empty for random seed'
+              />
+              <wotw-seedgen-flag-checkbox
+                v-model='seedgenConfig.flags'
+                flag='--hard'
+                hint='The seed generator will adjust damage boosts for you'
+                label='I want to play on Hard Mode'
+                persistent-hint
+              />
+              <wotw-seedgen-flag-checkbox
+                v-model='seedgenConfig.flags'
+                flag='--race'
+                hint='Useful for races'
+                label='Disable Spoilers'
+                persistent-hint
+              />
+            </v-col>
+            <v-col cols='12' md='6'>
+              <wotw-seedgen-flag-checkbox
+                v-model='seedgenConfig.flags'
+                flag='--multiplayer'
+                hint='Enable this if you want to play with friends (Co-op, Multiworld) or Bingo and select the appropriate game type below'
+                label='Multiplayer / Bingo'
+                persistent-hint
+              />
+              <v-expand-transition>
+                <div v-if='seedgenConfig.flags.includes("--multiplayer")'>
+                  <div class='mt-4'>
+                    <v-select
+                      v-model='createOnlineGame'
+                      :items="[
                           {text: 'None', value: 'none'},
                           {text: 'Normal', value: 'normal'},
                           {text: 'Bingo', value: 'bingo'},
                           {text: 'Discovery Bingo', value: 'discovery_bingo'},
                           {text: 'Lockout Bingo', value: 'lockout_bingo'},
                         ]"
-                        :disabled='!isLoggedIn'
-                        :persistent-hint='!isLoggedIn'
-                        :hint='!isLoggedIn ? "Only available when logged in" : ""'
-                        label='Automatically create online game'
-                      />
-                    </div>
-
-                    <v-combobox
-                      v-model='seedgenConfig.multiNames'
-                      :items='[]'
-                      hint='If you specify world names here, this seed will be a multiworld seed. Press Enter to add players.'
-                      label='Multiworld world names'
-                      multiple
-                      persistent-hint
-                    >
-                      <template #selection='data'>
-                        <v-chip
-                          :key='JSON.stringify(data.item)'
-                          v-bind='data.attrs'
-                          :disabled='data.disabled'
-                          :input-value='data.selected'
-                          @click:close='data.parent.selectItem(data.item)'
-                        >
-                          <v-avatar
-                            class='accent white--text'
-                            left
-                            v-text='data.item.slice(0, 1).toUpperCase()'
-                          ></v-avatar>
-                          {{ data.item }}
-                        </v-chip>
-                      </template>
-                    </v-combobox>
+                      :disabled='!isLoggedIn'
+                      :persistent-hint='!isLoggedIn'
+                      :hint='!isLoggedIn ? "Only available when logged in" : ""'
+                      label='Automatically create online game'
+                    />
                   </div>
-                </v-expand-transition>
-              </v-col>
-            </v-row>
-          </v-tab-item>
-        </v-tabs>
-      </v-card>
+
+                  <v-combobox
+                    v-model='seedgenConfig.multiNames'
+                    :items='[]'
+                    hint='If you specify world names here, this seed will be a multiworld seed. Press Enter to add players.'
+                    label='Multiworld world names'
+                    multiple
+                    persistent-hint
+                  >
+                    <template #selection='data'>
+                      <v-chip
+                        :key='JSON.stringify(data.item)'
+                        v-bind='data.attrs'
+                        :disabled='data.disabled'
+                        :input-value='data.selected'
+                        @click:close='data.parent.selectItem(data.item)'
+                      >
+                        <v-avatar
+                          class='accent white--text'
+                          left
+                          v-text='data.item.slice(0, 1).toUpperCase()'
+                        ></v-avatar>
+                        {{ data.item }}
+                      </v-chip>
+                    </template>
+                  </v-combobox>
+                </div>
+              </v-expand-transition>
+            </v-col>
+          </v-row>
+        </v-tab-item>
+      </v-tabs>
+    </v-card>
 
     <div class='text-center'>
       <v-tooltip :disabled='!anyPresetSelected' bottom>
@@ -192,7 +192,7 @@
     </div>
 
     <v-dialog v-model='showResultDialog' persistent max-width='400'>
-      <div class='relative'>
+      <v-card class='relative pa-5'>
         <v-btn
           class='close-button'
           color='background lighten-5'
@@ -202,14 +202,13 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <wotw-seedgen-result-view v-if='!!seedgenResult' ref='resultView' :result='seedgenResult' />
-      </div>
+      </v-card>
     </v-dialog>
   </div>
 </template>
 
 <script>
   import { saveAs } from 'file-saver'
-  import base64url from 'base64url'
   import { mapGetters } from 'vuex'
   import glitches from '~/assets/seedgen/glitches.yaml'
   import goals from '~/assets/seedgen/goals.yaml'
@@ -282,7 +281,7 @@
           this.createOnlineGame = 'normal'
         }
       },
-      '$route.query.result'() {
+      '$route.query.seedId'() {
         this.updateSeedgenResultDialogState()
       },
       isLoggedIn(isLoggedIn) {
@@ -336,16 +335,27 @@
           if (this.seedgenConfig.flags.includes('--multiplayer')) {
             switch (this.createOnlineGame) {
               case 'normal':
-                response.result.multiverseId = await this.$axios.$post('/multiverses')
+                response.result.multiverseId = await this.$axios.$post('/multiverses', {
+                  seedId: response.result.seedId,
+                })
                 break
               case 'bingo':
-                response.result.multiverseId = await this.$axios.$post('/bingo')
+                response.result.multiverseId = await this.$axios.$post('/multiverses', {
+                  bingo: {},
+                  seedId: response.result.seedId,
+                })
                 break
               case 'discovery_bingo':
-                response.result.multiverseId = await this.$axios.$post('/bingo', { discovery: 2 })
+                response.result.multiverseId = await this.$axios.$post('/multiverses', {
+                  bingo: { discovery: 2 },
+                  seedId: response.result.seedId,
+                })
                 break
               case 'lockout_bingo':
-                response.result.multiverseId = await this.$axios.$post('/bingo', { lockout: true })
+                response.result.multiverseId = await this.$axios.$post('/multiverses', {
+                  bingo: { lockout: true },
+                  seedId: response.result.seedId,
+                })
                 break
             }
           }
@@ -363,7 +373,7 @@
 
           // Download the seed instantly for single player, non-networked games
           // and show the download dialog otherwise
-          if (!hasMultiverse && response.result.worldList.length === 0) {
+          if (!hasMultiverse && response.result.files.length === 1) {
             const url = `${this.$axios.defaults.baseURL}/seeds/${response.result.seedId}`
             const fileName = `seed_${response.result.seedId}.wotwr`
 
@@ -385,12 +395,11 @@
               saveAs(url, fileName)
             }
           } else if (!hasMultiverse) {
-            await this.$router.replace({ query: { result: JSON.stringify(response.result) } })
+            await this.$router.replace({ query: { seedId: response.result.seedId } })
           } else {
             await this.$router.push({
               name: 'game-multiverseId',
               params: { multiverseId: this.seedgenResult.multiverseId },
-              query: { seedgenResult: base64url.encode(JSON.stringify(response.result)) },
             })
           }
         } catch (e) {
@@ -473,9 +482,9 @@
         this.seedgenConfig.flags = Array.from(flags)
         this.seedgenConfig.spawn = spawn
       },
-      updateSeedgenResultDialogState() {
-        if (this.$route.query.result) {
-          this.seedgenResult = JSON.parse(base64url.decode(String(this.$route.query.result)))
+      async updateSeedgenResultDialogState() {
+        if (this.$route.query.seedId) {
+          this.seedgenResult = await this.$axios.$get(`/seeds/${this.$route.query.seedId}`)
           this.showResultDialog = true
         } else {
           this.seedgenResult = null

@@ -20,6 +20,7 @@ const ensureMultiverseExists = (state, multiverseId) => {
       bingoBoard: null,
       bingoUniverses: [],
       markedBingoGoals: [],
+      seed: null,
     })
   }
 }
@@ -43,6 +44,9 @@ export const mutations = {
     ensureMultiverseExists(state, multiverseId)
     state.multiverses[multiverseId].bingoUniverses = bingoUniverses
   },
+  setSeed(state, { multiverseId, seed }) {
+    state.multiverses[multiverseId].seed = seed
+  },
   toggleBingoGoalMarked(state, { multiverseId, x, y }) {
     if (state.multiverses[multiverseId].markedBingoGoals.some(m => m.x === x && m.y === y)) {
       state.multiverses[multiverseId].markedBingoGoals = state.multiverses[multiverseId].markedBingoGoals.filter(m => (
@@ -51,7 +55,7 @@ export const mutations = {
       return
     }
 
-    state.multiverses[multiverseId].markedBingoGoals.push({x, y})
+    state.multiverses[multiverseId].markedBingoGoals.push({ x, y })
   },
 }
 
@@ -60,8 +64,24 @@ export const actions = {
     const multiverse = await this.$axios.$get(`/multiverses/${multiverseId}`)
     commit('setUniverses', { multiverseId, universes: multiverse.universes })
     commit('setSpectators', { multiverseId, spectators: multiverse.spectators })
+
+    if (multiverse.seedId !== null) {
+      await dispatch('fetchSeed', { multiverseId, seedId: multiverse.seedId })
+    }
+
     if (multiverse.hasBingoBoard) {
       await dispatch('fetchBingoBoard', multiverseId)
+    }
+  },
+  async fetchSeed({ commit }, { multiverseId, seedId }) {
+    try {
+      const seed = await this.$axios.$get(`/seeds/${seedId}`)
+      commit('setSeed', {
+        multiverseId,
+        seed,
+      })
+    } catch (e) {
+      console.error(e)
     }
   },
   async fetchBingoBoard({ commit }, multiverseId) {
@@ -125,7 +145,7 @@ export const actions = {
     }
   },
   async spectateMultiverse({ commit, dispatch }, multiverseId) {
-    await this.$axios.post(`/multiverses/${multiverseId}/spectate`)
+    await this.$axios.post(`/multiverses/${multiverseId}/spectators`)
     await dispatch('fetchMultiverse', multiverseId)
     await dispatch('connectMultiverse', { multiverseId, reconnect: true })
   },

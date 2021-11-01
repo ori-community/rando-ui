@@ -73,7 +73,7 @@
 
           if (currentSeedInfo) {
             if (!currentSeedInfo.webConn) {
-              this.$store.commit('nav/setLastMultiverseId', { id: null, seedgenResult: null })
+              this.$store.commit('nav/setLastMultiverseId', null)
             }
           }
         })
@@ -131,10 +131,7 @@
       if (isElectron()) {
         const currentSeedInfo = await window.electronApi.invoke('launcher.getCurrentSeedInfo')
         if (currentSeedInfo && currentSeedInfo.webConn) {
-          this.$store.commit('nav/setLastMultiverseId', {
-            id: this.user?.currentMultiverseId ?? null,
-            seedgenResult: null,
-          })
+          this.$store.commit('nav/setLastMultiverseId', this.user?.currentMultiverseId ?? null)
         }
 
         await this.$store.dispatch('electron/checkForUpdatesOnce')

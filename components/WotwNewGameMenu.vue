@@ -49,26 +49,36 @@
               multiverseId = await this.$axios.$post('/multiverses')
               break
             case 'bingo':
-              multiverseId = await this.$axios.$post('/bingo')
+              multiverseId = await this.$axios.$post('/multiverses', {
+                bingo: {},
+              })
               break
             case 'discovery_bingo':
-              multiverseId = await this.$axios.$post('/bingo', {discovery: 2})
+              multiverseId = await this.$axios.$post('/multiverses', {
+                bingo: {
+                  discovery: 2,
+                },
+              })
               break
             case 'lockout_bingo':
-              multiverseId = await this.$axios.$post('/bingo', {lockout: true})
+              multiverseId = await this.$axios.$post('/multiverses', {
+                bingo: {
+                  lockout: true,
+                },
+              })
               break
             default:
               throw new Error(`Invalid game type: ${type}`)
           }
 
-          await this.$router.push({name: 'game-multiverseId', params: {multiverseId}})
+          await this.$router.push({ name: 'game-multiverseId', params: { multiverseId } })
         } catch (e) {
           console.error(e)
         }
 
         this.newGameLoading = false
-      }
-    }
+      },
+    },
   }
 </script>
 

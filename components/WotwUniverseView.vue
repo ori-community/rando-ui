@@ -15,7 +15,7 @@
         />
       </v-scroll-y-reverse-transition>
     </v-card-text>
-    <v-btn v-if='canJoin' :disabled='disabled' block color='accent' tile @click='$emit("new-world")'>
+    <v-btn v-if='canJoin && canCreateWorld' :disabled='disabled' block color='accent' tile @click='$emit("new-world")'>
       New World
     </v-btn>
   </v-card>
@@ -36,6 +36,10 @@
         default: false,
       },
       canJoin: {
+        type: Boolean,
+        default: true,
+      },
+      canCreateWorld: {
         type: Boolean,
         default: true,
       },

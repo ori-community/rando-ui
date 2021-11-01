@@ -19,6 +19,7 @@ const ensureMultiverseExists = (state, multiverseId) => {
       spectators: [],
       bingoBoard: null,
       bingoUniverses: [],
+      markedBingoGoals: [],
     })
   }
 }
@@ -41,6 +42,16 @@ export const mutations = {
   setBingoUniverses(state, { multiverseId, bingoUniverses }) {
     ensureMultiverseExists(state, multiverseId)
     state.multiverses[multiverseId].bingoUniverses = bingoUniverses
+  },
+  toggleBingoGoalMarked(state, { multiverseId, x, y }) {
+    if (state.multiverses[multiverseId].markedBingoGoals.some(m => m.x === x && m.y === y)) {
+      state.multiverses[multiverseId].markedBingoGoals = state.multiverses[multiverseId].markedBingoGoals.filter(m => (
+        m.x !== x || m.y !== y
+      ))
+      return
+    }
+
+    state.multiverses[multiverseId].markedBingoGoals.push({x, y})
   },
 }
 

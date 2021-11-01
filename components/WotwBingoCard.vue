@@ -1,7 +1,14 @@
 <template>
-  <div class='bingo-card'>
-    <div class='bingo-card-inner' :class='{flipped: cardShouldBeFlipped}'>
-      <v-card class='front' :style='cardStyle' color='background lighten-1'>
+  <div class='bingo-card' @click='$emit("click")'>
+    <div class='bingo-card-inner' :class='{
+      flipped: cardShouldBeFlipped,
+      marked,
+      "top-marked": markedNeighborMask & 0b1000,
+      "left-marked": markedNeighborMask & 0b0100,
+      "right-marked": markedNeighborMask & 0b0010,
+      "bottom-marked": markedNeighborMask & 0b0001,
+    }'>
+      <v-card elevation='0' class='front' :style='cardStyle' color='background lighten-1'>
         <div class='content d-flex flex-column'>
           <template v-if='!!square'>
             <div class='square-text pa-2' :class='{expand: !hasGoals}'>{{ square.text }}</div>
@@ -18,7 +25,7 @@
         </div>
         <div class='attention-effect' :class='{active: attentionEffectActive}'></div>
       </v-card>
-      <v-card class='back' color='background lighten-1'>
+      <v-card elevation='0' class='back' color='background lighten-1'>
         <img alt='' src='~/assets/images/ori_think.png' class='ori-think'>
       </v-card>
     </div>
@@ -52,6 +59,14 @@
       highlightUniverse: {
         type: Number,
         default: null,
+      },
+      marked: {
+        type: Boolean,
+        default: false,
+      },
+      markedNeighborMask: {
+        type: Number,
+        default: 0b0000, // top, left, right, bottom
       }
     },
     data: () => ({
@@ -143,15 +158,46 @@
   .bingo-card {
     perspective: 500px;
     position: relative;
+    user-select: none;
 
     .bingo-card-inner {
       line-height: 1.1;
       text-align: center;
-      transition: transform 500ms;
+      transition: transform 500ms, background-color 200ms, border-radius 200ms;
       position: relative;
       transform-style: preserve-3d;
-      height: 100%;
-      width: 100%;
+      border-radius: 8px;
+      top: -0.4em;
+      left: -0.4em;
+      right: -0.4em;
+      bottom: -0.4em;
+      height: calc(100% + 0.8em);
+      width: calc(100% + 0.8em);
+      z-index: 0;
+
+      &.marked {
+        background-color: #dedeff;
+
+        &.top-marked {
+          border-top-left-radius: 0;
+          border-top-right-radius: 0;
+        }
+
+        &.left-marked {
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
+        }
+
+        &.right-marked {
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+        }
+
+        &.bottom-marked {
+          border-bottom-left-radius: 0;
+          border-bottom-right-radius: 0;
+        }
+      }
 
       &.flipped {
         transform: rotateX(180deg) translateZ(5em);
@@ -173,12 +219,13 @@
       .front,
       .back {
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        top: 0.4em;
+        left: 0.4em;
+        right: 0.4em;
+        bottom: 0.4em;
         backface-visibility: hidden;
         overflow: hidden;
+        z-index: 10;
       }
 
       .front {

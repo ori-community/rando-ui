@@ -22,6 +22,9 @@
           :hidden-universes='hiddenUniverses'
           :highlight-universe='highlightUniverse'
           :is-lockout='multiverse.bingoBoard.lockout'
+          :marked='isSquareMarked(x, y)'
+          :marked-neighbor-mask='getMarkedNeighborMask(x, y)'
+          @click='$store.commit("multiverseState/toggleBingoGoalMarked", {multiverseId: multiverse.id, x, y})'
         />
       </template>
 
@@ -102,7 +105,7 @@
           colorMap[universe.id] = universe.color
         }
         return colorMap
-      }
+      },
     },
     mounted() {
       const intervalId = setInterval(() => {
@@ -116,7 +119,18 @@
     methods: {
       hasSquare(x, y) {
         return hasOwnProperty(this.squaresByPosition, x) && hasOwnProperty(this.squaresByPosition[x], y)
-      }
+      },
+      isSquareMarked(x, y) {
+        return this.multiverse.markedBingoGoals.some(m => m.x === x && m.y === y)
+      },
+      getMarkedNeighborMask(x, y) {
+        let mask = 0b0000;
+        mask += this.isSquareMarked(x, y - 1) ? 0b1000 : 0
+        mask += this.isSquareMarked(x - 1, y) ? 0b0100 : 0
+        mask += this.isSquareMarked(x + 1, y) ? 0b0010 : 0
+        mask += this.isSquareMarked(x, y + 1) ? 0b0001 : 0
+        return mask
+      },
     }
   }
 </script>

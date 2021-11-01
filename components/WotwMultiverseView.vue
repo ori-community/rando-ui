@@ -5,6 +5,7 @@
         v-for='universe in multiverse.universes'
         :key='universe.id'
         :can-join='!isSpectating'
+        :can-create-world='multiverse.seed === null'
         :disabled='loading'
         :hide-color='multiverse.universes.length < 2'
         :universe='universe'

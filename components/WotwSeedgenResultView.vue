@@ -8,7 +8,7 @@
     </div>
 
     <div class='text-center'>
-      <div v-if='result.multiverseId !== null' class='mb-6'>
+      <div v-if='multiverseId !== null' class='mb-6'>
         <template v-if='!isElectron'>
           <v-btn
             :href='launcherUrl'
@@ -27,29 +27,9 @@
             </v-sheet>
           </v-sheet>
         </template>
-
-        <template v-if='!hideGoToGameButton'>
-          <h3 class='mb-1'>1. Join the game</h3>
-
-          <v-btn
-            :to='{
-              name: "game-multiverseId",
-              params: {
-                multiverseId: result.multiverseId
-              },
-              query: {
-                ...(isElectron ? {hideToolbar: true} : {})
-              }
-            }'
-            target='_blank'
-            color='primary'
-            text
-            outlined
-          >Go to game</v-btn>
-        </template>
       </div>
 
-      <h3 class='mb-1'><template v-if='result.gameId !== null && !hideGoToGameButton'>2. </template>{{ isElectron ? 'Launch' : 'Download' }} your seed</h3>
+      <h3 class='mb-1'>{{ isElectron ? 'Launch' : 'Download' }} your seed</h3>
       <div>
         <v-btn
           v-for='seed in seedsToDisplay'
@@ -71,7 +51,6 @@
 
 <script>
   import { saveAs } from 'file-saver'
-  import base64url from 'base64url'
   import { isElectron } from '~/assets/lib/isElectron'
 
   export default {
@@ -81,11 +60,11 @@
         type: Object,
         required: true,
       },
-      hideGoToGameButton: {
-        type: Boolean,
+      multiverseId: {
+        type: Number,
         required: false,
-        default: false,
-      }
+        default: null,
+      },
     },
     data: () => ({
       seedsToDisplay: [],
@@ -95,27 +74,27 @@
     computed: {
       isElectron,
       launcherUrl() {
-        if (this.result.multiverseId) {
-          return `ori-rando://game/${this.result.multiverseId}?seedgenResult=${base64url.encode(JSON.stringify(this.result))}`
+        if (this.multiverseId) {
+          return `ori-rando://game/${this.multiverseId}`
         } else {
-          return `ori-rando://seedgen?result=${base64url.encode(JSON.stringify(this.result))}`
+          return `ori-rando://seedgen?seedId=${this.result.seedId}`
         }
       }
     },
     created() {
-      if (this.result.worldList.length <= 1) {
+      if (this.result.files.length <= 1) {
         this.seedsToDisplay = [{
           label: isElectron() ? 'Launch seed' : 'Download seed',
-          url: `${this.$axios.defaults.baseURL}/seeds/${this.result.seedId}`,
-          fileName: `seed_${this.result.seedId}.wotwr`,
+          url: `${this.$axios.defaults.baseURL}/seeds/${this.result.id}/files/${this.result.files[0]}`,
+          fileName: `seed_${this.result.id}.wotwr`,
         }]
       } else {
         this.seedsToDisplay = []
-        for (const world of this.result.worldList) {
+        for (const file of this.result.files) {
           this.seedsToDisplay.push({
-            label: world,
-            url: `${this.$axios.defaults.baseURL}/seeds/${this.result.seedId}/${world}`,
-            fileName: `seed_${this.result.seedId}_${world}.wotwr`,
+            label: file,
+            url: `${this.$axios.defaults.baseURL}/seeds/${this.result.id}/files/${file}`,
+            fileName: `seed_${this.result.id}_${file}.wotwr`,
           })
         }
       }
@@ -143,12 +122,11 @@
       async copyLink() {
         const url = new URL(process.env.API_BASE_URL)
 
-        if (this.result.multiverseId) {
-          url.pathname = `/game/${this.result.multiverseId}`
-          url.searchParams.append('seedgenResult', base64url.encode(JSON.stringify(this.result)))
+        if (this.multiverseId) {
+          url.pathname = `/game/${this.multiverseId}`
         } else {
           url.pathname = '/seedgen'
-          url.searchParams.append('result', base64url.encode(JSON.stringify(this.result)))
+          url.searchParams.append('seedId', this.result.id)
         }
         await navigator.clipboard.writeText(url.toString())
         this.linkCopied = true

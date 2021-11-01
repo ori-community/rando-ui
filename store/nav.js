@@ -8,9 +8,8 @@ export const getters = {
 }
 
 export const mutations = {
-  setLastMultiverseId(state, { id, seedgenResult }) {
+  setLastMultiverseId(state, id) {
     state.lastMultiverseId = id
-    state.lastSeedgenResult = seedgenResult
   },
 }
 

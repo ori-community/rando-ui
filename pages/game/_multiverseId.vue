@@ -4,8 +4,16 @@
       <h1 class='text-center mt-12 mb-6'>Game <small>#</small>{{ multiverseId }}</h1>
 
       <v-slide-y-reverse-transition>
-        <floating-overlay-dialog v-if='seedgenResultDialogEnabled' v-model='seedgenResultVisible' :hide-completely='hideSeedgenResultCompletely'>
-          <wotw-seedgen-result-view :result='seedgenResult' max-width='400' hide-go-to-game-button />
+        <floating-overlay-dialog
+          v-if='multiverse && multiverse.seed !== null'
+          v-model='seedgenResultVisible'
+          :hide-completely='hideSeedgenResultCompletely'
+        >
+          <wotw-seedgen-result-view
+            :result='multiverse.seed'
+            :multiverse-id='multiverseId'
+            max-width='400'
+          />
         </floating-overlay-dialog>
       </v-slide-y-reverse-transition>
 
@@ -93,7 +101,11 @@
                 />
               </div>
 
-              <div v-if='!boardSettings.hideSpectators && multiverse.spectators.length > 0' key='spectators' class='mt-4'>
+              <div
+                v-if='!boardSettings.hideSpectators && multiverse.spectators.length > 0'
+                key='spectators'
+                class='mt-4'
+              >
                 <div class='text-caption'>Spectators</div>
 
                 <v-tooltip v-for='spectator in multiverse.spectators' :key='spectator.id' top>
@@ -171,7 +183,6 @@
 
 <script>
   import { mapGetters, mapState } from 'vuex'
-  import base64url from 'base64url'
 
   const isOBS = () => !!window?.obsstudio?.pluginVersion
 
@@ -207,7 +218,6 @@
       spectateDialogOpen: false,
       spectateLoading: false,
       seedgenResultVisible: false,
-      seedgenResultDialogEnabled: false,
       hideSeedgenResultCompletely: false,
     }),
     computed: {
@@ -250,7 +260,7 @@
           universe => universe.worlds.find(
             world => world.members.find(
               player => player.id === this.user?.id,
-            )
+            ),
           ),
         )
       },
@@ -271,17 +281,6 @@
 
         return this.multiverse.spectators.some(s => s.id === this.user.id)
       },
-      seedgenResult() {
-        try {
-          if (this.$route.query.seedgenResult) {
-            return JSON.parse(base64url.decode(this.$route.query.seedgenResult))
-          }
-        } catch (e) {
-          console.error('Error parsing seedgen result', e)
-        }
-
-        return null
-      }
     },
     watch: {
       userLoaded: {
@@ -347,18 +346,13 @@
         console.error('Could not load board settings', e)
       }
 
-      this.$store.commit('nav/setLastMultiverseId', {
-        id: this.multiverseId,
-        seedgenResult: this.$route.query.seedgenResult ?? null,
-      })
-
-      if (this.seedgenResult) {
-        this.seedgenResultVisible = true
-        this.seedgenResultDialogEnabled = true
-        setTimeout(() => {
-          this.seedgenResultVisible = false
-        }, 600)
-      }
+      // if (this.seedgenResult) {
+      //   this.seedgenResultVisible = true
+      //   this.seedgenResultDialogEnabled = true
+      //   setTimeout(() => {
+      //     this.seedgenResultVisible = false
+      //   }, 600)
+      // }
 
       window.addEventListener('scroll', this.onScroll)
     },
@@ -371,6 +365,9 @@
         await this.$store.dispatch('multiverseState/connectMultiverse', {
           multiverseId: this.multiverseId,
           reconnect: true,
+        })
+        this.$store.commit('nav/setLastMultiverseId', {
+          id: this.multiverseId,
         })
       },
       async createWorld(universeId = null) {

@@ -40,15 +40,15 @@
       isElectron,
       shouldHideToolbar() {
         return !!this.$route.query.hideToolbar && !!this.user && isElectron()
-      }
+      },
     },
     async beforeMount() {
-      EventBus.$on('notification', ({message, color = 'accent', timeout = 10000}) => {
+      EventBus.$on('notification', ({ message, color = 'accent', timeout = 10000 }) => {
         this.notifications.push({
           message,
           color,
           timeout,
-          multiLine: message.includes("\n"),
+          multiLine: message.includes('\n'),
           top: true,
           centered: true,
         })
@@ -105,12 +105,12 @@
                 await this.$router.push({ name: 'auth-callback', query: { jwt: url.searchParams.get('jwt') } })
                 break
               case 'seedgen':
-                await this.$router.push({ name: 'seedgen', query: { result: url.searchParams.get('result') } })
+                await this.$router.push({ name: 'seedgen', query: { seedId: url.searchParams.get('seedId') } })
                 break
               case 'game': {
                 const gameId = url.pathname.match(/.*\/(?<gameId>\d*)$/)?.groups.gameId
                 if (gameId) {
-                  await this.$router.push({ name: 'game-multiverseId', params: { multiverseId: gameId }, query: { seedgenResult: url.searchParams.get('seedgenResult') } })
+                  await this.$router.push({ name: 'game-multiverseId', params: { multiverseId: gameId } })
                 } else {
                   console.warn('Could not read game ID from URL', url)
                 }

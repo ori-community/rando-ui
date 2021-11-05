@@ -374,7 +374,7 @@
           // Download the seed instantly for single player, non-networked games
           // and show the download dialog otherwise
           if (!hasMultiverse && response.result.files.length === 1) {
-            const url = `${this.$axios.defaults.baseURL}/seeds/${response.result.seedId}/file`
+            const url = `${this.$axios.defaults.baseURL}/seeds/${response.result.seedId}/files/${response.result.files[0]}`
             const fileName = `seed_${response.result.seedId}.wotwr`
 
             confettiFromElement(this.$refs.generateButton.$el, {

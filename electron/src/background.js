@@ -4,7 +4,7 @@ import { app, BrowserWindow, protocol } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import * as path from 'path'
-import { registerIpcApi } from './api.js'
+import { registerUIIpcApi, uiIpc } from './api.js'
 import fs from 'fs'
 import { SettingsService } from '~/electron/src/lib/SettingsService'
 import { CrashDetectService } from '~/electron/src/lib/CrashDetectService'
@@ -22,7 +22,7 @@ export function getWindow() {
 }
 
 async function createWindow() {
-  registerIpcApi()
+  registerUIIpcApi()
 
   if (await SettingsService.importSettingsFromOldInstallation()) {
     console.log('Successfully imported old settings.')
@@ -65,13 +65,13 @@ async function createWindow() {
 
     if (lastArg.endsWith('.wotwr') && fs.existsSync(lastArg)) {
       // We got a seed!
-      window.webContents.send('main.openSeed', lastArg)
+      uiIpc.queueSend('main.openSeed', lastArg)
     } else {
       // Maybe an URL?
       try {
         const url = new URL(lastArg)
         if (url.protocol === 'ori-rando:') {
-          window.webContents.send('main.openUrl', url.toString())
+          uiIpc.queueSend('main.openUrl', url.toString())
         }
       } catch (e) {
         console.warn('Could not parse URL', e)
@@ -83,7 +83,7 @@ async function createWindow() {
   commandLineArgumentHandler(process.argv)
 
   CrashDetectService.setOnCrashCallback(supportBundleName => {
-    window.webContents.send('main.crashDetected', supportBundleName)
+    uiIpc.queueSend('main.crashDetected', supportBundleName)
   })
   await CrashDetectService.start()
   await SettingsService.migrateSettingsVersion()

@@ -366,9 +366,6 @@
           multiverseId: this.multiverseId,
           reconnect: true,
         })
-        this.$store.commit('nav/setLastMultiverseId', {
-          id: this.multiverseId,
-        })
       },
       async createWorld(universeId = null) {
         await this.$axios.post(`/multiverses/${this.multiverseId}/${universeId}/worlds`)

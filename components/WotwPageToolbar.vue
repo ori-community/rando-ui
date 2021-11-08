@@ -5,9 +5,9 @@
         <v-icon left>mdi-home-outline</v-icon>
         Home
       </v-btn>
-      <v-btn v-if='isElectron && lastMultiverseId !== null' key='game' exact x-large depressed text :to='{name: "game-multiverseId", params: {multiverseId: lastMultiverseId}, query: lastSeedgenResult ? {seedgenResult: lastSeedgenResult} : {}}'>
+      <v-btn v-if='isElectron && currentMultiverseId !== null' key='game' exact x-large depressed text :to='{name: "game-multiverseId", params: {multiverseId: currentMultiverseId}}'>
         <v-icon left>mdi-gamepad-variant-outline</v-icon>
-        Game {{ lastMultiverseId }}
+        Game {{ currentMultiverseId }}
       </v-btn>
       <v-btn key='seedgen' x-large depressed text to='/seedgen'>
         <v-icon left>mdi-dice-multiple</v-icon>
@@ -93,12 +93,14 @@
     computed: {
       ...mapGetters('user', ['isLoggedIn']),
       ...mapState('user', ['user', 'userLoaded']),
-      ...mapState('nav', ['lastMultiverseId', 'lastSeedgenResult']),
       isElectron,
       nicknameIsValid() {
         const trimmedNickname = this.currentNickname.trim()
         return trimmedNickname.length > 0 && trimmedNickname.length <= 32
       },
+      currentMultiverseId() {
+        return this.user?.currentMultiverseId
+      }
     },
     methods: {
       buildAbsoluteUrl(relativeUrl) {

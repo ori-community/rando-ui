@@ -3,9 +3,9 @@ import ini from 'ini'
 import { RANDOMIZER_BASE_PATH } from './Constants'
 import path from 'path'
 import merge from 'lodash.merge'
-import { getWindow } from '~/electron/src/background'
 import updater from '~/electron/src/api/updater'
 import semver from 'semver'
+import { uiIpc } from '~/electron/src/api'
 
 const SETTINGS_PATH = `${RANDOMIZER_BASE_PATH}/settings.ini`
 const CURRENT_SEED_PATH_FILE = `${RANDOMIZER_BASE_PATH}/.currentseedpath`
@@ -47,7 +47,7 @@ const getDefaultSettings = () => ({
 
 const sendSettingsToUI = () => {
   try {
-    getWindow().webContents.send('main.settingsChanged', settingsCache)
+    uiIpc.queueSend('main.settingsChanged', settingsCache)
   } catch (e) {
     console.error(e)
   }

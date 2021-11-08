@@ -122,6 +122,8 @@
           }
         })
 
+        window.electronApi.invoke('ready')
+
         this.$store.commit('electron/setSettings', await window.electronApi.invoke('settings.readSettings'))
       }
     },

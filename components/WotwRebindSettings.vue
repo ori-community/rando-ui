@@ -46,7 +46,7 @@
           </v-list-item-title>
           <v-list-item-subtitle>
             <div v-for='(binding, index) in boundActions[action.name]' :key='index'>
-              <v-btn x-small icon @click='boundActions[action.name].splice(index, 1)'>
+              <v-btn x-small icon @click='removeBinding(action.name, index)'>
                 <v-icon>mdi-close</v-icon>
               </v-btn>
               {{
@@ -318,7 +318,11 @@
         await this.loadBindings()
 
         this.allBindingsReset = true
-      }
+      },
+      removeBinding(actionName, index) {
+        this.boundActions[actionName].splice(index, 1)
+        this.saveBindings().catch(console.error)
+      },
     }
   }
 </script>

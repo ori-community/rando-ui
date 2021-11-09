@@ -181,7 +181,7 @@
               :loading='loading'
               color='accent'
               x-large
-              @click='generateSeed'
+              @click='generateSeed()'
             >
               {{ isElectron && !seedgenConfig.flags.includes('--multiplayer') ? 'Generate and Launch' : 'Generate' }}
             </v-btn>
@@ -204,6 +204,29 @@
         <wotw-seedgen-result-view v-if='!!seedgenResult' ref='resultView' :result='seedgenResult' />
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model='showBingoHeaderWarningDialog' max-width='700'>
+      <v-card>
+        <v-btn
+          class='close-button'
+          color='background lighten-5'
+          icon
+          @click='showBingoHeaderWarningDialog = false'
+        >
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+        <v-card-title>No Bingo header selected</v-card-title>
+        <v-card-text>
+          You are about to create a Bingo game but have not selected the Bingo header.
+          We recommend that you enable the Bingo header so you can warp to credits after you completed the goal.
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text @click='generateSeed(true)'>Continue without</v-btn>
+          <v-btn depressed color='accent' @click='addBingoHeaderAndGenerateSeed()'>Add header and generate</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -218,6 +241,8 @@
   import { db } from '~/assets/db/database'
   import { isElectron } from '~/assets/lib/isElectron'
   import { EventBus } from '~/assets/lib/EventBus'
+
+  const BINGO_HEADER_NAME = '3_line_bingo'
 
   const generateNewSeedgenConfig = () => ({
     flags: [],
@@ -246,6 +271,7 @@
       showResultDialog: false,
       seedgenResult: null,
       anyPresetSelected: false,
+      showBingoHeaderWarningDialog: false,
     }),
     computed: {
       isElectron,
@@ -303,10 +329,28 @@
         this.availableHeaders = await this.$axios.$get('/seedgen/headers')
         this.availablePresets = await this.$axios.$get('/seedgen/presets')
       },
-      async generateSeed() {
+      async addBingoHeaderAndGenerateSeed() {
+        if (!this.seedgenConfig.headers.includes(BINGO_HEADER_NAME)) {
+          this.seedgenConfig.headers.push(BINGO_HEADER_NAME)
+        }
+
+        await this.generateSeed()
+      },
+      async generateSeed(ignoreMissingBingoHeader = false) {
         if (this.loading) {
           return
         }
+
+        if (
+          ['bingo', 'discovery_bingo'].includes(this.createOnlineGame) &&
+          !this.seedgenConfig.headers.includes(BINGO_HEADER_NAME) &&
+          !ignoreMissingBingoHeader
+        ) {
+          this.showBingoHeaderWarningDialog = true
+          return
+        }
+
+        this.showBingoHeaderWarningDialog = false
 
         this.loading = true
 

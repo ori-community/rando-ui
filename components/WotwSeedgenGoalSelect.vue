@@ -59,18 +59,12 @@
     watch: {
       goalStates: {
         deep: true,
-        handler(value) {
-          this.inputValue = Object.keys(value)
-            .filter(p => !!this.goalStates[p])
-            .map(goal => {
-              switch (goal) {
-                case 'RELICS':
-                  return 'RELICS:' + this.relicChance + '%'
-              }
-
-              return goal
-            })
+        handler() {
+          this.updateInputValue()
         },
+      },
+      relicChance() {
+        this.updateInputValue()
       },
       inputValue: {
         deep: true,
@@ -90,6 +84,18 @@
       this.updateStates()
     },
     methods: {
+      updateInputValue() {
+        this.inputValue = Object.keys(this.goalStates)
+          .filter(p => !!this.goalStates[p])
+          .map(goal => {
+            switch (goal) {
+              case 'RELICS':
+                return 'RELICS:' + this.relicChance + '%'
+            }
+
+            return goal
+          })
+      },
       updateStates() {
         for (const id of Object.keys(this.goals)) {
           this.$set(this.goalStates, id, this.inputValue.map(g => g.split(':')[0]).includes(id))

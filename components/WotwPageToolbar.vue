@@ -13,6 +13,10 @@
         <v-icon left>mdi-dice-multiple</v-icon>
         Seed generator
       </v-btn>
+      <v-btn key='stats' x-large depressed text to='/electron/stats'>
+        <v-icon left>mdi-chart-box-outline</v-icon>
+        Stats
+      </v-btn>
       <v-btn v-if='isElectron' key='settings' exact x-large depressed text to='/electron/settings'>
         <v-icon left>mdi-application-cog-outline</v-icon>
         Settings

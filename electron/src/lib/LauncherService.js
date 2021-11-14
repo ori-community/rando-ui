@@ -1,7 +1,6 @@
 import { SettingsService } from '~/electron/src/lib/SettingsService'
 import { spawn } from 'child_process'
 import fs from 'fs'
-import psList from 'ps-list'
 import { RandoIPCService } from '~/electron/src/lib/RandoIPCService'
 import { RANDOMIZER_BASE_PATH } from './Constants'
 import { BindingsService } from '~/electron/src/lib/BindingsService'
@@ -9,14 +8,10 @@ import { Library as FFILibrary } from 'ffi-napi'
 import { UCS2String } from '~/electron/src/lib/UCS2String'
 import { SeedParser } from '~/assets/lib/SeedParser'
 import { uiIpc } from '~/electron/src/api'
+import { isProcessRunning } from '~/electron/src/lib/isProcessRunning'
 
 
 const CURRENT_SEED_PATH_FILE = `${RANDOMIZER_BASE_PATH}/.currentseedpath`
-
-const isProcessRunning = async (processName) => {
-  const processes = await psList({ all: true })
-  return processes.some(p => p.name.toLowerCase() === processName.toLowerCase())
-}
 
 const waitForProcess = (processName, maxTries = 20) => new Promise((resolve, reject) => {
   let tries = 0

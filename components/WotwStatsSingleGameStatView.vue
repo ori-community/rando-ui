@@ -6,16 +6,16 @@
       <div class='stats-content'>
         <h1 class='stat-heading'>Global Stats</h1>
         <div class=' d-flex flex-wrap stats-container'>
-          <wotw-stats-singlestat-view label='Time' text='1:35:02.49' />
-          <wotw-stats-singlestat-view label='Deaths' text='16' />
-          <wotw-stats-singlestat-view label='Warps used' text='9' />
+          <wotw-stats-singlestat-view label='Time' :text='formatTime(uberValue(14, 100))' />
+          <wotw-stats-singlestat-view label='Deaths' :text='uberValue(14, 101)' />
+          <wotw-stats-singlestat-view label='Warps used' :text='uberValue(14, 106)' />
           <wotw-stats-singlestat-view label='PPM' text='3.8' />
           <wotw-stats-singlestat-view label='Peak PPM'>
             9.6 <small>at 12:09.16</small>
           </wotw-stats-singlestat-view>
           <wotw-stats-singlestat-view
-            :progress='299 / 357'
-            text='299 / 357'
+            :progress='(uberValue(6, 2) || 0) / (uberValue(14, 109) || 1)'
+            :text='`${uberValue(6, 2)} / ${uberValue(14, 109)}`'
             label='Pickups'
           />
         </div>
@@ -23,25 +23,34 @@
     </div>
 
     <div>
-      <div v-for='zone in zones' :key='zone.id' class='area-stats pa-5'>
-        <div class='gradient-overlay gradient-x-overlay'></div>
-        <div class='gradient-overlay gradient-y-overlay'></div>
-        <img class='background' :src='require(`@/assets/images/areas/${zone.id}.jpg`)' alt=''>
-        <div class='stats-content'>
-          <h3 class='stat-heading'>{{ zone.name }}</h3>
-          <div class='d-flex flex-wrap stats-container mb-1'>
-            <wotw-stats-singlestat-view label='Time' text='1:35:02.49' />
-            <wotw-stats-singlestat-view label='Deaths' text='16' />
-            <wotw-stats-singlestat-view label='PPM' text='3.8' />
+      <transition-group name='list'>
+        <div v-for='zone in sortedZones' :key='zone.id' class='area-stats pa-5'>
+          <div class='gradient-overlay gradient-x-overlay'></div>
+          <div class='gradient-overlay gradient-y-overlay'></div>
+          <img class='background' :src='require(`@/assets/images/areas/${zone.id}.jpg`)' alt=''>
+          <div class='stats-content'>
+            <h3 class='stat-heading'>{{ zone.name }}</h3>
+            <div class='d-flex flex-wrap stats-container mb-1'>
+              <wotw-stats-singlestat-view label='Time' :text='formatTime(uberValue(14, zone.id))' />
+              <wotw-stats-singlestat-view label='Deaths' :text='uberValue(14, 20 + zone.id)' />
+              <wotw-stats-singlestat-view label='PPM' text='3.8' />
+              <wotw-stats-singlestat-view
+                :progress='(uberValue(14, 40 + zone.id) || 0) / (uberValue(14, 60 + zone.id) || 1)'
+                :text='`${uberValue(14, 40 + zone.id)} / ${uberValue(14, 60 + zone.id)}`'
+                label='Pickups'
+                :progress-size='20'
+              />
+            </div>
+            <v-progress-linear class='mt-3' :value='getZoneTimePercentage(zone.id)' />
           </div>
-          <v-progress-linear value='66' />
         </div>
-      </div>
+      </transition-group>
     </div>
   </v-card>
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
   import zones from '@/assets/db/zones.yaml'
 
   export default {
@@ -53,8 +62,53 @@
       },
     },
     data: () => ({
-      zones,
+      stats: null,
     }),
+    computed: {
+      ...mapGetters('uberStates', {uberValue: 'value'}),
+      sortedZones() {
+        return [...zones].sort((a, b) => this.getZoneTimePercentage(b.id) - this.getZoneTimePercentage(a.id))
+      },
+    },
+    mounted() {
+      this.fetchStats()
+    },
+    methods: {
+      getZoneTimePercentage(zoneId) {
+        return (this.uberValue(14, zoneId) / this.uberValue(14, 100)) * 100
+      },
+      formatTime(totalSeconds) {
+        const hours = Math.floor(totalSeconds / 3600)
+        const minutes = Math.floor(totalSeconds % 3600 / 60)
+        const seconds = totalSeconds % 60
+        return `${hours.toFixed(0)}:${minutes.toFixed(0).padStart(2, '0')}:${seconds.toFixed(1).padStart(4, '0')}`
+      },
+      fetchStats() {
+        const statsUberStates = []
+
+        statsUberStates.push({group: 6, state: 2}) // Pickups Collected
+        statsUberStates.push({group: 14, state: 100}) // Time
+        statsUberStates.push({group: 14, state: 101}) // Deaths
+        statsUberStates.push({group: 14, state: 102}) // Current Drought
+        statsUberStates.push({group: 14, state: 103}) // Longest Drought
+        statsUberStates.push({group: 14, state: 104}) // Time since last checkpoint
+        statsUberStates.push({group: 14, state: 105}) // Time lost to deaths
+        statsUberStates.push({group: 14, state: 106}) // Warps used
+        statsUberStates.push({group: 14, state: 107}) // Peak PPM time
+        statsUberStates.push({group: 14, state: 108}) // Peak PPM count
+        statsUberStates.push({group: 14, state: 109}) // Total Pickup count
+        for (const zone of zones) {
+          statsUberStates.push({group: 14, state: zone.id}) // Time spent
+          statsUberStates.push({group: 14, state: 20 + zone.id}) // Deaths
+          statsUberStates.push({group: 14, state: 40 + zone.id}) // Pickups
+          statsUberStates.push({group: 14, state: 60 + zone.id}) // Total Pickup Count
+        }
+
+        setInterval(async () => {
+          await this.$store.dispatch('uberStates/updateUberStates', statsUberStates)
+        }, 500)
+      }
+    }
   }
 </script>
 

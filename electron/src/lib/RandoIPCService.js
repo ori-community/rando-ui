@@ -1,6 +1,5 @@
 import net from 'net'
 import { LauncherService } from '~/electron/src/lib/LauncherService'
-import fs from 'fs'
 
 const PIPE_NAME = 'wotw_rando'
 const PIPE_PATH = '\\\\.\\pipe\\'
@@ -8,19 +7,25 @@ const PIPE_PATH = '\\\\.\\pipe\\'
 let socket = null
 let lastEventId = 0
 
+const requestHandlers = {} // eventId -> resolve
+const requestQueue = []
+let requestsRunning = 0
+
 export class RandoIPCService {
   static startConnectionCheckLoop() {
     console.log(`RandoIPC: Connection check loop started`)
 
-    setInterval(async () => {
+    const checkRandoIpcAvailability = async () => {
       if (await LauncherService.isRandomizerRunning()) {
         await this.makeSureSocketIsConnected()
       }
-    }, 5000)
+    }
+
+    setInterval(checkRandoIpcAvailability, 5000)
+    checkRandoIpcAvailability()
   }
 
   /**
-   * @private
    * @returns {Promise<void>}
    */
   static makeSureSocketIsConnected() {
@@ -32,17 +37,33 @@ export class RandoIPCService {
 
     if (socket === null) {
       return new Promise(((resolve, reject) => {
-        if (!fs.existsSync(PIPE_PATH + PIPE_NAME)) {
-          reject(new Error('Rando IPC pipe does not exist'))
-          return
-        }
+        // if (!fs.existsSync(PIPE_PATH + PIPE_NAME)) {
+        //   reject(new Error('Rando IPC pipe does not exist'))
+        //   return
+        // }
 
         try {
-          socket = net.createConnection(PIPE_PATH + PIPE_NAME, () => {
+          socket = new net.Socket()
+          socket.on('error', error => {
+            console.log('RandoIPC: Could not connect,', error)
+            reject(error)
+          })
+          socket.on('close', () => {
+            console.log('RandoIPC: Socket closed')
+          })
+          socket.connect(PIPE_PATH + PIPE_NAME, () => {
             console.log('RandoIPC: Connected')
             resolve()
           })
+          socket.on('data', data => {
+            const message = JSON.parse(data)
+            if (message.event_id in requestHandlers) {
+              console.log('RandoIPC: < ', message['payload'])
+              requestHandlers[message.event_id].resolve(message['payload'])
+            }
+          })
         } catch (e) {
+          console.log('RandoIPC: Error while connecting to pipe:', e)
           reject(e)
         }
       }))
@@ -55,8 +76,8 @@ export class RandoIPCService {
         const errorCallback = error => {
           throw error
         }
-
         socket.once('error', errorCallback)
+        console.log('RandoIPC: > ', message)
         socket.write(message + '\r\n', 'utf-8', () => resolve())
         socket.off('error', errorCallback)
       } catch (e) {
@@ -76,24 +97,50 @@ export class RandoIPCService {
     }
   }
 
+  static async handleRequestQueue() {
+    if (requestsRunning > 0) {
+      return
+    }
+
+    const request = requestQueue.shift()
+    if (request) {
+      requestsRunning++
+      await this.send(JSON.stringify({ event: request.event, event_id: request.event_id, payload: request.payload }))
+      await requestHandlers[request.event_id].promise
+      requestsRunning--
+
+      await this.handleRequestQueue()
+    }
+  }
+
   static async request(event, payload = null) {
     await this.makeSureSocketIsConnected()
 
     const eventId = lastEventId++
 
-    return (await Promise.all([
-      new Promise(resolve => {
-        const dataCallback = data => {
-          const message = JSON.parse(data)
-          if (message.event_id === eventId) {
-            socket.off('data', dataCallback)
-            resolve(JSON.parse(data))
-          }
-        }
+    requestHandlers[eventId] = {}
 
-        socket.on('data', dataCallback)
-      }),
-      this.send(JSON.stringify({ event, payload }))
-    ]))[0]
+    const promise = new Promise(resolve => {
+      requestQueue.push({
+        event,
+        payload,
+        event_id: eventId,
+      })
+
+      requestHandlers[eventId].resolve = resolve
+    })
+    requestHandlers[eventId].promise = promise
+
+    this.handleRequestQueue().catch(console.log)
+
+    return await promise
+  }
+
+  static async getUberStates(states) {
+    return await this.request('get_uberstates', states)
+  }
+
+  static async getUberState(group, state) {
+    return (await this.getUberStates([{ group, state }]))[0]
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <div class='d-flex singlestat-view'>
-    <v-progress-circular v-if='progress !== null' size='24' width='3' :value='progress * 100' class='completion-view' rotate='-90' />
+    <v-progress-circular v-if='progress !== null' :size='progressSize' width='3' :value='progress * 100' class='completion-view' rotate='-90' />
     <div class='singlestat'>
       <div class='text'>{{ text }}<slot /></div>
       <div class='label'>{{ label }}</div>
@@ -13,7 +13,7 @@
     name: 'WotwStatsSinglestatView',
     props: {
       text: {
-        type: String,
+        type: [String, Number],
         required: false,
         default: '',
       },
@@ -25,6 +25,11 @@
         type: Number,
         required: false,
         default: null,
+      },
+      progressSize: {
+        type: Number,
+        required: false,
+        default: 24,
       },
     },
   }

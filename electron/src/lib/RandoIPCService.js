@@ -5,11 +5,24 @@ const PIPE_NAME = 'wotw_rando'
 const PIPE_PATH = '\\\\.\\pipe\\'
 
 let socket = null
-let lastEventId = 0
+let lastRequestId = 0
 
-const requestHandlers = {} // eventId -> resolve
-const requestQueue = []
-let requestsRunning = 0
+const outgoingRequestHandlers = {} // requestId -> resolve
+const outgoingRequestQueue = []
+let outgoingRequestsRunning = 0
+
+const makeRequest = (method, payload) => ({
+  type: 'request',
+  method,
+  id: lastRequestId++,
+  payload,
+})
+
+const makeResponse = (requestId, payload) => ({
+  type: 'response',
+  id: requestId,
+  payload,
+})
 
 export class RandoIPCService {
   static startConnectionCheckLoop() {
@@ -37,11 +50,6 @@ export class RandoIPCService {
 
     if (socket === null) {
       return new Promise(((resolve, reject) => {
-        // if (!fs.existsSync(PIPE_PATH + PIPE_NAME)) {
-        //   reject(new Error('Rando IPC pipe does not exist'))
-        //   return
-        // }
-
         try {
           socket = new net.Socket()
           socket.on('error', error => {
@@ -57,9 +65,15 @@ export class RandoIPCService {
           })
           socket.on('data', data => {
             const message = JSON.parse(data)
-            if (message.event_id in requestHandlers) {
-              console.log('RandoIPC: < ', message['payload'])
-              requestHandlers[message.event_id].resolve(message['payload'])
+
+            if (message.type === 'request') {
+              this.handleIncomingRequest(message).catch(error => console.log('RandoIPC: Could not handle incoming request', error))
+            } else if (message.type === 'response') {
+              if (message.id in outgoingRequestHandlers) {
+                outgoingRequestHandlers[message.event_id].resolve(message['payload'])
+              }
+            } else {
+              console.log('RandoIPC: Could not handle message:', data)
             }
           })
         } catch (e) {
@@ -71,6 +85,8 @@ export class RandoIPCService {
   }
 
   static async send(message) {
+    message = JSON.stringify(message)
+
     await new Promise((resolve, reject) => {
       try {
         const errorCallback = error => {
@@ -86,52 +102,47 @@ export class RandoIPCService {
     })
   }
 
-  static async trySend(event, payload = null) {
-    try {
-      await this.makeSureSocketIsConnected()
-      await this.send(JSON.stringify({ event, payload }))
-      return true
-    } catch (e) {
-      console.log('RandoIPC error:', e)
-      return false
+  static async handleIncomingRequest(request) {
+    switch (request.method) {
+      case 'get_stats':
+        // TODO: do stuff
+        await this.send(makeResponse(request.id, {
+          deaths: 69,
+          ppm: 42,
+        }))
     }
   }
 
-  static async handleRequestQueue() {
-    if (requestsRunning > 0) {
+  static async handleOutgoingRequestQueue() {
+    if (outgoingRequestsRunning > 0) {
       return
     }
 
-    const request = requestQueue.shift()
+    const request = outgoingRequestQueue.shift()
     if (request) {
-      requestsRunning++
-      await this.send(JSON.stringify({ event: request.event, event_id: request.event_id, payload: request.payload }))
-      await requestHandlers[request.event_id].promise
-      requestsRunning--
+      outgoingRequestsRunning++
+      await this.send(request)
+      await outgoingRequestHandlers[request.request_id].promise
+      outgoingRequestsRunning--
 
-      await this.handleRequestQueue()
+      await this.handleOutgoingRequestQueue()
     }
   }
 
-  static async request(event, payload = null) {
+  static async request(method, payload = null) {
     await this.makeSureSocketIsConnected()
 
-    const eventId = lastEventId++
+    const request = makeRequest(method, payload)
 
-    requestHandlers[eventId] = {}
+    outgoingRequestHandlers[request.id] = {}
 
     const promise = new Promise(resolve => {
-      requestQueue.push({
-        event,
-        payload,
-        event_id: eventId,
-      })
-
-      requestHandlers[eventId].resolve = resolve
+      outgoingRequestQueue.push(request)
+      outgoingRequestHandlers[request.id].resolve = resolve
     })
-    requestHandlers[eventId].promise = promise
+    outgoingRequestHandlers[request.id].promise = promise
 
-    this.handleRequestQueue().catch(console.log)
+    this.handleOutgoingRequestQueue().catch(console.log)
 
     return await promise
   }

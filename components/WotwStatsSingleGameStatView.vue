@@ -64,6 +64,7 @@
     },
     data: () => ({
       stats: null,
+      refreshIntervalId: null,
     }),
     computed: {
       ...mapGetters('uberStates', {uberValue: 'value'}),
@@ -72,7 +73,34 @@
       },
     },
     mounted() {
-      this.fetchStats()
+      const statsUberStates = []
+
+      statsUberStates.push({group: 6, state: 2}) // Pickups Collected
+      statsUberStates.push({group: 14, state: 100}) // Time
+      statsUberStates.push({group: 14, state: 101}) // Deaths
+      statsUberStates.push({group: 14, state: 102}) // Current Drought
+      statsUberStates.push({group: 14, state: 103}) // Longest Drought
+      statsUberStates.push({group: 14, state: 104}) // Time since last checkpoint
+      statsUberStates.push({group: 14, state: 105}) // Time lost to deaths
+      statsUberStates.push({group: 14, state: 106}) // Warps used
+      statsUberStates.push({group: 14, state: 107}) // Peak PPM time
+      statsUberStates.push({group: 14, state: 108}) // Peak PPM count
+      statsUberStates.push({group: 14, state: 109}) // Total Pickup count
+      for (const zone of zones) {
+        statsUberStates.push({group: 14, state: zone.id}) // Time spent
+        statsUberStates.push({group: 14, state: 20 + zone.id}) // Deaths
+        statsUberStates.push({group: 14, state: 40 + zone.id}) // Pickups
+        statsUberStates.push({group: 14, state: 60 + zone.id}) // Total Pickup Count
+      }
+
+      this.refreshIntervalId = setInterval(async () => {
+        await this.$store.dispatch('uberStates/updateUberStates', statsUberStates)
+      }, 500)
+    },
+    beforeDestroy() {
+      if (this.refreshIntervalId) {
+        clearInterval(this.refreshIntervalId)
+      }
     },
     methods: {
       getZoneTimePercentage(zoneId) {
@@ -91,31 +119,6 @@
         const seconds = totalSeconds % 60
         return (hours > 0 ? `${hours.toFixed(0)}:` : '') + `${minutes.toFixed(0).padStart(2, '0')}:${seconds.toFixed(1).padStart(4, '0')}`
       },
-      fetchStats() {
-        const statsUberStates = []
-
-        statsUberStates.push({group: 6, state: 2}) // Pickups Collected
-        statsUberStates.push({group: 14, state: 100}) // Time
-        statsUberStates.push({group: 14, state: 101}) // Deaths
-        statsUberStates.push({group: 14, state: 102}) // Current Drought
-        statsUberStates.push({group: 14, state: 103}) // Longest Drought
-        statsUberStates.push({group: 14, state: 104}) // Time since last checkpoint
-        statsUberStates.push({group: 14, state: 105}) // Time lost to deaths
-        statsUberStates.push({group: 14, state: 106}) // Warps used
-        statsUberStates.push({group: 14, state: 107}) // Peak PPM time
-        statsUberStates.push({group: 14, state: 108}) // Peak PPM count
-        statsUberStates.push({group: 14, state: 109}) // Total Pickup count
-        for (const zone of zones) {
-          statsUberStates.push({group: 14, state: zone.id}) // Time spent
-          statsUberStates.push({group: 14, state: 20 + zone.id}) // Deaths
-          statsUberStates.push({group: 14, state: 40 + zone.id}) // Pickups
-          statsUberStates.push({group: 14, state: 60 + zone.id}) // Total Pickup Count
-        }
-
-        setInterval(async () => {
-          await this.$store.dispatch('uberStates/updateUberStates', statsUberStates)
-        }, 500)
-      }
     }
   }
 </script>

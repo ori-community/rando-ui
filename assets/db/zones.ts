@@ -1,5 +1,5 @@
 // @ts-ignore yaml import...
-import zonesData from '@/assets/db/zones.yaml'
+import zonesData from '~/assets/db/zones.yaml'
 
 interface Zone {
   id: number,

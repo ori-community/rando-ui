@@ -8,6 +8,13 @@ module.exports = {
       chainWebpackMainProcess: config => {
         config.resolve.alias.set('@', path.resolve(__dirname, './src/'))
         config.resolve.alias.set('~', path.resolve(__dirname, '../'))
+
+        config.module
+          .rule('yaml')
+          .test(/\.ya?ml$/)
+          .use('js-yaml-loader')
+          .loader('js-yaml-loader')
+          .end()
       },
       externals: [
         'ffi-napi',

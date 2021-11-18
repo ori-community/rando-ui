@@ -1,24 +1,51 @@
-import net from 'net'
+import { Socket } from 'net'
 import { LauncherService } from '~/electron/src/lib/LauncherService'
 
 const PIPE_NAME = 'wotw_rando'
 const PIPE_PATH = '\\\\.\\pipe\\'
 
-let socket = null
+interface NodeSocket extends Socket {
+  readyState?: string,
+}
+
+let socket: NodeSocket|null = null
 let lastRequestId = 0
 
-const outgoingRequestHandlers = {} // requestId -> resolve
-const outgoingRequestQueue = []
+interface Request {
+  type: 'request',
+  method: string,
+  id: number,
+  payload: any,
+}
+
+interface Response {
+  type: 'response',
+  id: number,
+  payload: any,
+}
+
+interface QueuedRequest {
+  request: Request,
+  expectsResponse: boolean,
+}
+
+interface UberState {
+  group: number,
+  state: number,
+}
+
+const outgoingRequestHandlers: {[requestId: number]: {resolve?: (arg?: any) => any, promise?: Promise<any>}} = {}
+const outgoingRequestQueue: QueuedRequest[] = []
 let outgoingRequestsRunning = 0
 
-const makeRequest = (method, payload) => ({
+const makeRequest = (method: string, payload: any): Request => ({
   type: 'request',
   method,
   id: lastRequestId++,
   payload,
 })
 
-const makeResponse = (requestId, payload) => ({
+const makeResponse = (requestId: number, payload: any): Response => ({
   type: 'response',
   id: requestId,
   payload,
@@ -49,9 +76,9 @@ export class RandoIPCService {
     }
 
     if (socket === null) {
-      return new Promise(((resolve, reject) => {
+      return new Promise<void>(((resolve, reject) => {
         try {
-          socket = new net.Socket()
+          socket = new Socket()
           socket.on('error', error => {
             console.log('RandoIPC: Could not connect,', error)
             reject(error)
@@ -64,13 +91,13 @@ export class RandoIPCService {
             resolve()
           })
           socket.on('data', data => {
-            const message = JSON.parse(data)
+            const message = JSON.parse(data.toString())
 
             if (message.type === 'request') {
               this.handleIncomingRequest(message).catch(error => console.log('RandoIPC: Could not handle incoming request', error))
             } else if (message.type === 'response') {
               if (message.id in outgoingRequestHandlers) {
-                outgoingRequestHandlers[message.event_id].resolve(message['payload'])
+                outgoingRequestHandlers[message.id].resolve?.(message.payload)
               }
             } else {
               console.log('RandoIPC: Could not handle message:', data)
@@ -84,25 +111,25 @@ export class RandoIPCService {
     }
   }
 
-  static async send(message) {
+  static async send(message: any) {
     message = JSON.stringify(message)
 
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       try {
-        const errorCallback = error => {
+        const errorCallback = (error: Error) => {
           throw error
         }
-        socket.once('error', errorCallback)
+        socket?.once('error', errorCallback)
         console.log('RandoIPC: > ', message)
-        socket.write(message + '\r\n', 'utf-8', () => resolve())
-        socket.off('error', errorCallback)
+        socket?.write(message + '\r\n', 'utf-8', () => resolve())
+        socket?.off('error', errorCallback)
       } catch (e) {
         reject(e)
       }
     })
   }
 
-  static async handleIncomingRequest(request) {
+  static async handleIncomingRequest(request: Request) {
     switch (request.method) {
       case 'get_stats':
         // TODO: do stuff
@@ -118,26 +145,33 @@ export class RandoIPCService {
       return
     }
 
-    const request = outgoingRequestQueue.shift()
-    if (request) {
+    const queuedRequest = outgoingRequestQueue.shift()
+    if (queuedRequest) {
       outgoingRequestsRunning++
-      await this.send(request)
-      await outgoingRequestHandlers[request.request_id].promise
+      await this.send(queuedRequest)
+
+      if (queuedRequest.expectsResponse) {
+        await outgoingRequestHandlers[queuedRequest.request.id].promise
+      }
+
       outgoingRequestsRunning--
 
       await this.handleOutgoingRequestQueue()
     }
   }
 
-  static async request(method, payload = null) {
+  static async request(method: string, payload: any = null) {
     await this.makeSureSocketIsConnected()
 
     const request = makeRequest(method, payload)
 
     outgoingRequestHandlers[request.id] = {}
 
-    const promise = new Promise(resolve => {
-      outgoingRequestQueue.push(request)
+    const promise = new Promise<any>(resolve => {
+      outgoingRequestQueue.push({
+        request,
+        expectsResponse: true,
+      })
       outgoingRequestHandlers[request.id].resolve = resolve
     })
     outgoingRequestHandlers[request.id].promise = promise
@@ -147,11 +181,11 @@ export class RandoIPCService {
     return await promise
   }
 
-  static async getUberStates(states) {
+  static async getUberStates(states: UberState[]) {
     return await this.request('get_uberstates', states)
   }
 
-  static async getUberState(group, state) {
+  static async getUberState(group: number, state: number) {
     return (await this.getUberStates([{ group, state }]))[0]
   }
 }

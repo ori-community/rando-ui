@@ -4,7 +4,7 @@ import path from 'path'
 import fs from 'fs'
 import { FileDownloadService } from '~/electron/src/lib/FileDownloadService'
 import { shell } from 'electron'
-import { getWindow } from '~/electron/src/background'
+import { getWindow } from '@/background'
 import { spawn } from 'child_process'
 
 export default {

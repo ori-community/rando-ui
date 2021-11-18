@@ -8,10 +8,11 @@
         <div class=' d-flex flex-wrap stats-container'>
           <wotw-stats-singlestat-view label='Time' :text='formatTime(uberValue(14, 100))' />
           <wotw-stats-singlestat-view label='Deaths' :text='uberValue(14, 101)' />
-          <wotw-stats-singlestat-view label='Warps used' :text='uberValue(14, 106)' />
-          <wotw-stats-singlestat-view label='PPM' text='3.8' />
+          <wotw-stats-singlestat-view label='Time lost' :text='formatTime(uberValue(14, 105))' />
+          <wotw-stats-singlestat-view label='Warps' :text='uberValue(14, 106)' />
+          <wotw-stats-singlestat-view label='PPM' :text='getPPM(uberValue(6, 2), uberValue(14, 100))' />
           <wotw-stats-singlestat-view label='Peak PPM'>
-            9.6 <small>at 12:09.16</small>
+            {{ uberValue(14, 108) }} <small>at {{ formatTime(uberValue(14, 107)) }}</small>
           </wotw-stats-singlestat-view>
           <wotw-stats-singlestat-view
             :progress='(uberValue(6, 2) || 0) / (uberValue(14, 109) || 1)'
@@ -33,7 +34,7 @@
             <div class='d-flex flex-wrap stats-container mb-1'>
               <wotw-stats-singlestat-view label='Time' :text='formatTime(uberValue(14, zone.id))' />
               <wotw-stats-singlestat-view label='Deaths' :text='uberValue(14, 20 + zone.id)' />
-              <wotw-stats-singlestat-view label='PPM' text='3.8' />
+              <wotw-stats-singlestat-view label='PPM' :text='getPPM(uberValue(14, 40 + zone.id), uberValue(14, zone.id))' />
               <wotw-stats-singlestat-view
                 :progress='(uberValue(14, 40 + zone.id) || 0) / (uberValue(14, 60 + zone.id) || 1)'
                 :text='`${uberValue(14, 40 + zone.id)} / ${uberValue(14, 60 + zone.id)}`'
@@ -77,11 +78,18 @@
       getZoneTimePercentage(zoneId) {
         return (this.uberValue(14, zoneId) / this.uberValue(14, 100)) * 100
       },
+      getPPM(pickups, totalSeconds) {
+        const minutes = totalSeconds / 1000
+        if (totalSeconds <= 10 || pickups < 5) {
+          return '-'
+        }
+        return pickups / minutes
+      },
       formatTime(totalSeconds) {
         const hours = Math.floor(totalSeconds / 3600)
         const minutes = Math.floor(totalSeconds % 3600 / 60)
         const seconds = totalSeconds % 60
-        return `${hours.toFixed(0)}:${minutes.toFixed(0).padStart(2, '0')}:${seconds.toFixed(1).padStart(4, '0')}`
+        return (hours > 0 ? `${hours.toFixed(0)}:` : '') + `${minutes.toFixed(0).padStart(2, '0')}:${seconds.toFixed(1).padStart(4, '0')}`
       },
       fetchStats() {
         const statsUberStates = []

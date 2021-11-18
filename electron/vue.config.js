@@ -6,6 +6,7 @@ module.exports = {
     electronBuilder: {
       buildDependenciesFromSource: true,
       chainWebpackMainProcess: config => {
+        config.resolve.alias.set('@', path.resolve(__dirname, './src/'))
         config.resolve.alias.set('~', path.resolve(__dirname, '../'))
       },
       externals: [

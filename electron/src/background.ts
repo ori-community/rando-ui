@@ -1,5 +1,3 @@
-'use strict'
-
 import { app, BrowserWindow, protocol } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
@@ -9,10 +7,11 @@ import fs from 'fs'
 import { SettingsService } from '~/electron/src/lib/SettingsService'
 import { CrashDetectService } from '~/electron/src/lib/CrashDetectService'
 import { SEEDS_PATH, UPDATE_PATH } from '~/electron/src/lib/Constants'
+import { RandoIPCService } from '~/electron/src/lib/RandoIPCService'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
-let window = null
+let window: BrowserWindow|null = null
 
 /**
  * @returns {BrowserWindow}
@@ -37,7 +36,8 @@ async function createWindow() {
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+      nodeIntegration: !!(process.env
+          .ELECTRON_NODE_INTEGRATION as unknown) as boolean,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
     },
@@ -51,7 +51,7 @@ async function createWindow() {
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
-    // await window.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
+    // await window.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string)
     await window.loadURL('http://localhost:3000/electron')
     if (!process.env.IS_TEST) window.webContents.openDevTools()
   } else {
@@ -60,7 +60,7 @@ async function createWindow() {
     await window.loadURL('app://./index.html#/electron')
   }
 
-  const commandLineArgumentHandler = (args) => {
+  const commandLineArgumentHandler = (args: string[]) => {
     const lastArg = args[args.length - 1]
 
     if (lastArg.endsWith('.wotwr') && fs.existsSync(lastArg)) {
@@ -82,11 +82,12 @@ async function createWindow() {
   app.on('second-instance', (event, args) => commandLineArgumentHandler(args))
   commandLineArgumentHandler(process.argv)
 
-  CrashDetectService.setOnCrashCallback(supportBundleName => {
+  CrashDetectService.setOnCrashCallback((supportBundleName: string) => {
     uiIpc.queueSend('main.crashDetected', supportBundleName)
   })
   await CrashDetectService.start()
   await SettingsService.migrateSettingsVersion()
+  RandoIPCService.startConnectionCheckLoop()
 }
 
 if (isDevelopment) {
@@ -134,7 +135,7 @@ if (!app.requestSingleInstanceLock()) {
       try {
         await installExtension(VUEJS3_DEVTOOLS)
       } catch (e) {
-        console.log('Vue Devtools failed to install:', e.toString())
+        console.log('Vue Devtools failed to install:', e)
       }
     }
 

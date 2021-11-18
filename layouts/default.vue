@@ -70,12 +70,6 @@
 
         window.electronApi.on('main.currentSeedChanged', (event, { currentSeedInfo, currentSeedPath }) => {
           this.$store.commit('electron/setCurrentSeedPath', currentSeedPath)
-
-          if (currentSeedInfo) {
-            if (!currentSeedInfo.webConn) {
-              this.$store.commit('nav/setLastMultiverseId', null)
-            }
-          }
         })
 
         window.electronApi.on('main.openSeed', (event, seedFile) => {
@@ -131,11 +125,6 @@
       await this.$store.dispatch('user/updateUser')
 
       if (isElectron()) {
-        const currentSeedInfo = await window.electronApi.invoke('launcher.getCurrentSeedInfo')
-        if (currentSeedInfo && currentSeedInfo.webConn) {
-          this.$store.commit('nav/setLastMultiverseId', this.user?.currentMultiverseId ?? null)
-        }
-
         await this.$store.dispatch('electron/checkForUpdatesOnce')
       }
     },

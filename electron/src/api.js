@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron'
 import apis from './api/index'
-import { getWindow } from '~/electron/src/background'
+import { getWindow } from '@/background'
 
 class UIIPC {
   constructor() {

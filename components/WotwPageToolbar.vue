@@ -2,16 +2,19 @@
   <div class='page-toolbar d-flex align-center my-4'>
     <v-scale-transition group tag='div' class='flex-gap'>
       <v-btn v-if='isElectron' key='home' depressed exact text to='/electron' x-large>
-        <v-icon left>mdi-home-outline</v-icon>
-        Home
+        <v-icon>mdi-home-outline</v-icon>
       </v-btn>
       <v-btn v-if='isElectron && currentMultiverseId !== null' key='game' exact x-large depressed text :to='{name: "game-multiverseId", params: {multiverseId: currentMultiverseId}}'>
         <v-icon left>mdi-gamepad-variant-outline</v-icon>
-        Game {{ currentMultiverseId }}
+        {{ currentMultiverseId }}
       </v-btn>
       <v-btn key='seedgen' x-large depressed text to='/seedgen'>
         <v-icon left>mdi-dice-multiple</v-icon>
-        Seed generator
+        Seed Generator
+      </v-btn>
+      <v-btn key='stats' x-large depressed text to='/electron/stats'>
+        <v-icon left>mdi-chart-box-outline</v-icon>
+        Stats
       </v-btn>
       <v-btn v-if='isElectron' key='settings' exact x-large depressed text to='/electron/settings'>
         <v-icon left>mdi-application-cog-outline</v-icon>

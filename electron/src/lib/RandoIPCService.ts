@@ -148,10 +148,12 @@ export class RandoIPCService {
     const queuedRequest = outgoingRequestQueue.shift()
     if (queuedRequest) {
       outgoingRequestsRunning++
-      await this.send(queuedRequest)
+      await this.send(queuedRequest.request)
 
       if (queuedRequest.expectsResponse) {
         await outgoingRequestHandlers[queuedRequest.request.id].promise
+      } else {
+        outgoingRequestHandlers[queuedRequest.request.id].resolve?.()
       }
 
       outgoingRequestsRunning--
@@ -160,7 +162,7 @@ export class RandoIPCService {
     }
   }
 
-  static async request(method: string, payload: any = null) {
+  static async request(method: string, payload: any = null, expectsResponse: boolean = true) {
     await this.makeSureSocketIsConnected()
 
     const request = makeRequest(method, payload)
@@ -170,7 +172,7 @@ export class RandoIPCService {
     const promise = new Promise<any>(resolve => {
       outgoingRequestQueue.push({
         request,
-        expectsResponse: true,
+        expectsResponse,
       })
       outgoingRequestHandlers[request.id].resolve = resolve
     })
@@ -179,6 +181,10 @@ export class RandoIPCService {
     this.handleOutgoingRequestQueue().catch(console.log)
 
     return await promise
+  }
+
+  static async emit(method: string, payload: any = null) {
+    return await this.request(method, payload, false)
   }
 
   static async getUberStates(states: UberState[]) {

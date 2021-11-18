@@ -8,10 +8,14 @@ import { SettingsService } from '~/electron/src/lib/SettingsService'
 import { CrashDetectService } from '~/electron/src/lib/CrashDetectService'
 import { SEEDS_PATH, UPDATE_PATH } from '~/electron/src/lib/Constants'
 import { RandoIPCService } from '~/electron/src/lib/RandoIPCService'
+import { Stats } from '@/lib/StatsCollector'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 let window: BrowserWindow|null = null
+
+const stats = Stats.create()
+console.log(JSON.stringify(stats))
 
 /**
  * @returns {BrowserWindow}

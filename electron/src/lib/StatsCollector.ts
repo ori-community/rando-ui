@@ -1,26 +1,30 @@
-import { Data } from 'dataclass'
-import {zones} from '@/assets/db/zones'
+import { zones } from '~/assets/db/zones'
+import { DataWithGetters } from '@/lib/DataWithGetters'
 
 interface ZoneStat {
-  zoneId: number,
   totalPickups: number,
   pickups: number,
   deaths: number,
   time: number,
 }
 
-export class Stats extends Data {
+export class Stats extends DataWithGetters {
   seedData: string = ''
-  startTime: Date|null = null
-  endTime: Date|null = null
+  startTime: Date | null = null
+  endTime: Date | null = null
   timeLostToDeaths: number = 0
-  zones: ZoneStat[] = zones.map(zone => ({
-    zoneId: zone.id,
-    totalPickups: 0,
-    pickups: 0,
-    deaths: 0,
-    time: 0,
-  }))
+  peakPpmTime: number = 0
+  peakPpm: number = 0
+
+  zones: { [zoneId: number]: ZoneStat } = zones.reduce((acc, zone) => {
+    acc[zone.id] = {
+      totalPickups: 0,
+      pickups: 0,
+      deaths: 0,
+      time: 0,
+    }
+    return acc
+  }, {} as { [zoneId: number]: ZoneStat })
 
   get totalTime() {
     if (this.startTime === null) {
@@ -35,18 +39,30 @@ export class Stats extends Data {
   }
 
   get pickups() {
-    return this.zones.reduce((sum, zoneStat) => sum + zoneStat.pickups, 0)
+    return Object.values(this.zones).reduce((sum, zoneStat) => sum + zoneStat.pickups, 0)
   }
 
   get totalPickups() {
-    return this.zones.reduce((sum, zoneStat) => sum + zoneStat.totalPickups, 0)
+    return Object.values(this.zones).reduce((sum, zoneStat) => sum + zoneStat.totalPickups, 0)
   }
 
   get deaths() {
-    return this.zones.reduce((sum, zoneStat) => sum + zoneStat.deaths, 0)
+    return Object.values(this.zones).reduce((sum, zoneStat) => sum + zoneStat.deaths, 0)
+  }
+
+  get ppm() {
+    if (this.totalTime > 0) {
+      return 0
+    }
+
+    return this.pickups / this.totalTime
   }
 }
 
 export class StatsCollector {
+  stats?: Stats
 
+  constructor(stats: Stats) {
+    this.stats = stats
+  }
 }

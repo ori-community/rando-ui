@@ -111,7 +111,7 @@
         if (totalSeconds <= 10 || pickups < 5) {
           return '-'
         }
-        return pickups / minutes
+        return (pickups / minutes).toFixed(1)
       },
       formatTime(totalSeconds) {
         const hours = Math.floor(totalSeconds / 3600)

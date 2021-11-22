@@ -9,6 +9,7 @@
         :disabled='loading'
         :hide-color='multiverse.universes.length < 2'
         :universe='universe'
+        :seed='multiverse.seed || null'
         :multiverse-id='multiverseId'
         class='universe-view'
         @join-world='worldId => join(worldId)'

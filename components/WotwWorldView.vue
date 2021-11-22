@@ -1,7 +1,12 @@
 <template>
   <v-card class='world-view' outlined color='background lighten-2'>
     <v-sheet :color='world.color' class='flex-shrink-0' height='0.5em' />
-    <v-card-title>{{ world.name }}</v-card-title>
+    <v-card-title class='d-flex'>
+      <div class='world-title'>
+        <div>{{ world.name }}</div>
+        <wotw-seed-button v-if='!!seed && !!world.seedFile' :seed='seed' :seed-file='world.seedFile' />
+      </div>
+    </v-card-title>
     <v-card-text>
       <v-scroll-x-transition leave-absolute group tag='div'>
         <wotw-player-view
@@ -42,7 +47,12 @@
         type: Number,
         required: false,
         default: null,
-      }
+      },
+      seed: {
+        type: Object,
+        required: false,
+        default: null,
+      },
     },
     computed: {
       ...mapState('user', ['user']),
@@ -62,6 +72,13 @@
 
     .spacer {
       flex-basis: 100%;
+    }
+
+    .world-title {
+      flex-grow: 1;
+      display: flex;
+      gap: 0.5em;
+      justify-content: space-between;
     }
   }
 </style>

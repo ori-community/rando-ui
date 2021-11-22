@@ -1,3 +1,5 @@
+<!-- TODO: Rewrite this -->
+
 <template>
   <div>
     <div class='text-center mb-6'>

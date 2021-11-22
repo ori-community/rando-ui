@@ -836,6 +836,7 @@ export const RandoProto = $root.RandoProto = (() => {
          * @property {string|null} [name] WorldInfo name
          * @property {string|null} [color] WorldInfo color
          * @property {Array.<RandoProto.IUserInfo>|null} [members] WorldInfo members
+         * @property {string|null} [seedFile] WorldInfo seedFile
          */
 
         /**
@@ -887,6 +888,28 @@ export const RandoProto = $root.RandoProto = (() => {
         WorldInfo.prototype.members = $util.emptyArray;
 
         /**
+         * WorldInfo seedFile.
+         * @member {string|null|undefined} seedFile
+         * @memberof RandoProto.WorldInfo
+         * @instance
+         */
+        WorldInfo.prototype.seedFile = null;
+
+        // OneOf field names bound to virtual getters and setters
+        let $oneOfFields;
+
+        /**
+         * WorldInfo _seedFile.
+         * @member {"seedFile"|undefined} _seedFile
+         * @memberof RandoProto.WorldInfo
+         * @instance
+         */
+        Object.defineProperty(WorldInfo.prototype, "_seedFile", {
+            get: $util.oneOfGetter($oneOfFields = ["seedFile"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        /**
          * Creates a new WorldInfo instance using the specified properties.
          * @function create
          * @memberof RandoProto.WorldInfo
@@ -919,6 +942,8 @@ export const RandoProto = $root.RandoProto = (() => {
             if (message.members != null && message.members.length)
                 for (let i = 0; i < message.members.length; ++i)
                     $root.RandoProto.UserInfo.encode(message.members[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            if (message.seedFile != null && Object.hasOwnProperty.call(message, "seedFile"))
+                writer.uint32(/* id 5, wireType 2 =*/42).string(message.seedFile);
             return writer;
         };
 
@@ -967,6 +992,9 @@ export const RandoProto = $root.RandoProto = (() => {
                         message.members = [];
                     message.members.push($root.RandoProto.UserInfo.decode(reader, reader.uint32()));
                     break;
+                case 5:
+                    message.seedFile = reader.string();
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -1002,6 +1030,7 @@ export const RandoProto = $root.RandoProto = (() => {
         WorldInfo.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            let properties = {};
             if (message.id != null && message.hasOwnProperty("id"))
                 if (!$util.isInteger(message.id) && !(message.id && $util.isInteger(message.id.low) && $util.isInteger(message.id.high)))
                     return "id: integer|Long expected";
@@ -1019,6 +1048,11 @@ export const RandoProto = $root.RandoProto = (() => {
                     if (error)
                         return "members." + error;
                 }
+            }
+            if (message.seedFile != null && message.hasOwnProperty("seedFile")) {
+                properties._seedFile = 1;
+                if (!$util.isString(message.seedFile))
+                    return "seedFile: string expected";
             }
             return null;
         };
@@ -1058,6 +1092,8 @@ export const RandoProto = $root.RandoProto = (() => {
                     message.members[i] = $root.RandoProto.UserInfo.fromObject(object.members[i]);
                 }
             }
+            if (object.seedFile != null)
+                message.seedFile = String(object.seedFile);
             return message;
         };
 
@@ -1098,6 +1134,11 @@ export const RandoProto = $root.RandoProto = (() => {
                 object.members = [];
                 for (let j = 0; j < message.members.length; ++j)
                     object.members[j] = $root.RandoProto.UserInfo.toObject(message.members[j], options);
+            }
+            if (message.seedFile != null && message.hasOwnProperty("seedFile")) {
+                object.seedFile = message.seedFile;
+                if (options.oneofs)
+                    object._seedFile = "seedFile";
             }
             return object;
         };
@@ -1438,6 +1479,7 @@ export const RandoProto = $root.RandoProto = (() => {
          * @property {Array.<RandoProto.IUniverseInfo>|null} [universes] MultiverseInfoMessage universes
          * @property {boolean|null} [hasBingoBoard] MultiverseInfoMessage hasBingoBoard
          * @property {Array.<RandoProto.IUserInfo>|null} [spectators] MultiverseInfoMessage spectators
+         * @property {number|Long|null} [seedId] MultiverseInfoMessage seedId
          */
 
         /**
@@ -1490,6 +1532,28 @@ export const RandoProto = $root.RandoProto = (() => {
         MultiverseInfoMessage.prototype.spectators = $util.emptyArray;
 
         /**
+         * MultiverseInfoMessage seedId.
+         * @member {number|Long|null|undefined} seedId
+         * @memberof RandoProto.MultiverseInfoMessage
+         * @instance
+         */
+        MultiverseInfoMessage.prototype.seedId = null;
+
+        // OneOf field names bound to virtual getters and setters
+        let $oneOfFields;
+
+        /**
+         * MultiverseInfoMessage _seedId.
+         * @member {"seedId"|undefined} _seedId
+         * @memberof RandoProto.MultiverseInfoMessage
+         * @instance
+         */
+        Object.defineProperty(MultiverseInfoMessage.prototype, "_seedId", {
+            get: $util.oneOfGetter($oneOfFields = ["seedId"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        /**
          * Creates a new MultiverseInfoMessage instance using the specified properties.
          * @function create
          * @memberof RandoProto.MultiverseInfoMessage
@@ -1523,6 +1587,8 @@ export const RandoProto = $root.RandoProto = (() => {
             if (message.spectators != null && message.spectators.length)
                 for (let i = 0; i < message.spectators.length; ++i)
                     $root.RandoProto.UserInfo.encode(message.spectators[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+            if (message.seedId != null && Object.hasOwnProperty.call(message, "seedId"))
+                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.seedId);
             return writer;
         };
 
@@ -1573,6 +1639,9 @@ export const RandoProto = $root.RandoProto = (() => {
                         message.spectators = [];
                     message.spectators.push($root.RandoProto.UserInfo.decode(reader, reader.uint32()));
                     break;
+                case 5:
+                    message.seedId = reader.int64();
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -1608,6 +1677,7 @@ export const RandoProto = $root.RandoProto = (() => {
         MultiverseInfoMessage.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            let properties = {};
             if (message.id != null && message.hasOwnProperty("id"))
                 if (!$util.isInteger(message.id) && !(message.id && $util.isInteger(message.id.low) && $util.isInteger(message.id.high)))
                     return "id: integer|Long expected";
@@ -1631,6 +1701,11 @@ export const RandoProto = $root.RandoProto = (() => {
                     if (error)
                         return "spectators." + error;
                 }
+            }
+            if (message.seedId != null && message.hasOwnProperty("seedId")) {
+                properties._seedId = 1;
+                if (!$util.isInteger(message.seedId) && !(message.seedId && $util.isInteger(message.seedId.low) && $util.isInteger(message.seedId.high)))
+                    return "seedId: integer|Long expected";
             }
             return null;
         };
@@ -1678,6 +1753,15 @@ export const RandoProto = $root.RandoProto = (() => {
                     message.spectators[i] = $root.RandoProto.UserInfo.fromObject(object.spectators[i]);
                 }
             }
+            if (object.seedId != null)
+                if ($util.Long)
+                    (message.seedId = $util.Long.fromValue(object.seedId)).unsigned = false;
+                else if (typeof object.seedId === "string")
+                    message.seedId = parseInt(object.seedId, 10);
+                else if (typeof object.seedId === "number")
+                    message.seedId = object.seedId;
+                else if (typeof object.seedId === "object")
+                    message.seedId = new $util.LongBits(object.seedId.low >>> 0, object.seedId.high >>> 0).toNumber();
             return message;
         };
 
@@ -1722,6 +1806,14 @@ export const RandoProto = $root.RandoProto = (() => {
                 object.spectators = [];
                 for (let j = 0; j < message.spectators.length; ++j)
                     object.spectators[j] = $root.RandoProto.UserInfo.toObject(message.spectators[j], options);
+            }
+            if (message.seedId != null && message.hasOwnProperty("seedId")) {
+                if (typeof message.seedId === "number")
+                    object.seedId = options.longs === String ? String(message.seedId) : message.seedId;
+                else
+                    object.seedId = options.longs === String ? $util.Long.prototype.toString.call(message.seedId) : options.longs === Number ? new $util.LongBits(message.seedId.low >>> 0, message.seedId.high >>> 0).toNumber() : message.seedId;
+                if (options.oneofs)
+                    object._seedId = "seedId";
             }
             return object;
         };

@@ -11,6 +11,7 @@
           :disabled='disabled'
           :can-join='canJoin'
           :multiverse-id='multiverseId'
+          :seed='seed'
           @join='$emit("join-world", world.id)'
         />
       </v-scroll-y-reverse-transition>
@@ -52,6 +53,11 @@
         type: Boolean,
         required: false,
         default: false,
+      },
+      seed: {
+        type: Object,
+        required: false,
+        default: null,
       },
     },
     computed: {

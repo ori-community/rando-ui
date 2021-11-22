@@ -1,21 +1,26 @@
 <template>
   <div>
     <v-container>
-      <h1 class='text-center mt-12 mb-6'>Game <small>#</small>{{ multiverseId }}</h1>
+      <div class='d-flex justify-center align-center mt-12 mb-6'>
+        <h1 class='text-center ml-8'>
+          Game <small>#</small>{{ multiverseId }}
+        </h1>
+        <v-btn class='ml-2' icon :disabled='gameLinkCopied' @click='copyGameLink'>
+          <v-icon>{{ gameLinkCopied ? 'mdi-clipboard-check-outline' : 'mdi-link' }}</v-icon>
+        </v-btn>
+      </div>
 
-      <v-slide-y-reverse-transition>
-        <floating-overlay-dialog
-          v-if='multiverse && multiverse.seed !== null'
-          v-model='seedgenResultVisible'
-          :hide-completely='hideSeedgenResultCompletely'
+      <div class='text-center my-6'>
+        <v-btn
+          v-if='!isElectron'
+          :href='launcherUrl'
+          color='accent'
+          x-large
         >
-          <wotw-seedgen-result-view
-            :result='multiverse.seed'
-            :multiverse-id='multiverseId'
-            max-width='400'
-          />
-        </floating-overlay-dialog>
-      </v-slide-y-reverse-transition>
+          <v-icon left>mdi-launch</v-icon>
+          Open in Launcher
+        </v-btn>
+      </div>
 
       <throttled-spinner>
         <div v-if='isLoggedIn && multiverseReady'>
@@ -183,6 +188,7 @@
 
 <script>
   import { mapGetters, mapState } from 'vuex'
+  import { isElectron } from '~/assets/lib/isElectron'
 
   const isOBS = () => !!window?.obsstudio?.pluginVersion
 
@@ -206,6 +212,7 @@
       loading: false,
       embedUrlLoading: false,
       embedUrlCopied: false,
+      gameLinkCopied: false,
       multiverseReady: false,
       showBoard: false,
       hiddenUniverses: [], // Array of team IDs
@@ -224,6 +231,7 @@
       ...mapGetters('user', ['isLoggedIn']),
       ...mapState('user', ['user', 'userLoaded']),
       ...mapState('multiverseState', ['multiverses']),
+      isElectron,
       isOBS() {
         return isOBS()
       },
@@ -280,6 +288,9 @@
         }
 
         return this.multiverse.spectators.some(s => s.id === this.user.id)
+      },
+      launcherUrl() {
+        return `ori-rando://game/${this.multiverseId}`
       },
     },
     watch: {
@@ -406,7 +417,7 @@
             jwt: token,
           },
         })
-        await window.navigator.clipboard.writeText(window.location.origin + targetRoute.href)
+        await window.navigator.clipboard.writeText(this.$axios.defaults.baseURL + targetRoute.href)
 
         this.embedUrlLoading = false
 
@@ -415,6 +426,17 @@
         setTimeout(() => {
           this.embedUrlCopied = false
         }, 4000)
+      },
+      async copyGameLink() {
+        const url = new URL(this.$axios.defaults.baseURL)
+
+        url.pathname = `/game/${this.multiverseId}`
+        await navigator.clipboard.writeText(url.toString())
+        this.gameLinkCopied = true
+
+        setTimeout(() => {
+          this.gameLinkCopied = false
+        }, 3000)
       },
       async spectate() {
         this.spectateLoading = true

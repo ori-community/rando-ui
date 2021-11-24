@@ -93,7 +93,7 @@
 </template>
 
 <script>
-  import { db } from '~/assets/db/database'
+  import { getDb } from '~/assets/db/database'
 
   export default {
     name: 'WotwSeedgenCustomHeaderSelect',
@@ -139,14 +139,13 @@
         },
       },
     },
-    mounted() {
-      db.on('changes', this.updateStates)
-      db.open()
-      this.updateStates()
+    async mounted() {
+      (await getDb).on('changes', this.updateStates)
+      await this.updateStates()
     },
     methods: {
       async updateStates() {
-        this.customHeaders = await db.customHeaders.toArray()
+        this.customHeaders = await (await getDb).customHeaders.toArray()
 
         for (const header of this.customHeaders) {
           this.$set(this.customHeaderStates, header.id, this.inputValue.includes(header.id))
@@ -175,9 +174,9 @@
         }
 
         if (!this.editingHeaderId) {
-          await db.customHeaders.add(headerPayload)
+          await (await getDb).customHeaders.add(headerPayload)
         } else {
-          await db.customHeaders.update(this.editingHeaderId, headerPayload)
+          await (await getDb).customHeaders.update(this.editingHeaderId, headerPayload)
         }
 
         this.editDialogOpen = false
@@ -186,7 +185,7 @@
         this.editDialogOpen = true
       },
       async deleteHeader() {
-        await db.customHeaders.delete(this.editingHeaderId)
+        await (await getDb).customHeaders.delete(this.editingHeaderId)
       },
       onDragEnter(event) {
         if (event.dataTransfer.types.includes('Files')) {
@@ -201,7 +200,7 @@
       async onDrop(event) {
         this.dragEnterCount = 0
         for (const file of event.dataTransfer.files) {
-          await db.customHeaders.add({
+          await (await getDb).customHeaders.add({
             name: file.name.replace(/\.wotwrh$/, ''),
             content: await file.text()
           })

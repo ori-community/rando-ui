@@ -23,7 +23,7 @@ module.exports = {
       preload: 'src/preload.js',
       rendererProcessFile: 'src/renderer.js',
       mainProcessWatch: [
-        'src/api.js',
+        'src/api.ts',
         ...fs.readdirSync('./src/api').map(f => `./src/api/${f}`),
         ...fs.readdirSync('./src/lib').map(f => `./src/lib/${f}`),
       ],

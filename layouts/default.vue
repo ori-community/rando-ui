@@ -37,6 +37,7 @@
     }),
     computed: {
       ...mapState('user', ['user']),
+      ...mapState('electron', ['settings', 'settingsLoaded']),
       isElectron,
       shouldHideToolbar() {
         return !!this.$route.query.hideToolbar && !!this.user && isElectron()
@@ -86,6 +87,13 @@
         window.electronApi.on('main.goToSettings', () => {
           this.$router.push({ name: 'electron-settings' })
           window.electronApi.invoke('launcher.focusMainWindow')
+        })
+
+        window.electronApi.on('game.gameFinished', () => {
+          if (this.settingsLoaded && this.settings.Flags.ShowStatsAfterFinish) {
+            this.$router.push({ name: 'electron-stats' })
+            window.electronApi.invoke('launcher.focusMainWindow')
+          }
         })
 
         window.electronApi.on('main.openUrl', async (event, url) => {

@@ -42,6 +42,7 @@ const getDefaultSettings = () => ({
     DisableDebugControls: true,
     CursorLock: false,
     UpdateToPrereleaseVersions: false,
+    ShowStatsAfterFinish: true,
   },
 })
 

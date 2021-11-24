@@ -50,6 +50,11 @@
       <div class='mb-8'>
         <h3>Miscellaneous</h3>
         <v-checkbox
+          v-model='settings.Flags.ShowStatsAfterFinish'
+          label='Show Stats after Finish'
+          messages='Show stats in the launcher after finishing a game'
+        />
+        <v-checkbox
           v-model='useRandomCurrencyNames'
           label='Random Currency Names'
           messages='Bored of seeing "X Spirit Light"? This setting is for you!'

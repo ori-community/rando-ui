@@ -1,5 +1,7 @@
 import { Socket } from 'net'
 import { LauncherService } from '~/electron/src/lib/LauncherService'
+import throttle from 'lodash.throttle'
+import { uiIpc } from '@/api'
 
 const PIPE_NAME = 'wotw_rando'
 const PIPE_PATH = '\\\\.\\pipe\\'
@@ -37,6 +39,10 @@ interface UberState {
 const outgoingRequestHandlers: {[requestId: number]: {resolve?: (arg?: any) => any, promise?: Promise<any>}} = {}
 const outgoingRequestQueue: QueuedRequest[] = []
 let outgoingRequestsRunning = 0
+
+const notifyUberStateChangedThrottled: (state: number, group: number, value: number) => void = throttle((state: number, group: number, value: number) => {
+  uiIpc.queueSend('game.uberStateChanged', {state, group, value})
+}, 500)
 
 const makeRequest = (method: string, payload: any): Request => ({
   type: 'request',
@@ -131,12 +137,13 @@ export class RandoIPCService {
 
   static async handleIncomingRequest(request: Request) {
     switch (request.method) {
-      case 'get_stats':
-        // TODO: do stuff
-        await this.send(makeResponse(request.id, {
-          deaths: 69,
-          ppm: 42,
-        }))
+      case 'notify_on_uber_state_changed': {
+        const {group, state, value} = request.payload
+        if (group === 34543 && state === 11226 && value) {
+          uiIpc.queueSend('game.gameFinished')
+        }
+        break
+      }
     }
   }
 

@@ -1,52 +1,60 @@
 <template>
   <v-card max-width='1000'>
-    <div class='global-stats pa-5 py-8'>
-      <img class='background' :src='require(`@/assets/images/ori_running.png`)' alt=''>
-      <div class='gradient-overlay gradient-x-overlay'></div>
-      <div class='stats-content'>
-        <h1 class='stat-heading'>Global Stats</h1>
-        <div class=' d-flex flex-wrap stats-container'>
-          <wotw-stats-singlestat-view label='Time' :text='formatTime(uberValue(14, 100))' />
-          <wotw-stats-singlestat-view label='Deaths' :text='uberValue(14, 101)' />
-          <wotw-stats-singlestat-view label='Time lost' :text='formatTime(uberValue(14, 105))' />
-          <wotw-stats-singlestat-view label='Warps' :text='uberValue(14, 106)' />
-          <wotw-stats-singlestat-view label='PPM' :text='getPPM(uberValue(6, 2), uberValue(14, 100))' />
-          <wotw-stats-singlestat-view label='Peak PPM'>
-            {{ uberValue(14, 108) }} <small>at {{ formatTime(uberValue(14, 107)) }}</small>
-          </wotw-stats-singlestat-view>
-          <wotw-stats-singlestat-view
-            :progress='(uberValue(6, 2) || 0) / (uberValue(14, 109) || 1)'
-            :text='`${uberValue(6, 2)} / ${uberValue(14, 109)}`'
-            label='Pickups'
-          />
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <transition-group name='list'>
-        <div v-for='zone in sortedZones' :key='zone.id' class='area-stats pa-5'>
-          <div class='gradient-overlay gradient-x-overlay'></div>
-          <div class='gradient-overlay gradient-y-overlay'></div>
-          <img class='background' :src='require(`@/assets/images/areas/${zone.id}.jpg`)' alt=''>
-          <div class='stats-content'>
-            <h3 class='stat-heading'>{{ zone.name }}</h3>
-            <div class='d-flex flex-wrap stats-container mb-1'>
-              <wotw-stats-singlestat-view label='Time' :text='formatTime(uberValue(14, zone.id))' />
-              <wotw-stats-singlestat-view label='Deaths' :text='uberValue(14, 20 + zone.id)' />
-              <wotw-stats-singlestat-view label='PPM' :text='getPPM(uberValue(14, 40 + zone.id), uberValue(14, zone.id))' />
-              <wotw-stats-singlestat-view
-                :progress='(uberValue(14, 40 + zone.id) || 0) / (uberValue(14, 60 + zone.id) || 1)'
-                :text='`${uberValue(14, 40 + zone.id)} / ${uberValue(14, 60 + zone.id)}`'
-                label='Pickups'
-                :progress-size='20'
-              />
-            </div>
-            <v-progress-linear class='mt-3' :value='getZoneTimePercentage(zone.id)' />
+    <template v-if='statsReady'>
+      <div class='global-stats pa-5 py-8'>
+        <img class='background' :src='require(`@/assets/images/ori_running.png`)' alt=''>
+        <div class='gradient-overlay gradient-x-overlay'></div>
+        <div class='stats-content'>
+          <h1 class='stat-heading'>Global Stats</h1>
+          <div class=' d-flex flex-wrap stats-container'>
+            <wotw-stats-singlestat-view label='Time' :text='formatTime(uberValue(14, 100))' />
+            <wotw-stats-singlestat-view label='Deaths' :text='uberValue(14, 101)' />
+            <wotw-stats-singlestat-view label='Time lost' :text='formatTime(uberValue(14, 105))' />
+            <wotw-stats-singlestat-view label='Warps' :text='uberValue(14, 106)' />
+            <wotw-stats-singlestat-view label='PPM' :text='getPPM(uberValue(6, 2), uberValue(14, 100))' />
+            <wotw-stats-singlestat-view label='Peak PPM'>
+              {{ uberValue(14, 108) }} <small>at {{ formatTime(uberValue(14, 107)) }}</small>
+            </wotw-stats-singlestat-view>
+            <wotw-stats-singlestat-view
+              :progress='(uberValue(6, 2) || 0) / (uberValue(14, 109) || 1)'
+              :text='`${uberValue(6, 2)} / ${uberValue(14, 109)}`'
+              label='Pickups'
+            />
           </div>
         </div>
-      </transition-group>
-    </div>
+      </div>
+
+      <div>
+        <transition-group name='list'>
+          <div v-for='zone in sortedZones' :key='zone.id' class='area-stats pa-5'>
+            <div class='gradient-overlay gradient-x-overlay'></div>
+            <div class='gradient-overlay gradient-y-overlay'></div>
+            <img class='background' :src='require(`@/assets/images/areas/${zone.id}.jpg`)' alt=''>
+            <div class='stats-content'>
+              <h3 class='stat-heading'>{{ zone.name }}</h3>
+              <div class='d-flex flex-wrap stats-container mb-1'>
+                <wotw-stats-singlestat-view label='Time' :text='formatTime(uberValue(14, zone.id))' />
+                <wotw-stats-singlestat-view label='Deaths' :text='uberValue(14, 20 + zone.id)' />
+                <wotw-stats-singlestat-view label='PPM' :text='getPPM(uberValue(14, 40 + zone.id), uberValue(14, zone.id))' />
+                <wotw-stats-singlestat-view
+                  :progress='(uberValue(14, 40 + zone.id) || 0) / (uberValue(14, 60 + zone.id) || 1)'
+                  :text='`${uberValue(14, 40 + zone.id)} / ${uberValue(14, 60 + zone.id)}`'
+                  label='Pickups'
+                  :progress-size='20'
+                />
+              </div>
+              <v-progress-linear class='mt-3' :value='getZoneTimePercentage(zone.id)' />
+            </div>
+          </div>
+        </transition-group>
+      </div>
+    </template>
+    <template v-else>
+      <div class='pa-4 text-center'>
+        Stats can currently only be displayed if the game is running and loaded.<br>
+        Please make sure the game is running.
+      </div>
+    </template>
   </v-card>
 </template>
 
@@ -63,8 +71,8 @@
       },
     },
     data: () => ({
-      stats: null,
       refreshIntervalId: null,
+      statsReady: false,
     }),
     computed: {
       ...mapGetters('uberStates', {uberValue: 'value'}),
@@ -94,7 +102,12 @@
       }
 
       this.refreshIntervalId = setInterval(async () => {
-        await this.$store.dispatch('uberStates/updateUberStates', statsUberStates)
+        try {
+          await this.$store.dispatch('uberStates/updateUberStates', statsUberStates)
+          this.statsReady = true
+        } catch (e) {
+          console.error(e)
+        }
       }, 500)
     },
     beforeDestroy() {
@@ -108,7 +121,7 @@
       },
       getPPM(pickups, totalSeconds) {
         const minutes = totalSeconds / 1000
-        if (totalSeconds <= 10 || pickups < 5) {
+        if (totalSeconds <= 10 || pickups <= 0) {
           return '-'
         }
         return (pickups / minutes).toFixed(1)

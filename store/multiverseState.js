@@ -106,7 +106,7 @@ export const actions = {
   async connectMultiverse({ commit, dispatch, getters }, { multiverseId, reconnect = false, retries = 0 }) {
     let ws = webSockets[multiverseId] ?? null
 
-    if (retries >= 5) {
+    if (retries >= 20) {
       throw new Error('Max number of retries exceeded')
     }
 

@@ -67,13 +67,26 @@ export class SettingsService {
       if (lastVersion !== currentVersion && lastVersion !== 'develop') {
         const settings = await SettingsService.readSettings()
 
+        // When switching from non-beta to beta or from beta to non-beta
+        const lastIsPrerelease = semver.prerelease(lastVersion)
+        const currentIsPrerelease = semver.prerelease(currentVersion)
+
+        if (lastIsPrerelease && !currentIsPrerelease) {
+          settings.Paths.URL = 'wotw.orirando.com'
+          settings.Paths.UdpPort = 31415
+          settings.Flags.Dev = false
+          settings.Flags.DisableDebugControls = true
+        } else if (!lastIsPrerelease && currentIsPrerelease) {
+          settings.Paths.URL = 'dev.wotw.orirando.com'
+          settings.Paths.UdpPort = 31416
+          settings.Flags.Dev = true
+          settings.Flags.DisableDebugControls = false
+        }
+
         const migrations = {
-          '1.0.0'() {
-            // Revert URL back for all the beta players
-            settings.Paths.URL = 'wotw.orirando.com'
-            settings.Flags.Dev = false
-            settings.Flags.DisableDebugControls = true
-          },
+          // '1.0.0'() {
+          //   ...
+          // },
         }
 
         for (const migrationVersion of Object.keys(migrations)) {

@@ -110,20 +110,28 @@ export const actions = {
       throw new Error('Max number of retries exceeded')
     }
 
+    const retryConnection = () => setTimeout(() => {
+      dispatch('connectMultiverse', { multiverseId, retries: retries + 1 })
+        .catch(error => {
+          throw error
+        })
+    }, 1000 * (retries + 1))
+
     if (reconnect || (ws?.readyState !== WebSocket.OPEN && ws?.readyState !== WebSocket.CONNECTING)) {
       ws?.close()
-      webSockets[multiverseId] = await WebSocketFactory.create(`/observers/${multiverseId}`, this.$websocket)
-      ws = webSockets[multiverseId]
+
+      try {
+        webSockets[multiverseId] = await WebSocketFactory.create(`/observers/${multiverseId}`, this.$websocket)
+        ws = webSockets[multiverseId]
+      } catch (e) {
+        retryConnection()
+        return
+      }
 
       retries = 0
 
       ws.addEventListener('close', () => {
-        setTimeout(() => {
-          dispatch('connectMultiverse', { multiverseId, retries: retries + 1 })
-            .catch(error => {
-              throw error
-            })
-        }, 1000 * (retries + 1))
+        retryConnection()
       })
       ws.addEventListener('message', async event => {
         const packet = await decodePacket(event.data)

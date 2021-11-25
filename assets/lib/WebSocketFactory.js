@@ -5,7 +5,7 @@ export class WebSocketFactory {
   static jwt = null
 
   static create(endpoint, $websocket) {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       let connected = false
       const ws = new WebSocket(`${$websocket.baseURL}${endpoint}`)
 
@@ -17,6 +17,8 @@ export class WebSocketFactory {
         resolve(ws)
         connected = true
       })
+
+      ws.addEventListener('error', reject)
 
       // Prevent dangling connections
       setTimeout(() => {

@@ -238,7 +238,7 @@
   import spawns from '~/assets/seedgen/spawns.yaml'
   import difficulties from '~/assets/seedgen/difficulties.yaml'
   import { confettiFromElement } from '~/assets/lib/confettiFromElement'
-  import { db } from '~/assets/db/database'
+  import { getDb } from '~/assets/db/database'
   import { isElectron } from '~/assets/lib/isElectron'
   import { EventBus } from '~/assets/lib/EventBus'
 
@@ -368,7 +368,7 @@
           }
 
           // Fetch custom headers from IndexedDB
-          additionalParameters.customHeaders = (await db.customHeaders.bulkGet(this.seedgenConfig.customHeaders))
+          additionalParameters.customHeaders = (await (await getDb).customHeaders.bulkGet(this.seedgenConfig.customHeaders))
             .map(h => h.content)
 
           const response = await this.$axios.$post('/seeds', {

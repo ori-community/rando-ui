@@ -52,6 +52,8 @@ async function createWindow() {
 
   window.maximize()
   window.show()
+  
+  await SettingsService.migrateSettingsVersion()
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
@@ -90,7 +92,6 @@ async function createWindow() {
     uiIpc.queueSend('main.crashDetected', supportBundleName)
   })
   await CrashDetectService.start()
-  await SettingsService.migrateSettingsVersion()
   RandoIPCService.startConnectionCheckLoop()
 }
 

@@ -13,7 +13,7 @@
             <wotw-stats-singlestat-view label='Warps' :text='uberValue(14, 106)' />
             <wotw-stats-singlestat-view label='PPM' :text='getPPM(uberValue(6, 2), uberValue(14, 100))' />
             <wotw-stats-singlestat-view label='Peak PPM'>
-              {{ uberValue(14, 108) }} <small>at {{ formatTime(uberValue(14, 107)) }}</small>
+              {{ getPPM(uberValue(14, 108), uberValue(14, 107)) }} <small>at {{ formatTime(uberValue(14, 107)) }}</small>
             </wotw-stats-singlestat-view>
             <wotw-stats-singlestat-view
               :progress='(uberValue(6, 2) || 0) / (uberValue(14, 109) || 1)'

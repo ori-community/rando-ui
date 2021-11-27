@@ -418,7 +418,7 @@
           },
         })
 
-        const url = new URL(targetRoute.href, process.env.UI_BASE_URL)
+        const url = new URL(targetRoute.href, this.$paths.UI_BASE_URL)
         await window.navigator.clipboard.writeText(url.toString())
 
         this.embedUrlLoading = false
@@ -430,7 +430,7 @@
         }, 4000)
       },
       async copyGameLink() {
-        const url = new URL(`/game/${this.multiverseId}`, process.env.UI_BASE_URL)
+        const url = new URL(`/game/${this.multiverseId}`, this.$paths.UI_BASE_URL)
         await navigator.clipboard.writeText(url.toString())
         this.gameLinkCopied = true
 

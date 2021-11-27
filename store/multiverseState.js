@@ -121,7 +121,7 @@ export const actions = {
       ws?.close()
 
       try {
-        webSockets[multiverseId] = await WebSocketFactory.create(`/observers/${multiverseId}`, this.$websocket)
+        webSockets[multiverseId] = await WebSocketFactory.create(`/observers/${multiverseId}`, this.$paths)
         ws = webSockets[multiverseId]
       } catch (e) {
         retryConnection()

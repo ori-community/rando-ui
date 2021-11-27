@@ -4,10 +4,10 @@ import { RandoProto } from '~/assets/proto/RandoProto'
 export class WebSocketFactory {
   static jwt = null
 
-  static create(endpoint, $websocket) {
+  static create(endpoint, $paths) {
     return new Promise((resolve, reject) => {
       let connected = false
-      const ws = new WebSocket(`${$websocket.baseURL}${endpoint}`)
+      const ws = new WebSocket(`${$paths.WS_BASE_URL}${endpoint}`)
 
       ws.addEventListener('open', () => {
         ws.send(makePacket(RandoProto.AuthenticateMessage, {

@@ -9,6 +9,7 @@ const env = {
 
 // Computed envs...
 Object.assign(env, {
+  UI_BASE_URL: (process.env.API_SECURE === 'true' ? 'https://' : 'http://') + env.API_HOST,
   API_BASE_URL: (process.env.API_SECURE === 'true' ? 'https://' : 'http://') + env.API_HOST + '/api',
   WS_BASE_URL: (process.env.API_SECURE === 'true' ? 'wss://' : 'ws://') + env.API_HOST + '/api',
 })

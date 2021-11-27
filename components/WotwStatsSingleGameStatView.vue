@@ -120,7 +120,7 @@
         return (this.uberValue(14, zoneId) / this.uberValue(14, 100)) * 100
       },
       getPPM(pickups, totalSeconds) {
-        const minutes = totalSeconds / 1000
+        const minutes = totalSeconds / 60
         if (totalSeconds <= 10 || pickups <= 0) {
           return '-'
         }

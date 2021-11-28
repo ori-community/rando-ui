@@ -302,8 +302,8 @@
       },
     },
     watch: {
-      'seedgenConfig.multiNames'(multiNames) {
-        if (multiNames && multiNames.length > 0 && this.createOnlineGame === 'none') {
+      'seedgenConfig.flags'(flags, oldFlags) {
+        if (flags.includes('--multiplayer') && !oldFlags.includes('--multiplayer') && this.createOnlineGame === 'none') {
           this.createOnlineGame = 'normal'
         }
       },

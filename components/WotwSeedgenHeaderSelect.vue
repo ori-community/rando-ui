@@ -29,7 +29,7 @@
       </v-tooltip>
 
       <v-badge v-if='header.params.length > 0' overlap offset-x='16' :value='getModifiedHeaderArgCount(header) > 0' :content='getModifiedHeaderArgCount(header)' color='accent lighten-1'>
-        <v-btn :disabled='!headerStates[header.headerName]' icon small class='mx-2' @click='editHeaderArgs(header)'>
+        <v-btn icon small class='mx-2' @click='editHeaderArgs(header)'>
           <v-icon>mdi-tune</v-icon>
         </v-btn>
       </v-badge>
@@ -211,6 +211,7 @@
         }
       },
       editHeaderArgs(header) {
+        this.headerStates[header.headerName] = true
         this.headerArgEditor.header = header
         this.headerArgEditor.isOpen = true
       },

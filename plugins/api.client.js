@@ -9,9 +9,9 @@ export default async ({ $axios, env }, inject) => {
     $paths.WS_BASE_URL = `wss://${settings.Paths.URL}/api`
     $paths.UI_BASE_URL = `https://${settings.Paths.URL}`
   } else {
-    $paths.apiBaseUrl = env.API_BASE_URL
-    $paths.websocketBaseUrl = env.WS_BASE_URL
-    $paths.uiBaseUrl = env.UI_BASE_URL
+    $paths.API_BASE_URL = env.API_BASE_URL
+    $paths.WS_BASE_URL = env.WS_BASE_URL
+    $paths.UI_BASE_URL = env.UI_BASE_URL
   }
 
   $axios.defaults.baseURL = $paths.API_BASE_URL

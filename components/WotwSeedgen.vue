@@ -242,7 +242,7 @@
   import { isElectron } from '~/assets/lib/isElectron'
   import { EventBus } from '~/assets/lib/EventBus'
 
-  const BINGO_HEADER_NAME = '3_line_bingo'
+  const BINGO_HEADER_NAME = 'bingo'
 
   const generateNewSeedgenConfig = () => ({
     flags: [],

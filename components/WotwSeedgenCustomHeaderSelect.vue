@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-dialog v-model='editDialogOpen' persistent class='pa-0'>
-      <v-card height='90vh' class='overflow-hidden d-flex flex-column'>
+      <v-card height='90vh' min-width='90vw' class='overflow-hidden d-flex flex-column'>
         <div class='px-5 pt-3'>
           <v-text-field v-model='editingHeaderName' autofocus label='Header name' />
         </div>

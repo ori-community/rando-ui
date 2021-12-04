@@ -47,9 +47,17 @@
               :label='param.name'
               :hint='param.description.join(" ")'
               persistent-hint
-              :append-icon='isHeaderParamModified(headerArgEditor.header, param) ? "mdi-restore" : ""'
-              @click:append='restoreDefaultHeaderParam(headerArgEditor.header, param)'
-            />
+            >
+              <template #append>
+                <v-btn
+                  icon
+                  :disabled='!isHeaderParamModified(headerArgEditor.header, param)'
+                  @click='restoreDefaultHeaderParam(headerArgEditor.header, param)'
+                >
+                  <v-icon>mdi-arrow-u-left-top</v-icon>
+                </v-btn>
+              </template>
+            </v-text-field>
           </template>
           <template v-else-if='param.type === "int"'>
             <v-text-field
@@ -59,9 +67,17 @@
               :label='param.name'
               :hint='param.description.join(" ")'
               persistent-hint
-              :append-icon='isHeaderParamModified(headerArgEditor.header, param) ? "mdi-arrow-u-left-top" : ""'
-              @click:append='restoreDefaultHeaderParam(headerArgEditor.header, param)'
-            />
+            >
+              <template #append>
+                <v-btn
+                  icon
+                  :disabled='!isHeaderParamModified(headerArgEditor.header, param)'
+                  @click='restoreDefaultHeaderParam(headerArgEditor.header, param)'
+                >
+                  <v-icon>mdi-arrow-u-left-top</v-icon>
+                </v-btn>
+              </template>
+            </v-text-field>
           </template>
           <template v-else-if='param.type === "bool"'>
             <v-checkbox
@@ -70,9 +86,17 @@
               :label='param.name'
               :hint='param.description.join(" ")'
               persistent-hint
-              :append-icon='isHeaderParamModified(headerArgEditor.header, param) ? "mdi-arrow-u-left-top" : ""'
-              @click:append='restoreDefaultHeaderParam(headerArgEditor.header, param)'
-            />
+            >
+              <template #append>
+                <v-btn
+                  icon
+                  :disabled='!isHeaderParamModified(headerArgEditor.header, param)'
+                  @click='restoreDefaultHeaderParam(headerArgEditor.header, param)'
+                >
+                  <v-icon>mdi-arrow-u-left-top</v-icon>
+                </v-btn>
+              </template>
+            </v-checkbox>
           </template>
         </template>
 

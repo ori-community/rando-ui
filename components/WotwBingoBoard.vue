@@ -24,6 +24,7 @@
           :is-lockout='multiverse.bingoBoard.lockout'
           :marked='isSquareMarked(x, y)'
           :marked-neighbor-mask='getMarkedNeighborMask(x, y)'
+          :own-universe-id='ownUniverseId'
           @click='$store.commit("multiverseState/toggleBingoGoalMarked", {multiverseId: multiverse.id, x, y})'
         />
       </template>
@@ -62,6 +63,10 @@
         default: false,
       },
       highlightUniverse: {
+        type: Number,
+        default: null,
+      },
+      ownUniverseId: {
         type: Number,
         default: null,
       },

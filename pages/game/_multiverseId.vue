@@ -87,6 +87,7 @@
             :multiverse='multiverse'
             :hidden-universes='hiddenUniverses'
             :highlight-universe='highlightedUniverseId'
+            :own-universe-id='ownUniverseId'
             class='board'
           />
           <div class='sidebar px-5'>

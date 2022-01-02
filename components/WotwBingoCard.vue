@@ -67,7 +67,11 @@
       markedNeighborMask: {
         type: Number,
         default: 0b0000, // top, left, right, bottom
-      }
+      },
+      ownUniverseId: {
+        type: Number,
+        default: null,
+      },
     },
     data: () => ({
       attentionEffectActive: false,
@@ -137,6 +141,11 @@
     },
     watch: {
       async stateHash(value, oldValue) {
+        // Don't show the attention effect for completed goals
+        if (this.ownUniverseId !== null && this.square.completedBy.includes(this.ownUniverseId)) {
+          return
+        }
+
         if (this.attentionEffectActive) {
           this.attentionEffectActive = false
           await this.$nextTick()

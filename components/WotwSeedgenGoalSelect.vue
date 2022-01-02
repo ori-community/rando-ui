@@ -82,7 +82,7 @@
       absoluteRelicCount() {
         this.updateInputValue()
       },
-      relicCount() {
+      relicCount(value, old) {
         this.updateInputValue()
       },
       relicChance() {
@@ -126,14 +126,18 @@
 
           if (id === 'RELICS') {
             const relicsGoalValue = this.inputValue.find(v => v.split(':')[0] === 'RELICS')
+
+            if (!relicsGoalValue) {
+              continue
+            }
             const relicsGoalParams = relicsGoalValue.split(':')[1]
 
             if (relicsGoalParams) {
               this.absoluteRelicCount = !relicsGoalParams.endsWith('%')
               if (this.absoluteRelicCount) {
-                this.relicsCount = Number(relicsGoalParams)
+                this.relicCount = Number(relicsGoalParams)
               } else {
-                this.relicsChance = Number(relicsGoalParams.split('%')[0])
+                this.relicChance = Number(relicsGoalParams.split('%')[0])
               }
             }
           }

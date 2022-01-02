@@ -27,7 +27,19 @@
     <v-expand-transition>
       <div v-if='!!goalStates["RELICS"]'>
         <div class='mt-4'>
+          <v-checkbox
+            v-model="absoluteRelicCount"
+            label="Specify relic count instead of chance"
+          />
+
           <v-slider
+            v-if="absoluteRelicCount"
+            v-model="relicCount"
+            hide-details
+            :label='`${relicChance} relics`'
+          />
+          <v-slider
+            v-else
             v-model="relicChance"
             hide-details
             :label='`${relicChance}% relic chance (per area)`'
@@ -54,6 +66,8 @@
     data: vm => ({
       goalStates: {},
       inputValue: vm.value ?? [],
+      absoluteRelicCount: false,
+      relicCount: 7,
       relicChance: 60,
     }),
     watch: {
@@ -90,7 +104,9 @@
           .map(goal => {
             switch (goal) {
               case 'RELICS':
-                return 'RELICS:' + this.relicChance + '%'
+                return this.absoluteRelicCount
+                  ? 'RELICS:' + this.relicCount
+                  : 'RELICS:' + this.relicChance + '%'
             }
 
             return goal
@@ -99,6 +115,20 @@
       updateStates() {
         for (const id of Object.keys(this.goals)) {
           this.$set(this.goalStates, id, this.inputValue.map(g => g.split(':')[0]).includes(id))
+
+          if (id === 'RELICS') {
+            const relicsGoalValue = this.inputValue.find(v => v.split(':')[0] === 'RELICS')
+            const relicsGoalParams = relicsGoalValue.split(':')[1]
+
+            if (relicsGoalParams) {
+              this.absoluteRelicCount = !relicsGoalParams.endsWith('%')
+              if (this.absoluteRelicCount) {
+                this.relicsCount = Number(relicsGoalParams)
+              } else {
+                this.relicsChance = Number(relicsGoalParams.split('%')[0])
+              }
+            }
+          }
         }
       },
     },

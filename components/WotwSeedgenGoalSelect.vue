@@ -36,13 +36,15 @@
             v-if="absoluteRelicCount"
             v-model="relicCount"
             hide-details
-            :label='`${relicChance} relics`'
+            min="1"
+            max="11"
+            :label="`${relicCount} relics`"
           />
           <v-slider
             v-else
             v-model="relicChance"
             hide-details
-            :label='`${relicChance}% relic chance (per area)`'
+            :label="`${relicChance}% relic chance (per area)`"
           />
         </div>
       </div>

@@ -79,6 +79,12 @@
           this.updateInputValue()
         },
       },
+      absoluteRelicCount() {
+        this.updateInputValue()
+      },
+      relicCount() {
+        this.updateInputValue()
+      },
       relicChance() {
         this.updateInputValue()
       },

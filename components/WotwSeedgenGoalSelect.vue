@@ -38,7 +38,7 @@
             hide-details
             min="1"
             max="11"
-            :label="`${relicCount} relics`"
+            :label="`${relicCount} relic${relicCount !== 1 ? 's' : ''}`"
           />
           <v-slider
             v-else

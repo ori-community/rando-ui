@@ -1,5 +1,17 @@
 <template>
   <div>
+    <div class='d-flex justify-end pb-3'>
+      <v-btn text :disabled='lastConfigLoaded' @click='loadLastSeedgenConfig'>
+        <template v-if='lastConfigLoaded'>
+          <v-icon left>mdi-check</v-icon>
+          Config loaded
+        </template>
+        <template v-else>
+          Load last config
+        </template>
+      </v-btn>
+    </div>
+
     <v-card v-if='loadedServerConfig' class='mb-4'>
       <v-tabs centered grow color='primary' show-arrows>
         <v-tab>
@@ -180,6 +192,7 @@
               :disabled='anyPresetSelected'
               :loading='loading'
               color='accent'
+              class='mb-3'
               x-large
               @click='generateSeed()'
             >
@@ -189,6 +202,8 @@
         </template>
         <span>Apply or unselect selected presets first</span>
       </v-tooltip>
+
+<!--      <v-btn text small @click='saveAsCustomPreset'>Save as custom preset</v-btn>-->
     </div>
 
     <v-dialog v-model='showResultDialog' persistent max-width='400'>
@@ -243,6 +258,7 @@
   import { EventBus } from '~/assets/lib/EventBus'
 
   const BINGO_HEADER_NAME = 'bingo'
+  const LAST_SEEDGEN_CONFIG_LOCALSTORAGE_KEY = 'last_seedgen_config'
 
   const generateNewSeedgenConfig = () => ({
     flags: [],
@@ -272,6 +288,7 @@
       seedgenResult: null,
       anyPresetSelected: false,
       showBingoHeaderWarningDialog: false,
+      lastConfigLoaded: false,
     }),
     computed: {
       isElectron,
@@ -300,6 +317,9 @@
           ...d[1],
         }))
       },
+      hasLastSeedgenConfig() {
+        return window.localStorage.getItem(LAST_SEEDGEN_CONFIG_LOCALSTORAGE_KEY) !== null
+      }
     },
     watch: {
       'seedgenConfig.flags'(flags, oldFlags) {
@@ -336,10 +356,20 @@
 
         await this.generateSeed()
       },
+      loadLastSeedgenConfig() {
+        this.seedgenConfig = JSON.parse(window.localStorage.getItem(LAST_SEEDGEN_CONFIG_LOCALSTORAGE_KEY))
+        this.lastConfigLoaded = true
+        setTimeout(() => {
+          this.lastConfigLoaded = false
+        }, 4000)
+      },
       async generateSeed(ignoreMissingBingoHeader = false) {
         if (this.loading) {
           return
         }
+
+        // Save as last config
+        window.localStorage.setItem(LAST_SEEDGEN_CONFIG_LOCALSTORAGE_KEY, JSON.stringify(this.seedgenConfig))
 
         if (
           ['bingo', 'discovery_bingo'].includes(this.createOnlineGame) &&

@@ -16,8 +16,9 @@ export const getDb = new Promise(resolve => {
     PER_ZONE_STATS.map(zoneStat => `${zoneStat}_${zone.id}`)
   ))
 
-  db.version(3).stores({
+  db.version(4).stores({
     customHeaders: '$$id, name, content',
+    customPresets: '$$id, name, json_data',
     gameStats: '$$id, group_id, finished_at, time, deaths, time_lost_to_deaths, warps_used, global_ppm, peak_ppm, ' + zoneStats.join(', ')
   })
 

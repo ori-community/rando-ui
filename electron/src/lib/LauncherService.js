@@ -42,7 +42,7 @@ const focusGameWindow = () => {
     console.log('Focusing game...')
     user32.SetForegroundWindow(gameWindowHandle)
   } else {
-    console.log('Could not focud game. Handle not found.')
+    console.log('Could not focus game. Handle not found.')
   }
 }
 
@@ -112,10 +112,12 @@ export class LauncherService {
     }
 
     if (await this.isRandomizerRunning()) {
-      if (!await RandoIPCService.emit('reload')) {
-        throw new Error('Could not load the seed in running game.\nPlease wait a few seconds if you closed the game just now.')
-      } else {
+      try {
+        await RandoIPCService.emit('reload')
         focusGameWindow()
+      } catch (e) {
+        console.error(e)
+        throw new Error('Could not load the seed in running game.\nPlease wait a few seconds if you closed the game just now.')
       }
     } else {
       //                                                    Why is windows a thing ↓

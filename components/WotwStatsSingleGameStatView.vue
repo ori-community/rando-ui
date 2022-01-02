@@ -107,6 +107,7 @@
           this.statsReady = true
         } catch (e) {
           console.error(e)
+          this.statsReady = false
         }
       }, 500)
     },

@@ -102,7 +102,7 @@ export class LauncherService {
     await SettingsService.makeSureSettingsFileExists()
     const settings = await SettingsService.readSettings()
 
-    if (!fs.existsSync(settings.Paths.Steam)) {
+    if (!settings.Flags.UseWinStore && !fs.existsSync(settings.Paths.Steam)) {
       uiIpc.queueSend('main.goToSettings')
       throw new Error(`Steam was not found at the specified path (${settings.Paths.Steam}). Please set it in "Launch settings" and launch again.`)
     }

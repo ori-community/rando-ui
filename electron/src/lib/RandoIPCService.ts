@@ -2,6 +2,7 @@ import { Socket } from 'net'
 import { LauncherService } from '~/electron/src/lib/LauncherService'
 import throttle from 'lodash.throttle'
 import { uiIpc } from '@/api'
+import { UberId } from '~/assets/lib/types/UberStates'
 
 const PIPE_NAME = 'wotw_rando'
 const PIPE_PATH = '\\\\.\\pipe\\'
@@ -29,11 +30,6 @@ interface Response {
 interface QueuedRequest {
   request: Request,
   expectsResponse: boolean,
-}
-
-interface UberState {
-  group: number,
-  state: number,
 }
 
 const outgoingRequestHandlers: {[requestId: number]: {resolve?: (arg?: any) => any, promise?: Promise<any>}} = {}
@@ -194,11 +190,11 @@ export class RandoIPCService {
     return await this.request(method, payload, false)
   }
 
-  static async getUberStates(states: UberState[]) {
+  static async getUberStates(states: UberId[]): Promise<number[]> {
     return await this.request('get_uberstates', states)
   }
 
-  static async getUberState(group: number, state: number) {
+  static async getUberState(group: number, state: number): Promise<number> {
     return (await this.getUberStates([{ group, state }]))[0]
   }
 }

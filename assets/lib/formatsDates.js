@@ -1,9 +1,9 @@
-import {formatDistanceToNow, format as formatDate, parseISO} from 'date-fns'
-import {enCA} from 'date-fns/locale'
+import { format as formatDate, formatDistanceToNow, parseISO } from 'date-fns'
+import { enCA } from 'date-fns/locale'
 
 export const formatsDates = {
   methods: {
-    formatDateRelative (date) {
+    formatDateRelative(date) {
       if (process.server) {
         return 'on ' + formatDate(new Date(date), 'PP', {
           locale: enCA,
@@ -15,8 +15,13 @@ export const formatsDates = {
         locale: enCA,
       })
     },
-    formatDate (dateISO, format = 'dd.MM.yyyy') {
+    formatDate(dateISO, format = 'dd.MM.yyyy') {
       return formatDate(parseISO(dateISO), format, {
+        locale: enCA,
+      })
+    },
+    formatDateObject(date, format = 'dd.MM.yyyy') {
+      return formatDate(date, format, {
         locale: enCA,
       })
     },

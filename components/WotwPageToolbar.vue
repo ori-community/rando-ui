@@ -102,7 +102,7 @@
         return trimmedNickname.length > 0 && trimmedNickname.length <= 32
       },
       currentMultiverseId() {
-        return this.user?.currentMultiverseId
+        return this.user?.currentMultiverseId ?? null
       }
     },
     methods: {

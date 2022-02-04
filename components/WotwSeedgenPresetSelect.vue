@@ -57,7 +57,7 @@
 <script>
   import presetMeta from '@/assets/seedgen/presets.yaml'
 
-  const difficultyPresets = ['moki', 'gorlek']
+  const difficultyPresets = ['moki', 'gorlek', '2022-tourney']
 
   export default {
     name: 'WotwSeedgenPresetSelect',
@@ -167,7 +167,7 @@
 <style lang='scss' scoped>
   .difficulty-presets {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     grid-gap: 0.4em;
 
     > * {

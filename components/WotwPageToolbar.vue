@@ -85,6 +85,7 @@
 <script>
   import { mapGetters, mapState } from 'vuex'
   import { isElectron } from '~/assets/lib/isElectron'
+  import { EventBus } from '~/assets/lib/EventBus'
 
   export default {
     name: 'WotwPageToolbar',
@@ -102,19 +103,25 @@
         return trimmedNickname.length > 0 && trimmedNickname.length <= 32
       },
       currentMultiverseId() {
-        return this.user?.currentMultiverseId
+        return this.user?.currentMultiverseId ?? null
       }
     },
     methods: {
       buildAbsoluteUrl(relativeUrl) {
         return `${window.location.origin}${relativeUrl}`
       },
-      async login() {
-        this.$store.commit('auth/setRedirectPath', this.$router.resolve(this.$route).href)
-
+      async login(event) {
         if (isElectron()) {
-          const jwt = await window.electronApi.invoke('auth.startOAuthFlow', this.$axios.defaults.baseURL)
-          await this.$router.push({ name: 'auth-callback', query: { jwt } })
+          try {
+            const jwt = await window.electronApi.invoke('auth.startOAuthFlow', this.$axios.defaults.baseURL, event.ctrlKey)
+            await this.$router.push({ name: 'auth-callback', query: { jwt } })
+          } catch (e) {
+            console.error(e)
+            EventBus.$emit('notification', {
+              message: 'Login failed.',
+              color: 'error',
+            })
+          }
         } else {
           window.location.href = `${this.$axios.defaults.baseURL}/login?redir=${this.buildAbsoluteUrl('/auth/callback')}`
         }

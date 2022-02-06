@@ -318,9 +318,6 @@
           ...d[1],
         }))
       },
-      hasLastSeedgenConfig() {
-        return window.localStorage.getItem(LAST_SEEDGEN_CONFIG_LOCALSTORAGE_KEY) !== null
-      }
     },
     watch: {
       'seedgenConfig.flags'(flags, oldFlags) {

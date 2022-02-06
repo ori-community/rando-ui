@@ -171,6 +171,7 @@
 <script>
   import { mapGetters, mapMutations, mapState } from 'vuex'
   import sanitizeHtml from 'sanitize-html'
+  import { parse } from 'date-fns'
   import { formatsDates } from '~/assets/lib/formatsDates'
 
   export default {
@@ -227,7 +228,10 @@
               allowedClasses: {
                 '*': ['mb-*'],
               },
-            })
+            }).replaceAll(/#(\d+:\d+)#/g, ((substring, utcTime) => {
+              const time = parse(`${utcTime}+00`, 'HH:mmx', new Date())
+              return this.formatDateObject(time, 'p')
+            }))
           }
         },
       }

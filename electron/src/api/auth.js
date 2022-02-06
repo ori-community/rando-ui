@@ -5,8 +5,8 @@ import { RANDOMIZER_BASE_PATH } from '~/electron/src/lib/Constants'
 const JWT_PATH = `${RANDOMIZER_BASE_PATH}/.jwt`
 
 export default {
-  async startOAuthFlow(event, baseUrl) {
-    if (app.isDefaultProtocolClient('ori-rando')) {
+  async startOAuthFlow(event, baseUrl, forceWindowLogin = false) {
+    if (app.isDefaultProtocolClient('ori-rando') && !forceWindowLogin) {
       await shell.openExternal(`${baseUrl}/login?redir=ori-rando://authenticate`)
     } else {
       const loginWindow = new BrowserWindow({

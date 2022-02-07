@@ -3,10 +3,11 @@
     <v-sheet v-if='!hideColor' :color='universe.color' height='0.5em' />
     <v-card-title>{{ universe.name }}</v-card-title>
     <v-card-text>
-      <v-scroll-y-reverse-transition leave-absolute group tag='div' class='d-flex worlds'>
+      <v-scroll-y-reverse-transition leave-absolute group tag='div' class='d-flex flex-wrap worlds'>
         <wotw-world-view
           v-for='world in universe.worlds'
           :key='world.id'
+          class="flex-grow-1"
           :world='world'
           :disabled='disabled'
           :can-join='canJoin'

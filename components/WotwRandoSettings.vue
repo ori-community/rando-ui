@@ -64,6 +64,11 @@
           label='Always Show Keystones'
           messages='Keep your keystone count visible while playing'
         />
+        <v-checkbox
+          v-model='settings.Flags.DisableShowSecrets'
+          label='Disable always showing secret areas'
+          messages='By default, the randomizer shows all secrets without having the Sense Shard equipped'
+        />
       </div>
     </v-col>
     <v-col cols='12' md='6'>

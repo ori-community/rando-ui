@@ -43,6 +43,7 @@ const getDefaultSettings = () => ({
     CursorLock: false,
     UpdateToPrereleaseVersions: false,
     ShowStatsAfterFinish: true,
+    DisableShowSecrets: false,
   },
 })
 

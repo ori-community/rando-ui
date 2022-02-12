@@ -86,7 +86,12 @@ export class LauncherService {
   }
 
   static async isRandomizerRunning() {
-    return RandoIPCService.isConnected()
+    try {
+      await RandoIPCService.makeSureSocketIsConnected()
+    } catch (e) {
+      return false
+    }
+    return RandoIPCService.isConnected() && isProcessRunning('oriwotw.exe')
   }
 
   static async launch(seedFilePath = null) {

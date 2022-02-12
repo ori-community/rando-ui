@@ -44,6 +44,7 @@ const getDefaultSettings = () => ({
     UpdateToPrereleaseVersions: false,
     ShowStatsAfterFinish: true,
     DisableShowSecrets: false,
+    DisableAutoAim: false,
   },
 })
 

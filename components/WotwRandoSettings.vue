@@ -99,6 +99,11 @@
           label='Lock Cursor to Window'
           messages='Prevents the mouse cursor from moving outside the game window'
         />
+        <v-checkbox
+          v-model='settings.Flags.DisableAutoAim'
+          label='Disable Autoaim'
+          messages='Disables Autoaiming for Spike, Bow and Shuriken'
+        />
       </div>
       <div class='mb-8'>
         <h3>Launch settings</h3>

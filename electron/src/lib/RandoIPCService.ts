@@ -58,13 +58,15 @@ const makeResponse = (requestId: number, payload: any): Response => ({
 })
 
 export class RandoIPCService {
+  static isConnected() {
+    return socket !== null && (socket.readyState !== 'open' || socket.destroyed)
+  }
+
   static startConnectionCheckLoop() {
     console.log(`RandoIPC: Connection check loop started`)
 
     const checkRandoIpcAvailability = async () => {
-      if (await LauncherService.isRandomizerRunning()) {
-        await this.makeSureSocketIsConnected()
-      }
+      await this.makeSureSocketIsConnected()
     }
 
     setInterval(checkRandoIpcAvailability, 5000)
@@ -75,9 +77,9 @@ export class RandoIPCService {
    * @returns {Promise<void>}
    */
   static makeSureSocketIsConnected() {
-    if (socket !== null && (socket.readyState !== 'open' || socket.destroyed)) {
-      console.log(`RandoIPC: Destroying IPC socket, readyState = ${socket.readyState}`)
-      socket.destroy()
+    if (this.isConnected()) {
+      console.log(`RandoIPC: Destroying IPC socket, readyState = ${socket?.readyState}`)
+      socket?.destroy()
       socket = null
     }
 

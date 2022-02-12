@@ -86,7 +86,7 @@ export class LauncherService {
   }
 
   static async isRandomizerRunning() {
-    return await isProcessRunning('injector.exe')
+    return RandoIPCService.isConnected()
   }
 
   static async launch(seedFilePath = null) {

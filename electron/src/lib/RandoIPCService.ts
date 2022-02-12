@@ -59,7 +59,7 @@ const makeResponse = (requestId: number, payload: any): Response => ({
 
 export class RandoIPCService {
   static isConnected() {
-    return socket !== null && (socket.readyState !== 'open' || socket.destroyed)
+    return socket !== null && socket.readyState === 'open'
   }
 
   static startConnectionCheckLoop() {
@@ -77,13 +77,13 @@ export class RandoIPCService {
    * @returns {Promise<void>}
    */
   static makeSureSocketIsConnected() {
-    if (this.isConnected()) {
+    if (!this.isConnected()) {
       console.log(`RandoIPC: Destroying IPC socket, readyState = ${socket?.readyState}`)
       socket?.destroy()
       socket = null
     }
 
-    if (socket === null) {
+    if (socket === null || socket.destroyed) {
       return new Promise<void>(((resolve, reject) => {
         try {
           socket = new Socket()

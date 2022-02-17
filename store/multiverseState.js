@@ -1,8 +1,7 @@
 import Vue from 'vue'
-import { RandoProto } from '~/assets/proto/RandoProto'
-import { decodePacket } from '~/assets/proto/RandoProtoUtil'
 import { hasOwnProperty } from '~/assets/lib/hasOwnProperty'
 import { WebSocketFactory } from '~/assets/lib/WebSocketFactory'
+import { decodePacket } from '~/assets/proto/ProtoUtil.ts'
 
 /** @type Object<Number, WebSocket> */
 const webSockets = {} // multiverseId → ws
@@ -140,14 +139,17 @@ export const actions = {
           return
         }
 
-        console.log(packet)
-        if (packet instanceof RandoProto.SyncBoardMessage) {
-          commit('setBingoBoard', { multiverseId, board: packet.board })
-        } else if (packet instanceof RandoProto.MultiverseInfoMessage) {
-          commit('setUniverses', { multiverseId, universes: packet.universes })
-          commit('setSpectators', { multiverseId, spectators: packet.spectators })
-        } else if (packet instanceof RandoProto.SyncBingoUniversesMessage) {
-          commit('setBingoUniverses', { multiverseId, bingoUniverses: packet.bingoUniverses })
+        switch (packet.$type) {
+          case 'RandoProto.SyncBoardMessage':
+            commit('setBingoBoard', { multiverseId, board: packet.board })
+            break
+          case 'RandoProto.MultiverseInfoMessage':
+            commit('setUniverses', { multiverseId, universes: packet.universes })
+            commit('setSpectators', { multiverseId, spectators: packet.spectators })
+            break
+          case 'RandoProto.SyncBingoUniversesMessage':
+            commit('setBingoUniverses', { multiverseId, bingoUniverses: packet.bingoUniverses })
+            break
         }
       })
     }

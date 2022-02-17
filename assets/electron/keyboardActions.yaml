@@ -31,6 +31,9 @@ WarpCredits:
 ToggleCursorLock:
   displayName: ToggleCursorLock
   composable: true
+ToggleAutoaim:
+  displayName: ToggleAutoaim
+  composable: true
 ToggleAlwaysShowKeystones:
   displayName: ToggleAlwaysShowKeystones
   composable: true

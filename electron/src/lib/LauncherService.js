@@ -86,7 +86,16 @@ export class LauncherService {
   }
 
   static async isRandomizerRunning() {
-    return await isProcessRunning('injector.exe')
+    if (!RandoIPCService.isConnected()) {
+      try {
+        await RandoIPCService.makeSureSocketIsConnected()
+        return true
+      } catch (e) {
+        return false
+      }
+    }
+
+    return true
   }
 
   static async launch(seedFilePath = null) {

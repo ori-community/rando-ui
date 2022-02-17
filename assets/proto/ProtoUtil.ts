@@ -48,10 +48,9 @@ const getPacketId = (type: any) => {
   return Number(Object.keys(packetTypes).find(key => packetTypes[Number(key)] === type))
 }
 
-export const makePacket = (type: any, content: object) => {
-  return Packet.encode({
-    $type: 'RandoProto.Packet',
+export const makePacket = (type: any, content: object = {}) => {
+  return Packet.encode(Packet.fromJSON({
     id: getPacketId(type),
     packet: type.encode(content).finish(),
-  }).finish()
+  })).finish()
 }

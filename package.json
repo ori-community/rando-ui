@@ -9,7 +9,8 @@
     "start": "nuxt start",
     "generate": "nuxt generate",
     "lint:js": "eslint --ext \".js,.vue\" --ignore-path .gitignore .",
-    "lint": "yarn lint:js"
+    "lint": "yarn lint:js",
+    "protoc:win": "cd assets/proto && protoc --plugin=../../node_modules/.bin/protoc-gen-ts_proto.cmd --ts_proto_out=. --ts_proto_opt=esModuleInterop=true --ts_proto_opt=outputTypeRegistry=true messages.proto"
   },
   "dependencies": {
     "@fontsource/nunito-sans": "^4.5.0",
@@ -33,6 +34,7 @@
     "protobufjs": "^6.11.2",
     "sanitize-html": "^2.5.1",
     "semver": "^7.3.5",
+    "ts-proto": "^1.105.2",
     "v-snackbars": "^3.2.4",
     "vue": "^2.6.14",
     "vue-apexcharts": "^1.6.2",
@@ -41,7 +43,8 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.14.7",
-    "@nuxt/types": "~2.15.0",
+    "@nuxt/types": "^2.15.8",
+    "@nuxt/typescript-build": "^2.1.0",
     "@nuxtjs/eslint-config": "^6.0.1",
     "@nuxtjs/eslint-module": "^3.0.2",
     "@nuxtjs/vuetify": "^1.12.1",

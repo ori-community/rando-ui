@@ -1,5 +1,5 @@
-import { makePacket } from '~/assets/proto/RandoProtoUtil'
-import { RandoProto } from '~/assets/proto/RandoProto'
+import { AuthenticateMessage } from '~/assets/proto/messages.ts'
+import { makePacket } from '~/assets/proto/ProtoUtil.ts'
 
 export class WebSocketFactory {
   static jwt = null
@@ -10,7 +10,7 @@ export class WebSocketFactory {
       const ws = new WebSocket(`${$paths.WS_BASE_URL}${endpoint}`)
 
       ws.addEventListener('open', () => {
-        ws.send(makePacket(RandoProto.AuthenticateMessage, {
+        ws.send(makePacket(AuthenticateMessage, {
           jwt: this.jwt,
         }))
 

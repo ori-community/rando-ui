@@ -147,6 +147,11 @@ export class RandoIPCService {
         LocalTrackerWebSocketService.reportUberState({group, state, value})
         break
       }
+      case 'notify_on_reload':
+      case 'notify_on_load': {
+        await LocalTrackerWebSocketService.forceRefreshAll()
+        break
+      }
     }
   }
 
@@ -203,5 +208,13 @@ export class RandoIPCService {
 
   static async getUberState(group: number, state: number): Promise<number> {
     return (await this.getUberStates([{ group, state }]))[0]
+  }
+
+  static async getSeedFlags(): Promise<string[]> {
+    return await this.request('get_flags')
+  }
+
+  static async setUberState(group: number, state: number, value: number): Promise<void> {
+    await this.emit('set_uberstate', { group, state, value })
   }
 }

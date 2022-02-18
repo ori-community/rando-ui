@@ -19,9 +19,9 @@
           </v-btn>
         </template>
         <v-list>
-          <v-list-item x-large depressed text @click='openLocalTrackerWindow'>
-            <v-icon left>mdi-radar</v-icon>
-            Tracker
+          <v-list-item :disabled='!localTrackerRunning' x-large depressed text @click='openLocalTrackerWindow'>
+            <v-icon left :disabled='!localTrackerRunning'>mdi-radar</v-icon>
+            Tracker (Beta)
           </v-list-item>
           <v-list-item x-large depressed text to='/electron/stats'>
             <v-icon left>mdi-chart-box-outline</v-icon>
@@ -110,6 +110,7 @@
     computed: {
       ...mapGetters('user', ['isLoggedIn']),
       ...mapState('user', ['user', 'userLoaded']),
+      ...mapState('electron', ['localTrackerRunning']),
       isElectron,
       nicknameIsValid() {
         const trimmedNickname = this.currentNickname.trim()

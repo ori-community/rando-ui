@@ -122,3 +122,7 @@ message TrackerUpdate { // 100
 message ResetTracker { // 101
 
 }
+
+message TrackerFlagsUpdate { // 102
+  repeated string flags = 1;
+}

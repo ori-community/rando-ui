@@ -30,7 +30,7 @@
       imageSource() {
         return require(`@/assets/images/tracker/skills/${this.skill}.png`)
       },
-    }
+    },
   }
 </script>
 

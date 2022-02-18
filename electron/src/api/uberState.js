@@ -10,4 +10,8 @@ export default {
     console.log(states)
     return await RandoIPCService.getUberStates(states)
   },
+  async set(event, { group, state, value }) {
+    await RandoIPCService.setUberState(group, state, value)
+    return value
+  },
 }

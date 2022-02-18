@@ -9,6 +9,7 @@ import { UCS2String } from '~/electron/src/lib/UCS2String'
 import { SeedParser } from '~/assets/lib/SeedParser'
 import { uiIpc } from '~/electron/src/api'
 import { isProcessRunning } from '~/electron/src/lib/isProcessRunning'
+import { LocalTrackerService } from '@/lib/LocalTrackerService'
 
 
 const CURRENT_SEED_PATH_FILE = `${RANDOMIZER_BASE_PATH}/.currentseedpath`
@@ -145,10 +146,14 @@ export class LauncherService {
       await waitForProcess('injector.exe', 10)
 
       if (settings.Flags.LaunchWithTracker) {
-        spawn(`start -FilePath "${RANDOMIZER_BASE_PATH.replaceAll('/', '\\')}\\ItemTracker.exe"`, {
-          shell: 'powershell.exe',
-          stdio: 'inherit',
-        }).unref()
+        if (settings.Flags.UseBuiltinTracker) {
+          await LocalTrackerService.openLocalTracker()
+        } else {
+          spawn(`start -FilePath "${RANDOMIZER_BASE_PATH.replaceAll('/', '\\')}\\ItemTracker.exe"`, {
+            shell: 'powershell.exe',
+            stdio: 'inherit',
+          }).unref()
+        }
       }
 
       if (settings.Flags.UseWinStore) {

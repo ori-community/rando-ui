@@ -1,7 +1,7 @@
-import { AddressInfo, WebSocketServer } from 'ws'
+import { AddressInfo, WebSocket, WebSocketServer } from 'ws'
 import { UberId, UberState } from '~/assets/lib/types/UberStates'
 import { RandoIPCService } from '@/lib/RandoIPCService'
-import { ResetTracker, TrackerUpdate } from '~/assets/proto/messages'
+import { ResetTracker, TrackerFlagsUpdate, TrackerUpdate } from '~/assets/proto/messages'
 import { makePacket } from '~/assets/proto/ProtoUtil'
 import { uiIpc } from '@/api'
 
@@ -77,6 +77,10 @@ const TRACKED_UBER_STATES: TrackedUberState[] = [
   { uberId: { group: 6, state: 1120 }, trackingId: 'skill_ancestral_light_glades' },
   { uberId: { group: 6, state: 1121 }, trackingId: 'skill_ancestral_light_marsh' },
   { uberId: { group: 6, state: 2000 }, trackingId: 'skill_clean_water' },
+
+  { uberId: { group: 15, state: 0 }, trackingId: 'resource_spirit_light' },
+  { uberId: { group: 15, state: 1 }, trackingId: 'resource_gorlek_ore' },
+  { uberId: { group: 15, state: 2 }, trackingId: 'resource_keystones' },
 ]
 
 export class LocalTrackerWebSocketService {
@@ -114,22 +118,13 @@ export class LocalTrackerWebSocketService {
 
     this.ws.on('connection', async socket => {
       // Send a reset and all tracked uber states on initial connection
-
-      const trackedValues = await RandoIPCService.getUberStates(TRACKED_UBER_STATES.map(s => s.uberId))
-      const trackerUpdates: TrackerUpdate[] = trackedValues.map((value, index) => TrackerUpdate.fromJSON({
-        id: TRACKED_UBER_STATES[index].trackingId,
-        value,
-      }))
-
       socket.send(makePacket(ResetTracker))
-      for (const update of trackerUpdates) {
-        socket.send(makePacket(TrackerUpdate, update))
-      }
+      await this.forceRefresh(socket)
     })
   }
 
   static get port(): number {
-    return (this.ws!!.address() as AddressInfo).port
+    return (this.ws?.address() as AddressInfo)?.port ?? 31410
   }
 
   static reportUberState(state: UberState) {
@@ -150,12 +145,44 @@ export class LocalTrackerWebSocketService {
     }
   }
 
+  static async forceRefreshAll() {
+    for (const client of this.ws?.clients || []) {
+      await this.forceRefresh(client)
+    }
+  }
+
+  static async forceRefresh(client: WebSocket) {
+    const trackedValues = await RandoIPCService.getUberStates(TRACKED_UBER_STATES.map(s => s.uberId))
+    const trackerUpdates: TrackerUpdate[] = trackedValues.map((value, index) => TrackerUpdate.fromJSON({
+      id: TRACKED_UBER_STATES[index].trackingId,
+      value,
+    }))
+
+    for (const update of trackerUpdates) {
+      client.send(makePacket(TrackerUpdate, update))
+    }
+
+    client.send(makePacket(TrackerFlagsUpdate, {
+      flags: await RandoIPCService.getSeedFlags(),
+    }))
+  }
+
   static stop() {
+    for (const socket of this.ws?.clients || []) {
+      socket.close()
+    }
     this.ws?.close()
     console.log('LocalTrackerWebSocketService: Stopped')
   }
 
   static get isRunning() {
     return !!this.ws && this.webSocketListening
+  }
+
+  static debugSetUberState(trackingId: string, value: number) {
+    const trackedUberState = TRACKED_UBER_STATES.find(t => t.trackingId === trackingId)
+    if (trackedUberState) {
+      RandoIPCService.setUberState(trackedUberState.uberId.group, trackedUberState.uberId.state, value)
+    }
   }
 }

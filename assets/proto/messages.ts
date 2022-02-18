@@ -147,6 +147,12 @@ export interface ResetTracker {
   $type: 'RandoProto.ResetTracker'
 }
 
+/** 102 */
+export interface TrackerFlagsUpdate {
+  $type: 'RandoProto.TrackerFlagsUpdate'
+  flags: string[]
+}
+
 function createBasePacket(): Packet {
   return { $type: 'RandoProto.Packet', id: 0, packet: new Uint8Array() }
 }
@@ -1910,6 +1916,71 @@ export const ResetTracker = {
 }
 
 messageTypeRegistry.set(ResetTracker.$type, ResetTracker)
+
+function createBaseTrackerFlagsUpdate(): TrackerFlagsUpdate {
+  return { $type: 'RandoProto.TrackerFlagsUpdate', flags: [] }
+}
+
+export const TrackerFlagsUpdate = {
+  $type: 'RandoProto.TrackerFlagsUpdate' as const,
+
+  encode(
+    message: TrackerFlagsUpdate,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    for (const v of message.flags) {
+      writer.uint32(10).string(v!)
+    }
+    return writer
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): TrackerFlagsUpdate {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input)
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = createBaseTrackerFlagsUpdate()
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.flags.push(reader.string())
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): TrackerFlagsUpdate {
+    return {
+      $type: TrackerFlagsUpdate.$type,
+      flags: Array.isArray(object?.flags)
+        ? object.flags.map((e: any) => String(e))
+        : [],
+    }
+  },
+
+  toJSON(message: TrackerFlagsUpdate): unknown {
+    const obj: any = {}
+    if (message.flags) {
+      obj.flags = message.flags.map((e) => e)
+    } else {
+      obj.flags = []
+    }
+    return obj
+  },
+
+  fromPartial<I extends Exact<DeepPartial<TrackerFlagsUpdate>, I>>(
+    object: I,
+  ): TrackerFlagsUpdate {
+    const message = createBaseTrackerFlagsUpdate()
+    message.flags = object.flags?.map((e) => e) || []
+    return message
+  },
+}
+
+messageTypeRegistry.set(TrackerFlagsUpdate.$type, TrackerFlagsUpdate)
 
 declare var self: any | undefined
 declare var window: any | undefined

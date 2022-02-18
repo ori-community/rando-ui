@@ -1,6 +1,5 @@
 import { LocalTrackerWebSocketService } from '~/electron/src/lib/LocalTrackerWebSocketService'
-import { BrowserWindow } from 'electron'
-import { getElectronUrl } from '@/api'
+import { LocalTrackerService } from '@/lib/LocalTrackerService'
 
 export default {
   isTrackerRunning() {
@@ -10,16 +9,9 @@ export default {
     return LocalTrackerWebSocketService.port
   },
   async openWindow() {
-    const loginWindow = new BrowserWindow({
-      width: 600,
-      height: 380,
-      autoHideMenuBar: true,
-      webPreferences: {
-        nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
-        contextIsolation: true,
-      },
-    })
-
-    await loginWindow.loadURL(getElectronUrl(`/tracker?source=ws://127.0.0.1:${LocalTrackerWebSocketService.port}`))
-  }
+    await LocalTrackerService.openLocalTracker()
+  },
+  debugSetUberState(event, { trackingId, value }) {
+    LocalTrackerWebSocketService.debugSetUberState(trackingId, value)
+  },
 }

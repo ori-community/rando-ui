@@ -7,8 +7,8 @@ import {
   SyncBingoUniversesMessage,
   SyncBoardMessage,
   TrackerUpdate,
-} from '@/assets/proto/messages'
-import { MessageType } from '@/assets/proto/typeRegistry'
+} from './messages'
+import { MessageType } from './typeRegistry'
 
 type PacketTypes = {
   [id: number]: MessageType | null,

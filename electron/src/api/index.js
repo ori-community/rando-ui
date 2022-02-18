@@ -5,6 +5,7 @@ import bindings from './bindings'
 import auth from './auth'
 import crash from './crash'
 import uberState from './uberState'
+import localTracker from './localTracker'
 
 export default {
   settings,
@@ -14,4 +15,5 @@ export default {
   auth,
   crash,
   uberState,
+  localTracker,
 }

@@ -1,6 +1,6 @@
 <template>
   <div class='page-toolbar d-flex align-center my-4'>
-    <v-scale-transition group tag='div' class='flex-gap'>
+    <v-scale-transition group tag='div' class='flex-gap align-center'>
       <v-btn v-if='isElectron' key='home' depressed exact text to='/electron' x-large>
         <v-icon>mdi-home-outline</v-icon>
       </v-btn>
@@ -12,14 +12,27 @@
         <v-icon left>mdi-dice-multiple</v-icon>
         Seed Generator
       </v-btn>
-      <v-btn v-if='isElectron' key='stats' x-large depressed text to='/electron/stats'>
-        <v-icon left>mdi-chart-box-outline</v-icon>
-        Stats
-      </v-btn>
-      <v-btn v-if='isElectron' key='settings' exact x-large depressed text to='/electron/settings'>
-        <v-icon left>mdi-application-cog-outline</v-icon>
-        Settings
-      </v-btn>
+      <v-menu v-if='isElectron' key='electron-menu' offset-y>
+        <template #activator='{on, attrs}'>
+          <v-btn icon v-bind='attrs' v-on='on'>
+            <v-icon>mdi-dots-vertical</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item x-large depressed text @click='openLocalTrackerWindow'>
+            <v-icon left>mdi-radar</v-icon>
+            Tracker
+          </v-list-item>
+          <v-list-item x-large depressed text to='/electron/stats'>
+            <v-icon left>mdi-chart-box-outline</v-icon>
+            Stats
+          </v-list-item>
+          <v-list-item exact x-large depressed text to='/electron/settings'>
+            <v-icon left>mdi-application-cog-outline</v-icon>
+            Settings
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </v-scale-transition>
     <v-spacer />
     <throttled-spinner>
@@ -155,6 +168,9 @@
         this.nicknameDialogLoading = false
         this.changeNicknameDialogIsOpen = false
       },
+      openLocalTrackerWindow() {
+        window.electronApi.invoke('localTracker.openWindow')
+      }
     },
   }
 </script>

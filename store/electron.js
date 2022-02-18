@@ -17,6 +17,7 @@ export const state = () => ({
   currentSeedPath: null,
   currentSupportBundleName: null,
   showUpdateAvailableDialog: false,
+  localTrackerRunning: false,
 })
 
 export const getters = {
@@ -108,6 +109,9 @@ export const mutations = {
   },
   setCurrentSupportBundleName(state, value) {
     state.currentSupportBundleName = value
+  },
+  setLocalTrackerRunning(state, value) {
+    state.localTrackerRunning = value
   },
 }
 

@@ -50,7 +50,7 @@ const getPacketId = (type: any) => {
 }
 
 export const makePacket = (type: any, content: object = {}) => {
-  return Packet.encode(Packet.fromJSON({
+  return Packet.encode(Packet.fromPartial({
     id: getPacketId(type),
     packet: type.encode(content).finish(),
   })).finish()

@@ -31,6 +31,7 @@
 <script>
   import { decodePacket } from '~/assets/proto/ProtoUtil'
   import { ResetTracker, TrackerUpdate } from '~/assets/proto/messages'
+  import { applyOBSStyles, isOBS } from '~/assets/lib/obs'
 
   export default {
     name: 'Tracker',
@@ -45,6 +46,10 @@
       }
     },
     mounted() {
+      if (isOBS()) {
+        applyOBSStyles()
+      }
+
       this.connect()
     },
     methods: {
@@ -63,7 +68,6 @@
 
           switch (packet.$type) {
             case TrackerUpdate.$type:
-              console.log(packet.id, packet.value)
               this.$set(this.trackedValues, packet.id, packet.value)
               break
             case ResetTracker.$type:

@@ -20,6 +20,6 @@ export default {
       },
     })
 
-    await loginWindow.loadURL(getElectronUrl(`/electron/windows/tracker?source=ws://127.0.0.1:${LocalTrackerWebSocketService.port}`))
+    await loginWindow.loadURL(getElectronUrl(`/tracker?source=ws://127.0.0.1:${LocalTrackerWebSocketService.port}`))
   }
 }

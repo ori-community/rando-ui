@@ -21,7 +21,7 @@ const TRACKED_UBER_STATES: TrackedUberState[] = [
   { uberId: { group: 0, state: 0 }, trackingId: 'tree_bash' },
   { uberId: { group: 0, state: 5 }, trackingId: 'tree_double_jump' },
   { uberId: { group: 0, state: 8 }, trackingId: 'tree_launch' },
-  { uberId: { group: 0, state: 51 }, trackingId: 'tree_grenade' },
+  { uberId: { group: 0, state: 51 }, trackingId: 'tree_light_burst' },
   { uberId: { group: 0, state: 57 }, trackingId: 'tree_grapple' },
   { uberId: { group: 0, state: 62 }, trackingId: 'tree_flash' },
   { uberId: { group: 0, state: 77 }, trackingId: 'tree_regenerate' },

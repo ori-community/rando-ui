@@ -154,6 +154,13 @@
   .tracker {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
+    width: 100vw;
+    height: calc(4 / 7 * 100vw);
+
+    > * {
+      min-width: 0;
+      min-height: 0;
+    }
 
     .clean-water {
       grid-column: 5;
@@ -163,6 +170,7 @@
     .resource-view {
       grid-column: 6 / span 2;
       grid-row: 1 / span 2;
+      position: relative;
     }
   }
 </style>

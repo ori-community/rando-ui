@@ -6,16 +6,18 @@
       <img v-if='flags.includes("Force Quests")' src='@/assets/images/tracker/quest.png'>
       <img v-if='flags.includes("World Tour")' src='@/assets/images/tracker/map_stone.png'>
     </div>
-    <div class='resource-line'>
-      <img src='@/assets/images/tracker/spirit_light.png'>
+    <div class='resource-grid'>
+      <div class='image'>
+        <img src='@/assets/images/tracker/spirit_light.png'>
+      </div>
       <div class='value'>{{ spiritLight }}</div>
-    </div>
-    <div class='resource-line'>
-      <img src='@/assets/images/tracker/keystone.png'>
+      <div class='image'>
+        <img src='@/assets/images/tracker/keystone.png'>
+      </div>
       <div class='value'>{{ keystones }}</div>
-    </div>
-    <div class='resource-line'>
-      <img src='@/assets/images/tracker/gorlek_ore.png'>
+      <div class='image'>
+        <img src='@/assets/images/tracker/gorlek_ore.png'>
+      </div>
       <div class='value'>{{ gorlekOre }}</div>
     </div>
   </div>
@@ -46,38 +48,48 @@
 </script>
 
 <style lang='scss' scoped>
-  .flags {
-    display: flex;
-    gap: 0.5em;
-    justify-content: center;
-    align-items: center;
+  .resource-view {
+    position: relative;
+    display: grid;
+    grid-template-rows: 20% 80%;
 
-    img {
-      height: 40px;
+    .flags {
+      display: flex;
+      gap: 0.5em;
+      justify-content: center;
+      align-items: center;
+
+      img {
+        max-width: 100%;
+        max-height: 100%;
+      }
     }
   }
 
-  .resource-view {
-    position: relative;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
+  .resource-grid {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 28% 28% 28%;
+    align-items: stretch;
 
-  .resource-line {
-    display: flex;
-    gap: 0.5em;
-    align-items: center;
+    .image {
+      min-width: 0;
+      min-height: 0;
+      justify-self: right;
 
-    img {
-      height: 40px;
+      img {
+        max-width: 100%;
+        max-height: 100%;
+      }
     }
 
     .value {
-      font-size: 1.2em;
-      min-width: 40px;
+      padding-left: 0.25em;
+      min-width: 0;
+      min-height: 0;
+      font-size: 4vw;
+      display: flex;
+      align-items: center;
     }
   }
 </style>

@@ -7,18 +7,24 @@
       <img v-if='flags.includes("World Tour")' src='@/assets/images/tracker/map_stone.png'>
     </div>
     <div class='resource-grid'>
-      <div class='image'>
-        <img src='@/assets/images/tracker/spirit_light.png'>
+      <div class='line'>
+        <div class='image'>
+          <img src='@/assets/images/tracker/spirit_light.png'>
+        </div>
+        <div class='value'>{{ spiritLight }}</div>
       </div>
-      <div class='value'>{{ spiritLight }}</div>
-      <div class='image'>
-        <img src='@/assets/images/tracker/keystone.png'>
+      <div class='line'>
+        <div class='image'>
+          <img src='@/assets/images/tracker/keystone.png'>
+        </div>
+        <div class='value'>{{ keystones }}</div>
       </div>
-      <div class='value'>{{ keystones }}</div>
-      <div class='image'>
-        <img src='@/assets/images/tracker/gorlek_ore.png'>
+      <div class='line'>
+        <div class='image'>
+          <img src='@/assets/images/tracker/gorlek_ore.png'>
+        </div>
+        <div class='value'>{{ gorlekOre }}</div>
       </div>
-      <div class='value'>{{ gorlekOre }}</div>
     </div>
   </div>
 </template>
@@ -51,9 +57,11 @@
   .resource-view {
     position: relative;
     display: grid;
-    grid-template-rows: 20% 80%;
+    grid-template-rows: 30% 70%;
+    justify-content: center;
 
     .flags {
+      padding-top: 0.5em;
       display: flex;
       gap: 0.5em;
       justify-content: center;
@@ -67,29 +75,31 @@
   }
 
   .resource-grid {
-    display: grid;
-    grid-template-columns: 50% 50%;
-    grid-template-rows: 28% 28% 28%;
-    align-items: stretch;
+    margin: 0 auto;
 
-    .image {
-      min-width: 0;
-      min-height: 0;
-      justify-self: right;
-
-      img {
-        max-width: 100%;
-        max-height: 100%;
-      }
-    }
-
-    .value {
-      padding-left: 0.25em;
-      min-width: 0;
-      min-height: 0;
-      font-size: 4vw;
+    .line {
       display: flex;
-      align-items: center;
+      height: 30%;
+
+      .image {
+        height: 100%;
+        min-width: 0;
+        justify-self: right;
+
+        img {
+          max-width: 100%;
+          max-height: 100%;
+        }
+      }
+
+      .value {
+        padding-left: 0.25em;
+        min-width: 0;
+        min-height: 0;
+        font-size: 4vw;
+        display: flex;
+        align-items: center;
+      }
     }
   }
 </style>

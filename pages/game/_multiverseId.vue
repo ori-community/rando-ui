@@ -190,22 +190,7 @@
 <script>
   import { mapGetters, mapState } from 'vuex'
   import { isElectron } from '~/assets/lib/isElectron'
-
-  const isOBS = () => !!window?.obsstudio?.pluginVersion
-
-  const obsModeStyle = `
-  html {
-    overflow: hidden; /* doesn't work sometimes for reasons */
-  }
-
-  .v-application {
-    background-color: transparent !important;
-  }
-
-  footer {
-    display: none;
-  }
-  `
+  import { applyOBSStyles, isOBS } from '~/assets/lib/obs'
 
   export default {
     name: 'GamePage',
@@ -336,11 +321,7 @@
           if (multiverseReady && this.multiverse.bingoBoard) {
             this.$nextTick(() => {
               if (isOBS()) {
-                const styleElement = document.createElement('style')
-                styleElement.innerHTML = obsModeStyle
-                styleElement.id = 'obs-mode-style'
-                document.head.appendChild(styleElement)
-
+                applyOBSStyles()
                 this.centerBoard()
               }
             })

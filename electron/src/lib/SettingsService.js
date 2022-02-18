@@ -35,6 +35,7 @@ const getDefaultSettings = () => ({
     WaterDashMouseControl: false,
     DisableNetcode: false,
     LaunchWithTracker: false,
+    UseBuiltinTracker: false,
     DisableQuestFocus: true,
     BoringMoney: true,
     WaitForDebugger: false,

@@ -121,6 +121,16 @@
           label='Launch with Item Tracker'
           messages='Automatically open the item tracker when launching the randomizer'
         />
+
+        <v-expand-transition>
+          <v-checkbox
+            v-if='settings.Flags.LaunchWithTracker'
+            v-model='settings.Flags.UseBuiltinTracker'
+            label='Use builtin tracker (beta)'
+            messages='Use the builtin item tracker. This will replace the current tracker in the long term'
+          />
+        </v-expand-transition>
+
         <v-checkbox
           v-model='settings.Flags.DisableNetcode'
           label='Disable Netcode'

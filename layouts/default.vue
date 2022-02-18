@@ -124,6 +124,10 @@
           }
         })
 
+        window.electronApi.on('localTracker.setIsRunning', (event, isRunning) => {
+          this.$store.commit('electron/setLocalTrackerRunning', isRunning)
+        })
+
         window.electronApi.invoke('ready')
 
         this.$store.commit('electron/setSettings', await window.electronApi.invoke('settings.readSettings'))

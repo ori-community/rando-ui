@@ -2,7 +2,7 @@ import { app, BrowserWindow, protocol } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import * as path from 'path'
-import { registerUIIpcApi, uiIpc } from './api'
+import { getElectronUrl, registerUIIpcApi, uiIpc } from './api'
 import fs from 'fs'
 import { SettingsService } from '~/electron/src/lib/SettingsService'
 import { CrashDetectService } from '~/electron/src/lib/CrashDetectService'
@@ -52,18 +52,18 @@ async function createWindow() {
 
   window.maximize()
   window.show()
-  
+
   await SettingsService.migrateSettingsVersion()
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     // await window.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string)
-    await window.loadURL('http://localhost:3000/electron')
+    await window.loadURL(getElectronUrl('/electron'))
     if (!process.env.IS_TEST) window.webContents.openDevTools()
   } else {
     createProtocol('app')
     // Load the index.html when not in development
-    await window.loadURL('app://./index.html#/electron')
+    await window.loadURL(getElectronUrl('/electron'))
   }
 
   const commandLineArgumentHandler = (args: string[]) => {

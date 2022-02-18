@@ -2,6 +2,8 @@ import { Socket } from 'net'
 import { LauncherService } from '~/electron/src/lib/LauncherService'
 import throttle from 'lodash.throttle'
 import { uiIpc } from '@/api'
+import { UberId } from '~/assets/lib/types/UberStates'
+import { LocalTrackerWebSocketService } from '@/lib/LocalTrackerWebSocketService'
 
 const PIPE_NAME = 'wotw_rando'
 const PIPE_PATH = '\\\\.\\pipe\\'
@@ -29,11 +31,6 @@ interface Response {
 interface QueuedRequest {
   request: Request,
   expectsResponse: boolean,
-}
-
-interface UberState {
-  group: number,
-  state: number,
 }
 
 const outgoingRequestHandlers: {[requestId: number]: {resolve?: (arg?: any) => any, promise?: Promise<any>}} = {}
@@ -93,9 +90,11 @@ export class RandoIPCService {
           })
           socket.on('close', () => {
             console.log('RandoIPC: Socket closed')
+            LocalTrackerWebSocketService.stop()
           })
           socket.connect(PIPE_PATH + PIPE_NAME, () => {
             console.log('RandoIPC: Connected')
+            LocalTrackerWebSocketService.start()
             resolve()
           })
           socket.on('data', data => {
@@ -144,6 +143,13 @@ export class RandoIPCService {
         if (group === 34543 && state === 11226 && value) {
           uiIpc.queueSend('game.gameFinished')
         }
+
+        LocalTrackerWebSocketService.reportUberState({group, state, value})
+        break
+      }
+      case 'notify_on_reload':
+      case 'notify_on_load': {
+        await LocalTrackerWebSocketService.forceRefreshAll()
         break
       }
     }
@@ -196,11 +202,19 @@ export class RandoIPCService {
     return await this.request(method, payload, false)
   }
 
-  static async getUberStates(states: UberState[]) {
+  static async getUberStates(states: UberId[]): Promise<number[]> {
     return await this.request('get_uberstates', states)
   }
 
-  static async getUberState(group: number, state: number) {
+  static async getUberState(group: number, state: number): Promise<number> {
     return (await this.getUberStates([{ group, state }]))[0]
+  }
+
+  static async getSeedFlags(): Promise<string[]> {
+    return await this.request('get_flags')
+  }
+
+  static async setUberState(group: number, state: number, value: number): Promise<void> {
+    await this.emit('set_uberstate', { group, state, value })
   }
 }

@@ -74,13 +74,16 @@
       isOBS,
     },
     watch: {
-      connected(newValue, oldValue) {
-        if (!newValue && oldValue && isOBS()) {
-          setTimeout(() => {
-            this.hideConnectingScreen = true
-          }, 5000)
-        } else if (newValue) {
-          this.hideConnectingScreen = false
+      connected: {
+        immediate: true,
+        handler(newValue) {
+          if (!newValue && isOBS()) {
+            setTimeout(() => {
+              this.hideConnectingScreen = true
+            }, 5000)
+          } else if (newValue) {
+            this.hideConnectingScreen = false
+          }
         }
       },
     },

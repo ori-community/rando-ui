@@ -2,10 +2,10 @@
   <div class='fill-height'>
     <v-fade-transition mode='out-in'>
       <div v-if='connected' key='tracker' class='tracker pa-2'>
-        <WotwTrackerSkillView skill='hammer' :active='trackedValues.skill_hammer' />
+        <WotwTrackerSkillView skill='spike' :active='trackedValues.skill_spike' />
         <WotwTrackerSkillView skill='sentry' :active='trackedValues.skill_sentry' />
-        <WotwTrackerSkillView skill='flap' :active='trackedValues.skill_flap' />
         <WotwTrackerSkillView skill='blaze' :active='trackedValues.skill_blaze' />
+        <WotwTrackerSkillView skill='flap' :active='trackedValues.skill_flap' />
         <WotwTrackerSkillView class='clean-water' skill='clean_water' :active='trackedValues.skill_clean_water' />
         <WotwTrackerResourceView
           class='resource-view'
@@ -14,35 +14,34 @@
           :gorlek-ore='trackedValues.resource_gorlek_ore'
           :keystones='trackedValues.resource_keystones'
         />
-        <WotwTrackerSkillView skill='spike' :active='trackedValues.skill_spike' />
+        <WotwTrackerSkillView skill='hammer' :active='trackedValues.skill_hammer' />
         <WotwTrackerSkillView skill='shuriken' :active='trackedValues.skill_shuriken' />
-        <WotwTrackerSkillView skill='glide' :active='trackedValues.skill_glide' />
         <WotwTrackerSkillView skill='water_breath' :active='trackedValues.skill_water_breath' />
+        <WotwTrackerSkillView skill='glide' :active='trackedValues.skill_glide' />
 
         <WotwTrackerSkillView skill='sword' :tree='trackedValues.tree_sword' :active='trackedValues.skill_sword' />
         <WotwTrackerSkillView skill='bash' :tree='trackedValues.tree_bash' :active='trackedValues.skill_bash' />
         <WotwTrackerSkillView skill='bow' :tree='trackedValues.tree_bow' :active='trackedValues.skill_bow' />
-        <WotwTrackerSkillView skill='burrow' :tree='trackedValues.tree_burrow' :active='trackedValues.skill_burrow' />
         <WotwTrackerSkillView skill='dash' :tree='trackedValues.tree_dash' :active='trackedValues.skill_dash' />
-        <WotwTrackerSkillView skill='double_jump' :tree='trackedValues.tree_double_jump' :active='trackedValues.skill_double_jump' />
+        <WotwTrackerSkillView skill='water_dash' :tree='trackedValues.tree_water_dash' :active='trackedValues.skill_water_dash' />
+        <WotwTrackerSkillView skill='burrow' :tree='trackedValues.tree_burrow' :active='trackedValues.skill_burrow' />
         <WotwTrackerSkillView skill='ancestral_light_glades' :tree='trackedValues.tree_ancestral_light_glades' :active='trackedValues.skill_ancestral_light_glades' />
-        <WotwTrackerSkillView skill='flash' :tree='trackedValues.tree_flash' :active='trackedValues.skill_flash' />
+        <WotwTrackerSkillView skill='double_jump' :tree='trackedValues.tree_double_jump' :active='trackedValues.skill_double_jump' />
+        <WotwTrackerSkillView skill='regenerate' :tree='trackedValues.tree_regenerate' :active='trackedValues.skill_regenerate' />
         <WotwTrackerSkillView skill='grapple' :tree='trackedValues.tree_grapple' :active='trackedValues.skill_grapple' />
         <WotwTrackerSkillView skill='launch' :tree='trackedValues.tree_launch' :active='trackedValues.skill_launch' />
+        <WotwTrackerSkillView skill='flash' :tree='trackedValues.tree_flash' :active='trackedValues.skill_flash' />
         <WotwTrackerSkillView skill='light_burst' :tree='trackedValues.tree_light_burst' :active='trackedValues.skill_light_burst' />
-        <WotwTrackerSkillView skill='regenerate' :tree='trackedValues.tree_regenerate' :active='trackedValues.skill_regenerate' />
-        <WotwTrackerSkillView skill='water_dash' :tree='trackedValues.tree_water_dash' :active='trackedValues.skill_water_dash' />
         <WotwTrackerSkillView skill='ancestral_light_marsh' :tree='trackedValues.tree_ancestral_light_marsh' :active='trackedValues.skill_ancestral_light_marsh' />
       </div>
-      <div v-else-if='connectedOnce' key='retrying-connection' class='fill-height d-flex flex-column align-center justify-center'>
+      <div v-else-if='!hideConnectingScreen' key='connecting' class='fill-height d-flex flex-column align-center justify-center'>
         <div class='pb-4'>
-          Connection lost. Trying to reconnect...
-        </div>
-        <v-progress-linear indeterminate query />
-      </div>
-      <div v-else key='connecting' class='fill-height d-flex flex-column align-center justify-center'>
-        <div class='pb-4'>
-          Connecting to game...
+          <template v-if='connectedOnce'>
+            Connection lost. Trying to reconnect...
+          </template>
+          <template v-else>
+            Waiting for game...
+          </template>
         </div>
         <v-progress-circular indeterminate />
       </div>
@@ -61,6 +60,7 @@
     data: () => ({
       connected: false,
       connectedOnce: false,
+      hideConnectingScreen: false,
       trackedValues: {},
       seedFlags: [],
     }),
@@ -70,7 +70,19 @@
     computed: {
       trackerSource() {
         return this.$route.query.source
-      }
+      },
+      isOBS,
+    },
+    watch: {
+      connected(newValue, oldValue) {
+        if (!newValue && oldValue && isOBS()) {
+          setTimeout(() => {
+            this.hideConnectingScreen = true
+          }, 5000)
+        } else if (newValue) {
+          this.hideConnectingScreen = false
+        }
+      },
     },
     mounted() {
       if (isOBS()) {

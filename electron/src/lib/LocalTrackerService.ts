@@ -9,6 +9,7 @@ export class LocalTrackerService {
       width: 700,
       height: 440,
       autoHideMenuBar: true,
+      alwaysOnTop: true,
       webPreferences: {
         nodeIntegration: Boolean(process.env.ELECTRON_NODE_INTEGRATION),
         contextIsolation: true,

@@ -1,6 +1,6 @@
 <template>
   <div class='resource-view'>
-    <div v-show='flags.length > 0' class='flags pb-2'>
+    <div class='flags pb-2'>
       <img v-if='flags.includes("Force Trees")' src='@/assets/images/tracker/tree.png'>
       <img v-if='flags.includes("Force Wisps")' src='@/assets/images/tracker/wisp.png'>
       <img v-if='flags.includes("Force Quests")' src='@/assets/images/tracker/quest.png'>

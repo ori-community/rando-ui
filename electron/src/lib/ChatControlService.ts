@@ -39,8 +39,6 @@ export class ChatControlService {
   }
 
   static async runScript(script: string, params: string[] = []) {
-    console.log({ script, params })
-
     if (!RandoIPCService.isConnected()) {
       console.log('Ignoring chat action, IPC not connected')
       return
@@ -65,6 +63,30 @@ export class ChatControlService {
       })
       runner.addFunction('wait', async (...args) => {
         await new Promise(resolve => setTimeout(resolve, Number(args[0]) * 1000))
+      })
+      runner.addFunction('action', async (...args) => {
+        await RandoIPCService.emit('action', {action_id: args[0], pressed: Boolean(args[1])})
+      })
+      runner.addFunction('setVelocity', async (...args) => {
+        console.log(args)
+        await RandoIPCService.emit('set_velocity', {
+          x: Number(args[0]),
+          y: Number(args[1]),
+          z: 0,
+        })
+      })
+      runner.addFunction('getVelocity', async () => {
+        await RandoIPCService.request('get_velocity')
+      })
+      runner.addFunction('random', (...args) => {
+        switch (args.length) {
+          case 0:
+            return Math.random()
+          case 1:
+            return Math.random() * (Number(args[0]) ?? 1)
+          default:
+            return Number(args[0]) + Math.random() * (Number(args[1]) - Number(args[0]))
+        }
       })
 
       for (const line of script.split('\n')) {

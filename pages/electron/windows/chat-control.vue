@@ -54,7 +54,7 @@
       commands: {
         deep: true,
         handler(value) {
-          window.localStorage.setItem(COMMANDS_STORAGE_KEY, JSON.stringify(this.commands))
+          window.localStorage.setItem(COMMANDS_STORAGE_KEY, JSON.stringify(value.filter(v => !!v)))
         },
       }
     },
@@ -62,7 +62,7 @@
       const savedCommands = window.localStorage.getItem(COMMANDS_STORAGE_KEY)
       if (savedCommands) {
         try {
-          this.commands = JSON.parse(savedCommands)
+          this.commands = JSON.parse(savedCommands)?.filter(v => !!v)
         } catch (e) {
           console.error(e)
         }

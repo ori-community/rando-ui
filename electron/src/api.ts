@@ -1,6 +1,5 @@
-import { ipcMain } from 'electron'
+import { ipcMain, webContents } from 'electron'
 import apis from './api/index'
-import { getWindow } from '@/background'
 
 class UIIPC {
   queue: {event: string, payload: any}[] = []
@@ -15,7 +14,9 @@ class UIIPC {
   }
 
   forceSend(event: string, payload: any = null) {
-    getWindow()?.webContents.send(event, payload)
+    for (const webContent of webContents.getAllWebContents()) {
+      webContent.send(event, payload)
+    }
   }
 
   handleQueuedEvents() {

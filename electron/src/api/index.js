@@ -6,6 +6,7 @@ import auth from './auth'
 import crash from './crash'
 import uberState from './uberState'
 import localTracker from './localTracker'
+import chatControl from './chatControl'
 
 export default {
   settings,
@@ -16,4 +17,5 @@ export default {
   crash,
   uberState,
   localTracker,
+  chatControl,
 }

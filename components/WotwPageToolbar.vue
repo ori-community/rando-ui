@@ -23,6 +23,10 @@
             <v-icon left :disabled='!localTrackerRunning'>mdi-radar</v-icon>
             Tracker (Beta)
           </v-list-item>
+          <v-list-item x-large depressed text @click='openChatControl'>
+            <v-icon left>mdi-radar</v-icon>
+            Chat Control (Beta)
+          </v-list-item>
           <v-list-item x-large depressed text to='/electron/stats'>
             <v-icon left>mdi-chart-box-outline</v-icon>
             Stats
@@ -171,6 +175,9 @@
       },
       openLocalTrackerWindow() {
         window.electronApi.invoke('localTracker.openWindow')
+      },
+      openChatControl() {
+        window.electronApi.invoke('chatControl.openWindow')
       }
     },
   }

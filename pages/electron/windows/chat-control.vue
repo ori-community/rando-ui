@@ -84,7 +84,7 @@
         for (const command of this.commands) {
           if (command.triggers.some(t => t.type === 'reward' && t.rewardId === message.reward.id)) {
             chatMessage.commandIds.push(command.id)
-            await this.runCommand(command, message.message?.split(' ') ?? [])
+            await this.runCommand(command, message.message?.trim().split(' ') ?? [])
           }
         }
       })
@@ -105,7 +105,7 @@
           for (const command of this.commands) {
             if (command.triggers.some(t => t.type === 'command' && t.action === matches.groups.action)) {
               chatMessage.commandIds.push(command.id)
-              await this.runCommand(command, matches.groups.params)
+              await this.runCommand(command, matches.groups.params.trim().split(' '))
             }
           }
         }

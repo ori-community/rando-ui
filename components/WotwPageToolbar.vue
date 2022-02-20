@@ -24,7 +24,7 @@
             Tracker (Beta)
           </v-list-item>
           <v-list-item x-large depressed text @click='openChatControl'>
-            <v-icon left>mdi-radar</v-icon>
+            <v-icon left>mdi-message-flash-outline</v-icon>
             Chat Control (Beta)
           </v-list-item>
           <v-list-item x-large depressed text to='/electron/stats'>

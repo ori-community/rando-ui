@@ -102,6 +102,9 @@
       selectedChatAction: '',
     }),
     watch: {
+      value(value) {
+        this.inputValue = value
+      },
       inputValue(value) {
         this.$emit('input', value)
       },

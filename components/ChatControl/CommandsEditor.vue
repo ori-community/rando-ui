@@ -68,9 +68,6 @@
       inputValue(value) {
         this.$emit('input', value)
       },
-      activeCommands(v) {
-        console.log(v)
-      },
     },
     methods: {
       addCommand() {

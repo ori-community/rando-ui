@@ -18,5 +18,11 @@ export default {
   },
   async getRewards() {
     return await ChatControlService.getRewards()
-  }
+  },
+  async exportCommands(event, { json }) {
+    await ChatControlService.exportCommands(json)
+  },
+  async importCommands() {
+    return await ChatControlService.importCommands()
+  },
 }

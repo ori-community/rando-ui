@@ -26,6 +26,8 @@
             <chat-control-commands-editor
               v-model='commands'
               :active-commands='activeCommands'
+              @export='exportCommands'
+              @import='importCommands'
             />
           </v-col>
         </v-row>
@@ -35,6 +37,8 @@
 </template>
 
 <script>
+  import { v4 as uuidv4 } from 'uuid'
+
   const COMMANDS_STORAGE_KEY = 'chatControl.commands'
 
   export default {
@@ -103,7 +107,7 @@
           const matches = messageRegex.exec(message)
 
           for (const command of this.commands) {
-            if (command.triggers.some(t => t.type === 'command' && t.action === matches.groups.action)) {
+            if (command.triggers.some(t => t.type === 'command' && t.action.toLowerCase() === matches.groups.action.toLowerCase())) {
               chatMessage.commandIds.push(command.id)
               await this.runCommand(command, matches.groups.params.trim().split(' '))
             }
@@ -132,6 +136,38 @@
             params,
           })
           this.activeCommands.splice(this.activeCommands.indexOf(command.id), 1)
+        }
+      },
+      async exportCommands() {
+        const json = JSON.stringify(
+          this.commands.map(c => {
+            delete c.id
+            return c
+          })
+        )
+
+        await window.electronApi.invoke('chatControl.exportCommands', {
+          json,
+        })
+      },
+      async importCommands() {
+        const json = await window.electronApi.invoke('chatControl.importCommands')
+
+        if (json) {
+          try {
+            const rawCommands = JSON.parse(json)
+
+            rawCommands.sort((a, b) => a.name.localeCompare(b.name))
+
+            for (const rawCommand of rawCommands) {
+              this.commands.push({
+                ...rawCommand,
+                id: uuidv4(),
+              })
+            }
+          } catch (e) {
+            console.error(e)
+          }
         }
       },
     },

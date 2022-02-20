@@ -20,6 +20,22 @@
       <v-icon left>mdi-plus</v-icon>
       Add command
     </v-btn>
+    <v-tooltip bottom>
+      <template #activator='{on, attrs}'>
+        <v-btn v-bind='attrs' icon v-on='on' @click='$emit("import")'>
+          <v-icon>mdi-database-import-outline</v-icon>
+        </v-btn>
+      </template>
+      <span>Import</span>
+    </v-tooltip>
+    <v-tooltip bottom>
+      <template #activator='{on, attrs}'>
+        <v-btn v-bind='attrs' icon v-on='on' @click='$emit("export")'>
+          <v-icon>mdi-database-export-outline</v-icon>
+        </v-btn>
+      </template>
+      <span>Export</span>
+    </v-tooltip>
 
     <v-dialog v-model='editDialogOpen' fullscreen>
       <v-card>
@@ -33,7 +49,7 @@
           </div>
 
           <chat-control-command-editor
-            v-if='editIndex !== null'
+            v-if='editIndex !== null && editDialogOpen'
             v-model='inputValue[editIndex]'
             :available-rewards='availableChannelRewards'
           />
@@ -73,7 +89,7 @@
       addCommand() {
         this.inputValue.push({
           id: uuidv4(),
-          name: 'New command',
+          name: '',
           triggers: [],
           script: '',
         })

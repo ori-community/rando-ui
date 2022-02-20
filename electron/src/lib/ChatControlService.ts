@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron'
+import { BrowserWindow, dialog } from 'electron'
 import path from 'path'
 import { getElectronUrl, uiIpc } from '@/api'
 import { RandoIPCService } from '@/lib/RandoIPCService'
@@ -8,6 +8,7 @@ import { PubSubClient, PubSubListener, PubSubRedemptionMessage } from '@twurple/
 import { AuthProvider } from '@twurple/auth'
 import { ChatClient } from '@twurple/chat'
 import { ApiClient, UserIdResolvable } from '@twurple/api'
+import fs from 'fs'
 
 const TWITCH_CLIENT_ID = '3d3x1rsrwtwz0db4tb9ou9g587677j'
 const TWITCH_REDIRECT_URI = 'https://wotw.orirando.com/api/twitch-login'
@@ -163,5 +164,33 @@ export class ChatControlService {
         cost: r.cost,
       }))
       : []
+  }
+
+  static async exportCommands(json: string) {
+    const result = await dialog.showSaveDialog({
+      title: 'Export commands',
+      filters: [
+        {name: 'Chat Control Commands', extensions: ['wotwcc']}
+      ],
+    })
+
+    if (!result.canceled && result.filePath) {
+      fs.writeFileSync(result.filePath, json, {encoding: 'utf-8'})
+    }
+  }
+
+  static async importCommands() {
+    const result = await dialog.showOpenDialog({
+      title: 'Import commands',
+      filters: [
+        {name: 'Chat Control Commands', extensions: ['wotwcc']}
+      ],
+    })
+
+    if (!result.canceled && result.filePaths) {
+      return fs.readFileSync(result.filePaths[0], {encoding: 'utf-8'})
+    }
+
+    return null
   }
 }

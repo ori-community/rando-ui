@@ -68,7 +68,7 @@
     <v-dialog v-model='addChatCommandTriggerDialogOpen'>
       <v-card>
         <div class='pa-5'>
-          <v-text-field v-model='selectedChatAction' label='Command' prefix='!' />
+          <v-text-field v-model='selectedChatAction' autofocus label='Command' prefix='!' @keydown.enter='addChatCommand' />
 
           <div class='d-flex justify-end'>
             <v-btn :disabled='!selectedChatAction' depressed color='accent' @click='addChatCommand'>

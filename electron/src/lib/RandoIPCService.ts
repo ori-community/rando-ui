@@ -1,5 +1,4 @@
 import { Socket } from 'net'
-import { LauncherService } from '~/electron/src/lib/LauncherService'
 import throttle from 'lodash.throttle'
 import { uiIpc } from '@/api'
 import { UberId } from '~/assets/lib/types/UberStates'
@@ -90,11 +89,10 @@ export class RandoIPCService {
           })
           socket.on('close', () => {
             console.log('RandoIPC: Socket closed')
-            LocalTrackerWebSocketService.stop()
           })
-          socket.connect(PIPE_PATH + PIPE_NAME, () => {
+          socket.connect(PIPE_PATH + PIPE_NAME, async () => {
             console.log('RandoIPC: Connected')
-            LocalTrackerWebSocketService.start()
+            await LocalTrackerWebSocketService.forceRefreshAll()
             resolve()
           })
           socket.on('data', data => {

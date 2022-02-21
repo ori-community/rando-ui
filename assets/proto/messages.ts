@@ -153,6 +153,17 @@ export interface TrackerFlagsUpdate {
   flags: string[]
 }
 
+/** 103 */
+export interface RequestFullUpdate {
+  $type: 'RandoProto.RequestFullUpdate'
+}
+
+/** 104 */
+export interface SetTrackerEndpointId {
+  $type: 'RandoProto.SetTrackerEndpointId'
+  endpointId: string
+}
+
 function createBasePacket(): Packet {
   return { $type: 'RandoProto.Packet', id: 0, packet: new Uint8Array() }
 }
@@ -1981,6 +1992,118 @@ export const TrackerFlagsUpdate = {
 }
 
 messageTypeRegistry.set(TrackerFlagsUpdate.$type, TrackerFlagsUpdate)
+
+function createBaseRequestFullUpdate(): RequestFullUpdate {
+  return { $type: 'RandoProto.RequestFullUpdate' }
+}
+
+export const RequestFullUpdate = {
+  $type: 'RandoProto.RequestFullUpdate' as const,
+
+  encode(
+    _: RequestFullUpdate,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    return writer
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): RequestFullUpdate {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input)
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = createBaseRequestFullUpdate()
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): RequestFullUpdate {
+    return {
+      $type: RequestFullUpdate.$type,
+    }
+  },
+
+  toJSON(_: RequestFullUpdate): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial<I extends Exact<DeepPartial<RequestFullUpdate>, I>>(
+    _: I,
+  ): RequestFullUpdate {
+    const message = createBaseRequestFullUpdate()
+    return message
+  },
+}
+
+messageTypeRegistry.set(RequestFullUpdate.$type, RequestFullUpdate)
+
+function createBaseSetTrackerEndpointId(): SetTrackerEndpointId {
+  return { $type: 'RandoProto.SetTrackerEndpointId', endpointId: '' }
+}
+
+export const SetTrackerEndpointId = {
+  $type: 'RandoProto.SetTrackerEndpointId' as const,
+
+  encode(
+    message: SetTrackerEndpointId,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.endpointId !== '') {
+      writer.uint32(10).string(message.endpointId)
+    }
+    return writer
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): SetTrackerEndpointId {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input)
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = createBaseSetTrackerEndpointId()
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.endpointId = reader.string()
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): SetTrackerEndpointId {
+    return {
+      $type: SetTrackerEndpointId.$type,
+      endpointId: isSet(object.endpointId) ? String(object.endpointId) : '',
+    }
+  },
+
+  toJSON(message: SetTrackerEndpointId): unknown {
+    const obj: any = {}
+    message.endpointId !== undefined && (obj.endpointId = message.endpointId)
+    return obj
+  },
+
+  fromPartial<I extends Exact<DeepPartial<SetTrackerEndpointId>, I>>(
+    object: I,
+  ): SetTrackerEndpointId {
+    const message = createBaseSetTrackerEndpointId()
+    message.endpointId = object.endpointId ?? ''
+    return message
+  },
+}
+
+messageTypeRegistry.set(SetTrackerEndpointId.$type, SetTrackerEndpointId)
 
 declare var self: any | undefined
 declare var window: any | undefined

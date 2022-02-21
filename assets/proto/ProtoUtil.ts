@@ -1,9 +1,9 @@
 import {
   AuthenticateMessage,
   MultiverseInfoMessage,
-  Packet,
+  Packet, RequestFullUpdate,
   RequestUpdatesMessage,
-  ResetTracker,
+  ResetTracker, SetTrackerEndpointId,
   SyncBingoUniversesMessage,
   SyncBoardMessage, TrackerFlagsUpdate,
   TrackerUpdate,
@@ -24,10 +24,16 @@ const packetTypes: PacketTypes = {
   100: TrackerUpdate,
   101: ResetTracker,
   102: TrackerFlagsUpdate,
+  103: RequestFullUpdate,
+  104: SetTrackerEndpointId,
 }
 
 export const blobToArray = async (blob: any) => {
-  return new Uint8Array(await new Response(blob).arrayBuffer())
+  if (typeof window !== 'undefined') {
+    return new Uint8Array(await new Response(blob).arrayBuffer())
+  } else {
+    return blob
+  }
 }
 
 export const decodePacket = async (blob: any) => {

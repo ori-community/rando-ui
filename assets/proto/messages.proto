@@ -126,3 +126,11 @@ message ResetTracker { // 101
 message TrackerFlagsUpdate { // 102
   repeated string flags = 1;
 }
+
+message RequestFullUpdate { // 103
+
+}
+
+message SetTrackerEndpointId { // 104
+  string endpointId = 1;
+}

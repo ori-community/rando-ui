@@ -14,4 +14,10 @@ export default {
   debugSetUberState(event, { trackingId, value }) {
     LocalTrackerWebSocketService.debugSetUberState(trackingId, value)
   },
+  async expose(event, { baseUrl, jwt }) {
+    return await LocalTrackerWebSocketService.expose(baseUrl, jwt)
+  },
+  getEndpoint() {
+    return LocalTrackerWebSocketService.remoteTrackerEndpoint
+  },
 }

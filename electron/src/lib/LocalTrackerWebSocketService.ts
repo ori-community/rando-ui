@@ -1,8 +1,14 @@
 import { AddressInfo, WebSocket, WebSocketServer } from 'ws'
 import { UberId, UberState } from '~/assets/lib/types/UberStates'
 import { RandoIPCService } from '@/lib/RandoIPCService'
-import { ResetTracker, TrackerFlagsUpdate, TrackerUpdate } from '~/assets/proto/messages'
-import { makePacket } from '~/assets/proto/ProtoUtil'
+import {
+  AuthenticateMessage,
+  RequestFullUpdate,
+  ResetTracker, SetTrackerEndpointId,
+  TrackerFlagsUpdate,
+  TrackerUpdate,
+} from '~/assets/proto/messages'
+import { decodePacket, makePacket } from '~/assets/proto/ProtoUtil'
 import { uiIpc } from '@/api'
 
 type TrackedUberState = {
@@ -84,9 +90,16 @@ const TRACKED_UBER_STATES: TrackedUberState[] = [
 ]
 
 export class LocalTrackerWebSocketService {
-  private static ws: WebSocketServer | null = null
+  private static wss: WebSocketServer | null = null
+  private static ws: WebSocket | null = null
 
   private static trackedUberStatesLookupTable: TrackedUberStatesLookupTable = {}
+
+  private static _remoteTrackerEndpoint: string | null = null
+
+  public static get remoteTrackerEndpoint() {
+    return this._remoteTrackerEndpoint
+  }
 
   private static uberIdHash(id: UberId) {
     return String(id.group) + '.' + String(id.state)
@@ -100,23 +113,27 @@ export class LocalTrackerWebSocketService {
       this.trackedUberStatesLookupTable[this.uberIdHash(trackedUberState.uberId)] = trackedUberState
     }
 
-    this.ws = new WebSocketServer({
+    this.wss?.close()
+
+    this.wss = new WebSocketServer({
       port: 31410, // Random free port
       host: '127.0.0.1',
     })
 
-    this.ws.on('listening', () => {
+    this.wss.on('listening', () => {
       this.webSocketListening = true
       uiIpc.queueSend('localTracker.setIsRunning', true)
       console.log('LocalTrackerWebSocketService: Started on port ' + this.port)
     })
 
-    this.ws.on('close', () => {
+    this.wss.on('close', () => {
       uiIpc.queueSend('localTracker.setIsRunning', false)
       this.webSocketListening = false
+
+      setTimeout(this.start, 5000)
     })
 
-    this.ws.on('connection', async socket => {
+    this.wss.on('connection', async socket => {
       // Send a reset and all tracked uber states on initial connection
       socket.send(makePacket(ResetTracker))
       await this.forceRefresh(socket)
@@ -124,7 +141,7 @@ export class LocalTrackerWebSocketService {
   }
 
   static get port(): number {
-    return (this.ws?.address() as AddressInfo)?.port ?? 31410
+    return (this.wss?.address() as AddressInfo)?.port ?? 31410
   }
 
   static reportUberState(state: UberState) {
@@ -140,18 +157,30 @@ export class LocalTrackerWebSocketService {
   }
 
   static sendUpdate(update: TrackerUpdate) {
-    for (const client of this.ws?.clients || []) {
+    for (const client of this.wss?.clients || []) {
       client.send(makePacket(TrackerUpdate, update))
+    }
+
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(makePacket(TrackerUpdate, update))
     }
   }
 
   static async forceRefreshAll() {
-    for (const client of this.ws?.clients || []) {
+    for (const client of this.wss?.clients || []) {
       await this.forceRefresh(client)
+    }
+
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      await this.forceRefresh(this.ws)
     }
   }
 
   static async forceRefresh(client: WebSocket) {
+    if (!RandoIPCService.isConnected()) {
+      return
+    }
+
     const trackedValues = await RandoIPCService.getUberStates(TRACKED_UBER_STATES.map(s => s.uberId))
     const trackerUpdates: TrackerUpdate[] = trackedValues.map((value, index) => TrackerUpdate.fromJSON({
       id: TRACKED_UBER_STATES[index].trackingId,
@@ -168,15 +197,15 @@ export class LocalTrackerWebSocketService {
   }
 
   static stop() {
-    for (const socket of this.ws?.clients || []) {
+    for (const socket of this.wss?.clients || []) {
       socket.close()
     }
-    this.ws?.close()
+    this.wss?.close()
     console.log('LocalTrackerWebSocketService: Stopped')
   }
 
   static get isRunning() {
-    return !!this.ws && this.webSocketListening
+    return !!this.wss && this.webSocketListening
   }
 
   static debugSetUberState(trackingId: string, value: number) {
@@ -184,5 +213,58 @@ export class LocalTrackerWebSocketService {
     if (trackedUberState) {
       RandoIPCService.setUberState(trackedUberState.uberId.group, trackedUberState.uberId.state, value)
     }
+  }
+
+  static expose(baseUrl: string, jwt: string) {
+    return new Promise<string>((resolve, reject) => {
+      const connect = (reconnect: boolean = false) => {
+        let wasConnected = false
+
+        const url = `${baseUrl}/remote-tracker${reconnect ? '?reconnect=true' : ''}`
+        console.log(`LocalTrackerWebSocketService: Connecting to ${url}`)
+        const ws = new WebSocket(url, {
+
+        })
+
+        ws.on('open', () => {
+          ws?.send(makePacket(AuthenticateMessage, {
+            jwt,
+          }))
+        })
+
+        ws.on('message', async data => {
+          const packet = await decodePacket(data)
+
+          if (!packet) {
+            return
+          }
+
+          switch (packet.$type) {
+            case SetTrackerEndpointId.$type:
+              wasConnected = true
+              this._remoteTrackerEndpoint = `${baseUrl}/remote-tracker/${(packet as SetTrackerEndpointId).endpointId}`
+              this.ws = ws
+              resolve(this._remoteTrackerEndpoint)
+              break
+            case RequestFullUpdate.$type:
+              await this.forceRefreshAll()
+              break
+          }
+        })
+
+        ws.on('close', (code, reason) => {
+          console.log('LocalTrackerWebSocketService: Client socket closed, reconnecting in 4s...')
+          setTimeout(() => connect(wasConnected), 4000)
+        })
+
+        setTimeout(() => {
+          if (!wasConnected) {
+            ws.close()
+            reject()
+          }
+        }, 20000)
+      }
+      connect()
+    })
   }
 }

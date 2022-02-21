@@ -9,6 +9,7 @@ import { CrashDetectService } from '~/electron/src/lib/CrashDetectService'
 import { SEEDS_PATH, UPDATE_PATH } from '~/electron/src/lib/Constants'
 import { RandoIPCService } from '~/electron/src/lib/RandoIPCService'
 import { Stats } from '@/lib/StatsCollector'
+import { LocalTrackerWebSocketService } from '@/lib/LocalTrackerWebSocketService'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -92,7 +93,8 @@ async function createWindow() {
     uiIpc.queueSend('main.crashDetected', supportBundleName)
   })
   await CrashDetectService.start()
-  RandoIPCService.startConnectionCheckLoop()
+  await RandoIPCService.startConnectionCheckLoop()
+  LocalTrackerWebSocketService.start()
 }
 
 if (isDevelopment) {

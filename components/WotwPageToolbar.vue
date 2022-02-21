@@ -12,7 +12,7 @@
         <v-icon left>mdi-dice-multiple</v-icon>
         Seed Generator
       </v-btn>
-      <v-menu v-if='isElectron' key='electron-menu' offset-y>
+      <v-menu v-if='isElectron' key='electron-menu' offset-y :close-on-content-click='!remoteTrackerUrlCopying'>
         <template #activator='{on, attrs}'>
           <v-btn icon v-bind='attrs' v-on='on'>
             <v-icon>mdi-dots-vertical</v-icon>
@@ -22,6 +22,25 @@
           <v-list-item :disabled='!localTrackerRunning' x-large depressed text @click='openLocalTrackerWindow'>
             <v-icon left :disabled='!localTrackerRunning'>mdi-radar</v-icon>
             Tracker (Beta)
+          </v-list-item>
+          <v-list-item :disabled='!localTrackerRunning || !isLoggedIn || remoteTrackerUrlCopying || remoteTrackerUrlCopied' x-large depressed text @click='exposeTracker'>
+            <v-icon left :disabled='!localTrackerRunning || !isLoggedIn || remoteTrackerUrlCopying || remoteTrackerUrlCopied'>
+              <template v-if='remoteTrackerUrlCopied'>
+                mdi-check
+              </template>
+              <template v-else>
+                mdi-radar
+              </template>
+            </v-icon>
+            <template v-if='remoteTrackerUrlCopying'>
+              Generating URL...
+            </template>
+            <template v-else-if='remoteTrackerUrlCopied'>
+              URL copied
+            </template>
+            <template v-else>
+              Create Remote Tracker (Beta)
+            </template>
           </v-list-item>
           <v-list-item x-large depressed text @click='openChatControl'>
             <v-icon left>mdi-message-flash-outline</v-icon>
@@ -110,6 +129,8 @@
       changeNicknameDialogIsOpen: false,
       currentNickname: '',
       nicknameDialogLoading: false,
+      remoteTrackerUrlCopying: false,
+      remoteTrackerUrlCopied: false,
     }),
     computed: {
       ...mapGetters('user', ['isLoggedIn']),
@@ -172,6 +193,31 @@
 
         this.nicknameDialogLoading = false
         this.changeNicknameDialogIsOpen = false
+      },
+      async exposeTracker() {
+        this.remoteTrackerUrlCopying = true
+
+        const sourceUrl = await window.electronApi.invoke('localTracker.expose', {
+          baseUrl: this.$paths.WS_BASE_URL,
+          jwt: this.$store.state.auth.jwt,
+        })
+
+        const targetRoute = this.$router.resolve({
+          name: 'tracker',
+          query: {
+            source: sourceUrl,
+          },
+        })
+
+        const url = new URL(targetRoute.href, this.$paths.UI_BASE_URL)
+        await window.navigator.clipboard.writeText(url.toString())
+
+        this.remoteTrackerUrlCopying = false
+        this.remoteTrackerUrlCopied = true
+
+        setTimeout(() => {
+          this.remoteTrackerUrlCopied = false
+        }, 4000)
       },
       openLocalTrackerWindow() {
         window.electronApi.invoke('localTracker.openWindow')

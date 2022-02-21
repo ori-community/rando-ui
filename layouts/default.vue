@@ -131,6 +131,7 @@
         window.electronApi.invoke('ready')
 
         this.$store.commit('electron/setSettings', await window.electronApi.invoke('settings.readSettings'))
+        this.$store.commit('electron/setLocalTrackerRunning', await window.electronApi.invoke('localTracker.isTrackerRunning'))
       }
     },
     async mounted() {

@@ -115,15 +115,17 @@
 
         this.ws.addEventListener('open', () => {
           console.log(`tracker: Connected`)
-          this.connected = true
-          this.connectedOnce = true
         })
+
         this.ws.addEventListener('message', async event => {
           const packet = await decodePacket(event.data)
 
           if (!packet) {
             return
           }
+
+          this.connected = true
+          this.connectedOnce = true
 
           const handlePacket = () => {
             switch (packet.$type) {

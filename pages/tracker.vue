@@ -125,17 +125,25 @@
             return
           }
 
-          switch (packet.$type) {
-            case TrackerUpdate.$type:
-              this.$set(this.trackedValues, packet.id, packet.value)
-              break
-            case TrackerFlagsUpdate.$type:
-              this.seedFlags = packet.flags
-              break
-            case ResetTracker.$type:
-              this.trackedValues = {}
-              this.seedFlags = []
-              break
+          const handlePacket = () => {
+            switch (packet.$type) {
+              case TrackerUpdate.$type:
+                this.$set(this.trackedValues, packet.id, packet.value)
+                break
+              case TrackerFlagsUpdate.$type:
+                this.seedFlags = packet.flags
+                break
+              case ResetTracker.$type:
+                this.trackedValues = {}
+                this.seedFlags = []
+                break
+            }
+          }
+
+          if (this.$route.query.delay) {
+            setTimeout(handlePacket, Number(this.$route.query.delay) * 1000)
+          } else {
+            handlePacket()
           }
         })
       },

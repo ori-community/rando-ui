@@ -44,8 +44,8 @@
     .skill-image {
       transform: scale(0.9);
       transition: filter 200ms, opacity 200ms, transform 200ms;
-      opacity: 0.3;
-      filter: grayscale(0.6) contrast(0);
+      opacity: 0.2;
+      filter: grayscale(0.6);
     }
 
     &.active {

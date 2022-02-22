@@ -4,7 +4,7 @@
       Command: "!{{ trigger.action }}"
     </span>
     <span v-else-if='trigger.type === "reward"'>
-      Channe reward: {{ getRewardDisplayName(trigger.rewardId) }}
+      Channel reward: {{ getRewardDisplayName(trigger.rewardId) }}
     </span>
   </div>
 </template>

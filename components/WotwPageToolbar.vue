@@ -21,7 +21,7 @@
         <v-list>
           <v-list-item :disabled='!localTrackerRunning' x-large depressed text @click='openLocalTrackerWindow'>
             <v-icon left :disabled='!localTrackerRunning'>mdi-radar</v-icon>
-            Tracker (Beta)
+            Tracker
           </v-list-item>
           <v-list-item :disabled='!localTrackerRunning || !isLoggedIn || remoteTrackerUrlCopying || remoteTrackerUrlCopied' x-large depressed text @click='exposeTracker'>
             <v-icon left :disabled='!localTrackerRunning || !isLoggedIn || remoteTrackerUrlCopying || remoteTrackerUrlCopied'>
@@ -29,7 +29,7 @@
                 mdi-check
               </template>
               <template v-else>
-                mdi-radar
+                mdi-leak
               </template>
             </v-icon>
             <template v-if='remoteTrackerUrlCopying'>
@@ -39,12 +39,12 @@
               URL copied
             </template>
             <template v-else>
-              Create Remote Tracker (Beta)
+              Create Remote Tracker
             </template>
           </v-list-item>
           <v-list-item x-large depressed text @click='openChatControl'>
             <v-icon left>mdi-message-flash-outline</v-icon>
-            Chat Control (Beta)
+            Chat Control
           </v-list-item>
           <v-list-item x-large depressed text to='/electron/stats'>
             <v-icon left>mdi-chart-box-outline</v-icon>
@@ -209,7 +209,7 @@
           },
         })
 
-        const url = new URL(targetRoute.href.replace('/#', ''), this.$paths.UI_BASE_URL)
+        const url = new URL(targetRoute.href.replace('#/', ''), this.$paths.UI_BASE_URL)
         await window.navigator.clipboard.writeText(url.toString())
 
         this.remoteTrackerUrlCopying = false

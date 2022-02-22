@@ -17,7 +17,7 @@ export default {
   async expose(event, { baseUrl, jwt }) {
     return await LocalTrackerWebSocketService.expose(baseUrl, jwt)
   },
-  getEndpoint() {
-    return LocalTrackerWebSocketService.remoteTrackerEndpoint
+  getEndpointId() {
+    return LocalTrackerWebSocketService.remoteTrackerEndpointId
   },
 }

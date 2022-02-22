@@ -1,7 +1,7 @@
 <template>
   <div class='fill-height'>
     <v-fade-transition mode='out-in'>
-      <div v-if='connected' key='tracker' class='tracker pa-2'>
+      <div v-if='connected && receivedPacket' key='tracker' class='tracker pa-2'>
         <WotwTrackerSkillView skill='spike' :active='trackedValues.skill_spike' />
         <WotwTrackerSkillView skill='sentry' :active='trackedValues.skill_sentry' />
         <WotwTrackerSkillView skill='blaze' :active='trackedValues.skill_blaze' />
@@ -13,6 +13,17 @@
           :spirit-light='trackedValues.resource_spirit_light'
           :gorlek-ore='trackedValues.resource_gorlek_ore'
           :keystones='trackedValues.resource_keystones'
+          :show-willow-hearts='showWillowHearts'
+          :total-tree-count='14'
+          :total-wisp-count='5'
+          :total-quest-count='17'
+          :total-relic-count='trackedValues.relic_count_total'
+          :total-heart-count='8'
+          :tree-count='trackedValues.tree_count'
+          :wisp-count='trackedValues.wisp_count'
+          :quest-count='trackedValues.quest_count'
+          :relic-count='trackedValues.relic_count'
+          :heart-count='heartCount'
         />
         <WotwTrackerSkillView skill='hammer' :active='trackedValues.skill_hammer' />
         <WotwTrackerSkillView skill='shuriken' :active='trackedValues.skill_shuriken' />
@@ -20,8 +31,8 @@
         <WotwTrackerSkillView skill='glide' :active='trackedValues.skill_glide' />
 
         <WotwTrackerSkillView skill='sword' :tree='trackedValues.tree_sword' :active='trackedValues.skill_sword' />
-        <WotwTrackerSkillView skill='bash' :tree='trackedValues.tree_bash' :active='trackedValues.skill_bash' />
         <WotwTrackerSkillView skill='bow' :tree='trackedValues.tree_bow' :active='trackedValues.skill_bow' />
+        <WotwTrackerSkillView skill='bash' :tree='trackedValues.tree_bash' :active='trackedValues.skill_bash' />
         <WotwTrackerSkillView skill='dash' :tree='trackedValues.tree_dash' :active='trackedValues.skill_dash' />
         <WotwTrackerSkillView skill='water_dash' :tree='trackedValues.tree_water_dash' :active='trackedValues.skill_water_dash' />
         <WotwTrackerSkillView skill='burrow' :tree='trackedValues.tree_burrow' :active='trackedValues.skill_burrow' />
@@ -36,7 +47,10 @@
       </div>
       <div v-else-if='!hideConnectingScreen' key='connecting' class='fill-height d-flex flex-column align-center justify-center'>
         <div class='pb-4'>
-          <template v-if='connectedOnce'>
+          <template v-if='!receivedPacket'>
+            Waiting for game...
+          </template>
+          <template v-else-if='connectedOnce'>
             Connection lost. Trying to reconnect...
           </template>
           <template v-else>
@@ -59,6 +73,7 @@
     layout: 'plain',
     data: () => ({
       connected: false,
+      receivedPacket: false,
       connectedOnce: false,
       hideConnectingScreen: false,
       trackedValues: {},
@@ -69,15 +84,52 @@
     },
     computed: {
       trackerSource() {
-        return this.$route.query.source
+        const source = this.$route.query.source
+
+        if (!source) {
+          return 'ws://127.0.0.1:31410'
+        }
+
+        if (/^wss?:\/\//.test(source)) {
+          return source
+        }
+
+        return `${this.$paths.WS_BASE_URL}/remote-tracker/${source}`
       },
       isOBS,
+      showWillowHearts() {
+        return this.$route.query.hearts === 'true'
+      },
+      showErrors() {
+        return this.$route.query.errors === 'true'
+      },
+      heartCount() {
+        const hearts = [
+          'heart_wind_spinners',
+          'heart_spinning_lasers',
+          'heart_upper_heart',
+          'heart_burrow_heart',
+          'heart_willow_laser',
+          'heart_redirect_puzzle',
+          'heart_boulder_escape',
+          'heart_lower_left',
+        ]
+        let count = 0
+
+        for (const heart of hearts) {
+          if (this.trackedValues[heart]) {
+            count++
+          }
+        }
+
+        return count
+      },
     },
     watch: {
       connected: {
         immediate: true,
         handler(newValue) {
-          if (!newValue && isOBS()) {
+          if (!newValue && isOBS() && !this.showErrors) {
             setTimeout(() => {
               this.hideConnectingScreen = true
             }, 5000)
@@ -102,6 +154,10 @@
     },
     methods: {
       connect() {
+        if (!this.trackerSource) {
+          return
+        }
+
         console.log(`tracker: Trying to connect to ${this.trackerSource}...`)
 
         this.tryDisconnect()
@@ -110,11 +166,14 @@
         this.ws.addEventListener('close', () => {
           console.log(`tracker: Connection lost. Will retry in 2s...`)
           this.connected = false
+          this.receivedPacket = false
           setTimeout(this.connect, 2000)
         })
 
         this.ws.addEventListener('open', () => {
           console.log(`tracker: Connected`)
+          this.connected = true
+          this.connectedOnce = true
         })
 
         this.ws.addEventListener('message', async event => {
@@ -124,16 +183,15 @@
             return
           }
 
-          this.connected = true
-          this.connectedOnce = true
-
           const handlePacket = () => {
             switch (packet.$type) {
               case TrackerUpdate.$type:
                 this.$set(this.trackedValues, packet.id, packet.value)
+                this.receivedPacket = true
                 break
               case TrackerFlagsUpdate.$type:
                 this.seedFlags = packet.flags
+                this.receivedPacket = true
                 break
               case ResetTracker.$type:
                 this.trackedValues = {}

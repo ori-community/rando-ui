@@ -62,7 +62,11 @@ export class RandoIPCService {
     console.log(`RandoIPC: Connection check loop started`)
 
     const checkRandoIpcAvailability = async () => {
-      await this.makeSureSocketIsConnected()
+      try {
+        await this.makeSureSocketIsConnected()
+      } catch (e) {
+        // Ignore
+      }
     }
 
     setInterval(checkRandoIpcAvailability, 5000)
@@ -84,7 +88,7 @@ export class RandoIPCService {
         try {
           socket = new Socket()
           socket.on('error', error => {
-            console.log('RandoIPC: Could not connect,', error)
+            console.log('RandoIPC: Could not connect,', error.message)
             reject(error)
           })
           socket.on('close', () => {

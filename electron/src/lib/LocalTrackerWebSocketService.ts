@@ -22,6 +22,7 @@ type TrackedUberStatesLookupTable = {
 }
 
 const teleporterValueConverter = (value: number) => value & 0b1
+const thresholdOf = (threshold: number) =>  (value: number) => value >= threshold ? 1 : 0
 
 const TRACKED_UBER_STATES: TrackedUberState[] = [
   { uberId: { group: 0, state: 0 }, trackingId: 'tree_bash' },
@@ -87,6 +88,28 @@ const TRACKED_UBER_STATES: TrackedUberState[] = [
   { uberId: { group: 15, state: 0 }, trackingId: 'resource_spirit_light' },
   { uberId: { group: 15, state: 1 }, trackingId: 'resource_gorlek_ore' },
   { uberId: { group: 15, state: 2 }, trackingId: 'resource_keystones' },
+
+  { uberId: { group: 15, state: 500 }, trackingId: 'relic_count_total' },
+  { uberId: { group: 15, state: 501 }, trackingId: 'relic_count' },
+  { uberId: { group: 15, state: 502 }, trackingId: 'tree_count' },
+  { uberId: { group: 15, state: 503 }, trackingId: 'wisp_count' },
+  { uberId: { group: 15, state: 504 }, trackingId: 'quest_count' },
+
+  { uberId: { group: 16155, state: 42976 }, trackingId: 'heart_wind_spinners' },
+  { uberId: { group: 16155, state: 54940 }, trackingId: 'heart_spinning_lasers' },
+  { uberId: { group: 16155, state: 24290 }, trackingId: 'heart_upper_heart' },
+  { uberId: { group: 16155, state: 3588 }, trackingId: 'heart_burrow_heart' },
+  { uberId: { group: 16155, state: 12971 }, trackingId: 'heart_willow_laser', valueConverter: thresholdOf(4) },
+  { uberId: { group: 16155, state: 65277 }, trackingId: 'heart_redirect_puzzle' },
+  { uberId: { group: 16155, state: 41488 }, trackingId: 'heart_boulder_escape' },
+  { uberId: { group: 16155, state: 60752 }, trackingId: 'heart_lower_left' },
+
+  // Maybe for later...
+  { uberId: { group: 945, state: 49747 }, trackingId: 'wisp_pools' },
+  { uberId: { group: 28895, state: 25522 }, trackingId: 'wisp_reach' },
+  { uberId: { group: 18793, state: 63291 }, trackingId: 'wisp_depths' },
+  { uberId: { group: 46462, state: 59806 }, trackingId: 'wisp_hollow' },
+  { uberId: { group: 10289, state: 22102 }, trackingId: 'wisp_ruins' },
 ]
 
 export class LocalTrackerWebSocketService {
@@ -95,10 +118,10 @@ export class LocalTrackerWebSocketService {
 
   private static trackedUberStatesLookupTable: TrackedUberStatesLookupTable = {}
 
-  private static _remoteTrackerEndpoint: string | null = null
+  private static _remoteTrackerEndpointId: string | null = null
 
-  public static get remoteTrackerEndpoint() {
-    return this._remoteTrackerEndpoint
+  public static get remoteTrackerEndpointId() {
+    return this._remoteTrackerEndpointId
   }
 
   private static uberIdHash(id: UberId) {
@@ -116,7 +139,7 @@ export class LocalTrackerWebSocketService {
     this.wss?.close()
 
     this.wss = new WebSocketServer({
-      port: 31410, // Random free port
+      port: 31410, // 0 = Random free port
       host: '127.0.0.1',
     })
 
@@ -222,9 +245,7 @@ export class LocalTrackerWebSocketService {
 
         const url = `${baseUrl}/remote-tracker${reconnect ? '?reconnect=true' : ''}`
         console.log(`LocalTrackerWebSocketService: Connecting to ${url}`)
-        const ws = new WebSocket(url, {
-
-        })
+        const ws = new WebSocket(url)
 
         ws.on('open', () => {
           ws?.send(makePacket(AuthenticateMessage, {
@@ -242,9 +263,9 @@ export class LocalTrackerWebSocketService {
           switch (packet.$type) {
             case SetTrackerEndpointId.$type:
               wasConnected = true
-              this._remoteTrackerEndpoint = `${baseUrl}/remote-tracker/${(packet as SetTrackerEndpointId).endpointId}`
+              this._remoteTrackerEndpointId = (packet as SetTrackerEndpointId).endpointId
               this.ws = ws
-              resolve(this._remoteTrackerEndpoint)
+              resolve(this._remoteTrackerEndpointId)
               break
             case RequestFullUpdate.$type:
               await this.forceRefreshAll()

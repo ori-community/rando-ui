@@ -46,6 +46,7 @@ const getDefaultSettings = () => ({
     ShowStatsAfterFinish: true,
     DisableShowSecrets: false,
     DisableAutoAim: false,
+    AlwaysShowKeystoneDoors: false,
   },
 })
 

@@ -80,8 +80,8 @@ async function createWindow() {
         if (url.protocol === 'ori-rando:') {
           uiIpc.queueSend('main.openUrl', url.toString())
         }
-      } catch (e) {
-        console.warn('Could not parse URL', e)
+      } catch (e: any) {
+        console.warn('Could not parse URL', e.message)
       }
     }
   }

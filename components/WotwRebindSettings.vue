@@ -78,7 +78,7 @@
 
     <v-dialog v-model='bindingEditor.dialogOpen' max-width='300px'>
       <v-card class='binding-editor pa-8'>
-        <v-sheet v-if='type === "kbm"' color='primary darken-2' rounded class='mouse-target' @mousedown='onKeyOrMouseDown'>
+        <v-sheet v-if='type === "kbm"' color='primary darken-2' rounded class='mouse-target' @mousedown='onKeyOrMouseDown' @mouseup.prevent>
           <v-icon size='64'>mdi-cursor-default-click-outline</v-icon>
           <div class='mt-2'>
             For mouse bindings, click here

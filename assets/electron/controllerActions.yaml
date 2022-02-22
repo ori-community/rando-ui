@@ -173,3 +173,6 @@ TogglePickupDisplayNamesOnSpoiler:
 ForceExit:
   displayName: ForceExit
   composable: true
+QuickBuy:
+  displayName: QuickBuy
+  composable: true

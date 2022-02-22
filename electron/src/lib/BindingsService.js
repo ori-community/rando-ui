@@ -44,6 +44,7 @@ const getDefaultControllerBindings = () => ({
   MapFocusOri: [[6]],
   MapFocusObjective: [[6]],
   OpenRandoWheel: [[2, 3]],
+  QuickBuy: [[10]],
 })
 
 const getDefaultKeyboardBindings = () => ({
@@ -105,6 +106,9 @@ const getDefaultKeyboardBindings = () => ({
   ForceExit: [
     { keys: [308, 47], respects_modifiers: true },
     { keys: [307, 47], respects_modifiers: true },
+  ],
+  QuickBuy: [
+    { keys: [49] },
   ],
 })
 

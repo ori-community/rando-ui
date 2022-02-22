@@ -37,6 +37,11 @@
           messages='Always show Spirit Wells on the in-game map, no matter what filter'
         />
         <v-checkbox
+          v-model='settings.Flags.AlwaysShowKeystoneDoors'
+          label='Always Show Keystone Doors'
+          messages='Always show Keystone Doors on the in-game map, no matter what filter'
+        />
+        <v-checkbox
           v-model='disableWorldMap'
           label='Disable World Map'
           messages='Disables the world map that opens when zooming out'

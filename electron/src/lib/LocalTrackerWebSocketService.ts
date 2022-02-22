@@ -207,7 +207,9 @@ export class LocalTrackerWebSocketService {
     const trackedValues = await RandoIPCService.getUberStates(TRACKED_UBER_STATES.map(s => s.uberId))
     const trackerUpdates: TrackerUpdate[] = trackedValues.map((value, index) => TrackerUpdate.fromJSON({
       id: TRACKED_UBER_STATES[index].trackingId,
-      value,
+      value: TRACKED_UBER_STATES[index].valueConverter
+        ? (TRACKED_UBER_STATES[index].valueConverter?.(value) ?? value)
+        : value,
     }))
 
     for (const update of trackerUpdates) {

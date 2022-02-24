@@ -48,6 +48,15 @@ const getDefaultSettings = () => ({
     DisableAutoAim: false,
     AlwaysShowKeystoneDoors: false,
   },
+  LocalTracker: {
+    X: 0,
+    Y: 0,
+    Width: 700,
+    Height: 405,
+    Transparent: false,
+    AlwaysOnTop: false,
+    IgnoreMouse: false,
+  },
 })
 
 const sendSettingsToUI = () => {
@@ -60,6 +69,7 @@ const sendSettingsToUI = () => {
 
 let settingsCache = null
 let shouldShowImportInfoDialog = false
+const settingsChangedListeners = []
 
 export class SettingsService {
   static async migrateSettingsVersion() {
@@ -69,7 +79,7 @@ export class SettingsService {
       const lastVersion = (await fs.promises.readFile(LAST_VERSION_FILE, { encoding: 'utf-8' })).trim()
 
       if (lastVersion !== currentVersion && lastVersion !== 'develop') {
-        const settings = await SettingsService.readSettings()
+        const settings = await SettingsService.getCurrentSettings()
 
         // When switching from non-beta to beta or from beta to non-beta
         const lastIsPrerelease = semver.prerelease(lastVersion)
@@ -114,11 +124,11 @@ export class SettingsService {
   }
 
   static async makeSureSettingsFileExists() {
-    await this.readSettings()
+    await this.getCurrentSettings()
     await this.writeSettings()
   }
 
-  static async readSettings() {
+  static async readSettingsToCache() {
     if (!fs.existsSync(SETTINGS_PATH)) {
       console.log('Settings file not found, using default settings...')
       settingsCache = getDefaultSettings()
@@ -127,8 +137,14 @@ export class SettingsService {
 
       settingsCache = merge(
         getDefaultSettings(),
-        ini.parse(settings.trimLeft()),
+        ini.parse(settings.trimStart()),
       )
+    }
+  }
+
+  static async getCurrentSettings() {
+    if (settingsCache === null) {
+      await this.readSettingsToCache()
     }
 
     sendSettingsToUI()
@@ -137,12 +153,36 @@ export class SettingsService {
   }
 
   static setSettings(settings) {
+    const oldSettings = settingsCache
     settingsCache = settings
     sendSettingsToUI()
+
+    for (const settingsChangedListener of settingsChangedListeners) {
+      if (settingsChangedListener) {
+        settingsChangedListener(settings, oldSettings)
+      }
+    }
+  }
+
+  static listen(listener) {
+    if (!settingsChangedListeners.includes(listener)) {
+      settingsChangedListeners.push(listener)
+    }
   }
 
   static async writeSettings() {
     await fs.promises.writeFile(SETTINGS_PATH, ini.encode(settingsCache), { encoding: 'utf16le' })
+  }
+
+  static async transaction(callback) {
+    const newSettings = callback(await this.getCurrentSettings())
+
+    if (!newSettings) {
+      return
+    }
+
+    this.setSettings(newSettings)
+    await this.writeSettings()
   }
 
   static async getOldInstallationPath() {

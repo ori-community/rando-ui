@@ -137,6 +137,24 @@
         </v-expand-transition>
 
         <v-checkbox
+          v-model='settings.LocalTracker.AlwaysOnTop'
+          label='Builtin tracker always on top'
+          messages='Show builtin tracker on top of other windows'
+        />
+
+        <v-checkbox
+          v-model='settings.LocalTracker.Transparent'
+          label='Builtin tracker transparent'
+          messages='Make the builtin Item Tracker transparent.'
+        />
+
+        <v-checkbox
+          v-model='settings.LocalTracker.IgnoreMouse'
+          label='Ignore mouse in builtin tracker'
+          messages='This is helpful if you want to show the tracker above the game. Note that you cannot move/resize the tracker with this option enabled.'
+        />
+
+        <v-checkbox
           v-model='settings.Flags.DisableNetcode'
           label='Disable Netcode'
           messages='Checking this option prevents the randomizer from communicating with the rando server. With netcode disabled, bingo autotracking and other networked features will be unavailable.'

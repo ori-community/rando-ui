@@ -110,7 +110,7 @@ export class LauncherService {
     await BindingsService.makeSureControllerBindingsFileExists()
     await BindingsService.makeSureKeyboardBindingsFileExists()
     await SettingsService.makeSureSettingsFileExists()
-    const settings = await SettingsService.readSettings()
+    const settings = await SettingsService.getCurrentSettings()
 
     if (!settings.Flags.UseWinStore && !fs.existsSync(settings.Paths.Steam)) {
       uiIpc.queueSend('main.goToSettings')

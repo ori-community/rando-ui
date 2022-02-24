@@ -3,7 +3,7 @@ import { dialog } from 'electron'
 
 export default {
   async readSettings() {
-    return await SettingsService.readSettings()
+    return await SettingsService.getCurrentSettings()
   },
   setSettings(event, settings) {
     SettingsService.setSettings(settings)
@@ -13,7 +13,7 @@ export default {
   },
   async selectSteamPath() {
     const result = await dialog.showOpenDialog({
-      defaultPath: (await SettingsService.readSettings()).Paths.Steam,
+      defaultPath: (await SettingsService.getCurrentSettings()).Paths.Steam,
       properties: ['openFile'],
       filters: [
         { name: 'Executables', extensions: ['exe'] },

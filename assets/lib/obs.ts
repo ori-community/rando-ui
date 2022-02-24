@@ -14,7 +14,7 @@ const obsModeStyle = `
   }
   `
 
-export const applyOBSStyles = () => {
+export const applyTransparentWindowStyles = () => {
   const styleElement = document.createElement('style')
   styleElement.innerHTML = obsModeStyle
   styleElement.id = 'obs-mode-style'

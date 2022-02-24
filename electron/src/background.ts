@@ -47,12 +47,15 @@ async function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
     },
     frame: true,
+    darkTheme: true,
     show: false,
+    paintWhenInitiallyHidden: true,
     title: 'Ori and the Will of the Wisps Randomizer',
   })
 
-  window.maximize()
-  window.show()
+  window.once('ready-to-show', () => {
+    window?.maximize()
+  })
 
   await SettingsService.migrateSettingsVersion()
 

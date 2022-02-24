@@ -241,6 +241,9 @@ export class LocalTrackerWebSocketService {
   }
 
   static expose(baseUrl: string, jwt: string) {
+    this.ws?.close()
+    this.ws = null
+
     return new Promise<string>((resolve, reject) => {
       const connect = (reconnect: boolean = false) => {
         let wasConnected = false
@@ -264,12 +267,14 @@ export class LocalTrackerWebSocketService {
 
           switch (packet.$type) {
             case SetTrackerEndpointId.$type:
+              console.log('LocalTrackerWebSocketService: Connected')
               wasConnected = true
               this._remoteTrackerEndpointId = (packet as SetTrackerEndpointId).endpointId
               this.ws = ws
               resolve(this._remoteTrackerEndpointId)
               break
             case RequestFullUpdate.$type:
+              console.log('LocalTrackerWebSocketService: Server requested full refresh')
               await this.forceRefreshAll()
               break
           }

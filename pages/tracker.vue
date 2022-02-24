@@ -1,5 +1,5 @@
 <template>
-  <div class='fill-height'>
+  <div class='fill-height' :class='{"electron-draggable": isElectron}'>
     <v-fade-transition mode='out-in'>
       <div v-if='connected && receivedPacket' key='tracker' class='tracker pa-2'>
         <WotwTrackerSkillView skill='spike' :active='trackedValues.skill_spike' />
@@ -67,6 +67,7 @@
   import { decodePacket } from '~/assets/proto/ProtoUtil'
   import { ResetTracker, TrackerFlagsUpdate, TrackerUpdate } from '~/assets/proto/messages'
   import { applyOBSStyles, isOBS } from '~/assets/lib/obs'
+  import { isElectron } from '~/assets/lib/isElectron'
 
   export default {
     name: 'Tracker',
@@ -97,6 +98,7 @@
         return `${this.$paths.WS_BASE_URL}/remote-tracker/${source}`
       },
       isOBS,
+      isElectron,
       showWillowHearts() {
         return this.$route.query.hearts === 'true'
       },
@@ -140,7 +142,7 @@
       },
     },
     mounted() {
-      if (isOBS()) {
+      if (!isOBS()) {
         applyOBSStyles()
       }
 
@@ -219,6 +221,11 @@
 </script>
 
 <style lang='scss' scoped>
+  .electron-draggable {
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+  }
+
   .tracker {
     display: grid;
     grid-template-columns: repeat(7, 1fr);

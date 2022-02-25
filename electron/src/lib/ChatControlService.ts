@@ -23,9 +23,21 @@ export class ChatControlService {
   private static chatClient: ChatClient | null = null
   private static apiClient: ApiClient | null = null
   private static user: UserIdResolvable | null = null
+  private static window: BrowserWindow | null = null
+
+  static close() {
+    if (this.window && !this.window.isDestroyed()) {
+      this.window.close()
+    }
+  }
 
   static async openChatControl() {
-    const window = new BrowserWindow({
+    if (this.window && !this.window.isDestroyed()) {
+      this.window.focus()
+      return
+    }
+
+    this.window = new BrowserWindow({
       width: 750,
       height: 750,
       autoHideMenuBar: true,
@@ -36,7 +48,7 @@ export class ChatControlService {
       },
     })
 
-    await window.loadURL(getElectronUrl(`/electron/windows/chat-control`))
+    await this.window.loadURL(getElectronUrl(`/electron/windows/chat-control`))
   }
 
   static async runScript(script: string, params: string[] = []) {

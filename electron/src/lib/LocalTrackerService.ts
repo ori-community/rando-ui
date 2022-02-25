@@ -41,6 +41,12 @@ export class LocalTrackerService {
     })
   }
 
+  static close() {
+    if (this.window && !this.window.isDestroyed()) {
+      this.window.close()
+    }
+  }
+
   static async openLocalTracker(forceReopenWindow = false, ) {
     SettingsService.listen(this.onSettingsChanged)
 

@@ -190,7 +190,7 @@
 <script>
   import { mapGetters, mapState } from 'vuex'
   import { isElectron } from '~/assets/lib/isElectron'
-  import { applyOBSStyles, isOBS } from '~/assets/lib/obs'
+  import { applyTransparentWindowStyles, isOBS } from '~/assets/lib/obs'
 
   export default {
     name: 'GamePage',
@@ -321,7 +321,7 @@
           if (multiverseReady && this.multiverse.bingoBoard) {
             this.$nextTick(() => {
               if (isOBS()) {
-                applyOBSStyles()
+                applyTransparentWindowStyles()
                 this.centerBoard()
               }
             })

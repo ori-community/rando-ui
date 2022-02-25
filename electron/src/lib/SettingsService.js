@@ -56,6 +56,8 @@ const getDefaultSettings = () => ({
     Transparent: false,
     AlwaysOnTop: false,
     IgnoreMouse: false,
+    ShowWillowHearts: false,
+    HideHeartsUntilFirstHeart: false,
   },
 })
 

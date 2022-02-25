@@ -10,6 +10,8 @@ import { SEEDS_PATH, UPDATE_PATH } from '~/electron/src/lib/Constants'
 import { RandoIPCService } from '~/electron/src/lib/RandoIPCService'
 import { Stats } from '@/lib/StatsCollector'
 import { LocalTrackerWebSocketService } from '@/lib/LocalTrackerWebSocketService'
+import { LocalTrackerService } from '@/lib/LocalTrackerService'
+import { ChatControlService } from '@/lib/ChatControlService'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -55,6 +57,11 @@ async function createWindow() {
 
   window.once('ready-to-show', () => {
     window?.maximize()
+  })
+
+  window.on('close', () => {
+    LocalTrackerService.close()
+    ChatControlService.close()
   })
 
   await SettingsService.migrateSettingsVersion()

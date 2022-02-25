@@ -9,7 +9,13 @@
 <script>
   export default {
     async mounted() {
+
+      window.electronApi.on('main.settingsChanged', (event, settings) => {
+        this.$store.commit('electron/setSettings', settings)
+      })
+      this.$store.commit('electron/setSettings', await window.electronApi.invoke('settings.readSettings'))
       await this.$store.dispatch('user/updateUser')
+
     },
   }
 </script>

@@ -131,7 +131,7 @@
           <v-checkbox
             v-if='settings.Flags.LaunchWithTracker'
             v-model='settings.Flags.UseBuiltinTracker'
-            label='Use builtin tracker (beta)'
+            label='Use builtin tracker'
             messages='Use the builtin item tracker. This will replace the current tracker in the long term'
           />
         </v-expand-transition>
@@ -153,6 +153,21 @@
           label='Ignore mouse in builtin tracker'
           messages='This is helpful if you want to show the tracker above the game. Note that you cannot move/resize the tracker with this option enabled.'
         />
+
+        <v-checkbox
+          v-model='settings.LocalTracker.ShowWillowHearts'
+          label='Show willow hearts built in tracker'
+          messages='Shows the amount of destroyed willow hearts.'
+        />
+
+        <v-expand-transition>
+          <v-checkbox
+            v-if='settings.LocalTracker.ShowWillowHearts'
+            v-model='settings.LocalTracker.HideHeartsUntilFirstHeart'
+            label='Hide counter until first destroyed heart'
+            messages='Only shows the amount of willow hearts when at least one is destroyed'
+          />
+        </v-expand-transition>
 
         <v-checkbox
           v-model='settings.Flags.DisableNetcode'

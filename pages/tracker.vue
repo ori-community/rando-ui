@@ -73,6 +73,7 @@
 </template>
 
 <script>
+  import { mapState } from 'vuex'
   import { decodePacket } from '~/assets/proto/ProtoUtil'
   import { ResetTracker, TrackerFlagsUpdate, TrackerUpdate } from '~/assets/proto/messages'
   import { applyTransparentWindowStyles, isOBS } from '~/assets/lib/obs'
@@ -94,6 +95,7 @@
       title: 'Item Tracker',
     },
     computed: {
+      ...mapState('electron', ['settings', 'settingsLoaded']),
       trackerSource() {
         const source = this.$route.query.source
 
@@ -110,7 +112,7 @@
       isOBS,
       isElectron,
       showWillowHearts() {
-        return this.$route.query.hearts === 'true'
+        return this.$route.query.hearts === 'true' || (this.settings?.LocalTracker?.ShowWillowHearts && (!this.settings?.LocalTracker?.HideHeartsUntilFirstHeart || this.heartCount > 0))
       },
       showErrors() {
         return this.$route.query.errors === 'true'

@@ -65,6 +65,10 @@ export class LocalTrackerService {
         show: false,
         paintWhenInitiallyHidden: true,
       })
+      
+      if (process.env.WEBPACK_DEV_SERVER_URL) {
+        this.window.webContents.openDevTools()
+      }
 
       this.window.once('ready-to-show', () => {
         this.window?.setPosition(

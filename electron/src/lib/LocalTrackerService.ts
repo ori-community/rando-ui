@@ -16,7 +16,7 @@ export class LocalTrackerService {
       }
 
       if (settings.LocalTracker.AlwaysOnTop !== oldSettings.LocalTracker.AlwaysOnTop) {
-        LocalTrackerService.window.setAlwaysOnTop(settings.LocalTracker.AlwaysOnTop)
+        LocalTrackerService.window.setAlwaysOnTop(settings.LocalTracker.AlwaysOnTop, 'normal')
       }
 
       if (settings.LocalTracker.IgnoreMouse !== oldSettings.LocalTracker.IgnoreMouse) {
@@ -65,7 +65,7 @@ export class LocalTrackerService {
         show: false,
         paintWhenInitiallyHidden: true,
       })
-      
+
       if (process.env.WEBPACK_DEV_SERVER_URL) {
         this.window.webContents.openDevTools()
       }

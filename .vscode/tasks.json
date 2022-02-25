@@ -1,0 +1,32 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "Install/Update dependencies",
+			"command": "yarn install; cd electron; yarn install",
+			"problemMatcher": []
+		},
+		{
+			"type": "shell",
+			"label": "Run UI",
+			"options": {
+				"env": {
+					"API_HOST": "wotw.orirando.com",
+					"API_SECURE": "true"
+				}
+			},
+			"command": "yarn dev",
+			"problemMatcher": []
+		},
+		{
+			"type": "shell",
+			"label": "Run Electron",
+			"command": "yarn electron:serve",
+			"options": {
+				"cwd": "${workspaceFolder}/electron"
+			},
+			"problemMatcher": []
+		}
+	]
+}

@@ -243,8 +243,9 @@ export class LocalTrackerWebSocketService {
   }
 
   static expose(baseUrl: string, jwt: string) {
-    this.ws?.close()
+    const previousWs = this.ws
     this.ws = null
+    previousWs?.close()
 
     return new Promise<string>((resolve, reject) => {
       const connect = (reconnect: boolean = false) => {
@@ -274,17 +275,27 @@ export class LocalTrackerWebSocketService {
               this._remoteTrackerEndpointId = (packet as SetTrackerEndpointId).endpointId
               this.ws = ws
               resolve(this._remoteTrackerEndpointId)
+              await this.forceRefresh(ws)
               break
             case RequestFullUpdate.$type:
               console.log('LocalTrackerWebSocketService: Server requested full refresh')
-              await this.forceRefreshAll()
+              await this.forceRefresh(ws)
               break
           }
         })
 
         ws.on('close', (code, reason) => {
-          console.log('LocalTrackerWebSocketService: Client socket closed, reconnecting in 4s...')
-          setTimeout(() => connect(wasConnected), 4000)
+          if (this.ws) {
+            console.log('LocalTrackerWebSocketService: Client socket closed, reconnecting in 4s...')
+            setTimeout(() => connect(true), 4000)
+          }
+        })
+
+        ws.on('error', (e) => {
+          if (this.ws) {
+            console.log('LocalTrackerWebSocketService: Client socket error, reconnecting in 4s...', e)
+            setTimeout(() => connect(true), 4000)
+          }
         })
 
         setTimeout(() => {

@@ -42,6 +42,11 @@
           messages='Always show Keystone Doors on the in-game map, no matter what filter'
         />
         <v-checkbox
+          v-model='showTransparentIcons'
+          label='Show Transparent Icons'
+          messages='Show out of logic icons as transparent'
+        />
+        <v-checkbox
           v-model='disableWorldMap'
           label='Disable World Map'
           messages='Disables the world map that opens when zooming out'
@@ -253,6 +258,14 @@
           this.settings.Flags.DisableDebugControls = !value
         }
       },
+      showTransparentIcons: {
+        get() {
+          return this.settings.Values.MapIconTransparency > 0.0;
+        },
+        set(value) {
+          this.settings.Flags.DisableDebugControls = value ? 0.25 : 0.0
+        }
+      }
     },
     watch: {
       settings: {

@@ -48,6 +48,9 @@ const getDefaultSettings = () => ({
     DisableAutoAim: false,
     AlwaysShowKeystoneDoors: false,
   },
+  Values: {
+    MapIconTransparency: 0.0
+  },
   LocalTracker: {
     X: 0,
     Y: 0,

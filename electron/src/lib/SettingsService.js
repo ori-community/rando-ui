@@ -49,7 +49,7 @@ const getDefaultSettings = () => ({
     AlwaysShowKeystoneDoors: false,
   },
   Values: {
-    MapIconTransparency: 0.0
+    MapIconTransparency: 0.25
   },
   LocalTracker: {
     X: 0,

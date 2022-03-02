@@ -263,7 +263,7 @@
           return this.settings.Values.MapIconTransparency > 0.0;
         },
         set(value) {
-          this.settings.Flags.DisableDebugControls = value ? 0.25 : 0.0
+          this.settings.Values.MapIconTransparency = value ? 0.25 : 0.0
         }
       }
     },

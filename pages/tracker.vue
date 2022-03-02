@@ -112,7 +112,7 @@
       isOBS,
       isElectron,
       showWillowHearts() {
-        return this.$route.query.hearts === 'true' || this.$route.query.TESTLOL === 'true' || (this.settings?.LocalTracker?.ShowWillowHearts && (!this.settings?.LocalTracker?.HideHeartsUntilFirstHeart || this.heartCount > 0))
+        return this.$route.query.hearts === 'true' || (this.settings?.LocalTracker?.ShowWillowHearts && (!this.settings?.LocalTracker?.HideHeartsUntilFirstHeart || this.heartCount > 0))
       },
       showErrors() {
         return this.$route.query.errors === 'true'

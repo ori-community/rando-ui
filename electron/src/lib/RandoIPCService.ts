@@ -140,6 +140,8 @@ export class RandoIPCService {
   }
 
   static async handleIncomingRequest(request: Request) {
+    console.log(request)
+
     switch (request.method) {
       case 'notify_on_uber_state_changed': {
         const {group, state, value} = request.payload

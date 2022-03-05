@@ -45,6 +45,7 @@ const getDefaultControllerBindings = () => ({
   MapFocusObjective: [[6]],
   OpenRandoWheel: [[2, 3]],
   QuickBuy: [[10]],
+  ToggleBingoBoardOverlay: [[23]],
 })
 
 const getDefaultKeyboardBindings = () => ({
@@ -109,6 +110,9 @@ const getDefaultKeyboardBindings = () => ({
   ],
   QuickBuy: [
     { keys: [49] },
+  ],
+  ToggleBingoBoardOverlay: [
+    { keys: [111] },
   ],
 })
 

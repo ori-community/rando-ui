@@ -46,7 +46,7 @@
           <WotwTrackerSkillView skill='light_burst' :tree='trackedValues.tree_light_burst' :active='trackedValues.skill_light_burst' />
           <WotwTrackerSkillView skill='ancestral_light_marsh' :tree='trackedValues.tree_ancestral_light_marsh' :active='trackedValues.skill_ancestral_light_marsh' />
         </div>
-        <div v-if='showWillowHearts'>
+        <div v-if='showTeleporters'>
             <div class='teleporters'>
               <div></div>
               <div></div>
@@ -125,7 +125,6 @@
       hideConnectingScreen: false,
       trackedValues: {},
       seedFlags: [],
-      showTeleporters: false,
     }),
     head: {
       title: 'Item Tracker',
@@ -149,6 +148,9 @@
       isElectron,
       showWillowHearts() {
         return (this.$route.query.hearts === 'true' && (!(this.$route.query.AtFirstHeart === 'true') || this.heartCount > 0)) || (this.settings?.LocalTracker?.ShowWillowHearts && (!this.settings?.LocalTracker?.HideHeartsUntilFirstHeart || this.heartCount > 0))
+      },
+      showTeleporters() {
+        return this.$route.query.teleporters === 'true'
       },
       showErrors() {
         return this.$route.query.errors === 'true'

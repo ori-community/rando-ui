@@ -7,6 +7,7 @@ import crash from './crash'
 import uberState from './uberState'
 import localTracker from './localTracker'
 import chatControl from './chatControl'
+import bingoBoardOverlay from './bingoBoardOverlay'
 
 export default {
   settings,
@@ -18,4 +19,5 @@ export default {
   uberState,
   localTracker,
   chatControl,
+  bingoBoardOverlay,
 }

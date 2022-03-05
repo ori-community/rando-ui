@@ -176,3 +176,6 @@ ForceExit:
 QuickBuy:
   displayName: QuickBuy
   composable: true
+ToggleBingoBoardOverlay:
+  displayName: ToggleBingoBoardOverlay
+  composable: true

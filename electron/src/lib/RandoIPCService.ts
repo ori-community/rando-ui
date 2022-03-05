@@ -1,8 +1,9 @@
-import { Socket } from 'net'
+  import { Socket } from 'net'
 import throttle from 'lodash.throttle'
 import { uiIpc } from '@/api'
 import { UberId } from '~/assets/lib/types/UberStates'
 import { LocalTrackerWebSocketService } from '@/lib/LocalTrackerWebSocketService'
+  import {BingoBoardOverlayService} from '@/lib/BingoBoardOverlayService'
 
 const PIPE_NAME = 'wotw_rando'
 const PIPE_PATH = '\\\\.\\pipe\\'
@@ -152,6 +153,19 @@ export class RandoIPCService {
       case 'notify_on_reload':
       case 'notify_on_load': {
         await LocalTrackerWebSocketService.forceRefreshAll()
+        break
+      }
+      case 'notify_input': {
+        const {type, pressed} = request.payload
+
+        if (pressed) {
+          switch (type) {
+            case 'ToggleBingoBoardOverlay':
+              await BingoBoardOverlayService.toggleVisibility()
+              break
+          }
+        }
+
         break
       }
     }

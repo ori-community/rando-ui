@@ -59,6 +59,20 @@
             Settings
           </v-btn>
           <v-btn
+            :disabled='bingoOverlayEnabled'
+            text
+            @click='enableBingoOverlay'
+          >
+            <template v-if='bingoOverlayEnabled'>
+              <v-icon left>mdi-check</v-icon>
+              Overlay enabled
+            </template>
+            <template v-else>
+              <v-icon left>mdi-semantic-web</v-icon>
+             Enable Overlay
+            </template>
+          </v-btn>
+          <v-btn
             :disabled='embedUrlCopied'
             :loading='embedUrlLoading'
             text
@@ -212,6 +226,7 @@
       spectateLoading: false,
       seedgenResultVisible: false,
       hideSeedgenResultCompletely: false,
+      bingoOverlayEnabled: false,
     }),
     computed: {
       ...mapGetters('user', ['isLoggedIn']),
@@ -278,6 +293,9 @@
       launcherUrl() {
         return `ori-rando://game/${this.multiverseId}`
       },
+      isBingoBoardOverlay() {
+        return this.$route.query.isBingoBoardOverlay === 'true'
+      }
     },
     watch: {
       userLoaded: {
@@ -320,7 +338,7 @@
         handler(multiverseReady) {
           if (multiverseReady && this.multiverse.bingoBoard) {
             this.$nextTick(() => {
-              if (isOBS()) {
+              if (isOBS() || this.isBingoBoardOverlay) {
                 applyTransparentWindowStyles()
                 this.centerBoard()
               }
@@ -434,6 +452,14 @@
       },
       onScroll() {
         this.hideSeedgenResultCompletely = document.scrollingElement.scrollTop > 200
+      },
+      async enableBingoOverlay() {
+        await window.electronApi.invoke('bingoBoardOverlay.prepare', this.multiverseId)
+        this.bingoOverlayEnabled = true
+
+        setTimeout(() => {
+          this.bingoOverlayEnabled = false
+        }, 5000)
       },
     },
   }

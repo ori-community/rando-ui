@@ -12,6 +12,7 @@ import { Stats } from '@/lib/StatsCollector'
 import { LocalTrackerWebSocketService } from '@/lib/LocalTrackerWebSocketService'
 import { LocalTrackerService } from '@/lib/LocalTrackerService'
 import { ChatControlService } from '@/lib/ChatControlService'
+import {BingoBoardOverlayService} from '@/lib/BingoBoardOverlayService'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -62,6 +63,7 @@ async function createWindow() {
   window.on('close', () => {
     LocalTrackerService.close()
     ChatControlService.close()
+    BingoBoardOverlayService.close()
   })
 
   await SettingsService.migrateSettingsVersion()

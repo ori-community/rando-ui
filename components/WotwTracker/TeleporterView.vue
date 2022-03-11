@@ -1,0 +1,64 @@
+<template>
+    <div>
+        <div class='teleporter' :class='{active: Boolean(active)}'>
+          <img class='teleporter-image' src='@/assets/images/tracker/teleporter_edited.png' alt=''/>
+        </div>
+        <div class='teleportername'>{{ tpname }}</div>
+    </div>
+</template>
+
+<script>
+  export default {
+    name: 'TeleporterView',
+    props: {
+      teleporter: {
+        type: String,
+        required: true,
+      },
+      active: {
+        type: Number,
+        default: 0,
+      },
+      tpname:{
+        type: String,
+        required: true,
+      }
+    },
+  }
+</script>
+
+<style lang='scss' scoped>
+  .teleporter {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .teleporter-image {
+      transform: scale(0.9);
+      transition: filter 200ms, opacity 200ms, transform 200ms;
+      opacity: 0.2;
+      filter: grayscale(0.6);
+    }
+
+    &.active {
+      .teleporter-image {
+        opacity: 1;
+        filter: grayscale(0) brightness(1.0);
+        transform: scale(1);
+      }
+    }
+
+    img {
+      width: 80%;
+    }
+  }
+  .teleportername {
+        display: flex;
+        width: 100%;
+        font-size: 1.5vw;
+        font-weight: 400;
+        align-content: center;
+        justify-content: center;
+    }
+</style>

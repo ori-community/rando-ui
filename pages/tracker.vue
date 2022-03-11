@@ -1,7 +1,7 @@
 <template>
   <div class='fill-height' :class='{"electron-draggable": isElectron}'>
     <v-fade-transition mode='out-in'>
-      <div v-if='connected && receivedPacket' key='tracker' class='tracker-container' :class='{done: trackedValues.game_finished}'>
+      <div v-if='connected && receivedPacket' key='tracker' class='tracker-container' :class='{done: this.showGameDone}'>
         <div class='tracker pa-2'>
           <WotwTrackerSkillView skill='spike' :active='trackedValues.skill_spike' />
           <WotwTrackerSkillView skill='sentry' :active='trackedValues.skill_sentry' />
@@ -48,7 +48,6 @@
         </div>
 
         <div class='done-label'>
-          <div class='label'>DONE</div>
           <div ref='hype' class='hype'>
             <img src='@/assets/images/ori_hype.png'>
           </div>
@@ -90,6 +89,7 @@
       hideConnectingScreen: false,
       trackedValues: {},
       seedFlags: [],
+      showGameDone: false,
     }),
     head: {
       title: 'Item Tracker',
@@ -154,6 +154,8 @@
       },
       'trackedValues.game_finished'(value) {
         if (value) {
+          this.showGameDone = true
+          setTimeout(() => {this.showGameDone = false}, 5000)
           setTimeout(() => {
             confettiFromElement(this.$refs.hype, {
               startVelocity: 30
@@ -278,8 +280,8 @@
       }
 
       .hype {
-        height: 13vw;
-        width: 13vw;
+        height: 26vw;
+        width: 26vw;
         overflow: hidden;
         display: flex;
         border-radius: 50%;

@@ -131,7 +131,10 @@
       isOBS,
       isElectron,
       showWillowHearts() {
-        return (this.$route.query.hearts === 'true' && (!(this.$route.query.AtFirstHeart === 'true') || this.heartCount > 0)) || (this.settings?.LocalTracker?.ShowWillowHearts && (!this.settings?.LocalTracker?.HideHeartsUntilFirstHeart || this.heartCount > 0))
+        const showWillowHearts = this.$route.query.hearts === 'true' || this.settings?.LocalTracker?.ShowWillowHearts
+        const hideHeartsUntilFirstOne = this.$route.query.hideHeartsUntilFirst === 'true' || this.settings?.LocalTracker?.HideHeartsUntilFirstHeart
+
+        return showWillowHearts && (!hideHeartsUntilFirstOne || this.heartCount > 0)
       },
       showTeleporters() {
         return this.$route.query.teleporters === 'true'

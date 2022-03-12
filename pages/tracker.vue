@@ -190,12 +190,12 @@
     mounted() {
       if (isOBS() || isElectron()) {
         applyTransparentWindowStyles()
+
+        // pagchimp
+        document.documentElement.style.overflow = 'hidden'
       }
 
       this.connect()
-
-      // pagchimp
-      document.documentElement.style.overflow = 'hidden'
     },
     beforeDestroy() {
       this.tryDisconnect()

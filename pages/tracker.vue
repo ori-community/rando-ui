@@ -1,7 +1,7 @@
 <template>
   <div class='fill-height' :class='{"electron-draggable": isElectron}'>
     <v-fade-transition mode='out-in'>
-      <div v-if='connected && receivedPacket' key='tracker' class='tracker-container' :class='{done: trackedValues.game_finished}'>
+      <div v-if='connected && receivedPacket' key='tracker' class='tracker-container' :class='{done: showDone}'>
         <div class='tracker pa-2'>
           <WotwTrackerSkillView skill='spike' :active='trackedValues.skill_spike' />
           <WotwTrackerSkillView skill='sentry' :active='trackedValues.skill_sentry' />
@@ -10,6 +10,7 @@
           <WotwTrackerSkillView class='clean-water' skill='clean_water' :active='trackedValues.skill_clean_water' />
           <WotwTrackerResourceView
             class='resource-view'
+            :finished="trackedValues.game_finished"
             :flags='seedFlags'
             :spirit-light='trackedValues.resource_spirit_light'
             :gorlek-ore='trackedValues.resource_gorlek_ore'
@@ -46,9 +47,27 @@
           <WotwTrackerSkillView skill='light_burst' :tree='trackedValues.tree_light_burst' :active='trackedValues.skill_light_burst' />
           <WotwTrackerSkillView skill='ancestral_light_marsh' :tree='trackedValues.tree_ancestral_light_marsh' :active='trackedValues.skill_ancestral_light_marsh' />
         </div>
-
+        <div v-if="showTeleporters" class='teleporters'>
+          <WotwTrackerTeleporterView style="grid-column: 3; grid-row: 1;" name='Wellspring' :active='trackedValues.tp_wellspring' />
+          <WotwTrackerTeleporterView style="grid-column: 5; grid-row: 1;" name='Reach' :active='trackedValues.tp_baurs_reach' />
+          <WotwTrackerTeleporterView style="grid-column: 6; grid-row: 1;" name='Shriek' :active='trackedValues.tp_willow_outer' />
+          <WotwTrackerTeleporterView style="grid-column: 1; grid-row: 2;" name='Pools West' :active='trackedValues.tp_luma_pools_west' />
+          <WotwTrackerTeleporterView style="grid-column: 2; grid-row: 2;" name='Pools East' :active='trackedValues.tp_luma_pools_east' />
+          <WotwTrackerTeleporterView style="grid-column: 4; grid-row: 2;" name='Glades' :active='trackedValues.tp_wellspring_glades' />
+          <WotwTrackerTeleporterView style="grid-column: 6; grid-row: 2;" name='Willow' :active='trackedValues.tp_willow_inner' />
+          <WotwTrackerTeleporterView style="grid-column: 8; grid-row: 2;" name='Outer Ruins' :active='trackedValues.tp_windtorn_ruins_outer' />
+          <WotwTrackerTeleporterView style="grid-column: 3; grid-row: 3;" name='Marsh' :active='trackedValues.tp_inkwater_marsh' />
+          <WotwTrackerTeleporterView style="grid-column: 4; grid-row: 3;" name='Hollow' :active='trackedValues.tp_kwoloks_hollow' />
+          <WotwTrackerTeleporterView style="grid-column: 5; grid-row: 3;" name='Woods West' :active='trackedValues.tp_silent_woods_west' />
+          <WotwTrackerTeleporterView style="grid-column: 6; grid-row: 3;" name='Woods East' :active='trackedValues.tp_silent_woods_wast' />
+          <WotwTrackerTeleporterView style="grid-column: 7; grid-row: 3;" name='Wastes West' :active='trackedValues.tp_windswept_wastes_west' />
+          <WotwTrackerTeleporterView style="grid-column: 8; grid-row: 3;" name='Wastes East' :active='trackedValues.tp_windswept_wastes_east' />
+          <WotwTrackerTeleporterView style="grid-column: 3; grid-row: 4;" name='Burrows' :active='trackedValues.tp_midnight_burrows' />
+          <WotwTrackerTeleporterView style="grid-column: 4; grid-row: 4;" name="Howl's Den" :active='trackedValues.tp_howls_den' />
+          <WotwTrackerTeleporterView style="grid-column: 5; grid-row: 4;" name='Depths' :active='trackedValues.tp_mouldwood_depths' />
+          <WotwTrackerTeleporterView style="grid-column: 8; grid-row: 4;" name='Inner Ruins' :active='trackedValues.tp_windtorn_ruins_inner' />
+        </div>
         <div class='done-label'>
-          <div class='label'>DONE</div>
           <div ref='hype' class='hype'>
             <img src='@/assets/images/ori_hype.png'>
           </div>
@@ -90,6 +109,7 @@
       hideConnectingScreen: false,
       trackedValues: {},
       seedFlags: [],
+      showDone: false,
     }),
     head: {
       title: 'Item Tracker',
@@ -112,7 +132,13 @@
       isOBS,
       isElectron,
       showWillowHearts() {
-        return this.$route.query.hearts === 'true' || (this.settings?.LocalTracker?.ShowWillowHearts && (!this.settings?.LocalTracker?.HideHeartsUntilFirstHeart || this.heartCount > 0))
+        const showWillowHearts = this.$route.query.hearts === 'true' || this.settings?.LocalTracker?.ShowWillowHearts
+        const hideHeartsUntilFirstOne = this.$route.query.hideHeartsUntilFirst === 'true' || this.settings?.LocalTracker?.HideHeartsUntilFirstHeart
+
+        return showWillowHearts && (!hideHeartsUntilFirstOne || this.heartCount > 0)
+      },
+      showTeleporters() {
+        return this.$route.query.teleporters === 'true'
       },
       showErrors() {
         return this.$route.query.errors === 'true'
@@ -158,19 +184,24 @@
             confettiFromElement(this.$refs.hype, {
               startVelocity: 30
             })
-          }, 400)
+          }, 75)
+
+          this.showDone = true
+          setTimeout(() => {
+            this.showDone = false
+          }, 4000)
         }
       },
     },
     mounted() {
       if (isOBS() || isElectron()) {
         applyTransparentWindowStyles()
+
+        // pagchimp
+        document.documentElement.style.overflow = 'hidden'
       }
 
       this.connect()
-
-      // pagchimp
-      document.documentElement.style.overflow = 'hidden'
     },
     beforeDestroy() {
       this.tryDisconnect()
@@ -250,6 +281,7 @@
   .tracker-container {
     width: 100vw;
     position: relative;
+    overflow: hidden;
 
     .done-label {
       position: absolute;
@@ -261,25 +293,10 @@
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      font-size: 15vw;
-      font-weight: 700;
-      user-select: none;
-      opacity: 0;
-      transform: scale(1.4);
-      transition: opacity 200ms, transform 400ms cubic-bezier(.05, 1.62, .32, 1.01);
-
-      @keyframes label-move {
-        from {
-          transform: translateY(5vw);
-        }
-        to {
-          transform: translateY(0);
-        }
-      }
 
       .hype {
-        height: 13vw;
-        width: 13vw;
+        height: 20vw;
+        width: 20vw;
         overflow: hidden;
         display: flex;
         border-radius: 50%;
@@ -287,7 +304,7 @@
         margin-top: -5vw;
         transform: translateY(5vw) scale(1.1);
         opacity: 0;
-        transition: opacity 100ms 400ms, transform 400ms cubic-bezier(.05, 1.62, .32, 1.01) 400ms;
+        transition: opacity 100ms, transform 400ms cubic-bezier(.05, 1.62, .32, 1.01);
 
         img {
           width: 100%;
@@ -298,7 +315,8 @@
     }
 
     &.done {
-      > .tracker {
+      > .tracker,
+      > .teleporters {
         opacity: 0.4;
       }
 
@@ -339,6 +357,18 @@
       grid-column: 6 / span 2;
       grid-row: 1 / span 2;
       position: relative;
+    }
+  }
+
+  .teleporters {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    width: 100%;
+    transition: opacity 200ms;
+
+    > * {
+      min-width: 0;
+      min-height: 0;
     }
   }
 </style>

@@ -275,6 +275,7 @@
   .tracker-container {
     width: 100vw;
     position: relative;
+    overflow: hidden;
 
     .done-label {
       position: absolute;

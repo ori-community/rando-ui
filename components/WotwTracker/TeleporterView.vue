@@ -11,10 +11,6 @@
   export default {
     name: 'TeleporterView',
     props: {
-      teleporter: {
-        type: String,
-        required: true,
-      },
       active: {
         type: Number,
         default: 0,

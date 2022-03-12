@@ -50,37 +50,37 @@
             <div class='teleporters'>
               <div></div>
               <div></div>
-              <WotwTrackerTeleporterView teleporter='wellspring' tpname='Wellspring' :active='trackedValues.tp_wellspring' />
+              <WotwTrackerTeleporterView teleporter='wellspring' name='Wellspring' :active='trackedValues.tp_wellspring' />
               <div></div>
-              <WotwTrackerTeleporterView teleporter='reach' tpname='Reach' :active='trackedValues.tp_baurs_reach' />
-              <WotwTrackerTeleporterView teleporter='willow_outer' tpname='Shriek' :active='trackedValues.tp_willow_outer' />
-              <div></div>
-              <div></div>
-              <WotwTrackerTeleporterView teleporter='pools_west' tpname='Pools West' :active='trackedValues.tp_luma_pools_west' />
-              <WotwTrackerTeleporterView teleporter='pools_east' tpname='Pools East' :active='trackedValues.tp_luma_pools_east' />
-              <div></div>
-              <WotwTrackerTeleporterView teleporter='wellspring_glades' tpname='Glades' :active='trackedValues.tp_wellspring_glades' />
-              <div></div>
-              <WotwTrackerTeleporterView teleporter='willow_inner' tpname='Willow' :active='trackedValues.tp_willow_inner' />
-              <div></div>
-              <WotwTrackerTeleporterView teleporter='ruins_outer' tpname='Outer Ruins' :active='trackedValues.tp_windtorn_ruins_outer' />
+              <WotwTrackerTeleporterView teleporter='reach' name='Reach' :active='trackedValues.tp_baurs_reach' />
+              <WotwTrackerTeleporterView teleporter='willow_outer' name='Shriek' :active='trackedValues.tp_willow_outer' />
               <div></div>
               <div></div>
-              <WotwTrackerTeleporterView teleporter='marsh' tpname='Marsh' :active='trackedValues.tp_inkwater_marsh' />
-              <WotwTrackerTeleporterView teleporter='hollow' tpname='Hollow' :active='trackedValues.tp_kwoloks_hollow' />
-              <WotwTrackerTeleporterView teleporter='woods_west' tpname='Woods West' :active='trackedValues.tp_silent_woods_west' />
-              <WotwTrackerTeleporterView teleporter='woods_east' tpname='Woods East' :active='trackedValues.tp_silent_woods_wast' />
-              <WotwTrackerTeleporterView teleporter='wastes_west' tpname='Wastes West' :active='trackedValues.tp_windswept_wastes_west' />
-              <WotwTrackerTeleporterView teleporter='wastes_east' tpname='Wastes East' :active='trackedValues.tp_windswept_wastes_east' />
+              <WotwTrackerTeleporterView teleporter='pools_west' name='Pools West' :active='trackedValues.tp_luma_pools_west' />
+              <WotwTrackerTeleporterView teleporter='pools_east' name='Pools East' :active='trackedValues.tp_luma_pools_east' />
+              <div></div>
+              <WotwTrackerTeleporterView teleporter='wellspring_glades' name='Glades' :active='trackedValues.tp_wellspring_glades' />
+              <div></div>
+              <WotwTrackerTeleporterView teleporter='willow_inner' name='Willow' :active='trackedValues.tp_willow_inner' />
+              <div></div>
+              <WotwTrackerTeleporterView teleporter='ruins_outer' name='Outer Ruins' :active='trackedValues.tp_windtorn_ruins_outer' />
               <div></div>
               <div></div>
-              <WotwTrackerTeleporterView teleporter='burrows' tpname='Burrows' :active='trackedValues.tp_midnight_burrows' />
-              <WotwTrackerTeleporterView teleporter='howls_den' tpname="Howl's Den" :active='trackedValues.tp_howls_den' />
-              <WotwTrackerTeleporterView teleporter='depths' tpname='Depths' :active='trackedValues.tp_mouldwood_depths' />
+              <WotwTrackerTeleporterView teleporter='marsh' name='Marsh' :active='trackedValues.tp_inkwater_marsh' />
+              <WotwTrackerTeleporterView teleporter='hollow' name='Hollow' :active='trackedValues.tp_kwoloks_hollow' />
+              <WotwTrackerTeleporterView teleporter='woods_west' name='Woods West' :active='trackedValues.tp_silent_woods_west' />
+              <WotwTrackerTeleporterView teleporter='woods_east' name='Woods East' :active='trackedValues.tp_silent_woods_wast' />
+              <WotwTrackerTeleporterView teleporter='wastes_west' name='Wastes West' :active='trackedValues.tp_windswept_wastes_west' />
+              <WotwTrackerTeleporterView teleporter='wastes_east' name='Wastes East' :active='trackedValues.tp_windswept_wastes_east' />
               <div></div>
               <div></div>
-              <WotwTrackerTeleporterView teleporter='ruins_inner' tpname='Inner Ruins' :active='trackedValues.tp_windtorn_ruins_inner' />
-            </div> 
+              <WotwTrackerTeleporterView teleporter='burrows' name='Burrows' :active='trackedValues.tp_midnight_burrows' />
+              <WotwTrackerTeleporterView teleporter='howls_den' name="Howl's Den" :active='trackedValues.tp_howls_den' />
+              <WotwTrackerTeleporterView teleporter='depths' name='Depths' :active='trackedValues.tp_mouldwood_depths' />
+              <div></div>
+              <div></div>
+              <WotwTrackerTeleporterView teleporter='ruins_inner' name='Inner Ruins' :active='trackedValues.tp_windtorn_ruins_inner' />
+            </div>
         </div>
         <div class='done-label'>
           <div class='label'>DONE</div>

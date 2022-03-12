@@ -1,10 +1,10 @@
 <template>
-    <div>
-        <div class='teleporter' :class='{active: Boolean(active)}'>
-          <img class='teleporter-image' src='@/assets/images/tracker/teleporter_edited.png' alt=''/>
-        </div>
-        <div class='teleportername'>{{ tpname }}</div>
+  <div>
+    <div class='teleporter' :class='{active: Boolean(active)}'>
+      <img class='teleporter-image' src='@/assets/images/tracker/teleporter_alt.png' alt=''/>
     </div>
+    <div class='teleporter-name'>{{ name }}</div>
+  </div>
 </template>
 
 <script>
@@ -19,7 +19,7 @@
         type: Number,
         default: 0,
       },
-      tpname:{
+      name: {
         type: String,
         required: true,
       }
@@ -53,12 +53,13 @@
       width: 80%;
     }
   }
-  .teleportername {
-        display: flex;
-        width: 100%;
-        font-size: 1.5vw;
-        font-weight: 400;
-        align-content: center;
-        justify-content: center;
-    }
+
+  .teleporter-name {
+    display: flex;
+    width: 100%;
+    font-size: 1.5vw;
+    font-weight: 400;
+    align-content: center;
+    justify-content: center;
+  }
 </style>

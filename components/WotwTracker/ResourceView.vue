@@ -6,6 +6,9 @@
           <img src='@/assets/images/tracker/spirit_light.png'>
         </div>
         <div class='value'>{{ spiritLight }}</div>
+        <div v-if="finished" class='image hype'>
+          <img src='@/assets/images/ori_hype.png'>
+        </div>
       </div>
 
       <div class='line'>
@@ -118,6 +121,10 @@
         type: Array,
         default: () => ([]),
       },
+      finished: {
+        type: Boolean,
+        default: false,
+      }
     },
   }
 </script>
@@ -185,7 +192,7 @@
       }
 
       .value {
-        font-size: 4vw;
+        font-size: 3.75vw;
         font-weight: 600;
 
         &.completed {
@@ -199,5 +206,12 @@
         }
       }
     }
+  }
+
+  .hype {
+    margin-left: 1vw;
+    overflow: hidden;
+    border-radius: 50%;
+    border: 0.5vw solid var(--v-accent-base);
   }
 </style>

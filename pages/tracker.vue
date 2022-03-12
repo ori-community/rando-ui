@@ -1,7 +1,7 @@
 <template>
   <div class='fill-height' :class='{"electron-draggable": isElectron}'>
     <v-fade-transition mode='out-in'>
-      <div v-if='connected && receivedPacket' key='tracker' class='tracker-container' :class='{done: trackedValues.game_finished}'>
+      <div v-if='connected && receivedPacket' key='tracker' class='tracker-container' :class='{done: showDone}'>
         <div class='tracker pa-2'>
           <WotwTrackerSkillView skill='spike' :active='trackedValues.skill_spike' />
           <WotwTrackerSkillView skill='sentry' :active='trackedValues.skill_sentry' />
@@ -10,6 +10,7 @@
           <WotwTrackerSkillView class='clean-water' skill='clean_water' :active='trackedValues.skill_clean_water' />
           <WotwTrackerResourceView
             class='resource-view'
+            :finished="trackedValues.game_finished"
             :flags='seedFlags'
             :spirit-light='trackedValues.resource_spirit_light'
             :gorlek-ore='trackedValues.resource_gorlek_ore'
@@ -67,7 +68,6 @@
           <WotwTrackerTeleporterView style="grid-column: 8; grid-row: 4;" name='Inner Ruins' :active='trackedValues.tp_windtorn_ruins_inner' />
         </div>
         <div class='done-label'>
-          <div class='label'>DONE</div>
           <div ref='hype' class='hype'>
             <img src='@/assets/images/ori_hype.png'>
           </div>
@@ -109,6 +109,7 @@
       hideConnectingScreen: false,
       trackedValues: {},
       seedFlags: [],
+      showDone: false,
     }),
     head: {
       title: 'Item Tracker',
@@ -183,7 +184,12 @@
             confettiFromElement(this.$refs.hype, {
               startVelocity: 30
             })
-          }, 400)
+          }, 75)
+
+          this.showDone = true
+          setTimeout(() => {
+            this.showDone = false
+          }, 4000)
         }
       },
     },
@@ -287,25 +293,10 @@
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      font-size: 15vw;
-      font-weight: 700;
-      user-select: none;
-      opacity: 0;
-      transform: scale(1.4);
-      transition: opacity 200ms, transform 400ms cubic-bezier(.05, 1.62, .32, 1.01);
-
-      @keyframes label-move {
-        from {
-          transform: translateY(5vw);
-        }
-        to {
-          transform: translateY(0);
-        }
-      }
 
       .hype {
-        height: 13vw;
-        width: 13vw;
+        height: 20vw;
+        width: 20vw;
         overflow: hidden;
         display: flex;
         border-radius: 50%;
@@ -313,7 +304,7 @@
         margin-top: -5vw;
         transform: translateY(5vw) scale(1.1);
         opacity: 0;
-        transition: opacity 100ms 400ms, transform 400ms cubic-bezier(.05, 1.62, .32, 1.01) 400ms;
+        transition: opacity 100ms, transform 400ms cubic-bezier(.05, 1.62, .32, 1.01);
 
         img {
           width: 100%;
@@ -324,7 +315,8 @@
     }
 
     &.done {
-      > .tracker {
+      > .tracker,
+      > .teleporters {
         opacity: 0.4;
       }
 

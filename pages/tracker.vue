@@ -46,41 +46,25 @@
           <WotwTrackerSkillView skill='light_burst' :tree='trackedValues.tree_light_burst' :active='trackedValues.skill_light_burst' />
           <WotwTrackerSkillView skill='ancestral_light_marsh' :tree='trackedValues.tree_ancestral_light_marsh' :active='trackedValues.skill_ancestral_light_marsh' />
         </div>
-        <div v-if='showTeleporters'>
-            <div class='teleporters'>
-              <div></div>
-              <div></div>
-              <WotwTrackerTeleporterView name='Wellspring' :active='trackedValues.tp_wellspring' />
-              <div></div>
-              <WotwTrackerTeleporterView name='Reach' :active='trackedValues.tp_baurs_reach' />
-              <WotwTrackerTeleporterView name='Shriek' :active='trackedValues.tp_willow_outer' />
-              <div></div>
-              <div></div>
-              <WotwTrackerTeleporterView name='Pools West' :active='trackedValues.tp_luma_pools_west' />
-              <WotwTrackerTeleporterView name='Pools East' :active='trackedValues.tp_luma_pools_east' />
-              <div></div>
-              <WotwTrackerTeleporterView name='Glades' :active='trackedValues.tp_wellspring_glades' />
-              <div></div>
-              <WotwTrackerTeleporterView name='Willow' :active='trackedValues.tp_willow_inner' />
-              <div></div>
-              <WotwTrackerTeleporterView name='Outer Ruins' :active='trackedValues.tp_windtorn_ruins_outer' />
-              <div></div>
-              <div></div>
-              <WotwTrackerTeleporterView name='Marsh' :active='trackedValues.tp_inkwater_marsh' />
-              <WotwTrackerTeleporterView name='Hollow' :active='trackedValues.tp_kwoloks_hollow' />
-              <WotwTrackerTeleporterView name='Woods West' :active='trackedValues.tp_silent_woods_west' />
-              <WotwTrackerTeleporterView name='Woods East' :active='trackedValues.tp_silent_woods_wast' />
-              <WotwTrackerTeleporterView name='Wastes West' :active='trackedValues.tp_windswept_wastes_west' />
-              <WotwTrackerTeleporterView name='Wastes East' :active='trackedValues.tp_windswept_wastes_east' />
-              <div></div>
-              <div></div>
-              <WotwTrackerTeleporterView name='Burrows' :active='trackedValues.tp_midnight_burrows' />
-              <WotwTrackerTeleporterView name="Howl's Den" :active='trackedValues.tp_howls_den' />
-              <WotwTrackerTeleporterView name='Depths' :active='trackedValues.tp_mouldwood_depths' />
-              <div></div>
-              <div></div>
-              <WotwTrackerTeleporterView name='Inner Ruins' :active='trackedValues.tp_windtorn_ruins_inner' />
-            </div>
+        <div v-if="showTeleporters" class='teleporters'>
+          <WotwTrackerTeleporterView style="grid-column: 3; grid-row: 1;" name='Wellspring' :active='trackedValues.tp_wellspring' />
+          <WotwTrackerTeleporterView style="grid-column: 5; grid-row: 1;" name='Reach' :active='trackedValues.tp_baurs_reach' />
+          <WotwTrackerTeleporterView style="grid-column: 6; grid-row: 1;" name='Shriek' :active='trackedValues.tp_willow_outer' />
+          <WotwTrackerTeleporterView style="grid-column: 1; grid-row: 2;" name='Pools West' :active='trackedValues.tp_luma_pools_west' />
+          <WotwTrackerTeleporterView style="grid-column: 2; grid-row: 2;" name='Pools East' :active='trackedValues.tp_luma_pools_east' />
+          <WotwTrackerTeleporterView style="grid-column: 4; grid-row: 2;" name='Glades' :active='trackedValues.tp_wellspring_glades' />
+          <WotwTrackerTeleporterView style="grid-column: 6; grid-row: 2;" name='Willow' :active='trackedValues.tp_willow_inner' />
+          <WotwTrackerTeleporterView style="grid-column: 8; grid-row: 2;" name='Outer Ruins' :active='trackedValues.tp_windtorn_ruins_outer' />
+          <WotwTrackerTeleporterView style="grid-column: 3; grid-row: 3;" name='Marsh' :active='trackedValues.tp_inkwater_marsh' />
+          <WotwTrackerTeleporterView style="grid-column: 4; grid-row: 3;" name='Hollow' :active='trackedValues.tp_kwoloks_hollow' />
+          <WotwTrackerTeleporterView style="grid-column: 5; grid-row: 3;" name='Woods West' :active='trackedValues.tp_silent_woods_west' />
+          <WotwTrackerTeleporterView style="grid-column: 6; grid-row: 3;" name='Woods East' :active='trackedValues.tp_silent_woods_wast' />
+          <WotwTrackerTeleporterView style="grid-column: 7; grid-row: 3;" name='Wastes West' :active='trackedValues.tp_windswept_wastes_west' />
+          <WotwTrackerTeleporterView style="grid-column: 8; grid-row: 3;" name='Wastes East' :active='trackedValues.tp_windswept_wastes_east' />
+          <WotwTrackerTeleporterView style="grid-column: 3; grid-row: 4;" name='Burrows' :active='trackedValues.tp_midnight_burrows' />
+          <WotwTrackerTeleporterView style="grid-column: 4; grid-row: 4;" name="Howl's Den" :active='trackedValues.tp_howls_den' />
+          <WotwTrackerTeleporterView style="grid-column: 5; grid-row: 4;" name='Depths' :active='trackedValues.tp_mouldwood_depths' />
+          <WotwTrackerTeleporterView style="grid-column: 8; grid-row: 4;" name='Inner Ruins' :active='trackedValues.tp_windtorn_ruins_inner' />
         </div>
         <div class='done-label'>
           <div class='label'>DONE</div>
@@ -379,11 +363,13 @@
       position: relative;
     }
   }
+
   .teleporters {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     width: 100%;
     transition: opacity 200ms;
+
     > * {
       min-width: 0;
       min-height: 0;

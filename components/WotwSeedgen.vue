@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class='d-flex justify-end pb-3'>
-      <v-btn v-if='hasLastSeedgenConfig' text :disabled='lastConfigLoaded' @click='loadLastSeedgenConfig'>
+      <v-btn v-if="" text :disabled='lastConfigLoaded' @click='loadLastSeedgenConfig'>
         <template v-if='lastConfigLoaded'>
           <v-icon left>mdi-check</v-icon>
           Config loaded
@@ -289,7 +289,6 @@
       anyPresetSelected: false,
       showBingoHeaderWarningDialog: false,
       lastConfigLoaded: false,
-      hasLastSeedgenConfig: false,
     }),
     computed: {
       isElectron,
@@ -318,10 +317,13 @@
           ...d[1],
         }))
       },
+      hasLastSeedgenConfig() {
+        return window.localStorage.getItem(LAST_SEEDGEN_CONFIG_LOCALSTORAGE_KEY) !== null
+      }
     },
     watch: {
       'seedgenConfig.flags'(flags, oldFlags) {
-        if (flags.includes('--multiplayer') && !oldFlags.includes('--multiplayer') && this.createOnlineGame === 'none') {
+        if (flags.includes('--multiplayer') && !oldFlags.includes('--multiplayer') && this.createOnlineGame === 'none' && this.isLoggedIn) {
           this.createOnlineGame = 'normal'
         }
       },
@@ -341,8 +343,6 @@
       this.updateSeedgenResultDialogState()
 
       this.$emit('loaded')
-
-      this.hasLastSeedgenConfig = window.localStorage.getItem(LAST_SEEDGEN_CONFIG_LOCALSTORAGE_KEY) !== null
     },
     methods: {
       async fetchServerConfig() {
@@ -370,7 +370,6 @@
 
         // Save as last config
         window.localStorage.setItem(LAST_SEEDGEN_CONFIG_LOCALSTORAGE_KEY, JSON.stringify(this.seedgenConfig))
-        this.hasLastSeedgenConfig = true
 
         if (
           ['bingo', 'discovery_bingo'].includes(this.createOnlineGame) &&

@@ -102,6 +102,7 @@
             :hidden-universes='hiddenUniverses'
             :highlight-universe='highlightedUniverseId'
             :own-universe-id='ownUniverseId'
+            :card-attention-effect='boardSettings.cardAttentionEffect'
             class='board'
           />
           <div class='sidebar px-5'>
@@ -175,6 +176,13 @@
             label='Hide spectators'
             persistent-hint
           />
+
+          <v-checkbox
+            v-model='boardSettings.cardAttentionEffect'
+            hint='Highlight cards when their value changes'
+            label='Highlight changing cards'
+            persistent-hint
+          />
         </v-card>
       </v-dialog>
 
@@ -221,6 +229,7 @@
         edgeLabels: false,
         highlightOwnUniverse: true,
         hideSpectators: false,
+        cardAttentionEffect: true,
       },
       spectateDialogOpen: false,
       spectateLoading: false,

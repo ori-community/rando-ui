@@ -179,8 +179,8 @@
 
           <v-checkbox
             v-model='boardSettings.cardAttentionEffect'
-            hint='Highlight cards when their value changes'
-            label='Highlight changing cards'
+            hint='Flash cards when their value changes'
+            label='Flash cards'
             persistent-hint
           />
         </v-card>

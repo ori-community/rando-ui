@@ -156,7 +156,7 @@
           await this.$nextTick()
         }
 
-        if(this.attentionEffect){
+        if (this.attentionEffect) {
           this.attentionEffectActive = true
         }
         

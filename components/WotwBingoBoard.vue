@@ -25,6 +25,7 @@
           :marked='isSquareMarked(x, y)'
           :marked-neighbor-mask='getMarkedNeighborMask(x, y)'
           :own-universe-id='ownUniverseId'
+          :attention-effect='cardAttentionEffect'
           @click='$store.commit("multiverseState/toggleBingoGoalMarked", {multiverseId: multiverse.id, x, y})'
         />
       </template>
@@ -52,6 +53,10 @@
     props: {
       multiverse: {
         type: Object,
+        required: true,
+      },
+      cardAttentionEffect: {
+        type: Boolean,
         required: true,
       },
       hiddenUniverses: {

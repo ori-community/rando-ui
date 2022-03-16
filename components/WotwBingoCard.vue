@@ -72,6 +72,10 @@
         type: Number,
         default: null,
       },
+      attentionEffect: {
+        type: Boolean,
+        default: false,
+      },
     },
     data: () => ({
       attentionEffectActive: false,
@@ -152,8 +156,10 @@
           await this.$nextTick()
         }
 
-        this.attentionEffectActive = true
-
+        if (this.attentionEffect) {
+          this.attentionEffectActive = true
+        }
+        
         // TODO: Do this properly
         setTimeout(() => {
           this.attentionEffectActive = false

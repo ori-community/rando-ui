@@ -1,6 +1,12 @@
 <template>
   <div>
     <div class='d-flex justify-end pb-3'>
+      <v-btn text @click='resetConfig'>
+        <template>
+          <v-icon v-if='configReset' left>mdi-check</v-icon>
+          Reset config
+        </template>
+      </v-btn>
       <v-btn v-if='hasLastSeedgenConfig' text :disabled='lastConfigLoaded' @click='loadLastSeedgenConfig'>
         <template v-if='lastConfigLoaded'>
           <v-icon left>mdi-check</v-icon>
@@ -289,6 +295,7 @@
       anyPresetSelected: false,
       showBingoHeaderWarningDialog: false,
       lastConfigLoaded: false,
+      configReset: false,
       hasLastSeedgenConfig: false,
     }),
     computed: {
@@ -362,6 +369,13 @@
         setTimeout(() => {
           this.lastConfigLoaded = false
         }, 4000)
+      },
+      resetConfig(){
+        this.seedgenConfig = generateNewSeedgenConfig()
+        this.configReset = true
+        setTimeout(() => {
+          this.configReset = false
+        }, 1000)
       },
       async generateSeed(ignoreMissingBingoHeader = false) {
         if (this.loading) {

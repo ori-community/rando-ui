@@ -127,6 +127,21 @@
         />
 
         <v-checkbox
+          v-model='settings.Flags.DisableNetcode'
+          label='Disable Netcode'
+          messages='Checking this option prevents the randomizer from communicating with the rando server. With netcode disabled, bingo autotracking and other networked features will be unavailable.'
+        />
+        <v-checkbox
+          v-model='settings.Flags.UseWinStore'
+          label='Use Windows Store'
+          messages='Launch the rando using the windows store version of the game.'
+        />
+
+      </div>
+      <div class='mb-8'>
+        <h3>Tracker settings</h3>
+        
+        <v-checkbox
           v-model='settings.Flags.LaunchWithTracker'
           label='Launch with Item Tracker'
           messages='Automatically open the item tracker when launching the randomizer'
@@ -174,16 +189,6 @@
           />
         </v-expand-transition>
 
-        <v-checkbox
-          v-model='settings.Flags.DisableNetcode'
-          label='Disable Netcode'
-          messages='Checking this option prevents the randomizer from communicating with the rando server. With netcode disabled, bingo autotracking and other networked features will be unavailable.'
-        />
-        <v-checkbox
-          v-model='settings.Flags.UseWinStore'
-          label='Use Windows Store'
-          messages='Launch the rando using the windows store version of the game.'
-        />
       </div>
       <div v-if='settings.Flags.Dev' class='mb-8'>
         <h3>Developer Tools</h3>

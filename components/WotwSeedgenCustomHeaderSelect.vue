@@ -82,6 +82,10 @@
             <v-icon left color='inherit'>mdi-pencil</v-icon>
             <v-list-item-title>Edit</v-list-item-title>
           </v-list-item>
+          <v-list-item @click='pasteNewHeader(contextMenuHeader)'>
+            <v-icon left color='inherit'>mdi-content-duplicate</v-icon>
+            <v-list-item-title>Dublicate</v-list-item-title>
+          </v-list-item>
           <v-list-item @click='deleteHeader'>
             <v-icon left color='inherit'>mdi-delete</v-icon>
             <v-list-item-title>Delete</v-list-item-title>
@@ -109,6 +113,7 @@
       contextMenuX: 0,
       contextMenuY: 0,
       contextMenuOpen: false,
+      contextMenuHeader: null,
       editingHeaderId: null,
       editingHeaderName: '',
       editingHeaderContent: '',
@@ -157,6 +162,7 @@
         this.contextMenuX = event.clientX
         this.contextMenuY = event.clientY
         this.contextMenuOpen = true
+        this.contextMenuHeader = header
         this.editingHeaderId = header.id
         this.editingHeaderName = header.name
         this.editingHeaderContent = header.content
@@ -166,6 +172,27 @@
         this.editingHeaderName = ''
         this.editingHeaderContent = ''
         this.editDialogOpen = true
+      },
+      pasteNewHeader(header){
+        let newName = header.name
+        let foundFreeName = false
+        let count = -1
+        do {
+          count++
+          let checkName = ''
+          if (count === 0){checkName = newName} else {checkName = newName + " (" + count.toString() + ")"}
+          const found = this.customHeaders.find(element => element.name === checkName)
+
+          if (!found){
+            newName = checkName
+            foundFreeName = true
+            }
+        } while (foundFreeName === false)
+
+        this.editingHeaderId = null
+        this.editingHeaderName = newName
+        this.editingHeaderContent = header.content
+        this.saveEditedHeader()
       },
       async saveEditedHeader() {
         const headerPayload = {

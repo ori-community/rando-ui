@@ -272,8 +272,8 @@
         this.headerArgEditor.header = header
         this.headerArgEditor.isOpen = true
       },
-      downloadToCustomHeaders(header) {
-          downloadHeaderToCustom(header.headerName, header.name)
+      downloadToCustomHeaders(headerName) {
+          downloadHeaderToCustom(this.$axios, headerName)
       },
     },
   }

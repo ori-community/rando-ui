@@ -1,5 +1,13 @@
 import { getDb } from '~/assets/db/database'
 
+export function downloadHeaderToCustom(axios, headerName){
+  const serverHeader = fetchServerHeader(axios, headerName)
+  saveCustomHeader(null, serverHeader.name, serverHeader.content)
+}
+export async function fetchServerHeader(axios, headerName) {
+  console.info(headerName)
+  return await axios.$get('/seedgen/headers', headerName)
+}
 export async function insertCustomHeader(header){
   const headers = await (await getDb).customHeaders.toArray()
 
@@ -14,9 +22,6 @@ export async function insertCustomHeader(header){
     }
   } while (!freeName)
 
-}
-export function downloadHeaderToCustom(headerName, displayName){
-  saveCustomHeader(null, displayName, 'Test')
   saveCustomHeader(null, freeName, header.content)
 }
 export async function saveCustomHeader(headerId, headerName, headercontent){

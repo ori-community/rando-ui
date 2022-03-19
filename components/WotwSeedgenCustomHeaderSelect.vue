@@ -82,7 +82,7 @@
             <v-icon left color='inherit'>mdi-pencil</v-icon>
             <v-list-item-title>Edit</v-list-item-title>
           </v-list-item>
-          <v-list-item @click='pasteNewHeader(contextMenuHeader)'>
+          <v-list-item @click='insertHeader(contextMenuHeader)'>
             <v-icon left color='inherit'>mdi-content-duplicate</v-icon>
             <v-list-item-title>Dublicate</v-list-item-title>
           </v-list-item>
@@ -98,6 +98,8 @@
 
 <script>
   import { getDb } from '~/assets/db/database'
+  import { insertCustomHeader } from '~/assets/lib/customHeader'
+  import { saveCustomHeader } from '~/assets/lib/customHeader'
 
   export default {
     name: 'WotwSeedgenCustomHeaderSelect',
@@ -173,39 +175,11 @@
         this.editingHeaderContent = ''
         this.editDialogOpen = true
       },
-      pasteNewHeader(header){
-        let newName = header.name
-        let foundFreeName = false
-        let count = -1
-        do {
-          count++
-          let checkName = ''
-          if (count === 0){checkName = newName} else {checkName = newName + " (" + count.toString() + ")"}
-          const found = this.customHeaders.find(element => element.name === checkName)
-
-          if (!found){
-            newName = checkName
-            foundFreeName = true
-            }
-        } while (foundFreeName === false)
-
-        this.editingHeaderId = null
-        this.editingHeaderName = newName
-        this.editingHeaderContent = header.content
-        this.saveEditedHeader()
+      insertHeader(header){
+        insertCustomHeader(header)
       },
       async saveEditedHeader() {
-        const headerPayload = {
-          name: this.editingHeaderName,
-          content: this.editingHeaderContent,
-        }
-
-        if (!this.editingHeaderId) {
-          await (await getDb).customHeaders.add(headerPayload)
-        } else {
-          await (await getDb).customHeaders.update(this.editingHeaderId, headerPayload)
-        }
-
+        await saveCustomHeader(this.editingHeaderId, this.editingHeaderName, this.editingHeaderContent)
         this.editDialogOpen = false
       },
       editHeader() {

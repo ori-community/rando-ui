@@ -117,13 +117,13 @@
       offset-y
     >
       <v-list>
-        <v-list-item @click='downloadToCustomHeaders(contextMenuHeader)'>
-          <v-icon left color='inherit'>mdi-clipboard-arrow-down-outline</v-icon>
-          <v-list-item-title>Copy to custom headers</v-list-item-title>
-        </v-list-item>
         <v-list-item v-if='contextMenuHeader && contextMenuHeader.params.length > 0' @click='editHeaderArgs(contextMenuHeader)'>
           <v-icon left color='inherit'>mdi-tune</v-icon>
           <v-list-item-title>Configure parameters</v-list-item-title>
+        </v-list-item>
+        <v-list-item @click='downloadToCustomHeaders(contextMenuHeader.headerName)'>
+          <v-icon left color='inherit'>mdi-download</v-icon>
+          <v-list-item-title>Copy to custom headers</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>

@@ -4,25 +4,20 @@ export async function insertCustomHeader(header){
   const headers = await (await getDb).customHeaders.toArray()
 
   // get free name so the new header does not get the same name as source
-  let newName = header.name
-  let foundFreeName = false
+  let freeName = ''
   let count = -1
   do {
     count++
-    let checkName = ''
-    if (count === 0){checkName = newName} else {checkName = newName + " (" + count.toString() + ")"}
-    const found = headers.find(element => element.name === checkName)
-
-    if (!found){
-      newName = checkName
-      foundFreeName = true
+    const comparisonName = header.name + `${count > 0 ? ` (${count.toString()})` : '' }`
+    if (!headers.find(element => element.name === comparisonName)){
+      freeName = comparisonName
     }
-  } while (foundFreeName === false)
+  } while (!freeName)
 
-  saveCustomHeader(null, newName, header.content)
 }
 export function downloadHeaderToCustom(headerName, displayName){
   saveCustomHeader(null, displayName, 'Test')
+  saveCustomHeader(null, freeName, header.content)
 }
 export async function saveCustomHeader(headerId, headerName, headercontent){
   const headerPayload = {

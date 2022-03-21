@@ -176,7 +176,7 @@
         this.editDialogOpen = true
       },
       insertHeader(header){
-        insertCustomHeader(header)
+        insertCustomHeader(header.name, header.content)
       },
       async saveEditedHeader() {
         await saveCustomHeader(this.editingHeaderId, this.editingHeaderName, this.editingHeaderContent)

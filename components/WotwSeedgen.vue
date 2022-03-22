@@ -29,22 +29,22 @@
           <v-icon left>mdi-star-outline</v-icon>
           Presets
         </v-tab>
-        <v-tab>
+        <v-tab :disabled="anyPresetSelected">
           <v-icon left>mdi-map-marker-path</v-icon>
           Paths
           <v-chip class='ml-1' x-small>{{ seedgenConfig.glitches.length }}</v-chip>
         </v-tab>
-        <v-tab>
+        <v-tab :disabled="anyPresetSelected">
           <v-icon left>mdi-flag-checkered</v-icon>
           Goals
           <v-chip class='ml-1' x-small>{{ seedgenConfig.goals.length }}</v-chip>
         </v-tab>
-        <v-tab>
+        <v-tab :disabled="anyPresetSelected">
           <v-icon left>mdi-cog-outline</v-icon>
           Headers
           <v-chip class='ml-1' x-small>{{ seedgenConfig.headers.length }}</v-chip>
         </v-tab>
-        <v-tab>
+        <v-tab :disabled="anyPresetSelected">
           <v-icon left>mdi-tune-vertical</v-icon>
           Generator
         </v-tab>

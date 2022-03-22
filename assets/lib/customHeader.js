@@ -7,10 +7,13 @@ export async function downloadHeaderToCustom(axios, headerName, displayName){
     insertCustomHeader(displayName, content)
   } catch (e) {
     console.error(e)
-    EventBus.$emit('notification', {message: 'An error occured while trying to download the header', color: 'error'}) 
+    EventBus.$emit('notification', {
+      message: 'An error occured while trying to download the header',
+      color: 'error'
+    }) 
   }
 }
-export async function fetchServerHeaderContent(axios, headerName) {
+async function fetchServerHeaderContent(axios, headerName) {
   return await axios.$get(`/seedgen/headers/${headerName}/file`)
 }
 export async function insertCustomHeader(headerName, headerContent){

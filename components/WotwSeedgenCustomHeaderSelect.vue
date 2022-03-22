@@ -84,7 +84,7 @@
           </v-list-item>
           <v-list-item @click='insertHeader(contextMenuHeader)'>
             <v-icon left color='inherit'>mdi-content-duplicate</v-icon>
-            <v-list-item-title>Dublicate</v-list-item-title>
+            <v-list-item-title>Duplicate</v-list-item-title>
           </v-list-item>
           <v-list-item @click='deleteHeader'>
             <v-icon left color='inherit'>mdi-delete</v-icon>

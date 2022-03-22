@@ -139,8 +139,8 @@
 
       </div>
       <div class='mb-8'>
-        <h3>Tracker settings</h3>
-        
+        <h3>Tracker</h3>
+
         <v-checkbox
           v-model='settings.Flags.LaunchWithTracker'
           label='Launch with Item Tracker'
@@ -184,8 +184,8 @@
           <v-checkbox
             v-if='settings.LocalTracker.ShowWillowHearts'
             v-model='settings.LocalTracker.HideHeartsUntilFirstHeart'
-            label='Hide counter until first destroyed heart'
-            messages='Only shows the amount of willow hearts when at least one is destroyed'
+            label='Hide counter until first heart is destroyed'
+            messages='Only shows the amount of willow hearts when at least one heart is destroyed'
           />
         </v-expand-transition>
 

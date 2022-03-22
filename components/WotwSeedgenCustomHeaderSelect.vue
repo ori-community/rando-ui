@@ -82,6 +82,10 @@
             <v-icon left color='inherit'>mdi-pencil</v-icon>
             <v-list-item-title>Edit</v-list-item-title>
           </v-list-item>
+          <v-list-item @click='insertHeader(contextMenuHeader)'>
+            <v-icon left color='inherit'>mdi-content-duplicate</v-icon>
+            <v-list-item-title>Duplicate</v-list-item-title>
+          </v-list-item>
           <v-list-item @click='deleteHeader'>
             <v-icon left color='inherit'>mdi-delete</v-icon>
             <v-list-item-title>Delete</v-list-item-title>
@@ -94,6 +98,8 @@
 
 <script>
   import { getDb } from '~/assets/db/database'
+  import { insertCustomHeader } from '~/assets/lib/customHeader'
+  import { saveCustomHeader } from '~/assets/lib/customHeader'
 
   export default {
     name: 'WotwSeedgenCustomHeaderSelect',
@@ -109,6 +115,7 @@
       contextMenuX: 0,
       contextMenuY: 0,
       contextMenuOpen: false,
+      contextMenuHeader: null,
       editingHeaderId: null,
       editingHeaderName: '',
       editingHeaderContent: '',
@@ -157,6 +164,7 @@
         this.contextMenuX = event.clientX
         this.contextMenuY = event.clientY
         this.contextMenuOpen = true
+        this.contextMenuHeader = header
         this.editingHeaderId = header.id
         this.editingHeaderName = header.name
         this.editingHeaderContent = header.content
@@ -167,18 +175,11 @@
         this.editingHeaderContent = ''
         this.editDialogOpen = true
       },
+      insertHeader(header){
+        insertCustomHeader(header.name, header.content)
+      },
       async saveEditedHeader() {
-        const headerPayload = {
-          name: this.editingHeaderName,
-          content: this.editingHeaderContent,
-        }
-
-        if (!this.editingHeaderId) {
-          await (await getDb).customHeaders.add(headerPayload)
-        } else {
-          await (await getDb).customHeaders.update(this.editingHeaderId, headerPayload)
-        }
-
+        await saveCustomHeader(this.editingHeaderId, this.editingHeaderName, this.editingHeaderContent)
         this.editDialogOpen = false
       },
       editHeader() {

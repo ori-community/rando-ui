@@ -31,7 +31,10 @@ export class BingoBoardOverlayService {
         frame: false,
         show: false,
         focusable: false,
+        skipTaskbar: false,
+        fullscreen: true,
         paintWhenInitiallyHidden: true,
+        opacity: 0.9,
       })
 
       if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -43,13 +46,12 @@ export class BingoBoardOverlayService {
         this.window?.hide()
       })
 
-      this.window.setAspectRatio(1)
       this.window.setAlwaysOnTop(true, 'normal')
       this.window.setIgnoreMouseEvents(true, {
         forward: true,
       })
 
-      await this.window.loadURL(getElectronUrl(`/game/${multiverseId}?isBingoBoardOverlay=true`))
+      await this.window.loadURL(getElectronUrl(`/game/${multiverseId}?isBingoBoardOverlay=true&registerInteractiveHandlers=false`))
     }
   }
 

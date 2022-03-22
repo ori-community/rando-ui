@@ -1,9 +1,13 @@
 <template>
   <div>
-    <div class='d-flex justify-end pb-3'>
-      <v-btn text @click='resetConfig'>
-        <template>
-          <v-icon v-if='configReset' left>mdi-check</v-icon>
+    <div class='d-flex justify-end pb-3 gapped'>
+      <v-btn text :disabled="configReset" @click='resetConfig'>
+        <template v-if="configReset">
+          <v-icon left>mdi-check</v-icon>
+          Config reset
+        </template>
+        <template v-else>
+          <v-icon left>mdi-restore</v-icon>
           Reset config
         </template>
       </v-btn>
@@ -13,6 +17,7 @@
           Config loaded
         </template>
         <template v-else>
+          <v-icon left>mdi-tray-arrow-up</v-icon>
           Load last config
         </template>
       </v-btn>
@@ -594,5 +599,9 @@
     top: 1em;
     right: 1em;
     z-index: 10;
+  }
+
+  .gapped {
+    gap: 0.2em;
   }
 </style>

@@ -136,7 +136,6 @@
           label='Use Windows Store'
           messages='Launch the rando using the windows store version of the game.'
         />
-
       </div>
       <div class='mb-8'>
         <h3>Tracker</h3>
@@ -189,6 +188,16 @@
           />
         </v-expand-transition>
 
+        <v-btn depressed color="accent" class="mt-3" :disabled="localTrackerPositionReset" @click="resetLocalTrackerPosition">
+          <template v-if="localTrackerPositionReset">
+            <v-icon left>mdi-check</v-icon>
+            Tracker position reset
+          </template>
+          <template v-else>
+            <v-icon left>mdi-restore</v-icon>
+            Reset tracker position
+          </template>
+        </v-btn>
       </div>
       <div v-if='settings.Flags.Dev' class='mb-8'>
         <h3>Developer Tools</h3>
@@ -232,6 +241,7 @@
     data: () => ({
       settings: null,
       debugStreak: 0,
+      localTrackerPositionReset: false,
     }),
     head() {
       return {
@@ -304,6 +314,22 @@
             this.debugStreak = 0
           }
         }
+      },
+      async resetLocalTrackerPosition() {
+        this.settings.LocalTracker.X = 0
+        this.settings.LocalTracker.Y = 0
+        this.settings.LocalTracker.Width = 700
+        this.settings.LocalTracker.Height = 405
+
+        await window.electronApi.invoke('localTracker.resetWindowRect')
+
+        this.localTrackerPositionReset = true
+
+
+
+        setTimeout(() => {
+          this.localTrackerPositionReset = false
+        }, 2000)
       }
     }
   }

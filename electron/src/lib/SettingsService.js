@@ -1,68 +1,75 @@
 import fs from 'fs'
 import ini from 'ini'
-import { RANDOMIZER_BASE_PATH } from './Constants'
+import {RANDOMIZER_BASE_PATH} from './Constants'
 import path from 'path'
 import merge from 'lodash.merge'
 import updater from '~/electron/src/api/updater'
 import semver from 'semver'
-import { uiIpc } from '~/electron/src/api'
+import {uiIpc} from '~/electron/src/api'
+import {LocalTrackerService} from '@/lib/LocalTrackerService'
 
 const SETTINGS_PATH = `${RANDOMIZER_BASE_PATH}/settings.ini`
 const CURRENT_SEED_PATH_FILE = `${RANDOMIZER_BASE_PATH}/.currentseedpath`
 const LAST_VERSION_FILE = `${RANDOMIZER_BASE_PATH}/LAST_VERSION`
 const OLD_RANDO_PATH_FILE = path.join(process.env.LOCALAPPDATA || '', 'wotwrpath.tmp')
 
-const getDefaultSettings = () => ({
-  Paths: {
-    Steam: 'C:\\Program Files (x86)\\Steam\\steam.exe',
-    UdpPort: 31415,
-    URL: 'wotw.orirando.com',
-  },
-  Flags: {
-    UseWinStore: false,
-    Dev: false,
-    MuteInjectLogs: false,
-    ShowShortCutscenes: false,
-    ShowLongCutscenes: false,
-    HideQuestFilter: false,
-    HideWarpFilter: false,
-    HideCollectableFilter: false,
-    AlwaysShowWarps: true,
-    AlwaysShowKeystones: true,
-    WorldMapEnabled: true,
-    GrappleMouseControl: false,
-    BurrowMouseControl: false,
-    WaterDashMouseControl: false,
-    DisableNetcode: false,
-    LaunchWithTracker: false,
-    UseBuiltinTracker: false,
-    DisableQuestFocus: true,
-    BoringMoney: true,
-    WaitForDebugger: false,
-    InvertSwim: false,
-    DisableDebugControls: true,
-    CursorLock: false,
-    UpdateToPrereleaseVersions: false,
-    ShowStatsAfterFinish: true,
-    DisableShowSecrets: false,
-    DisableAutoAim: false,
-    AlwaysShowKeystoneDoors: false,
-  },
-  Values: {
-    MapIconTransparency: 0.25
-  },
-  LocalTracker: {
-    X: 0,
-    Y: 0,
-    Width: 700,
-    Height: 405,
-    Transparent: false,
-    AlwaysOnTop: false,
-    IgnoreMouse: false,
-    ShowWillowHearts: false,
-    HideHeartsUntilFirstHeart: false,
-  },
-})
+
+const getDefaultSettings = () => {
+
+  const localTrackerInitialWindowRect = LocalTrackerService.getInitialWindowRect()
+
+  return {
+    Paths: {
+      Steam: 'C:\\Program Files (x86)\\Steam\\steam.exe',
+      UdpPort: 31415,
+      URL: 'wotw.orirando.com',
+    },
+    Flags: {
+      UseWinStore: false,
+      Dev: false,
+      MuteInjectLogs: false,
+      ShowShortCutscenes: false,
+      ShowLongCutscenes: false,
+      HideQuestFilter: false,
+      HideWarpFilter: false,
+      HideCollectableFilter: false,
+      AlwaysShowWarps: true,
+      AlwaysShowKeystones: true,
+      WorldMapEnabled: true,
+      GrappleMouseControl: false,
+      BurrowMouseControl: false,
+      WaterDashMouseControl: false,
+      DisableNetcode: false,
+      LaunchWithTracker: false,
+      UseBuiltinTracker: false,
+      DisableQuestFocus: true,
+      BoringMoney: true,
+      WaitForDebugger: false,
+      InvertSwim: false,
+      DisableDebugControls: true,
+      CursorLock: false,
+      UpdateToPrereleaseVersions: false,
+      ShowStatsAfterFinish: true,
+      DisableShowSecrets: false,
+      DisableAutoAim: false,
+      AlwaysShowKeystoneDoors: false,
+    },
+    Values: {
+      MapIconTransparency: 0.25
+    },
+    LocalTracker: {
+      X: localTrackerInitialWindowRect.x,
+      Y: localTrackerInitialWindowRect.y,
+      Width: localTrackerInitialWindowRect.width,
+      Height: localTrackerInitialWindowRect.height,
+      Transparent: false,
+      AlwaysOnTop: false,
+      IgnoreMouse: false,
+      ShowWillowHearts: false,
+      HideHeartsUntilFirstHeart: false,
+    },
+  }
+}
 
 const sendSettingsToUI = () => {
   try {
@@ -81,7 +88,7 @@ export class SettingsService {
     const currentVersion = (await updater.getVersion()).trim()
 
     if (fs.existsSync(LAST_VERSION_FILE) && currentVersion !== 'develop') {
-      const lastVersion = (await fs.promises.readFile(LAST_VERSION_FILE, { encoding: 'utf-8' })).trim()
+      const lastVersion = (await fs.promises.readFile(LAST_VERSION_FILE, {encoding: 'utf-8'})).trim()
 
       if (lastVersion !== currentVersion && lastVersion !== 'develop') {
         const settings = await SettingsService.getCurrentSettings()
@@ -138,7 +145,7 @@ export class SettingsService {
       console.log('Settings file not found, using default settings...')
       settingsCache = getDefaultSettings()
     } else {
-      const settings = await fs.promises.readFile(SETTINGS_PATH, { encoding: 'utf16le' })
+      const settings = await fs.promises.readFile(SETTINGS_PATH, {encoding: 'utf16le'})
 
       settingsCache = merge(
         getDefaultSettings(),
@@ -176,7 +183,7 @@ export class SettingsService {
   }
 
   static async writeSettings() {
-    await fs.promises.writeFile(SETTINGS_PATH, ini.encode(settingsCache), { encoding: 'utf16le' })
+    await fs.promises.writeFile(SETTINGS_PATH, ini.encode(settingsCache), {encoding: 'utf16le'})
   }
 
   static async transaction(callback) {
@@ -197,7 +204,7 @@ export class SettingsService {
       return null
     }
 
-    const oldPath = (await fs.promises.readFile(oldPathFile, { encoding: 'utf-8' })).trim()
+    const oldPath = (await fs.promises.readFile(oldPathFile, {encoding: 'utf-8'})).trim()
     if (!fs.existsSync(oldPath)) {
       console.log(`SettingsService: Found old Rando path file, but the target path (${oldPath}) does not exist`)
       return null

@@ -1,5 +1,6 @@
 import { LocalTrackerWebSocketService } from '~/electron/src/lib/LocalTrackerWebSocketService'
 import { LocalTrackerService } from '@/lib/LocalTrackerService'
+import {SettingsService} from '@/lib/SettingsService'
 
 export default {
   isTrackerRunning() {
@@ -20,4 +21,16 @@ export default {
   getEndpointId() {
     return LocalTrackerWebSocketService.remoteTrackerEndpointId
   },
+  async resetWindowRect() {
+    await SettingsService.transaction(settings => {
+      const rect = LocalTrackerService.getInitialWindowRect()
+      settings.LocalTracker.X = rect.x
+      settings.LocalTracker.Y = rect.y
+      settings.LocalTracker.Width = rect.width
+      settings.LocalTracker.Height = rect.height
+      return settings
+    })
+
+    LocalTrackerService.resetWindowRect()
+  }
 }

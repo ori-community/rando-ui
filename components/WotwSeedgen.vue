@@ -1,12 +1,23 @@
 <template>
   <div>
-    <div class='d-flex justify-end pb-3'>
+    <div class='d-flex justify-end pb-3 gapped'>
+      <v-btn text :disabled="configReset" @click='resetConfig'>
+        <template v-if="configReset">
+          <v-icon left>mdi-check</v-icon>
+          Config reset
+        </template>
+        <template v-else>
+          <v-icon left>mdi-restore</v-icon>
+          Reset config
+        </template>
+      </v-btn>
       <v-btn v-if='hasLastSeedgenConfig' text :disabled='lastConfigLoaded' @click='loadLastSeedgenConfig'>
         <template v-if='lastConfigLoaded'>
           <v-icon left>mdi-check</v-icon>
           Config loaded
         </template>
         <template v-else>
+          <v-icon left>mdi-tray-arrow-up</v-icon>
           Load last config
         </template>
       </v-btn>
@@ -18,22 +29,22 @@
           <v-icon left>mdi-star-outline</v-icon>
           Presets
         </v-tab>
-        <v-tab>
+        <v-tab :disabled="anyPresetSelected">
           <v-icon left>mdi-map-marker-path</v-icon>
           Paths
           <v-chip class='ml-1' x-small>{{ seedgenConfig.glitches.length }}</v-chip>
         </v-tab>
-        <v-tab>
+        <v-tab :disabled="anyPresetSelected">
           <v-icon left>mdi-flag-checkered</v-icon>
           Goals
           <v-chip class='ml-1' x-small>{{ seedgenConfig.goals.length }}</v-chip>
         </v-tab>
-        <v-tab>
+        <v-tab :disabled="anyPresetSelected">
           <v-icon left>mdi-cog-outline</v-icon>
           Headers
           <v-chip class='ml-1' x-small>{{ seedgenConfig.headers.length }}</v-chip>
         </v-tab>
-        <v-tab>
+        <v-tab :disabled="anyPresetSelected">
           <v-icon left>mdi-tune-vertical</v-icon>
           Generator
         </v-tab>
@@ -289,6 +300,7 @@
       anyPresetSelected: false,
       showBingoHeaderWarningDialog: false,
       lastConfigLoaded: false,
+      configReset: false,
       hasLastSeedgenConfig: false,
     }),
     computed: {
@@ -362,6 +374,13 @@
         setTimeout(() => {
           this.lastConfigLoaded = false
         }, 4000)
+      },
+      resetConfig(){
+        this.seedgenConfig = generateNewSeedgenConfig()
+        this.configReset = true
+        setTimeout(() => {
+          this.configReset = false
+        }, 1000)
       },
       async generateSeed(ignoreMissingBingoHeader = false) {
         if (this.loading) {
@@ -580,5 +599,9 @@
     top: 1em;
     right: 1em;
     z-index: 10;
+  }
+
+  .gapped {
+    gap: 0.2em;
   }
 </style>

@@ -21,6 +21,7 @@
             depressed
             v-on='on'
             @click='toggleHeaderState(header)'
+            @contextmenu.native='e => showContextMenu(e, header)'
           >
             {{ header.name }}
           </v-btn>
@@ -108,10 +109,30 @@
         </div>
       </v-card>
     </v-dialog>
+    <v-menu
+      v-model='contextMenuOpen'
+      :position-x='contextMenuX'
+      :position-y='contextMenuY'
+      absolute
+      offset-y
+    >
+      <v-list>
+        <v-list-item v-if='contextMenuHeader && contextMenuHeader.params.length > 0' @click='editHeaderArgs(contextMenuHeader)'>
+          <v-icon left color='inherit'>mdi-tune</v-icon>
+          <v-list-item-title>Configure parameters</v-list-item-title>
+        </v-list-item>
+        <v-list-item @click='downloadToCustomHeaders(contextMenuHeader)'>
+          <v-icon left color='inherit'>mdi-download</v-icon>
+          <v-list-item-title>Copy to custom headers</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </div>
 </template>
 
 <script>
+  import { downloadHeaderToCustom } from '~/assets/lib/customHeader'
+
   export default {
     name: 'WotwSeedgenHeaderSelect',
     props: {
@@ -136,6 +157,10 @@
         header: null,
       },
       headerArgStates: {},
+      contextMenuHeader: null,
+      contextMenuX: 0,
+      contextMenuY: 0,
+      contextMenuOpen: false,
     }),
     computed: {
       visibleHeaders() {
@@ -202,6 +227,13 @@
           default: return String(value)
         }
       },
+      showContextMenu(event, header) {
+        event.preventDefault()
+        this.contextMenuHeader = header
+        this.contextMenuX = event.clientX
+        this.contextMenuY = event.clientY
+        this.contextMenuOpen = true
+      },
       toggleHeaderState(header) {
         this.headerStates[header.headerName] = !this.headerStates[header.headerName]
       },
@@ -238,6 +270,9 @@
         this.headerStates[header.headerName] = true
         this.headerArgEditor.header = header
         this.headerArgEditor.isOpen = true
+      },
+      downloadToCustomHeaders(header) {
+          downloadHeaderToCustom(this.$axios, header.headerName, header.name)
       },
     },
   }

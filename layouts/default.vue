@@ -58,12 +58,67 @@
       })
 
       if (isElectron()) {
-        window.electronApi.on('main.error', (event, e) => {
-          EventBus.$emit('notification', {
-            message: String(e),
-            color: 'error',
+        const registerInteractiveHandlers = this.$route.query.registerInteractiveHandlers !== 'false'
+
+        if (registerInteractiveHandlers) {
+          window.electronApi.on('main.error', (event, e) => {
+            EventBus.$emit('notification', {
+              message: String(e),
+              color: 'error',
+            })
           })
-        })
+
+          window.electronApi.on('main.openSeed', (event, seedFile) => {
+            this.$store.dispatch('electron/launch', {
+              seedFile,
+            })
+          })
+
+          window.electronApi.on('main.crashDetected', (event, supportBundleName) => {
+            this.$store.commit('electron/setCurrentSupportBundleName', supportBundleName)
+            window.electronApi.invoke('launcher.focusMainWindow')
+          })
+
+          window.electronApi.on('main.goToSettings', () => {
+            this.$router.push({ name: 'electron-settings' })
+            window.electronApi.invoke('launcher.focusMainWindow')
+          })
+
+          window.electronApi.on('game.gameFinished', () => {
+            if (this.settingsLoaded && this.settings.Flags.ShowStatsAfterFinish) {
+              this.$router.push({ name: 'electron-stats' })
+              window.electronApi.invoke('launcher.focusMainWindow')
+            }
+          })
+
+          window.electronApi.on('main.openUrl', async (event, url) => {
+            url = new URL(url)
+
+            if (url.protocol === 'ori-rando:') {
+              window.electronApi.invoke('launcher.focusMainWindow')
+              const topPath = url.pathname.match(/\/\/(?<topPath>[^/]*)\//)?.groups.topPath
+              switch (topPath) {
+                case 'authenticate':
+                  await this.$router.push({ name: 'auth-callback', query: { jwt: url.searchParams.get('jwt') } })
+                  break
+                case 'seedgen':
+                  await this.$router.push({ name: 'seedgen', query: { seedId: url.searchParams.get('seedId') } })
+                  break
+                case 'game': {
+                  const gameId = url.pathname.match(/.*\/(?<gameId>\d*)$/)?.groups.gameId
+                  if (gameId) {
+                    await this.$router.push({ name: 'game-multiverseId', params: { multiverseId: gameId } })
+                  } else {
+                    console.warn('Could not read game ID from URL', url)
+                  }
+                  break
+                }
+                default:
+                  console.warn('Could not handle URL', url)
+              }
+            }
+          })
+        }
 
         window.electronApi.on('main.settingsChanged', (event, settings) => {
           this.$store.commit('electron/setSettings', settings)
@@ -71,57 +126,6 @@
 
         window.electronApi.on('main.currentSeedChanged', (event, { currentSeedInfo, currentSeedPath }) => {
           this.$store.commit('electron/setCurrentSeedPath', currentSeedPath)
-        })
-
-        window.electronApi.on('main.openSeed', (event, seedFile) => {
-          this.$store.dispatch('electron/launch', {
-            seedFile,
-          })
-        })
-
-        window.electronApi.on('main.crashDetected', (event, supportBundleName) => {
-          this.$store.commit('electron/setCurrentSupportBundleName', supportBundleName)
-          window.electronApi.invoke('launcher.focusMainWindow')
-        })
-
-        window.electronApi.on('main.goToSettings', () => {
-          this.$router.push({ name: 'electron-settings' })
-          window.electronApi.invoke('launcher.focusMainWindow')
-        })
-
-        window.electronApi.on('game.gameFinished', () => {
-          if (this.settingsLoaded && this.settings.Flags.ShowStatsAfterFinish) {
-            this.$router.push({ name: 'electron-stats' })
-            window.electronApi.invoke('launcher.focusMainWindow')
-          }
-        })
-
-        window.electronApi.on('main.openUrl', async (event, url) => {
-          url = new URL(url)
-
-          if (url.protocol === 'ori-rando:') {
-            window.electronApi.invoke('launcher.focusMainWindow')
-            const topPath = url.pathname.match(/\/\/(?<topPath>[^/]*)\//)?.groups.topPath
-            switch (topPath) {
-              case 'authenticate':
-                await this.$router.push({ name: 'auth-callback', query: { jwt: url.searchParams.get('jwt') } })
-                break
-              case 'seedgen':
-                await this.$router.push({ name: 'seedgen', query: { seedId: url.searchParams.get('seedId') } })
-                break
-              case 'game': {
-                const gameId = url.pathname.match(/.*\/(?<gameId>\d*)$/)?.groups.gameId
-                if (gameId) {
-                  await this.$router.push({ name: 'game-multiverseId', params: { multiverseId: gameId } })
-                } else {
-                  console.warn('Could not read game ID from URL', url)
-                }
-                break
-              }
-              default:
-                console.warn('Could not handle URL', url)
-            }
-          }
         })
 
         window.electronApi.on('localTracker.setIsRunning', (event, isRunning) => {

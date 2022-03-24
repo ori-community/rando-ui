@@ -9,9 +9,12 @@ import { spawn } from 'child_process'
 
 export default {
   addExceptionForWindowsDefender() {
-    spawn(`Start-Process powershell -ArgumentList "if (Add-MpPreference -ExclusionPath '${RANDOMIZER_BASE_PATH}') { echo 'Done, you can close this window' } else { echo 'Could not add an exception for Windows Defender. If you are using an Antivirus other than Windows Defender, you have to add an exception manually if it blocks the Randomizer.' }; sleep 100000" -Verb RunAs`, {
-      shell: 'powershell.exe',
-    }).unref()
+    spawn(
+      `Start-Process powershell -ArgumentList "if (Add-MpPreference -ExclusionPath '${RANDOMIZER_BASE_PATH}') { echo 'Done, you can close this window' } else { echo 'Could not add an exception for Windows Defender. If you are using an Antivirus other than Windows Defender, you have to add an exception manually if it blocks the Randomizer.' }; sleep 100000" -Verb RunAs`,
+      {
+        shell: 'powershell.exe',
+      },
+    ).unref()
   },
 
   getOpenedSeedPath() {
@@ -43,8 +46,8 @@ export default {
     }
   },
 
-  async downloadSeedFromUrl(event, { url, fileName }) {
-    console.log(`Launching seed from URL: ${url}`)
+  async downloadSeedFromUrl(event, { url, fileName, setToCurrent = true }) {
+    console.log(`Downloading seed from URL: ${url}`)
 
     const originalFilenameParts = fileName.match(/(?<name>.*)\.(?<extension>[^.]*)/).groups
     let count = 1
@@ -56,7 +59,30 @@ export default {
     await FileDownloadService.download(url, targetFile)
 
     console.log(`Downloaded seed to ${targetFile}`)
-    await LauncherService.setCurrentSeedPath(targetFile)
+
+    if (setToCurrent) {
+      await LauncherService.setCurrentSeedPath(targetFile)
+    }
+
+    return targetFile
+  },
+
+  async downloadSeedsFromUrl(event, { seeds, showInExplorer = false }) {
+    let firstSeedFile = null
+    for (const seed of seeds) {
+      const targetFile = await this.downloadSeedFromUrl(event, {
+        ...seed,
+        setToCurrent: false,
+      })
+
+      if (!firstSeedFile) {
+        firstSeedFile = targetFile
+      }
+    }
+
+    if (showInExplorer && firstSeedFile) {
+      shell.showItemInFolder(firstSeedFile)
+    }
   },
 
   openWiki() {
@@ -81,5 +107,5 @@ export default {
 
   focusMainWindow() {
     getWindow().focus()
-  }
+  },
 }

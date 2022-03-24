@@ -151,8 +151,6 @@
 <style lang='scss'>
   // Global styles
 
-  @import "@fontsource/nunito-sans/index.css";
-
   ::-webkit-scrollbar {
     width: 12px;
   }

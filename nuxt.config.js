@@ -46,7 +46,10 @@ export default {
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: [],
+  css: [
+    '@mdi/font/css/materialdesignicons.css',
+    '@fontsource/nunito-sans/index.css',
+  ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
@@ -87,6 +90,7 @@ export default {
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
     treeShake: true,
+    defaultAssets: false,
     customVariables: ['@/assets/style/variables.scss'],
     theme: {
       dark: true,

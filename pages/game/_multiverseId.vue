@@ -471,7 +471,7 @@
         }, 5000)
       },
       openInLauncher() {
-        window.open(this.launcherUrl)
+        window.open(this.launcherUrl, '_self')
         window.close()
       },
     },

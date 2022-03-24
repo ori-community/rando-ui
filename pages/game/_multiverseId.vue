@@ -13,7 +13,7 @@
       <div class='text-center my-6'>
         <v-btn
           v-if='!isElectron'
-          :href='launcherUrl'
+          @click='openInLauncher'
           color='accent'
           x-large
         >
@@ -469,6 +469,10 @@
         setTimeout(() => {
           this.bingoOverlayEnabled = false
         }, 5000)
+      },
+      openInLauncher() {
+        window.open(this.launcherUrl)
+        window.close()
       },
     },
   }

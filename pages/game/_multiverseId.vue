@@ -11,15 +11,21 @@
       </div>
 
       <div class='text-center my-6'>
-        <v-btn
-          v-if='!isElectron'
-          @click='openInLauncher'
-          color='accent'
-          x-large
-        >
-          <v-icon left>mdi-launch</v-icon>
-          Open in Launcher
-        </v-btn>
+        <v-tooltip bottom>
+          <template #activator='{on}'>
+            <v-btn
+              v-if='!isElectron'
+              v-on='on'
+              color='accent'
+              x-large
+              @click='openInLauncher'
+            >
+              <v-icon left>mdi-launch</v-icon>
+              Open in Launcher
+            </v-btn>
+          </template>
+          <span><kbd>Ctrl</kbd> + Click to close this window</span>
+        </v-tooltip>
       </div>
 
       <throttled-spinner>
@@ -470,9 +476,14 @@
           this.bingoOverlayEnabled = false
         }, 5000)
       },
-      openInLauncher() {
+      openInLauncher(event) {
         window.open(this.launcherUrl, '_self')
-        window.close()
+
+        if (event.ctrlKey) {
+          setTimeout(() => {
+            window.close()
+          }, 500)
+        }
       },
     },
   }

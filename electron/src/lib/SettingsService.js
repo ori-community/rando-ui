@@ -3,19 +3,20 @@ import ini from 'ini'
 import {RANDOMIZER_BASE_PATH} from './Constants'
 import path from 'path'
 import merge from 'lodash.merge'
+import cloneDeep from 'lodash.clonedeep'
+import isEqual from 'lodash.isequal'
 import updater from '~/electron/src/api/updater'
 import semver from 'semver'
-import {uiIpc} from '~/electron/src/api'
 import {LocalTrackerService} from '@/lib/LocalTrackerService'
+import {uiIpc} from '@/api.ts'
+import {EventEmitter} from 'events'
 
 const SETTINGS_PATH = `${RANDOMIZER_BASE_PATH}/settings.ini`
 const CURRENT_SEED_PATH_FILE = `${RANDOMIZER_BASE_PATH}/.currentseedpath`
 const LAST_VERSION_FILE = `${RANDOMIZER_BASE_PATH}/LAST_VERSION`
 const OLD_RANDO_PATH_FILE = path.join(process.env.LOCALAPPDATA || '', 'wotwrpath.tmp')
 
-
 const getDefaultSettings = () => {
-
   const localTrackerInitialWindowRect = LocalTrackerService.getInitialWindowRect()
 
   return {
@@ -81,9 +82,13 @@ const sendSettingsToUI = () => {
 
 let settingsCache = null
 let shouldShowImportInfoDialog = false
-const settingsChangedListeners = []
+let events = new EventEmitter()
 
 export class SettingsService {
+  static get events() {
+    return events
+  }
+
   static async migrateSettingsVersion() {
     const currentVersion = (await updater.getVersion()).trim()
 
@@ -124,7 +129,6 @@ export class SettingsService {
         console.log(`SettingsService: Migrations finished`)
 
         await SettingsService.setSettings(settings)
-        await SettingsService.writeSettings()
       } else {
         console.log(`SettingsService: Nothing to migrate`)
       }
@@ -152,6 +156,8 @@ export class SettingsService {
         ini.parse(settings.trimStart()),
       )
     }
+
+    sendSettingsToUI()
   }
 
   static async getCurrentSettings() {
@@ -159,27 +165,19 @@ export class SettingsService {
       await this.readSettingsToCache()
     }
 
-    sendSettingsToUI()
-
     return settingsCache
   }
 
-  static setSettings(settings) {
-    const oldSettings = settingsCache
+  static async setSettings(settings) {
+    if (isEqual(settings, settingsCache)) {
+      return
+    }
+
+    const oldSettings = cloneDeep(settingsCache)
     settingsCache = settings
     sendSettingsToUI()
-
-    for (const settingsChangedListener of settingsChangedListeners) {
-      if (settingsChangedListener) {
-        settingsChangedListener(settings, oldSettings)
-      }
-    }
-  }
-
-  static listen(listener) {
-    if (!settingsChangedListeners.includes(listener)) {
-      settingsChangedListeners.push(listener)
-    }
+    this.events.emit('settings-changed', settings, oldSettings)
+    await this.writeSettings()
   }
 
   static async writeSettings() {
@@ -187,14 +185,9 @@ export class SettingsService {
   }
 
   static async transaction(callback) {
-    const newSettings = callback(await this.getCurrentSettings())
-
-    if (!newSettings) {
-      return
-    }
-
-    this.setSettings(newSettings)
-    await this.writeSettings()
+    const currentSettings = cloneDeep(await this.getCurrentSettings())
+    callback(currentSettings)
+    await this.setSettings(currentSettings)
   }
 
   static async getOldInstallationPath() {

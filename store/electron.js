@@ -118,29 +118,36 @@ export const mutations = {
 let checkForUpdatesOncePromise = null
 
 export const actions = {
+  async setSettings({ commit }, settings) {
+    commit('setSettings', settings)
+    await window.electronApi.invoke('settings.setSettings', settings)
+  },
   async checkForUpdates({ commit }) {
     try {
       commit('setCurrentVersion', await window.electronApi.invoke('updater.getVersion'))
 
-      commit('setAvailableReleases', (await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/releases`))
-        .filter(release => !release.draft && !release.prerelease)
-        .sort((a, b) => semver.compareLoose(b.name, a.name))
-        .map(release => {
-          const parser = new commonmark.Parser()
-          const writer = new commonmark.HtmlRenderer()
+      commit(
+        'setAvailableReleases',
+        (await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/releases`))
+          .filter((release) => !release.draft && !release.prerelease)
+          .sort((a, b) => semver.compareLoose(b.name, a.name))
+          .map((release) => {
+            const parser = new commonmark.Parser()
+            const writer = new commonmark.HtmlRenderer()
 
-          return {
-            ...release,
-            bodyHtml: sanitizeHtml(writer.render(parser.parse(release.body))),
-          }
-        }))
+            return {
+              ...release,
+              bodyHtml: sanitizeHtml(writer.render(parser.parse(release.body))),
+            }
+          }),
+      )
     } catch (e) {
       commit('setOfflineMode', true)
       console.error(e)
     }
   },
   async checkForUpdatesOnce({ dispatch }) {
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       if (checkForUpdatesOncePromise === null) {
         checkForUpdatesOncePromise = dispatch('checkForUpdates')
       }
@@ -158,7 +165,7 @@ export const actions = {
         commit('setUpdateDownloadProgress', progress * 100)
       })
       await window.electronApi.invoke('updater.downloadAndInstallUpdate', {
-        url: getters.latestVisibleRelease.assets.find(a => a.name === 'WotwRandoSetup.exe').browser_download_url,
+        url: getters.latestVisibleRelease.assets.find((a) => a.name === 'WotwRandoSetup.exe').browser_download_url,
       })
     }
   },

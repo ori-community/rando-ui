@@ -237,6 +237,10 @@
 </template>
 
 <script>
+  import {mapState} from 'vuex'
+  import cloneDeep from 'lodash.clonedeep'
+  import isEqual from 'lodash.isequal'
+
   export default {
     data: () => ({
       settings: null,
@@ -249,6 +253,8 @@
       }
     },
     computed: {
+      ...mapState('electron', {storeSettings: 'settings'}),
+      ...mapState('electron', ['settingsLoaded']),
       useRandomCurrencyNames: {
         get() {
           return !this.settings.Flags.BoringMoney
@@ -286,13 +292,27 @@
       settings: {
         deep: true,
         async handler(settings) {
-          await window.electronApi.invoke('settings.setSettings', settings)
-          await window.electronApi.invoke('settings.writeSettings')
+          await this.$store.dispatch('electron/setSettings', cloneDeep(settings))
+        }
+      },
+      settingsLoaded: {
+        immediate: true,
+        handler(loaded) {
+          if (loaded) {
+            this.updateSettings()
+          }
+        },
+      },
+      storeSettings: {
+        deep: true,
+        handler(storeSettings) {
+          if (!isEqual(this.settings, storeSettings)) {
+            this.updateSettings()
+          }
         }
       }
     },
-    async mounted() {
-      this.settings = await window.electronApi.invoke('settings.readSettings')
+    mounted() {
       document.addEventListener('keydown', this.onKeyDown)
       this.$emit('loaded')
     },
@@ -300,6 +320,9 @@
       document.removeEventListener('keydown', this.onKeyDown)
     },
     methods: {
+      updateSettings() {
+        this.settings = cloneDeep(this.storeSettings)
+      },
       async selectSteamPath() {
         const newPath = await window.electronApi.invoke('settings.selectSteamPath')
         if (newPath) {
@@ -324,8 +347,6 @@
         await window.electronApi.invoke('localTracker.resetWindowRect')
 
         this.localTrackerPositionReset = true
-
-
 
         setTimeout(() => {
           this.localTrackerPositionReset = false

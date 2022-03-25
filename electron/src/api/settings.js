@@ -5,11 +5,8 @@ export default {
   async readSettings() {
     return await SettingsService.getCurrentSettings()
   },
-  setSettings(event, settings) {
-    SettingsService.setSettings(settings)
-  },
-  async writeSettings() {
-    await SettingsService.writeSettings()
+  async setSettings(event, settings) {
+    await SettingsService.setSettings(settings)
   },
   async selectSteamPath() {
     const result = await dialog.showOpenDialog({

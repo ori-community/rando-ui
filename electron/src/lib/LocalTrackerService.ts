@@ -66,7 +66,7 @@ export class LocalTrackerService {
   }
 
   static async openLocalTracker(forceReopenWindow = false) {
-    SettingsService.listen(this.onSettingsChanged)
+    SettingsService.events.on('settings-changed', LocalTrackerService.onSettingsChanged)
 
     if (!this.window || this.window.isDestroyed() || forceReopenWindow) {
       if (this.window?.isDestroyed() === false) {

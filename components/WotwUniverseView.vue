@@ -1,7 +1,12 @@
 <template>
   <v-card class='universe-view'>
     <v-sheet v-if='!hideColor' :color='universe.color' height='0.5em' />
-    <v-card-title>{{ universe.name }}</v-card-title>
+    <v-card-title>
+      <div>
+        {{ universe.name }}
+        <copyable-info v-if="devtoolsEnabled" :value="universe.id" />
+      </div>
+    </v-card-title>
     <v-card-text>
       <v-scroll-y-reverse-transition leave-absolute group tag='div' class='d-flex flex-wrap worlds'>
         <wotw-world-view
@@ -24,7 +29,7 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex'
+  import {mapState} from 'vuex'
 
   export default {
     name: 'WotwUniverseView',
@@ -63,6 +68,7 @@
     },
     computed: {
       ...mapState('user', ['user']),
+      ...mapState('dev', ['devtoolsEnabled']),
     },
   }
 </script>

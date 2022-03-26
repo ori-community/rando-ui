@@ -3,7 +3,7 @@
     <v-sheet :color='world.color' class='flex-shrink-0' height='0.5em' />
     <v-card-title class='d-flex'>
       <div class='world-title'>
-        <div>{{ world.name }}</div>
+        <div>{{ world.name }} <copyable-info v-if="devtoolsEnabled" :value="world.id" /></div>
         <wotw-seed-button v-if='!!seed && !!world.seedFile' :seed='seed' :seed-file='world.seedFile' />
       </div>
     </v-card-title>
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex'
+  import {mapState} from 'vuex'
 
   export default {
     name: 'WotwWorldView',
@@ -56,6 +56,7 @@
     },
     computed: {
       ...mapState('user', ['user']),
+      ...mapState('dev', ['devtoolsEnabled']),
       canJoinInternal() {
         return this.canJoin && !this.world.members.some(u => u.id === this.user?.id)
       },

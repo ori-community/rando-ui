@@ -243,9 +243,8 @@ export class LocalTrackerWebSocketService {
   }
 
   static expose(baseUrl: string, jwt: string) {
-    const previousWs = this.ws
-    this.ws = null
-    previousWs?.close()
+    this.ws?.removeAllListeners()
+    this.ws?.close()
 
     return new Promise<string>((resolve, reject) => {
       const connect = (reconnect: boolean = false) => {

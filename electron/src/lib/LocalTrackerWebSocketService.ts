@@ -286,7 +286,7 @@ export class LocalTrackerWebSocketService {
 
         ws.on('close', (code, reason) => {
           if (this.ws) {
-            console.log('LocalTrackerWebSocketService: Client socket closed, reconnecting in 4s...')
+            console.log('LocalTrackerWebSocketService: Client socket closed, reconnecting in 4s...', code, reason.toString())
             setTimeout(() => connect(true), 4000)
           }
         })

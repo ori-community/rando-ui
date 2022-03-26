@@ -10,6 +10,9 @@ export const getters = {
   isLoggedIn(state) {
     return state.user !== null
   },
+  isDeveloper(state) {
+    return !!state.user?.isDeveloper
+  }
 }
 
 export const mutations = {
@@ -30,11 +33,9 @@ export const actions = {
       const user = await this.$axios.$get('/users/me/info')
       commit('setUser', user)
 
-      if (isElectron()) {
-        if (user) {
-          if (!await window.electronApi.invoke('auth.hasClientJwt')) {
-            await generateClientJwt(this.$axios)
-          }
+      if (isElectron() && !!user) {
+        if (!await window.electronApi.invoke('auth.hasClientJwt')) {
+          await generateClientJwt(this.$axios)
         }
       }
     } catch (e) {

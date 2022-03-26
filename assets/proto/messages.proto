@@ -18,6 +18,7 @@ message UserInfo {
   optional string avatarId = 3;
   optional int64 connectedMultiverseId = 4;
   optional int64 currentMultiverseId = 5;
+  bool isDeveloper = 6;
 }
 
 message WorldInfo {

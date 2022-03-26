@@ -24,6 +24,7 @@ export interface UserInfo {
   avatarId?: string | undefined
   connectedMultiverseId?: number | undefined
   currentMultiverseId?: number | undefined
+  isDeveloper: boolean
 }
 
 export interface WorldInfo {
@@ -171,10 +172,7 @@ function createBasePacket(): Packet {
 export const Packet = {
   $type: 'RandoProto.Packet' as const,
 
-  encode(
-    message: Packet,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: Packet, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.id !== 0) {
       writer.uint32(8).int32(message.id)
     }
@@ -209,19 +207,14 @@ export const Packet = {
     return {
       $type: Packet.$type,
       id: isSet(object.id) ? Number(object.id) : 0,
-      packet: isSet(object.packet)
-        ? bytesFromBase64(object.packet)
-        : new Uint8Array(),
+      packet: isSet(object.packet) ? bytesFromBase64(object.packet) : new Uint8Array(),
     }
   },
 
   toJSON(message: Packet): unknown {
     const obj: any = {}
     message.id !== undefined && (obj.id = Math.round(message.id))
-    message.packet !== undefined &&
-      (obj.packet = base64FromBytes(
-        message.packet !== undefined ? message.packet : new Uint8Array(),
-      ))
+    message.packet !== undefined && (obj.packet = base64FromBytes(message.packet !== undefined ? message.packet : new Uint8Array()))
     return obj
   },
 
@@ -242,10 +235,7 @@ function createBaseBingoGoal(): BingoGoal {
 export const BingoGoal = {
   $type: 'RandoProto.BingoGoal' as const,
 
-  encode(
-    message: BingoGoal,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: BingoGoal, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.text !== '') {
       writer.uint32(10).string(message.text)
     }
@@ -291,9 +281,7 @@ export const BingoGoal = {
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<BingoGoal>, I>>(
-    object: I,
-  ): BingoGoal {
+  fromPartial<I extends Exact<DeepPartial<BingoGoal>, I>>(object: I): BingoGoal {
     const message = createBaseBingoGoal()
     message.text = object.text ?? ''
     message.completed = object.completed ?? false
@@ -311,16 +299,14 @@ function createBaseUserInfo(): UserInfo {
     avatarId: undefined,
     connectedMultiverseId: undefined,
     currentMultiverseId: undefined,
+    isDeveloper: false,
   }
 }
 
 export const UserInfo = {
   $type: 'RandoProto.UserInfo' as const,
 
-  encode(
-    message: UserInfo,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: UserInfo, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.id !== '') {
       writer.uint32(10).string(message.id)
     }
@@ -335,6 +321,9 @@ export const UserInfo = {
     }
     if (message.currentMultiverseId !== undefined) {
       writer.uint32(40).int64(message.currentMultiverseId)
+    }
+    if (message.isDeveloper === true) {
+      writer.uint32(48).bool(message.isDeveloper)
     }
     return writer
   },
@@ -361,6 +350,9 @@ export const UserInfo = {
         case 5:
           message.currentMultiverseId = longToNumber(reader.int64() as Long)
           break
+        case 6:
+          message.isDeveloper = reader.bool()
+          break
         default:
           reader.skipType(tag & 7)
           break
@@ -375,12 +367,9 @@ export const UserInfo = {
       id: isSet(object.id) ? String(object.id) : '',
       name: isSet(object.name) ? String(object.name) : '',
       avatarId: isSet(object.avatarId) ? String(object.avatarId) : undefined,
-      connectedMultiverseId: isSet(object.connectedMultiverseId)
-        ? Number(object.connectedMultiverseId)
-        : undefined,
-      currentMultiverseId: isSet(object.currentMultiverseId)
-        ? Number(object.currentMultiverseId)
-        : undefined,
+      connectedMultiverseId: isSet(object.connectedMultiverseId) ? Number(object.connectedMultiverseId) : undefined,
+      currentMultiverseId: isSet(object.currentMultiverseId) ? Number(object.currentMultiverseId) : undefined,
+      isDeveloper: isSet(object.isDeveloper) ? Boolean(object.isDeveloper) : false,
     }
   },
 
@@ -389,10 +378,9 @@ export const UserInfo = {
     message.id !== undefined && (obj.id = message.id)
     message.name !== undefined && (obj.name = message.name)
     message.avatarId !== undefined && (obj.avatarId = message.avatarId)
-    message.connectedMultiverseId !== undefined &&
-      (obj.connectedMultiverseId = Math.round(message.connectedMultiverseId))
-    message.currentMultiverseId !== undefined &&
-      (obj.currentMultiverseId = Math.round(message.currentMultiverseId))
+    message.connectedMultiverseId !== undefined && (obj.connectedMultiverseId = Math.round(message.connectedMultiverseId))
+    message.currentMultiverseId !== undefined && (obj.currentMultiverseId = Math.round(message.currentMultiverseId))
+    message.isDeveloper !== undefined && (obj.isDeveloper = message.isDeveloper)
     return obj
   },
 
@@ -403,6 +391,7 @@ export const UserInfo = {
     message.avatarId = object.avatarId ?? undefined
     message.connectedMultiverseId = object.connectedMultiverseId ?? undefined
     message.currentMultiverseId = object.currentMultiverseId ?? undefined
+    message.isDeveloper = object.isDeveloper ?? false
     return message
   },
 }
@@ -410,23 +399,13 @@ export const UserInfo = {
 messageTypeRegistry.set(UserInfo.$type, UserInfo)
 
 function createBaseWorldInfo(): WorldInfo {
-  return {
-    $type: 'RandoProto.WorldInfo',
-    id: 0,
-    name: '',
-    color: '',
-    members: [],
-    seedFile: undefined,
-  }
+  return { $type: 'RandoProto.WorldInfo', id: 0, name: '', color: '', members: [], seedFile: undefined }
 }
 
 export const WorldInfo = {
   $type: 'RandoProto.WorldInfo' as const,
 
-  encode(
-    message: WorldInfo,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: WorldInfo, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.id !== 0) {
       writer.uint32(8).int64(message.id)
     }
@@ -481,9 +460,7 @@ export const WorldInfo = {
       id: isSet(object.id) ? Number(object.id) : 0,
       name: isSet(object.name) ? String(object.name) : '',
       color: isSet(object.color) ? String(object.color) : '',
-      members: Array.isArray(object?.members)
-        ? object.members.map((e: any) => UserInfo.fromJSON(e))
-        : [],
+      members: Array.isArray(object?.members) ? object.members.map((e: any) => UserInfo.fromJSON(e)) : [],
       seedFile: isSet(object.seedFile) ? String(object.seedFile) : undefined,
     }
   },
@@ -494,9 +471,7 @@ export const WorldInfo = {
     message.name !== undefined && (obj.name = message.name)
     message.color !== undefined && (obj.color = message.color)
     if (message.members) {
-      obj.members = message.members.map((e) =>
-        e ? UserInfo.toJSON(e) : undefined,
-      )
+      obj.members = message.members.map((e) => (e ? UserInfo.toJSON(e) : undefined))
     } else {
       obj.members = []
     }
@@ -504,9 +479,7 @@ export const WorldInfo = {
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<WorldInfo>, I>>(
-    object: I,
-  ): WorldInfo {
+  fromPartial<I extends Exact<DeepPartial<WorldInfo>, I>>(object: I): WorldInfo {
     const message = createBaseWorldInfo()
     message.id = object.id ?? 0
     message.name = object.name ?? ''
@@ -520,22 +493,13 @@ export const WorldInfo = {
 messageTypeRegistry.set(WorldInfo.$type, WorldInfo)
 
 function createBaseUniverseInfo(): UniverseInfo {
-  return {
-    $type: 'RandoProto.UniverseInfo',
-    id: 0,
-    name: '',
-    color: '',
-    worlds: [],
-  }
+  return { $type: 'RandoProto.UniverseInfo', id: 0, name: '', color: '', worlds: [] }
 }
 
 export const UniverseInfo = {
   $type: 'RandoProto.UniverseInfo' as const,
 
-  encode(
-    message: UniverseInfo,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: UniverseInfo, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.id !== 0) {
       writer.uint32(8).int64(message.id)
     }
@@ -584,9 +548,7 @@ export const UniverseInfo = {
       id: isSet(object.id) ? Number(object.id) : 0,
       name: isSet(object.name) ? String(object.name) : '',
       color: isSet(object.color) ? String(object.color) : '',
-      worlds: Array.isArray(object?.worlds)
-        ? object.worlds.map((e: any) => WorldInfo.fromJSON(e))
-        : [],
+      worlds: Array.isArray(object?.worlds) ? object.worlds.map((e: any) => WorldInfo.fromJSON(e)) : [],
     }
   },
 
@@ -596,18 +558,14 @@ export const UniverseInfo = {
     message.name !== undefined && (obj.name = message.name)
     message.color !== undefined && (obj.color = message.color)
     if (message.worlds) {
-      obj.worlds = message.worlds.map((e) =>
-        e ? WorldInfo.toJSON(e) : undefined,
-      )
+      obj.worlds = message.worlds.map((e) => (e ? WorldInfo.toJSON(e) : undefined))
     } else {
       obj.worlds = []
     }
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<UniverseInfo>, I>>(
-    object: I,
-  ): UniverseInfo {
+  fromPartial<I extends Exact<DeepPartial<UniverseInfo>, I>>(object: I): UniverseInfo {
     const message = createBaseUniverseInfo()
     message.id = object.id ?? 0
     message.name = object.name ?? ''
@@ -620,23 +578,13 @@ export const UniverseInfo = {
 messageTypeRegistry.set(UniverseInfo.$type, UniverseInfo)
 
 function createBaseMultiverseInfoMessage(): MultiverseInfoMessage {
-  return {
-    $type: 'RandoProto.MultiverseInfoMessage',
-    id: 0,
-    universes: [],
-    hasBingoBoard: false,
-    spectators: [],
-    seedId: undefined,
-  }
+  return { $type: 'RandoProto.MultiverseInfoMessage', id: 0, universes: [], hasBingoBoard: false, spectators: [], seedId: undefined }
 }
 
 export const MultiverseInfoMessage = {
   $type: 'RandoProto.MultiverseInfoMessage' as const,
 
-  encode(
-    message: MultiverseInfoMessage,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: MultiverseInfoMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.id !== 0) {
       writer.uint32(8).int64(message.id)
     }
@@ -655,10 +603,7 @@ export const MultiverseInfoMessage = {
     return writer
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number,
-  ): MultiverseInfoMessage {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MultiverseInfoMessage {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input)
     let end = length === undefined ? reader.len : reader.pos + length
     const message = createBaseMultiverseInfoMessage()
@@ -692,15 +637,9 @@ export const MultiverseInfoMessage = {
     return {
       $type: MultiverseInfoMessage.$type,
       id: isSet(object.id) ? Number(object.id) : 0,
-      universes: Array.isArray(object?.universes)
-        ? object.universes.map((e: any) => UniverseInfo.fromJSON(e))
-        : [],
-      hasBingoBoard: isSet(object.hasBingoBoard)
-        ? Boolean(object.hasBingoBoard)
-        : false,
-      spectators: Array.isArray(object?.spectators)
-        ? object.spectators.map((e: any) => UserInfo.fromJSON(e))
-        : [],
+      universes: Array.isArray(object?.universes) ? object.universes.map((e: any) => UniverseInfo.fromJSON(e)) : [],
+      hasBingoBoard: isSet(object.hasBingoBoard) ? Boolean(object.hasBingoBoard) : false,
+      spectators: Array.isArray(object?.spectators) ? object.spectators.map((e: any) => UserInfo.fromJSON(e)) : [],
       seedId: isSet(object.seedId) ? Number(object.seedId) : undefined,
     }
   },
@@ -709,18 +648,13 @@ export const MultiverseInfoMessage = {
     const obj: any = {}
     message.id !== undefined && (obj.id = Math.round(message.id))
     if (message.universes) {
-      obj.universes = message.universes.map((e) =>
-        e ? UniverseInfo.toJSON(e) : undefined,
-      )
+      obj.universes = message.universes.map((e) => (e ? UniverseInfo.toJSON(e) : undefined))
     } else {
       obj.universes = []
     }
-    message.hasBingoBoard !== undefined &&
-      (obj.hasBingoBoard = message.hasBingoBoard)
+    message.hasBingoBoard !== undefined && (obj.hasBingoBoard = message.hasBingoBoard)
     if (message.spectators) {
-      obj.spectators = message.spectators.map((e) =>
-        e ? UserInfo.toJSON(e) : undefined,
-      )
+      obj.spectators = message.spectators.map((e) => (e ? UserInfo.toJSON(e) : undefined))
     } else {
       obj.spectators = []
     }
@@ -728,16 +662,12 @@ export const MultiverseInfoMessage = {
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<MultiverseInfoMessage>, I>>(
-    object: I,
-  ): MultiverseInfoMessage {
+  fromPartial<I extends Exact<DeepPartial<MultiverseInfoMessage>, I>>(object: I): MultiverseInfoMessage {
     const message = createBaseMultiverseInfoMessage()
     message.id = object.id ?? 0
-    message.universes =
-      object.universes?.map((e) => UniverseInfo.fromPartial(e)) || []
+    message.universes = object.universes?.map((e) => UniverseInfo.fromPartial(e)) || []
     message.hasBingoBoard = object.hasBingoBoard ?? false
-    message.spectators =
-      object.spectators?.map((e) => UserInfo.fromPartial(e)) || []
+    message.spectators = object.spectators?.map((e) => UserInfo.fromPartial(e)) || []
     message.seedId = object.seedId ?? undefined
     return message
   },
@@ -746,21 +676,13 @@ export const MultiverseInfoMessage = {
 messageTypeRegistry.set(MultiverseInfoMessage.$type, MultiverseInfoMessage)
 
 function createBaseBingoSquare(): BingoSquare {
-  return {
-    $type: 'RandoProto.BingoSquare',
-    text: '',
-    completedBy: [],
-    goals: [],
-  }
+  return { $type: 'RandoProto.BingoSquare', text: '', completedBy: [], goals: [] }
 }
 
 export const BingoSquare = {
   $type: 'RandoProto.BingoSquare' as const,
 
-  encode(
-    message: BingoSquare,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: BingoSquare, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.text !== '') {
       writer.uint32(10).string(message.text)
     }
@@ -810,12 +732,8 @@ export const BingoSquare = {
     return {
       $type: BingoSquare.$type,
       text: isSet(object.text) ? String(object.text) : '',
-      completedBy: Array.isArray(object?.completedBy)
-        ? object.completedBy.map((e: any) => Number(e))
-        : [],
-      goals: Array.isArray(object?.goals)
-        ? object.goals.map((e: any) => BingoGoal.fromJSON(e))
-        : [],
+      completedBy: Array.isArray(object?.completedBy) ? object.completedBy.map((e: any) => Number(e)) : [],
+      goals: Array.isArray(object?.goals) ? object.goals.map((e: any) => BingoGoal.fromJSON(e)) : [],
     }
   },
 
@@ -828,18 +746,14 @@ export const BingoSquare = {
       obj.completedBy = []
     }
     if (message.goals) {
-      obj.goals = message.goals.map((e) =>
-        e ? BingoGoal.toJSON(e) : undefined,
-      )
+      obj.goals = message.goals.map((e) => (e ? BingoGoal.toJSON(e) : undefined))
     } else {
       obj.goals = []
     }
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<BingoSquare>, I>>(
-    object: I,
-  ): BingoSquare {
+  fromPartial<I extends Exact<DeepPartial<BingoSquare>, I>>(object: I): BingoSquare {
     const message = createBaseBingoSquare()
     message.text = object.text ?? ''
     message.completedBy = object.completedBy?.map((e) => e) || []
@@ -857,20 +771,14 @@ function createBaseRequestUpdatesMessage(): RequestUpdatesMessage {
 export const RequestUpdatesMessage = {
   $type: 'RandoProto.RequestUpdatesMessage' as const,
 
-  encode(
-    message: RequestUpdatesMessage,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: RequestUpdatesMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.playerId !== '') {
       writer.uint32(10).string(message.playerId)
     }
     return writer
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number,
-  ): RequestUpdatesMessage {
+  decode(input: _m0.Reader | Uint8Array, length?: number): RequestUpdatesMessage {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input)
     let end = length === undefined ? reader.len : reader.pos + length
     const message = createBaseRequestUpdatesMessage()
@@ -901,9 +809,7 @@ export const RequestUpdatesMessage = {
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<RequestUpdatesMessage>, I>>(
-    object: I,
-  ): RequestUpdatesMessage {
+  fromPartial<I extends Exact<DeepPartial<RequestUpdatesMessage>, I>>(object: I): RequestUpdatesMessage {
     const message = createBaseRequestUpdatesMessage()
     message.playerId = object.playerId ?? ''
     return message
@@ -913,23 +819,13 @@ export const RequestUpdatesMessage = {
 messageTypeRegistry.set(RequestUpdatesMessage.$type, RequestUpdatesMessage)
 
 function createBaseBingoUniverseInfo(): BingoUniverseInfo {
-  return {
-    $type: 'RandoProto.BingoUniverseInfo',
-    universeId: 0,
-    score: '',
-    rank: 0,
-    squares: 0,
-    lines: 0,
-  }
+  return { $type: 'RandoProto.BingoUniverseInfo', universeId: 0, score: '', rank: 0, squares: 0, lines: 0 }
 }
 
 export const BingoUniverseInfo = {
   $type: 'RandoProto.BingoUniverseInfo' as const,
 
-  encode(
-    message: BingoUniverseInfo,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: BingoUniverseInfo, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.universeId !== 0) {
       writer.uint32(8).int64(message.universeId)
     }
@@ -991,8 +887,7 @@ export const BingoUniverseInfo = {
 
   toJSON(message: BingoUniverseInfo): unknown {
     const obj: any = {}
-    message.universeId !== undefined &&
-      (obj.universeId = Math.round(message.universeId))
+    message.universeId !== undefined && (obj.universeId = Math.round(message.universeId))
     message.score !== undefined && (obj.score = message.score)
     message.rank !== undefined && (obj.rank = Math.round(message.rank))
     message.squares !== undefined && (obj.squares = Math.round(message.squares))
@@ -1000,9 +895,7 @@ export const BingoUniverseInfo = {
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<BingoUniverseInfo>, I>>(
-    object: I,
-  ): BingoUniverseInfo {
+  fromPartial<I extends Exact<DeepPartial<BingoUniverseInfo>, I>>(object: I): BingoUniverseInfo {
     const message = createBaseBingoUniverseInfo()
     message.universeId = object.universeId ?? 0
     message.score = object.score ?? ''
@@ -1022,20 +915,14 @@ function createBaseSyncBingoUniversesMessage(): SyncBingoUniversesMessage {
 export const SyncBingoUniversesMessage = {
   $type: 'RandoProto.SyncBingoUniversesMessage' as const,
 
-  encode(
-    message: SyncBingoUniversesMessage,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: SyncBingoUniversesMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     for (const v of message.bingoUniverses) {
       BingoUniverseInfo.encode(v!, writer.uint32(10).fork()).ldelim()
     }
     return writer
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number,
-  ): SyncBingoUniversesMessage {
+  decode(input: _m0.Reader | Uint8Array, length?: number): SyncBingoUniversesMessage {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input)
     let end = length === undefined ? reader.len : reader.pos + length
     const message = createBaseSyncBingoUniversesMessage()
@@ -1043,9 +930,7 @@ export const SyncBingoUniversesMessage = {
       const tag = reader.uint32()
       switch (tag >>> 3) {
         case 1:
-          message.bingoUniverses.push(
-            BingoUniverseInfo.decode(reader, reader.uint32()),
-          )
+          message.bingoUniverses.push(BingoUniverseInfo.decode(reader, reader.uint32()))
           break
         default:
           reader.skipType(tag & 7)
@@ -1058,38 +943,28 @@ export const SyncBingoUniversesMessage = {
   fromJSON(object: any): SyncBingoUniversesMessage {
     return {
       $type: SyncBingoUniversesMessage.$type,
-      bingoUniverses: Array.isArray(object?.bingoUniverses)
-        ? object.bingoUniverses.map((e: any) => BingoUniverseInfo.fromJSON(e))
-        : [],
+      bingoUniverses: Array.isArray(object?.bingoUniverses) ? object.bingoUniverses.map((e: any) => BingoUniverseInfo.fromJSON(e)) : [],
     }
   },
 
   toJSON(message: SyncBingoUniversesMessage): unknown {
     const obj: any = {}
     if (message.bingoUniverses) {
-      obj.bingoUniverses = message.bingoUniverses.map((e) =>
-        e ? BingoUniverseInfo.toJSON(e) : undefined,
-      )
+      obj.bingoUniverses = message.bingoUniverses.map((e) => (e ? BingoUniverseInfo.toJSON(e) : undefined))
     } else {
       obj.bingoUniverses = []
     }
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<SyncBingoUniversesMessage>, I>>(
-    object: I,
-  ): SyncBingoUniversesMessage {
+  fromPartial<I extends Exact<DeepPartial<SyncBingoUniversesMessage>, I>>(object: I): SyncBingoUniversesMessage {
     const message = createBaseSyncBingoUniversesMessage()
-    message.bingoUniverses =
-      object.bingoUniverses?.map((e) => BingoUniverseInfo.fromPartial(e)) || []
+    message.bingoUniverses = object.bingoUniverses?.map((e) => BingoUniverseInfo.fromPartial(e)) || []
     return message
   },
 }
 
-messageTypeRegistry.set(
-  SyncBingoUniversesMessage.$type,
-  SyncBingoUniversesMessage,
-)
+messageTypeRegistry.set(SyncBingoUniversesMessage.$type, SyncBingoUniversesMessage)
 
 function createBasePosition(): Position {
   return { $type: 'RandoProto.Position', x: 0, y: 0 }
@@ -1098,10 +973,7 @@ function createBasePosition(): Position {
 export const Position = {
   $type: 'RandoProto.Position' as const,
 
-  encode(
-    message: Position,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: Position, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.x !== 0) {
       writer.uint32(8).int32(message.x)
     }
@@ -1158,20 +1030,13 @@ export const Position = {
 messageTypeRegistry.set(Position.$type, Position)
 
 function createBasePositionedBingoSquare(): PositionedBingoSquare {
-  return {
-    $type: 'RandoProto.PositionedBingoSquare',
-    position: undefined,
-    square: undefined,
-  }
+  return { $type: 'RandoProto.PositionedBingoSquare', position: undefined, square: undefined }
 }
 
 export const PositionedBingoSquare = {
   $type: 'RandoProto.PositionedBingoSquare' as const,
 
-  encode(
-    message: PositionedBingoSquare,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: PositionedBingoSquare, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.position !== undefined) {
       Position.encode(message.position, writer.uint32(10).fork()).ldelim()
     }
@@ -1181,10 +1046,7 @@ export const PositionedBingoSquare = {
     return writer
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number,
-  ): PositionedBingoSquare {
+  decode(input: _m0.Reader | Uint8Array, length?: number): PositionedBingoSquare {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input)
     let end = length === undefined ? reader.len : reader.pos + length
     const message = createBasePositionedBingoSquare()
@@ -1208,40 +1070,22 @@ export const PositionedBingoSquare = {
   fromJSON(object: any): PositionedBingoSquare {
     return {
       $type: PositionedBingoSquare.$type,
-      position: isSet(object.position)
-        ? Position.fromJSON(object.position)
-        : undefined,
-      square: isSet(object.square)
-        ? BingoSquare.fromJSON(object.square)
-        : undefined,
+      position: isSet(object.position) ? Position.fromJSON(object.position) : undefined,
+      square: isSet(object.square) ? BingoSquare.fromJSON(object.square) : undefined,
     }
   },
 
   toJSON(message: PositionedBingoSquare): unknown {
     const obj: any = {}
-    message.position !== undefined &&
-      (obj.position = message.position
-        ? Position.toJSON(message.position)
-        : undefined)
-    message.square !== undefined &&
-      (obj.square = message.square
-        ? BingoSquare.toJSON(message.square)
-        : undefined)
+    message.position !== undefined && (obj.position = message.position ? Position.toJSON(message.position) : undefined)
+    message.square !== undefined && (obj.square = message.square ? BingoSquare.toJSON(message.square) : undefined)
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<PositionedBingoSquare>, I>>(
-    object: I,
-  ): PositionedBingoSquare {
+  fromPartial<I extends Exact<DeepPartial<PositionedBingoSquare>, I>>(object: I): PositionedBingoSquare {
     const message = createBasePositionedBingoSquare()
-    message.position =
-      object.position !== undefined && object.position !== null
-        ? Position.fromPartial(object.position)
-        : undefined
-    message.square =
-      object.square !== undefined && object.square !== null
-        ? BingoSquare.fromPartial(object.square)
-        : undefined
+    message.position = object.position !== undefined && object.position !== null ? Position.fromPartial(object.position) : undefined
+    message.square = object.square !== undefined && object.square !== null ? BingoSquare.fromPartial(object.square) : undefined
     return message
   },
 }
@@ -1249,21 +1093,13 @@ export const PositionedBingoSquare = {
 messageTypeRegistry.set(PositionedBingoSquare.$type, PositionedBingoSquare)
 
 function createBaseBingoBoard(): BingoBoard {
-  return {
-    $type: 'RandoProto.BingoBoard',
-    squares: [],
-    size: 0,
-    lockout: false,
-  }
+  return { $type: 'RandoProto.BingoBoard', squares: [], size: 0, lockout: false }
 }
 
 export const BingoBoard = {
   $type: 'RandoProto.BingoBoard' as const,
 
-  encode(
-    message: BingoBoard,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: BingoBoard, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     for (const v of message.squares) {
       PositionedBingoSquare.encode(v!, writer.uint32(10).fork()).ldelim()
     }
@@ -1284,9 +1120,7 @@ export const BingoBoard = {
       const tag = reader.uint32()
       switch (tag >>> 3) {
         case 1:
-          message.squares.push(
-            PositionedBingoSquare.decode(reader, reader.uint32()),
-          )
+          message.squares.push(PositionedBingoSquare.decode(reader, reader.uint32()))
           break
         case 2:
           message.size = reader.int32()
@@ -1305,9 +1139,7 @@ export const BingoBoard = {
   fromJSON(object: any): BingoBoard {
     return {
       $type: BingoBoard.$type,
-      squares: Array.isArray(object?.squares)
-        ? object.squares.map((e: any) => PositionedBingoSquare.fromJSON(e))
-        : [],
+      squares: Array.isArray(object?.squares) ? object.squares.map((e: any) => PositionedBingoSquare.fromJSON(e)) : [],
       size: isSet(object.size) ? Number(object.size) : 0,
       lockout: isSet(object.lockout) ? Boolean(object.lockout) : false,
     }
@@ -1316,9 +1148,7 @@ export const BingoBoard = {
   toJSON(message: BingoBoard): unknown {
     const obj: any = {}
     if (message.squares) {
-      obj.squares = message.squares.map((e) =>
-        e ? PositionedBingoSquare.toJSON(e) : undefined,
-      )
+      obj.squares = message.squares.map((e) => (e ? PositionedBingoSquare.toJSON(e) : undefined))
     } else {
       obj.squares = []
     }
@@ -1327,12 +1157,9 @@ export const BingoBoard = {
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<BingoBoard>, I>>(
-    object: I,
-  ): BingoBoard {
+  fromPartial<I extends Exact<DeepPartial<BingoBoard>, I>>(object: I): BingoBoard {
     const message = createBaseBingoBoard()
-    message.squares =
-      object.squares?.map((e) => PositionedBingoSquare.fromPartial(e)) || []
+    message.squares = object.squares?.map((e) => PositionedBingoSquare.fromPartial(e)) || []
     message.size = object.size ?? 0
     message.lockout = object.lockout ?? false
     return message
@@ -1342,20 +1169,13 @@ export const BingoBoard = {
 messageTypeRegistry.set(BingoBoard.$type, BingoBoard)
 
 function createBaseSyncBoardMessage(): SyncBoardMessage {
-  return {
-    $type: 'RandoProto.SyncBoardMessage',
-    board: undefined,
-    replace: false,
-  }
+  return { $type: 'RandoProto.SyncBoardMessage', board: undefined, replace: false }
 }
 
 export const SyncBoardMessage = {
   $type: 'RandoProto.SyncBoardMessage' as const,
 
-  encode(
-    message: SyncBoardMessage,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: SyncBoardMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.board !== undefined) {
       BingoBoard.encode(message.board, writer.uint32(10).fork()).ldelim()
     }
@@ -1389,29 +1209,21 @@ export const SyncBoardMessage = {
   fromJSON(object: any): SyncBoardMessage {
     return {
       $type: SyncBoardMessage.$type,
-      board: isSet(object.board)
-        ? BingoBoard.fromJSON(object.board)
-        : undefined,
+      board: isSet(object.board) ? BingoBoard.fromJSON(object.board) : undefined,
       replace: isSet(object.replace) ? Boolean(object.replace) : false,
     }
   },
 
   toJSON(message: SyncBoardMessage): unknown {
     const obj: any = {}
-    message.board !== undefined &&
-      (obj.board = message.board ? BingoBoard.toJSON(message.board) : undefined)
+    message.board !== undefined && (obj.board = message.board ? BingoBoard.toJSON(message.board) : undefined)
     message.replace !== undefined && (obj.replace = message.replace)
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<SyncBoardMessage>, I>>(
-    object: I,
-  ): SyncBoardMessage {
+  fromPartial<I extends Exact<DeepPartial<SyncBoardMessage>, I>>(object: I): SyncBoardMessage {
     const message = createBaseSyncBoardMessage()
-    message.board =
-      object.board !== undefined && object.board !== null
-        ? BingoBoard.fromPartial(object.board)
-        : undefined
+    message.board = object.board !== undefined && object.board !== null ? BingoBoard.fromPartial(object.board) : undefined
     message.replace = object.replace ?? false
     return message
   },
@@ -1426,10 +1238,7 @@ function createBaseAuthenticateMessage(): AuthenticateMessage {
 export const AuthenticateMessage = {
   $type: 'RandoProto.AuthenticateMessage' as const,
 
-  encode(
-    message: AuthenticateMessage,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: AuthenticateMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.jwt !== '') {
       writer.uint32(10).string(message.jwt)
     }
@@ -1467,9 +1276,7 @@ export const AuthenticateMessage = {
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<AuthenticateMessage>, I>>(
-    object: I,
-  ): AuthenticateMessage {
+  fromPartial<I extends Exact<DeepPartial<AuthenticateMessage>, I>>(object: I): AuthenticateMessage {
     const message = createBaseAuthenticateMessage()
     message.jwt = object.jwt ?? ''
     return message
@@ -1479,21 +1286,13 @@ export const AuthenticateMessage = {
 messageTypeRegistry.set(AuthenticateMessage.$type, AuthenticateMessage)
 
 function createBaseAuthenticatedMessage(): AuthenticatedMessage {
-  return {
-    $type: 'RandoProto.AuthenticatedMessage',
-    user: undefined,
-    udpId: 0,
-    udpKey: new Uint8Array(),
-  }
+  return { $type: 'RandoProto.AuthenticatedMessage', user: undefined, udpId: 0, udpKey: new Uint8Array() }
 }
 
 export const AuthenticatedMessage = {
   $type: 'RandoProto.AuthenticatedMessage' as const,
 
-  encode(
-    message: AuthenticatedMessage,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: AuthenticatedMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.user !== undefined) {
       UserInfo.encode(message.user, writer.uint32(10).fork()).ldelim()
     }
@@ -1506,10 +1305,7 @@ export const AuthenticatedMessage = {
     return writer
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number,
-  ): AuthenticatedMessage {
+  decode(input: _m0.Reader | Uint8Array, length?: number): AuthenticatedMessage {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input)
     let end = length === undefined ? reader.len : reader.pos + length
     const message = createBaseAuthenticatedMessage()
@@ -1538,32 +1334,21 @@ export const AuthenticatedMessage = {
       $type: AuthenticatedMessage.$type,
       user: isSet(object.user) ? UserInfo.fromJSON(object.user) : undefined,
       udpId: isSet(object.udpId) ? Number(object.udpId) : 0,
-      udpKey: isSet(object.udpKey)
-        ? bytesFromBase64(object.udpKey)
-        : new Uint8Array(),
+      udpKey: isSet(object.udpKey) ? bytesFromBase64(object.udpKey) : new Uint8Array(),
     }
   },
 
   toJSON(message: AuthenticatedMessage): unknown {
     const obj: any = {}
-    message.user !== undefined &&
-      (obj.user = message.user ? UserInfo.toJSON(message.user) : undefined)
+    message.user !== undefined && (obj.user = message.user ? UserInfo.toJSON(message.user) : undefined)
     message.udpId !== undefined && (obj.udpId = Math.round(message.udpId))
-    message.udpKey !== undefined &&
-      (obj.udpKey = base64FromBytes(
-        message.udpKey !== undefined ? message.udpKey : new Uint8Array(),
-      ))
+    message.udpKey !== undefined && (obj.udpKey = base64FromBytes(message.udpKey !== undefined ? message.udpKey : new Uint8Array()))
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<AuthenticatedMessage>, I>>(
-    object: I,
-  ): AuthenticatedMessage {
+  fromPartial<I extends Exact<DeepPartial<AuthenticatedMessage>, I>>(object: I): AuthenticatedMessage {
     const message = createBaseAuthenticatedMessage()
-    message.user =
-      object.user !== undefined && object.user !== null
-        ? UserInfo.fromPartial(object.user)
-        : undefined
+    message.user = object.user !== undefined && object.user !== null ? UserInfo.fromPartial(object.user) : undefined
     message.udpId = object.udpId ?? 0
     message.udpKey = object.udpKey ?? new Uint8Array()
     return message
@@ -1579,10 +1364,7 @@ function createBasePlayerPositionMessage(): PlayerPositionMessage {
 export const PlayerPositionMessage = {
   $type: 'RandoProto.PlayerPositionMessage' as const,
 
-  encode(
-    message: PlayerPositionMessage,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: PlayerPositionMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.x !== 0) {
       writer.uint32(13).float(message.x)
     }
@@ -1592,10 +1374,7 @@ export const PlayerPositionMessage = {
     return writer
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number,
-  ): PlayerPositionMessage {
+  decode(input: _m0.Reader | Uint8Array, length?: number): PlayerPositionMessage {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input)
     let end = length === undefined ? reader.len : reader.pos + length
     const message = createBasePlayerPositionMessage()
@@ -1631,9 +1410,7 @@ export const PlayerPositionMessage = {
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<PlayerPositionMessage>, I>>(
-    object: I,
-  ): PlayerPositionMessage {
+  fromPartial<I extends Exact<DeepPartial<PlayerPositionMessage>, I>>(object: I): PlayerPositionMessage {
     const message = createBasePlayerPositionMessage()
     message.x = object.x ?? 0
     message.y = object.y ?? 0
@@ -1644,21 +1421,13 @@ export const PlayerPositionMessage = {
 messageTypeRegistry.set(PlayerPositionMessage.$type, PlayerPositionMessage)
 
 function createBaseUpdatePlayerPositionMessage(): UpdatePlayerPositionMessage {
-  return {
-    $type: 'RandoProto.UpdatePlayerPositionMessage',
-    playerId: '',
-    x: 0,
-    y: 0,
-  }
+  return { $type: 'RandoProto.UpdatePlayerPositionMessage', playerId: '', x: 0, y: 0 }
 }
 
 export const UpdatePlayerPositionMessage = {
   $type: 'RandoProto.UpdatePlayerPositionMessage' as const,
 
-  encode(
-    message: UpdatePlayerPositionMessage,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: UpdatePlayerPositionMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.playerId !== '') {
       writer.uint32(10).string(message.playerId)
     }
@@ -1671,10 +1440,7 @@ export const UpdatePlayerPositionMessage = {
     return writer
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number,
-  ): UpdatePlayerPositionMessage {
+  decode(input: _m0.Reader | Uint8Array, length?: number): UpdatePlayerPositionMessage {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input)
     let end = length === undefined ? reader.len : reader.pos + length
     const message = createBaseUpdatePlayerPositionMessage()
@@ -1715,9 +1481,7 @@ export const UpdatePlayerPositionMessage = {
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<UpdatePlayerPositionMessage>, I>>(
-    object: I,
-  ): UpdatePlayerPositionMessage {
+  fromPartial<I extends Exact<DeepPartial<UpdatePlayerPositionMessage>, I>>(object: I): UpdatePlayerPositionMessage {
     const message = createBaseUpdatePlayerPositionMessage()
     message.playerId = object.playerId ?? ''
     message.x = object.x ?? 0
@@ -1726,26 +1490,16 @@ export const UpdatePlayerPositionMessage = {
   },
 }
 
-messageTypeRegistry.set(
-  UpdatePlayerPositionMessage.$type,
-  UpdatePlayerPositionMessage,
-)
+messageTypeRegistry.set(UpdatePlayerPositionMessage.$type, UpdatePlayerPositionMessage)
 
 function createBaseUdpPacket(): UdpPacket {
-  return {
-    $type: 'RandoProto.UdpPacket',
-    udpId: 0,
-    encryptedPacket: new Uint8Array(),
-  }
+  return { $type: 'RandoProto.UdpPacket', udpId: 0, encryptedPacket: new Uint8Array() }
 }
 
 export const UdpPacket = {
   $type: 'RandoProto.UdpPacket' as const,
 
-  encode(
-    message: UdpPacket,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: UdpPacket, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.udpId !== 0) {
       writer.uint32(8).int32(message.udpId)
     }
@@ -1780,9 +1534,7 @@ export const UdpPacket = {
     return {
       $type: UdpPacket.$type,
       udpId: isSet(object.udpId) ? Number(object.udpId) : 0,
-      encryptedPacket: isSet(object.encryptedPacket)
-        ? bytesFromBase64(object.encryptedPacket)
-        : new Uint8Array(),
+      encryptedPacket: isSet(object.encryptedPacket) ? bytesFromBase64(object.encryptedPacket) : new Uint8Array(),
     }
   },
 
@@ -1790,17 +1542,11 @@ export const UdpPacket = {
     const obj: any = {}
     message.udpId !== undefined && (obj.udpId = Math.round(message.udpId))
     message.encryptedPacket !== undefined &&
-      (obj.encryptedPacket = base64FromBytes(
-        message.encryptedPacket !== undefined
-          ? message.encryptedPacket
-          : new Uint8Array(),
-      ))
+      (obj.encryptedPacket = base64FromBytes(message.encryptedPacket !== undefined ? message.encryptedPacket : new Uint8Array()))
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<UdpPacket>, I>>(
-    object: I,
-  ): UdpPacket {
+  fromPartial<I extends Exact<DeepPartial<UdpPacket>, I>>(object: I): UdpPacket {
     const message = createBaseUdpPacket()
     message.udpId = object.udpId ?? 0
     message.encryptedPacket = object.encryptedPacket ?? new Uint8Array()
@@ -1817,10 +1563,7 @@ function createBaseTrackerUpdate(): TrackerUpdate {
 export const TrackerUpdate = {
   $type: 'RandoProto.TrackerUpdate' as const,
 
-  encode(
-    message: TrackerUpdate,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: TrackerUpdate, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.id !== '') {
       writer.uint32(10).string(message.id)
     }
@@ -1866,9 +1609,7 @@ export const TrackerUpdate = {
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<TrackerUpdate>, I>>(
-    object: I,
-  ): TrackerUpdate {
+  fromPartial<I extends Exact<DeepPartial<TrackerUpdate>, I>>(object: I): TrackerUpdate {
     const message = createBaseTrackerUpdate()
     message.id = object.id ?? ''
     message.value = object.value ?? 0
@@ -1885,10 +1626,7 @@ function createBaseResetTracker(): ResetTracker {
 export const ResetTracker = {
   $type: 'RandoProto.ResetTracker' as const,
 
-  encode(
-    _: ResetTracker,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(_: ResetTracker, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer
   },
 
@@ -1918,9 +1656,7 @@ export const ResetTracker = {
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<ResetTracker>, I>>(
-    _: I,
-  ): ResetTracker {
+  fromPartial<I extends Exact<DeepPartial<ResetTracker>, I>>(_: I): ResetTracker {
     const message = createBaseResetTracker()
     return message
   },
@@ -1935,10 +1671,7 @@ function createBaseTrackerFlagsUpdate(): TrackerFlagsUpdate {
 export const TrackerFlagsUpdate = {
   $type: 'RandoProto.TrackerFlagsUpdate' as const,
 
-  encode(
-    message: TrackerFlagsUpdate,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: TrackerFlagsUpdate, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     for (const v of message.flags) {
       writer.uint32(10).string(v!)
     }
@@ -1966,9 +1699,7 @@ export const TrackerFlagsUpdate = {
   fromJSON(object: any): TrackerFlagsUpdate {
     return {
       $type: TrackerFlagsUpdate.$type,
-      flags: Array.isArray(object?.flags)
-        ? object.flags.map((e: any) => String(e))
-        : [],
+      flags: Array.isArray(object?.flags) ? object.flags.map((e: any) => String(e)) : [],
     }
   },
 
@@ -1982,9 +1713,7 @@ export const TrackerFlagsUpdate = {
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<TrackerFlagsUpdate>, I>>(
-    object: I,
-  ): TrackerFlagsUpdate {
+  fromPartial<I extends Exact<DeepPartial<TrackerFlagsUpdate>, I>>(object: I): TrackerFlagsUpdate {
     const message = createBaseTrackerFlagsUpdate()
     message.flags = object.flags?.map((e) => e) || []
     return message
@@ -2000,10 +1729,7 @@ function createBaseRequestFullUpdate(): RequestFullUpdate {
 export const RequestFullUpdate = {
   $type: 'RandoProto.RequestFullUpdate' as const,
 
-  encode(
-    _: RequestFullUpdate,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(_: RequestFullUpdate, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer
   },
 
@@ -2033,9 +1759,7 @@ export const RequestFullUpdate = {
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<RequestFullUpdate>, I>>(
-    _: I,
-  ): RequestFullUpdate {
+  fromPartial<I extends Exact<DeepPartial<RequestFullUpdate>, I>>(_: I): RequestFullUpdate {
     const message = createBaseRequestFullUpdate()
     return message
   },
@@ -2050,20 +1774,14 @@ function createBaseSetTrackerEndpointId(): SetTrackerEndpointId {
 export const SetTrackerEndpointId = {
   $type: 'RandoProto.SetTrackerEndpointId' as const,
 
-  encode(
-    message: SetTrackerEndpointId,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: SetTrackerEndpointId, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.endpointId !== '') {
       writer.uint32(10).string(message.endpointId)
     }
     return writer
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number,
-  ): SetTrackerEndpointId {
+  decode(input: _m0.Reader | Uint8Array, length?: number): SetTrackerEndpointId {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input)
     let end = length === undefined ? reader.len : reader.pos + length
     const message = createBaseSetTrackerEndpointId()
@@ -2094,9 +1812,7 @@ export const SetTrackerEndpointId = {
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<SetTrackerEndpointId>, I>>(
-    object: I,
-  ): SetTrackerEndpointId {
+  fromPartial<I extends Exact<DeepPartial<SetTrackerEndpointId>, I>>(object: I): SetTrackerEndpointId {
     const message = createBaseSetTrackerEndpointId()
     message.endpointId = object.endpointId ?? ''
     return message
@@ -2116,9 +1832,7 @@ var globalThis: any = (() => {
   throw 'Unable to locate global object'
 })()
 
-const atob: (b64: string) => string =
-  globalThis.atob ||
-  ((b64) => globalThis.Buffer.from(b64, 'base64').toString('binary'))
+const atob: (b64: string) => string = globalThis.atob || ((b64) => globalThis.Buffer.from(b64, 'base64').toString('binary'))
 function bytesFromBase64(b64: string): Uint8Array {
   const bin = atob(b64)
   const arr = new Uint8Array(bin.length)
@@ -2128,9 +1842,7 @@ function bytesFromBase64(b64: string): Uint8Array {
   return arr
 }
 
-const btoa: (bin: string) => string =
-  globalThis.btoa ||
-  ((bin) => globalThis.Buffer.from(bin, 'binary').toString('base64'))
+const btoa: (bin: string) => string = globalThis.btoa || ((bin) => globalThis.Buffer.from(bin, 'binary').toString('base64'))
 function base64FromBytes(arr: Uint8Array): string {
   const bin: string[] = []
   for (const byte of arr) {
@@ -2139,14 +1851,7 @@ function base64FromBytes(arr: Uint8Array): string {
   return btoa(bin.join(''))
 }
 
-type Builtin =
-  | Date
-  | Function
-  | Uint8Array
-  | string
-  | number
-  | boolean
-  | undefined
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined
 
 export type DeepPartial<T> = T extends Builtin
   ? T
@@ -2161,10 +1866,7 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<
-        Exclude<keyof I, KeysOfUnion<P> | '$type'>,
-        never
-      >
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & Record<Exclude<keyof I, KeysOfUnion<P> | '$type'>, never>
 
 function longToNumber(long: Long): number {
   if (long.gt(Number.MAX_SAFE_INTEGER)) {

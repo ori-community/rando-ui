@@ -1,11 +1,11 @@
 <template>
   <div class='bingo-grid py-1' :style='gridStyle'>
     <template v-if='edgeLabels'>
-      <div></div>
+      <div class='edge-label'>X</div>
       <div v-for='x in multiverse.bingoBoard.size' :key='`${x}-top`' class='edge-label'>
         {{ alphabet[x - 1] }}
       </div>
-      <div></div>
+      <div class='edge-label'>Y</div>
     </template>
 
     <template v-for='y in multiverse.bingoBoard.size'>
@@ -36,11 +36,11 @@
     </template>
 
     <template v-if='edgeLabels'>
-      <div></div>
+      <div class='edge-label'>Y</div>
       <div v-for='x in multiverse.bingoBoard.size' :key='`${x}-bottom`' class='edge-label'>
         {{ alphabet[x - 1] }}
       </div>
-      <div></div>
+      <div class='edge-label'>X</div>
     </template>
   </div>
 </template>

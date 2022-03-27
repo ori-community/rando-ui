@@ -5,9 +5,14 @@
         <h1 class='text-center ml-8'>
           Game <small>#</small>{{ multiverseId }}
         </h1>
-        <v-btn class='ml-2' icon :disabled='gameLinkCopied' @click='copyGameLink'>
-          <v-icon>{{ gameLinkCopied ? 'mdi-clipboard-check-outline' : 'mdi-link' }}</v-icon>
-        </v-btn>
+        <v-tooltip top open-delay='500'>
+          <template #activator='{on}' :disabled='!gameLinkCopied'>
+            <v-btn class='ml-2' v-on='on' icon :disabled='gameLinkCopied' @click='copyGameLink'>
+              <v-icon>{{ gameLinkCopied ? 'mdi-clipboard-check-outline' : 'mdi-link' }}</v-icon>
+            </v-btn>
+          </template>
+          <span>Copy game link</span>
+        </v-tooltip>
       </div>
 
       <div class='text-center my-6'>

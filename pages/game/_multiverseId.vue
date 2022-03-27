@@ -65,6 +65,7 @@
             Settings
           </v-btn>
           <v-btn
+            v-if='isElectron'
             :disabled='bingoOverlayEnabled'
             text
             @click='enableBingoOverlay'

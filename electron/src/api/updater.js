@@ -19,7 +19,12 @@ export default {
   async downloadAndInstallUpdate(event, { url }) {
     const targetPath = path.join(UPDATE_PATH, 'WotwRandoUpdate.exe')
     await FileDownloadService.download(url, targetPath, throttle((progress, total) => {
-      event.sender.send('updater.downloadProgress', progress / total)
+      try {
+        // Sometimes the sender object is already destroyed because we quit the application already...
+        event.sender.send('updater.downloadProgress', progress / total)
+      } catch (e) {
+        console.error(e)
+      }
     }, 100))
 
     console.log('Spawning process: ', targetPath)

@@ -54,6 +54,7 @@ const getDefaultSettings = () => {
       DisableShowSecrets: false,
       DisableAutoAim: false,
       AlwaysShowKeystoneDoors: false,
+      Insecure: false,
     },
     Values: {
       MapIconTransparency: 0.25

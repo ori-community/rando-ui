@@ -231,6 +231,11 @@
           v-model='settings.Paths.UdpPort'
           label='UDP Port'
         />
+        <v-checkbox
+          v-model='useSecureConnection'
+          label='Use Secure connection'
+          messages='Connect to the Server using HTTPS and WSS instead of HTTP and WS'
+        />
       </div>
     </v-col>
   </v-row>
@@ -286,7 +291,15 @@
         set(value) {
           this.settings.Values.MapIconTransparency = value ? 0.25 : 0.0
         }
-      }
+      },
+      useSecureConnection: {
+        get() {
+          return !this.settings.Flags.Insecure
+        },
+        set(value) {
+          this.settings.Flags.Insecure = !value
+        }
+      },
     },
     watch: {
       settings: {

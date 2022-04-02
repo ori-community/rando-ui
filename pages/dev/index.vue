@@ -5,7 +5,10 @@
 
       <div class="gapped">
         <v-btn color="accent" to="/dev/population-cache">
-          Population Cache Viewer
+          Population Cache
+        </v-btn>
+        <v-btn color="accent" to="/dev/handler state">
+          Handler State
         </v-btn>
       </div>
     </div>

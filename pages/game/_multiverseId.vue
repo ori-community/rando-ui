@@ -36,6 +36,20 @@
       <throttled-spinner>
         <div v-if='isLoggedIn && multiverseReady'>
           <wotw-multiverse-view :multiverse='multiverse' />
+
+          <div v-if="devtoolsEnabled" class="mt-5">
+            <v-card class="pa-4">
+              <h3>Dispatch custom event</h3>
+              <v-text-field v-model="dev.customEventName" label="Event" />
+
+              <div class="d-flex">
+                <v-spacer />
+                <v-btn depressed color="accent" @click="dispatchCustomEvent">
+                  Dispatch
+                </v-btn>
+              </div>
+            </v-card>
+          </div>
         </div>
         <div v-if='!isLoggedIn && userLoaded' class='text-center'>
           <v-alert class='d-inline-block' color='error darken-3'>
@@ -248,10 +262,14 @@
       seedgenResultVisible: false,
       hideSeedgenResultCompletely: false,
       bingoOverlayEnabled: false,
+      dev: {
+        customEventName: '',
+      },
     }),
     computed: {
       ...mapGetters('user', ['isLoggedIn']),
       ...mapState('user', ['user', 'userLoaded']),
+      ...mapState('dev', ['devtoolsEnabled']),
       ...mapState('multiverseState', ['multiverses']),
       isElectron,
       isOBS() {
@@ -489,6 +507,13 @@
           setTimeout(() => {
             window.close()
           }, 500)
+        }
+      },
+      async dispatchCustomEvent() {
+        try {
+          await this.$axios.post(`/multiverses/${this.multiverseId}/event/${this.dev.customEventName}`)
+        } catch (e) {
+          console.error(e)
         }
       },
     },

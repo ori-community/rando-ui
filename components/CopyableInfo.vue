@@ -1,12 +1,13 @@
 <template>
-  <v-tooltip :value="showTooltip" right transition="slide-x-transition">
-    <template #activator>
-      <div class="copyable-info" @click="copy">
+  <v-tooltip :value="showTooltip" right transition="slide-x-transition" :open-on-click="false" :open-on-hover="false" :open-on-focus="false">
+    <template #activator="{on}">
+      <div class="copyable-info" v-on="on" @click="copy">
         {{ value }}
       </div>
     </template>
     <span>Copied!</span>
   </v-tooltip>
+
 </template>
 
 <script>
@@ -14,7 +15,7 @@
     name: 'CopyableInfo',
     props: {
       value: {
-        type: String,
+        type: [String, Number],
         required: true,
       },
     },

@@ -37,7 +37,7 @@ export const registerUIIpcApi = () => {
     // @ts-ignore
     for (const method of Object.keys(apis[apiNamespace])) {
       // @ts-ignore
-      ipcMain.handle(`${apiNamespace}.${method}`, apis[apiNamespace][method])
+      ipcMain.handle(`${apiNamespace}.${method}`, () => apis[apiNamespace][method]())
       console.log(`Registered UI-IPC handler "${apiNamespace}.${method}"`)
     }
   }

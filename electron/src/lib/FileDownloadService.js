@@ -1,5 +1,6 @@
 import axios from 'axios'
 import fs from 'fs'
+import { shell } from 'electron'
 
 export class FileDownloadService {
   static async download(url, targetFile, progressCallback = () => {}) {
@@ -33,4 +34,43 @@ export class FileDownloadService {
       })
     })
   }
+
+  static async downloadSeedFromUrl(url, fileName, setToCurrent = true) {
+    console.log(`Downloading seed from URL: ${url}`)
+
+    const originalFilenameParts = fileName.match(/(?<name>.*)\.(?<extension>[^.]*)/).groups
+    let count = 1
+    while (fs.existsSync(path.join(SEEDS_PATH, fileName))) {
+      fileName = `${originalFilenameParts.name}_${count++}.${originalFilenameParts.extension}`
+    }
+
+    const targetFile = path.join(SEEDS_PATH, fileName)
+    await FileDownloadService.download(url, targetFile)
+
+    console.log(`Downloaded seed to ${targetFile}`)
+
+    if (setToCurrent) {
+      await LauncherService.setCurrentSeedPath(targetFile)
+    }
+
+    return targetFile
+  }
+
+  static async downloadSeedsFromUrl(seeds, showInExplorer = false) {
+    let firstSeedFile = null
+    for (const seed of seeds) {
+      const targetFile = await this.downloadSeedFromUrl(event, {
+        ...seed,
+        setToCurrent: false,
+      })
+
+      if (!firstSeedFile) {
+        firstSeedFile = targetFile
+      }
+    }
+
+    if (showInExplorer && firstSeedFile) {
+      shell.showItemInFolder(firstSeedFile)
+    }
+  },
 }

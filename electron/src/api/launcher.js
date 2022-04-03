@@ -47,42 +47,11 @@ export default {
   },
 
   async downloadSeedFromUrl(event, { url, fileName, setToCurrent = true }) {
-    console.log(`Downloading seed from URL: ${url}`)
-
-    const originalFilenameParts = fileName.match(/(?<name>.*)\.(?<extension>[^.]*)/).groups
-    let count = 1
-    while (fs.existsSync(path.join(SEEDS_PATH, fileName))) {
-      fileName = `${originalFilenameParts.name}_${count++}.${originalFilenameParts.extension}`
-    }
-
-    const targetFile = path.join(SEEDS_PATH, fileName)
-    await FileDownloadService.download(url, targetFile)
-
-    console.log(`Downloaded seed to ${targetFile}`)
-
-    if (setToCurrent) {
-      await LauncherService.setCurrentSeedPath(targetFile)
-    }
-
-    return targetFile
+    return await FileDownloadService.downloadSeedFromUrl(url, fileName, setToCurrent)
   },
 
   async downloadSeedsFromUrl(event, { seeds, showInExplorer = false }) {
-    let firstSeedFile = null
-    for (const seed of seeds) {
-      const targetFile = await this.downloadSeedFromUrl(event, {
-        ...seed,
-        setToCurrent: false,
-      })
-
-      if (!firstSeedFile) {
-        firstSeedFile = targetFile
-      }
-    }
-
-    if (showInExplorer && firstSeedFile) {
-      shell.showItemInFolder(firstSeedFile)
-    }
+    await FileDownloadService.downloadSeedsFromUrl(seeds, showInExplorer)
   },
 
   openWiki() {

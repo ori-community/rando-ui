@@ -220,7 +220,7 @@
               color='accent'
               class='mb-3'
               x-large
-              @click='generateSeed()'
+              @click='createSeeds("generate")'
             >
               {{ isElectron && !seedgenConfig.flags.includes('--multiplayer') ? 'Generate and Launch' : 'Generate' }}
             </v-btn>
@@ -263,7 +263,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn text @click='generateSeed(true)'>Continue without</v-btn>
+          <v-btn text @click='createSeeds(functionAfterBingoWarning, true)'>Continue without</v-btn>
           <v-btn depressed color='accent' @click='addBingoHeaderAndGenerateSeed()'>Add header and generate</v-btn>
         </v-card-actions>
       </v-card>
@@ -272,16 +272,15 @@
 </template>
 
 <script>
-  import { saveAs } from 'file-saver'
   import { mapGetters } from 'vuex'
   import glitches from '~/assets/seedgen/glitches.yaml'
   import goals from '~/assets/seedgen/goals.yaml'
   import spawns from '~/assets/seedgen/spawns.yaml'
   import difficulties from '~/assets/seedgen/difficulties.yaml'
   import { confettiFromElement } from '~/assets/lib/confettiFromElement'
-  import { getDb } from '~/assets/db/database'
   import { isElectron } from '~/assets/lib/isElectron'
   import { EventBus } from '~/assets/lib/EventBus'
+  import { SeedGenerator } from '@/assets/lib/SeedGenerator'
 
   const BINGO_HEADER_NAME = 'bingo'
   const LAST_SEEDGEN_CONFIG_LOCALSTORAGE_KEY = 'last_seedgen_config'
@@ -315,6 +314,7 @@
       seedgenResult: null,
       anyPresetSelected: false,
       showBingoHeaderWarningDialog: false,
+      functionAfterBingoWarning: null,
       lastConfigLoaded: false,
       configReset: false,
       hasLastSeedgenConfig: false,
@@ -382,7 +382,7 @@
           this.seedgenConfig.headers.push(BINGO_HEADER_NAME)
         }
 
-        await this.generateSeed()
+        await this.createSeeds(this.functionAfterBingoWarning)
       },
       loadLastSeedgenConfig() {
         this.seedgenConfig = JSON.parse(window.localStorage.getItem(LAST_SEEDGEN_CONFIG_LOCALSTORAGE_KEY))
@@ -398,7 +398,8 @@
           this.configReset = false
         }, 1000)
       },
-      async generateSeed(ignoreMissingBingoHeader = false) {
+
+      createSeeds(functionType, ignoreMissingBingoHeader = false){
         if (this.loading) {
           return
         }
@@ -412,105 +413,57 @@
           !this.seedgenConfig.headers.includes(BINGO_HEADER_NAME) &&
           !ignoreMissingBingoHeader
         ) {
+          this.functionAfterBingoWarning = functionType
           this.showBingoHeaderWarningDialog = true
           return
         }
-
+        
         this.showBingoHeaderWarningDialog = false
+        this.functionAfterBingoWarning= null
 
         this.loading = true
+        
+        switch (functionType){
+          case 'download':
+            this.downloadSeeds()
+            break
+          case 'generate':
+            this.generateSeeds()
+            break
+        }
+
+        this.loading = false
+      },
+
+      async downloadSeeds() {
+
+      },
+      async generateSeeds() {     
 
         try {
-          const additionalParameters = {}
-
-          // Convert empty string seed to null
-          if (!this.seedgenConfig.seed) {
-            this.seedgenConfig.seed = null
-          }
-
-          // Remove multiNames if netcode is disabled
-          if (!this.seedgenConfig.flags.includes('--multiplayer')) {
-            this.seedgenConfig.multiNames = []
-          }
-
-          // Fetch custom headers from IndexedDB
-          additionalParameters.customHeaders = (await (await getDb).customHeaders.bulkGet(this.seedgenConfig.customHeaders))
-            .map(h => h.content)
-
-          const response = await this.$axios.$post('/seeds', {
-            ...this.seedgenConfig,
-            ...additionalParameters,
-          })
-
-          if (this.seedgenConfig.flags.includes('--multiplayer')) {
-            switch (this.createOnlineGame) {
-              case 'normal':
-                response.result.multiverseId = await this.$axios.$post('/multiverses', {
-                  seedGroupId: response.result.seedGroupId,
-                })
-                break
-              case 'bingo':
-                response.result.multiverseId = await this.$axios.$post('/multiverses', {
-                  bingoConfig: { size: this.bingoSize },
-                  seedGroupId: response.result.seedGroupId,
-                })
-                break
-              case 'discovery_bingo':
-                response.result.multiverseId = await this.$axios.$post('/multiverses', {
-                  bingoConfig: { discovery: 2, size: this.bingoSize },
-                  seedGroupId: response.result.seedGroupId,
-                })
-                break
-              case 'lockout_bingo':
-                response.result.multiverseId = await this.$axios.$post('/multiverses', {
-                  bingoConfig: { lockout: true, size: this.bingoSize },
-                  seedGroupId: response.result.seedGroupId,
-                })
-                break
-            }
-          }
-
-          this.seedgenResult = response.result
-
-          if (response.warnings && response.warnings.includes('WARN')) {
-            EventBus.$emit('notification', {
-              message: response.warnings,
-              color: 'warning',
-            })
-          }
-
-          const hasMultiverse = typeof this.seedgenResult.multiverseId === 'number'
+          const seedGen = new SeedGenerator(this.$axios)
+          await seedGen.generateSeeds(this.seedgenConfig, this.createOnlineGame, this.bingoSize)
 
           // Download the seed instantly for single player, non-networked games
           // and show the download dialog otherwise
-          if (!hasMultiverse && response.result.seedIds.length === 1) {
-            const url = `${this.$axios.defaults.baseURL}/seeds/${response.result.seedIds[0]}/file`
-            const fileName = `seed_${response.result.seedIds[0]}.wotwr`
-
+          if (!seedGen.hasMultiverse && seedGen.seedIds.length === 1) {
             confettiFromElement(this.$refs.generateButton.$el, {
               disableForReducedMotion: true,
               zIndex: 100000,
-            })
+            })         
 
+            seedGen.downloadSeed(0)
             if (isElectron()) {
               try {
-                await window.electronApi.invoke('launcher.downloadSeedFromUrl', {
-                  url, fileName,
-                })
                 await this.$store.dispatch('electron/launch')
               } catch (e) {
                 console.error(e)
               }
-            } else {
-              saveAs(url, fileName)
             }
-          } else if (!hasMultiverse) {
-            await this.$router.replace({ query: { seedGroupId: response.result.seedGroupId } })
+          } else if (!seedGen.hasMultiverse) {
+            await this.$router.replace({ query: { seedGroupId: seedGen.seedGroupId } })
           } else {
-            await this.$router.push({
-              name: 'game-multiverseId',
-              params: { multiverseId: this.seedgenResult.multiverseId },
-            })
+            this.openMultiverse(seedGen.multiverseId)
           }
         } catch (e) {
           console.error(e)
@@ -519,9 +472,8 @@
             color: 'error',
           })
         }
-
-        this.loading = false
       },
+      
       applyPresets({ presets, override }) {
         if (override) {
           this.seedgenConfig = generateNewSeedgenConfig()
@@ -591,6 +543,12 @@
         this.seedgenConfig.goals = Array.from(goals)
         this.seedgenConfig.flags = Array.from(flags)
         this.seedgenConfig.spawn = spawn
+      },
+      async openMultiverse(_multiverseId){
+        await this.$router.push({
+          name: 'game-multiverseId',
+          params: { multiverseId: _multiverseId },
+            })
       },
       async updateSeedgenResultDialogState() {
         if (this.$route.query.seedGroupId) {

@@ -214,6 +214,7 @@
         <template #activator='{on}'>
           <div v-on='on'>
             <v-btn
+              v-if='isElectron || seedgenConfig.flags.includes("--multiplayer")'
               ref='generateButton'
               :disabled='anyPresetSelected'
               :loading='loading'
@@ -222,7 +223,20 @@
               x-large
               @click='createSeeds("generate")'
             >
-              {{ isElectron && !seedgenConfig.flags.includes('--multiplayer') ? 'Generate and Launch' : 'Generate' }}
+              {{ isElectron && !(seedgenConfig.flags.includes('--multiplayer') && (createOnlineGame !== 'none' || seedgenConfig.multiNames.length > 1)) ? 'Generate and Launch' : 'Generate' }}
+            </v-btn>
+            <v-btn
+              v-if='isElectron || !(seedgenConfig.flags.includes("--multiplayer"))'
+              ref='downloadButton'
+              :disabled='anyPresetSelected'
+              :loading='loading'
+              color='accent'
+              class='mb-3'
+              x-large
+              @click='createSeeds("download")'
+            >
+              <template v-if='isElectron'><v-icon>mdi-download</v-icon></template>
+              <template v-else>Generate</template>
             </v-btn>
           </div>
         </template>
@@ -399,7 +413,7 @@
         }, 1000)
       },
 
-      createSeeds(functionType, ignoreMissingBingoHeader = false){
+      async createSeeds(functionType, ignoreMissingBingoHeader = false){
         if (this.loading) {
           return
         }
@@ -408,6 +422,7 @@
         window.localStorage.setItem(LAST_SEEDGEN_CONFIG_LOCALSTORAGE_KEY, JSON.stringify(this.seedgenConfig))
         this.hasLastSeedgenConfig = true
 
+        // check if bingo game selected and bingo headers missing
         if (
           ['bingo', 'discovery_bingo'].includes(this.createOnlineGame) &&
           !this.seedgenConfig.headers.includes(BINGO_HEADER_NAME) &&
@@ -419,51 +434,18 @@
         }
         
         this.showBingoHeaderWarningDialog = false
-        this.functionAfterBingoWarning= null
+        this.functionAfterBingoWarning = null
 
         this.loading = true
-        
-        switch (functionType){
-          case 'download':
-            this.downloadSeeds()
-            break
-          case 'generate':
-            this.generateSeeds()
-            break
-        }
-
-        this.loading = false
-      },
-
-      async downloadSeeds() {
-
-      },
-      async generateSeeds() {     
 
         try {
-          const seedGen = new SeedGenerator(this.$axios)
-          await seedGen.generateSeeds(this.seedgenConfig, this.createOnlineGame, this.bingoSize)
-
-          // Download the seed instantly for single player, non-networked games
-          // and show the download dialog otherwise
-          if (!seedGen.hasMultiverse && seedGen.seedIds.length === 1) {
-            confettiFromElement(this.$refs.generateButton.$el, {
-              disableForReducedMotion: true,
-              zIndex: 100000,
-            })         
-
-            seedGen.downloadSeed(0)
-            if (isElectron()) {
-              try {
-                await this.$store.dispatch('electron/launch')
-              } catch (e) {
-                console.error(e)
-              }
-            }
-          } else if (!seedGen.hasMultiverse) {
-            await this.$router.replace({ query: { seedGroupId: seedGen.seedGroupId } })
-          } else {
-            this.openMultiverse(seedGen.multiverseId)
+          switch (functionType){
+            case 'download':
+              await this.downloadSeeds()
+              break
+            case 'generate':
+              await this.generateSeeds()
+              break
           }
         } catch (e) {
           console.error(e)
@@ -472,8 +454,65 @@
             color: 'error',
           })
         }
+        this.loading = false
       },
-      
+      async downloadSeeds() {
+        const seedGen = new SeedGenerator(this.$axios)
+        await seedGen.generateSeeds(this.seedgenConfig, '')
+
+        let result = false
+        if (isElectron()){
+          result = await seedGen.downloadAllSeeds(true)
+        } else if(seedGen.files.length === 1){
+            seedGen.saveSeed(0)
+            result = true
+        } else {
+            EventBus.$emit('notification', {
+              message: 'Downloading several seeds not implemented',
+              color: 'error',
+            })
+            result = false
+        }
+        if (result){
+          confettiFromElement(this.$refs.downloadButton.$el, {
+              disableForReducedMotion: true,
+              zIndex: 100000,
+            })
+        }
+      },
+      async generateSeeds() {  
+        const seedGen = new SeedGenerator(this.$axios)
+        await seedGen.generateSeeds(this.seedgenConfig, this.createOnlineGame)
+
+        // Download the seed instantly for single player, non-networked games
+        // and show the download dialog otherwise
+        if (!seedGen.hasMultiverse && seedGen.files.length === 1) {
+          let result = false
+          if(isElectron()){
+            result = await seedGen.downloadSeed(0)
+          } else {
+            result = seedGen.saveSeed(0)
+          }
+          if(result){
+            confettiFromElement(this.$refs.generateButton.$el, {
+              disableForReducedMotion: true,
+              zIndex: 100000,
+              })
+            try {
+              await this.$store.dispatch('electron/launch')
+            } catch (e) {
+              console.error(e)
+            }
+          }
+        } else if (!seedGen.hasMultiverse) {
+          await this.$router.replace({ query: { seedId: seedGen.seedId } })
+        } else {
+          await this.$router.push({
+              name: 'game-multiverseId',
+              params: { multiverseId: seedGen.multiverseId },
+            })
+        }
+      },
       applyPresets({ presets, override }) {
         if (override) {
           this.seedgenConfig = generateNewSeedgenConfig()
@@ -543,12 +582,6 @@
         this.seedgenConfig.goals = Array.from(goals)
         this.seedgenConfig.flags = Array.from(flags)
         this.seedgenConfig.spawn = spawn
-      },
-      async openMultiverse(_multiverseId){
-        await this.$router.push({
-          name: 'game-multiverseId',
-          params: { multiverseId: _multiverseId },
-            })
       },
       async updateSeedgenResultDialogState() {
         if (this.$route.query.seedGroupId) {

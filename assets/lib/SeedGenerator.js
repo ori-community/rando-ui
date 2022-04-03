@@ -1,40 +1,55 @@
 import { saveAs } from 'file-saver'
 import { EventBus } from '~/assets/lib/EventBus'
 import { getDb } from '~/assets/db/database'
-import { isElectron } from '~/assets/lib/isElectron'
 
 export class SeedGenerator{
   axios = null
-  generationResult = null
   seedGroupId = null
   multiverseId = null
   hasMultiverse = false
+  multiNames = []
   seedIds = null
 
   constructor(axios){
       this.axios = axios
   }
 
-  async downloadAllSeeds(){
-    
+  // download all seeds to seeds directory
+  async downloadAllSeeds(_showInExplorer = false){
+    try{
+      const _seeds = []
+      for (const file of this.files) {
+        _seeds.push(this.newSeed(file))
+      }
+      await window.electronApi.invoke('launcher.downloadSeedsFromUrl', {
+        seeds: _seeds, showInExplorer: _showInExplorer
+      })
+    } catch (e) {
+      console.error(e)
+      return false
+    }
+    return true
   }
 
+  // download seed to seeds directory
   async downloadSeed(index, setToCurrent = true){
-    const url = `${this.axios.defaults.baseURL}/seeds/${this.seedIds[index]}/file`
-    const fileName = `seed_${this.seedIds[index]}.wotwr`
-
-    if(isElectron()){
-      try{
-        await window.electronApi.invoke('launcher.downloadSeedFromUrl', {
-          url, fileName, setToCurrent
-        })
-      } catch (e) {
-        console.error(e)
-      }
-    } else {
-      saveAs(url, fileName)
+    const seed = this.newSeed(this.seedIds[index])
+    try{
+      await window.electronApi.invoke('launcher.downloadSeedFromUrl', {
+        url: seed.url, fileName: seed.fileName, setToCurrent
+      })
+    } catch (e) {
+      console.error(e)
+      return false
     }
+    return true
+  }
 
+  newSeed(seedId){
+    return {
+      url: `${this.axios.defaults.baseURL}/seeds/${seedId}/file`,
+      fileName: `seed_${seedId}.wotwr`,
+    }
   }
 
   async generateGame(seedGroupId, gameType, bingoSize) {
@@ -79,6 +94,7 @@ export class SeedGenerator{
     if (!seedConfig.flags.includes('--multiplayer')) {
       seedConfig.multiNames = []
     }
+    this.multiNames = seedConfig.multiNames
 
     // Generate seeds
     const response = await this.axios.$post('/seeds', {
@@ -100,5 +116,10 @@ export class SeedGenerator{
         color: 'warning',
       })
     }
+  }
+
+  saveSeed(index){
+    const seed = this.newSeed(this.files[index])
+    saveAs(seed.url, seed.fileName)
   }
 }

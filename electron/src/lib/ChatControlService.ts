@@ -9,6 +9,7 @@ import { AuthProvider } from '@twurple/auth'
 import { ChatClient } from '@twurple/chat'
 import { ApiClient, UserIdResolvable } from '@twurple/api'
 import fs from 'fs'
+import { WindowService } from '@/lib/WindowService'
 
 const TWITCH_CLIENT_ID = '3d3x1rsrwtwz0db4tb9ou9g587677j'
 const TWITCH_REDIRECT_URI = 'https://wotw.orirando.com/api/twitch-login'
@@ -37,15 +38,9 @@ export class ChatControlService {
       return
     }
 
-    this.window = new BrowserWindow({
+    this.window = WindowService.createWindow({
       width: 750,
       height: 750,
-      autoHideMenuBar: true,
-      webPreferences: {
-        nodeIntegration: Boolean(process.env.ELECTRON_NODE_INTEGRATION),
-        contextIsolation: true,
-        preload: path.join(__dirname, 'preload.js'),
-      },
     })
 
     await this.window.loadURL(getElectronUrl(`/electron/windows/chat-control`))

@@ -4,6 +4,7 @@ import { getElectronUrl } from '@/api'
 import { LocalTrackerWebSocketService } from '@/lib/LocalTrackerWebSocketService'
 import debounce from 'lodash.debounce'
 import { SettingsService } from '@/lib/SettingsService'
+import { WindowService } from '@/lib/WindowService'
 
 export class LocalTrackerService {
   private static window: BrowserWindow | null = null
@@ -76,13 +77,7 @@ export class LocalTrackerService {
 
       const settings = await SettingsService.getCurrentSettings()
 
-      this.window = new BrowserWindow({
-        autoHideMenuBar: true,
-        webPreferences: {
-          nodeIntegration: Boolean(process.env.ELECTRON_NODE_INTEGRATION),
-          contextIsolation: true,
-          preload: path.join(__dirname, 'preload.js'),
-        },
+      this.window = WindowService.createWindow({
         backgroundColor: settings.LocalTracker.Transparent
           ? undefined
           : '#050e17',

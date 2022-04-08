@@ -1,5 +1,5 @@
 <template>
-  <span>{{ node.name }}: {{ node.value }}</span>
+  <span>{{ node.name }}: <code>{{ node.value }}</code></span>
 </template>
 
 <script>
@@ -14,5 +14,7 @@
 </script>
 
 <style scoped>
-
+  code {
+    font-family: Consolas, "Fira Code", monospace;
+  }
 </style>

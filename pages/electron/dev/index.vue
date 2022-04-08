@@ -4,7 +4,12 @@
       Randomizer IPC not connected
     </template>
     <template v-else>
-      <v-text-field v-model='search' label='Search' prepend-inner-icon='mdi-magnify' />
+      <div class='d-flex align-end mb-4'>
+        <v-text-field v-model='search' label='Search' hide-details prepend-inner-icon='mdi-magnify' />
+        <v-btn :loading='loading' icon class='ml-4' @click='reload'>
+          <v-icon>mdi-reload</v-icon>
+        </v-btn>
+      </div>
 
       <div class='d-flex'>
         <div>
@@ -57,6 +62,7 @@
       open: [],
       active: [],
       search: '',
+      loading: false,
     }),
     head: {
       title: 'Client Devtools'
@@ -103,11 +109,18 @@
           return item
         })
       },
+      async reload() {
+        await this.updateTree()
+        if (this.activeItem) {
+          await this.loadValueForItem(this.activeItem)
+        }
+      },
       async updateTree() {
-        this.tree = await this.getSubtree('')
+        this.loading = true
+        const tree = await this.getSubtree('')
 
         const loadSubtreeIfOpenOrBelowLevel = async (root, level) => {
-          if (!root.childrenLoaded && (this.open.includes(root.path) || level > 0)) {
+          if (!root.childrenLoaded && (this.open.some(o => o.path === root.path) || level > 0)) {
             await this.loadSubtreeForItem(root)
           }
 
@@ -117,10 +130,13 @@
         }
 
         for (const level of [0, 1]) {
-          for (const root of this.tree) {
+          for (const root of tree) {
             await loadSubtreeIfOpenOrBelowLevel(root, level)
           }
         }
+
+        this.tree = tree
+        this.loading = false
       },
       async loadSubtreeForItem(item) {
         item.children = await this.getSubtree(item.path, item.instance_id)

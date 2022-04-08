@@ -12,9 +12,12 @@
           <wotw-devtools-node-renderer :node='item' />
         </div>
       </wotw-devtools-value-indent>
-      <template v-else>
-        <div class='d-inline-block'>{{ guessNodeLabel(node) }}</div>
+      <template v-else-if='typeof node.value === "object"'>
+        <div class='d-inline-block'>{{ guessNodeLabel(node) }} <v-btn x-small outlined text @click='forceJson = false'>Visual</v-btn></div>
         <wotw-devtools-value-renderer-json class='pl-2' :value='node.value' />
+      </template>
+      <template v-else>
+        <wotw-devtools-node-renderer-scalar :node='node' />
       </template>
     </div>
   </div>

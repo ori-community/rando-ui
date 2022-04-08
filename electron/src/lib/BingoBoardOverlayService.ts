@@ -1,9 +1,5 @@
 import { BrowserWindow } from 'electron'
-import path from 'path'
 import { getElectronUrl } from '@/api'
-import { LocalTrackerWebSocketService } from '@/lib/LocalTrackerWebSocketService'
-import debounce from 'lodash.debounce'
-import { SettingsService } from '@/lib/SettingsService'
 import { WindowService } from '@/lib/WindowService'
 
 export class BingoBoardOverlayService {

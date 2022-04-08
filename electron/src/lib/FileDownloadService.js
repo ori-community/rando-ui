@@ -1,6 +1,9 @@
 import axios from 'axios'
 import fs from 'fs'
+import path from 'path'
 import { shell } from 'electron'
+import { SEEDS_PATH } from '@/lib/Constants'
+import { LauncherService } from '@/lib/LauncherService'
 
 export class FileDownloadService {
   static async download(url, targetFile, progressCallback = () => {}) {
@@ -72,5 +75,5 @@ export class FileDownloadService {
     if (showInExplorer && firstSeedFile) {
       shell.showItemInFolder(firstSeedFile)
     }
-  },
+  }
 }

@@ -15,10 +15,16 @@
         window.electronApi.on('main.settingsChanged', (event, settings) => {
           this.$store.commit('electron/setSettings', settings)
         })
-        this.$store.commit('electron/setSettings', await window.electronApi.invoke('settings.readSettings'))
-      }
-      await this.$store.dispatch('user/updateUser')
 
+        window.electronApi.on('randoIpc.setConnected', (event, connected) => {
+          this.$store.commit('electron/setRandoIpcConnected', connected)
+        })
+
+        this.$store.commit('electron/setSettings', await window.electronApi.invoke('settings.readSettings'))
+        this.$store.commit('electron/setRandoIpcConnected', await window.electronApi.invoke('randoIpc.isConnected'))
+      }
+
+      await this.$store.dispatch('user/updateUser')
     },
   }
 </script>

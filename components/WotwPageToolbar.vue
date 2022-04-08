@@ -54,6 +54,10 @@
             <v-icon left>mdi-application-cog-outline</v-icon>
             Settings
           </v-list-item>
+          <v-list-item v-if='settingsLoaded && settings.Flags.Dev' exact x-large depressed text @click='openRandoDevtools'>
+            <v-icon left>mdi-application-braces-outline</v-icon>
+            Rando Devtools
+          </v-list-item>
         </v-list>
       </v-menu>
     </v-scale-transition>
@@ -77,7 +81,7 @@
               </v-list-item>
               <v-list-item v-if="isDeveloper" @click='toggleDevtools'>
                 <v-icon left>mdi-code-braces</v-icon>
-                {{ devtoolsEnabled ? 'Disable' : 'Enable' }} Devtools
+                {{ devtoolsEnabled ? 'Disable' : 'Enable' }} Server Devtools
               </v-list-item>
               <v-list-item @click='logout'>
                 <v-icon left>mdi-logout-variant</v-icon>
@@ -140,7 +144,7 @@
       ...mapGetters('user', ['isLoggedIn', 'isDeveloper']),
       ...mapState('user', ['user', 'userLoaded']),
       ...mapState('dev', ['devtoolsEnabled']),
-      ...mapState('electron', ['localTrackerRunning']),
+      ...mapState('electron', ['localTrackerRunning', 'settings', 'settingsLoaded']),
       isElectron,
       nicknameIsValid() {
         const trimmedNickname = this.currentNickname.trim()
@@ -233,6 +237,9 @@
       toggleDevtools() {
         this.$store.commit('dev/setDevtoolsEnabled', !this.devtoolsEnabled)
       },
+      openRandoDevtools() {
+        window.electronApi.invoke('devtools.open')
+      }
     },
   }
 </script>

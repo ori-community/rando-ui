@@ -7,7 +7,7 @@
         <v-btn color="accent" to="/dev/population-cache">
           Population Cache
         </v-btn>
-        <v-btn color="accent" to="/dev/handler state">
+        <v-btn color="accent" to="/dev/handler-state">
           Handler State
         </v-btn>
       </div>

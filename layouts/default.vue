@@ -132,10 +132,15 @@
           this.$store.commit('electron/setLocalTrackerRunning', isRunning)
         })
 
+        window.electronApi.on('randoIpc.setConnected', (event, connected) => {
+          this.$store.commit('electron/setRandoIpcConnected', connected)
+        })
+
         window.electronApi.invoke('ready')
 
         this.$store.commit('electron/setSettings', await window.electronApi.invoke('settings.readSettings'))
         this.$store.commit('electron/setLocalTrackerRunning', await window.electronApi.invoke('localTracker.isTrackerRunning'))
+        this.$store.commit('electron/setRandoIpcConnected', await window.electronApi.invoke('randoIpc.isConnected'))
       }
     },
     async mounted() {

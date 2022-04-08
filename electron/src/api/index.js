@@ -8,6 +8,8 @@ import uberState from './uberState'
 import localTracker from './localTracker'
 import chatControl from './chatControl'
 import bingoBoardOverlay from './bingoBoardOverlay'
+import devtools from './devtools'
+import randoIpc from './randoIpc'
 
 export default {
   settings,
@@ -20,4 +22,6 @@ export default {
   localTracker,
   chatControl,
   bingoBoardOverlay,
+  devtools,
+  randoIpc,
 }

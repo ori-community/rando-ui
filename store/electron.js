@@ -18,6 +18,7 @@ export const state = () => ({
   currentSupportBundleName: null,
   showUpdateAvailableDialog: false,
   localTrackerRunning: false,
+  randoIpcConnected: false,
 })
 
 export const getters = {
@@ -112,6 +113,9 @@ export const mutations = {
   },
   setLocalTrackerRunning(state, value) {
     state.localTrackerRunning = value
+  },
+  setRandoIpcConnected(state, value) {
+    state.randoIpcConnected = value
   },
 }
 

@@ -4,6 +4,7 @@ import { uiIpc } from '@/api'
 import { UberId } from '~/assets/lib/types/UberStates'
 import { LocalTrackerWebSocketService } from '@/lib/LocalTrackerWebSocketService'
   import {BingoBoardOverlayService} from '@/lib/BingoBoardOverlayService'
+  import { Exception } from 'sass'
 
 const PIPE_NAME = 'wotw_rando'
 const PIPE_PATH = '\\\\.\\pipe\\'
@@ -90,13 +91,16 @@ export class RandoIPCService {
           socket = new Socket()
           socket.on('error', error => {
             console.log('RandoIPC: Could not connect,', error.message)
+            uiIpc.queueSend('randoIpc.setConnected', false)
             reject(error)
           })
           socket.on('close', () => {
+            uiIpc.queueSend('randoIpc.setConnected', false)
             console.log('RandoIPC: Socket closed')
           })
           socket.connect(PIPE_PATH + PIPE_NAME, async () => {
             console.log('RandoIPC: Connected')
+            uiIpc.queueSend('randoIpc.setConnected', true)
             await LocalTrackerWebSocketService.forceRefreshAll()
             resolve()
           })
@@ -114,6 +118,7 @@ export class RandoIPCService {
             }
           })
         } catch (e) {
+          uiIpc.queueSend('randoIpc.setConnected', false)
           console.log('RandoIPC: Error while connecting to pipe:', e)
           reject(e)
         }
@@ -129,6 +134,7 @@ export class RandoIPCService {
         const errorCallback = (error: Error) => {
           throw error
         }
+
         socket?.once('error', errorCallback)
         console.log('RandoIPC: > ', message)
         socket?.write(message + '\r\n', 'utf-8', () => resolve())
@@ -202,12 +208,17 @@ export class RandoIPCService {
 
     outgoingRequestHandlers[request.id] = {}
 
-    const promise = new Promise<any>(resolve => {
+    const promise = new Promise<any>((resolve, reject) => {
       outgoingRequestQueue.push({
         request,
         expectsResponse,
       })
       outgoingRequestHandlers[request.id].resolve = resolve
+
+      setTimeout(() => {
+        reject(new Error('RandoIPC timeout'))
+        delete outgoingRequestHandlers[request.id]
+      }, 5000)
     })
     outgoingRequestHandlers[request.id].promise = promise
 

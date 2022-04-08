@@ -6,8 +6,8 @@
     <template v-else>
       <v-text-field v-model='search' label='Search' prepend-inner-icon='mdi-magnify' />
 
-      <v-row>
-        <v-col cols='7'>
+      <div class='d-flex'>
+        <div>
           <v-treeview
             dense
             activatable
@@ -24,25 +24,25 @@
             transition
           >
             <template #label='{ item }'>
-              <span class='tree-item'>
-                {{ item.name }}
+          <span class='tree-item'>
+            {{ item.name }}
 
-                <v-icon class='not-loaded' v-if='!item.childrenLoaded'>
-                  mdi-dots-horizontal-circle-outline
-                </v-icon>
-              </span>
+            <v-icon class='not-loaded' v-if='!item.childrenLoaded'>
+              mdi-dots-horizontal-circle-outline
+            </v-icon>
+          </span>
             </template>
           </v-treeview>
-        </v-col>
-        <v-col cols='5'>
+        </div>
+        <div class='pl-2'>
           <div class='sticky'>
             <template v-if='!activeItem'>
               <em>Select an item to inspect</em>
             </template>
             <wotw-devtools-node-renderer v-else :node='activeItem' />
           </div>
-        </v-col>
-      </v-row>
+        </div>
+      </div>
     </template>
   </div>
 </template>
@@ -58,6 +58,9 @@
       active: [],
       search: '',
     }),
+    head: {
+      title: 'Client Devtools'
+    },
     computed: {
       ...mapState('electron', ['randoIpcConnected']),
       activeValue() {
@@ -113,7 +116,7 @@
           }
         }
 
-        for (const level of [1, 2, 3]) {
+        for (const level of [0, 1]) {
           for (const root of this.tree) {
             await loadSubtreeIfOpenOrBelowLevel(root, level)
           }

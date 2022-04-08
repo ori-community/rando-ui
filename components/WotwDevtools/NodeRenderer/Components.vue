@@ -1,7 +1,8 @@
 <template>
   <div>
-    <div>Components</div>
+
     <wotw-devtools-value-indent>
+      <template #header>Components</template>
       <wotw-devtools-node-renderer v-for='(item, index) in node.value' :key='index' :node='item' />
     </wotw-devtools-value-indent>
   </div>

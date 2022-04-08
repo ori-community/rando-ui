@@ -110,6 +110,8 @@ export class RandoIPCService {
             if (message.type === 'request') {
               this.handleIncomingRequest(message).catch(error => console.log('RandoIPC: Could not handle incoming request', error))
             } else if (message.type === 'response') {
+              console.log(`< ${message.id}`)
+
               if (message.id in outgoingRequestHandlers) {
                 outgoingRequestHandlers[message.id].resolve?.(message.payload)
               }
@@ -127,6 +129,7 @@ export class RandoIPCService {
   }
 
   static async send(message: any) {
+    console.log(`> ${message.id || '-'}`)
     message = JSON.stringify(message)
 
     await new Promise<void>((resolve, reject) => {
@@ -136,7 +139,6 @@ export class RandoIPCService {
         }
 
         socket?.once('error', errorCallback)
-        console.log('RandoIPC: > ', message)
         socket?.write(message + '\r\n', 'utf-8', () => resolve())
         socket?.off('error', errorCallback)
       } catch (e) {
@@ -146,8 +148,6 @@ export class RandoIPCService {
   }
 
   static async handleIncomingRequest(request: Request) {
-    console.log(request)
-
     switch (request.method) {
       case 'notify_on_uber_state_changed': {
         const {group, state, value} = request.payload
@@ -187,11 +187,22 @@ export class RandoIPCService {
     const queuedRequest = outgoingRequestQueue.shift()
     if (queuedRequest) {
       outgoingRequestsRunning++
-      await this.send(queuedRequest.request)
 
       if (queuedRequest.expectsResponse) {
-        await outgoingRequestHandlers[queuedRequest.request.id].promise
+        let tries = 0
+        do {
+          try {
+            await this.send(queuedRequest.request)
+            await outgoingRequestHandlers[queuedRequest.request.id].promise
+            break
+          } catch (e) {
+            console.error(e)
+            tries++
+            console.log(`Trying again... (try ${tries})`)
+          }
+        } while (tries < 3)
       } else {
+        await this.send(queuedRequest.request)
         outgoingRequestHandlers[queuedRequest.request.id].resolve?.()
       }
 

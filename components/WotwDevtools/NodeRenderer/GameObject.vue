@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div v-if='!!node.name'>{{ node.name }} (GameObject)</div>
-    <div v-else>GameObject</div>
     <wotw-devtools-value-indent>
+      <template v-if='!!node.name' #header>{{ node.name }} (GameObject)</template>
+      <template v-else #header>GameObject</template>
       <wotw-devtools-node-renderer v-for='(item, index) in node.value' :key='index' :node='item' />
     </wotw-devtools-value-indent>
   </div>

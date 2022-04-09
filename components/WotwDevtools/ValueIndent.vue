@@ -1,7 +1,13 @@
 <template>
   <div class='value-indent' tabindex='0'>
-    <slot name='header' />
-    <div class='pl-4 value'>
+    <div>
+      <v-btn x-small icon @click='expanded = !expanded'>
+        <v-icon v-if='expanded'>mdi-chevron-down</v-icon>
+        <v-icon v-else>mdi-chevron-right</v-icon>
+      </v-btn>
+      <slot name='header' />
+    </div>
+    <div v-show='expanded' class='pl-4 value'>
       <slot />
     </div>
   </div>
@@ -12,6 +18,7 @@
     name: 'ValueIndent',
     data: () => ({
       highlighted: false,
+      expanded: true,
     }),
   }
 </script>

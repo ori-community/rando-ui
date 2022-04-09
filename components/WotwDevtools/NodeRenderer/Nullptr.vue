@@ -1,6 +1,6 @@
 <template>
   <div>
-    <em>Invalid reference (nullptr)</em>
+    <em>{{ node.name || 'Invalid reference' }} (nullptr)</em>
   </div>
 </template>
 

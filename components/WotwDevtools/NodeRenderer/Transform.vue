@@ -5,33 +5,7 @@
         Transform
       </template>
 
-      <div class='d-flex small'>
-        <div>
-          Local
-        </div>
-        <div class='pl-2'>
-          <div>
-            Pos: <wotw-devtools-value-renderer-vector3 :value='node.value.local_position' />
-          </div>
-          <div>
-            Rot: <wotw-devtools-value-renderer-vector3 :value='node.value.local_position' />
-          </div>
-          <div>
-            Scale: <wotw-devtools-value-renderer-vector3 :value='node.value.local_position' />
-          </div>
-        </div>
-        <div class='pl-4'>
-          World
-        </div>
-        <div class='pl-2'>
-          <div>
-            Pos: <wotw-devtools-value-renderer-vector3 :value='node.value.world_position' />
-          </div>
-          <div>
-            Rot: <wotw-devtools-value-renderer-vector3 :value='node.value.world_position' />
-          </div>
-        </div>
-      </div>
+      <wotw-devtools-value-renderer-array :value='node.value' />
     </wotw-devtools-value-indent>
   </div>
 </template>

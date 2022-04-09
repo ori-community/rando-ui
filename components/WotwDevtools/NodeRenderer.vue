@@ -8,12 +8,10 @@
           {{ guessNodeLabel(node) }}
           <v-btn x-small outlined text @click='forceJson = true'>JSON</v-btn>
         </template>
-        <div v-for='(item, index) in node.value' :key='index'>
-          <wotw-devtools-node-renderer :node='item' />
-        </div>
+        <wotw-devtools-value-renderer-array :value='node.value' />
       </wotw-devtools-value-indent>
       <template v-else-if='typeof node.value === "object"'>
-        <div class='d-inline-block'>{{ guessNodeLabel(node) }} <v-btn x-small outlined text @click='forceJson = false'>Visual</v-btn></div>
+        <div class='d-inline-block'>{{ guessNodeLabel(node) }} <v-btn v-if='rendererComponent !== null' x-small outlined text @click='forceJson = false'>Visual</v-btn></div>
         <wotw-devtools-value-renderer-json class='pl-2' :value='node.value' />
       </template>
       <template v-else>
@@ -37,10 +35,16 @@
     }),
     computed: {
       rendererComponent() {
-        let targetType = this.node.type
+        return this.getRendererComponentForNode(this.node)
+      },
+    },
+    methods: {
+      isArray: Array.isArray,
+      getRendererComponentForNode(node) {
+        let targetType = node.type
 
-        if (this.node.visualizer_type) {
-          targetType = this.node.visualizer_type
+        if (node.visualizer_type) {
+          targetType = node.visualizer_type
         }
 
         switch (targetType) {
@@ -49,13 +53,11 @@
           case 'UnityEngine.Transform': return 'wotw-devtools-node-renderer-transform'
           case 'nullptr': return 'wotw-devtools-node-renderer-nullptr'
           case 'components': return 'wotw-devtools-node-renderer-components'
+          case 'vector_3': return 'wotw-devtools-node-renderer-vector3'
         }
 
         return null
       },
-    },
-    methods: {
-      isArray: Array.isArray,
       guessNodeLabel(node) {
         if (node.type) {
           const types = [node.type]

@@ -1,11 +1,14 @@
 <template>
-  <span @click='roundValues = !roundValues'>({{ round(value.x) }}, {{ round(value.y) }}, {{ round(value.z) }})</span>
+  <span @click='roundValues = !roundValues'>
+    {{ node.name || 'Vector3' }}:
+    ({{ round(node.value.x) }}, {{ round(node.value.y) }}, {{ round(node.value.z) }})
+  </span>
 </template>
 
 <script>
   export default {
     props: {
-      value: {
+      node: {
         type: Object,
         required: true,
       },

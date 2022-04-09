@@ -79,7 +79,7 @@
         if (this.multiverseId) {
           return `ori-rando://game/${this.multiverseId}`
         } else {
-          return `ori-rando://seedgen?seedId=${this.result.seedId}`
+          return `ori-rando://seedgen?seedGroupId=${this.result.seedGroupId}`
         }
       }
     },
@@ -87,16 +87,16 @@
       if (this.result.files.length <= 1) {
         this.seedsToDisplay = [{
           label: isElectron() ? 'Launch seed' : 'Download seed',
-          url: `${this.$axios.defaults.baseURL}/seeds/${this.result.id}/files/${this.result.files[0]}`,
+          url: `${this.$axios.defaults.baseURL}/seeds/${this.result.seedIds[0]}/file`,
           fileName: `seed_${this.result.id}.wotwr`,
         }]
       } else {
         this.seedsToDisplay = []
-        for (const file of this.result.files) {
+        for (const seedId of this.result.seedIds) {
           this.seedsToDisplay.push({
-            label: file,
-            url: `${this.$axios.defaults.baseURL}/seeds/${this.result.id}/files/${file}`,
-            fileName: `seed_${this.result.id}_${file}.wotwr`,
+            label: seedId,
+            url: `${this.$axios.defaults.baseURL}/seeds/${seedId}/file`,
+            fileName: `seed_${this.result.seedGroupId}_${seedId}.wotwr`,
           })
         }
       }

@@ -11,12 +11,8 @@
   export default {
     name: 'WotwSeedButton',
     props: {
-      seed: {
-        type: Object,
-        required: true,
-      },
-      seedFile: {
-        type: String,
+      seedId: {
+        type: [String, Number],
         required: true,
       },
     },
@@ -28,8 +24,8 @@
     },
     methods: {
       async downloadSeed() {
-        const url = `${this.$axios.defaults.baseURL}/seeds/${this.seed.id}/files/${this.seedFile}`
-        const fileName = this.seedFile + '.wotwr'
+        const url = `${this.$axios.defaults.baseURL}/seeds/${this.seedId}/file`
+        const fileName = `${this.seedId}.wotwr`
 
         if (isElectron()) {
           this.loading = true

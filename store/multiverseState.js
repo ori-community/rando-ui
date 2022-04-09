@@ -43,8 +43,8 @@ export const mutations = {
     ensureMultiverseExists(state, multiverseId)
     state.multiverses[multiverseId].bingoUniverses = bingoUniverses
   },
-  setSeed(state, { multiverseId, seed }) {
-    state.multiverses[multiverseId].seed = seed
+  setMultiverseSeedGroup(state, { multiverseId, seedGroup }) {
+    state.multiverses[multiverseId].seedGroup = seedGroup
   },
   toggleBingoGoalMarked(state, { multiverseId, x, y }) {
     if (state.multiverses[multiverseId].markedBingoGoals.some(m => m.x === x && m.y === y)) {
@@ -64,20 +64,20 @@ export const actions = {
     commit('setUniverses', { multiverseId, universes: multiverse.universes })
     commit('setSpectators', { multiverseId, spectators: multiverse.spectators })
 
-    if (multiverse.seedId !== null) {
-      await dispatch('fetchSeed', { multiverseId, seedId: multiverse.seedId })
+    if (multiverse.seedGroupId !== null) {
+      await dispatch('fetchSeedGroup', { multiverseId, seedGroupId: multiverse.seedGroupId })
     }
 
     if (multiverse.hasBingoBoard) {
       await dispatch('fetchBingoBoard', multiverseId)
     }
   },
-  async fetchSeed({ commit }, { multiverseId, seedId }) {
+  async fetchSeedGroup({ commit }, { multiverseId, seedGroupId }) {
     try {
-      const seed = await this.$axios.$get(`/seeds/${seedId}`)
-      commit('setSeed', {
+      const seedGroup = await this.$axios.$get(`/seed-groups/${seedGroupId}`)
+      commit('setMultiverseSeedGroup', {
         multiverseId,
-        seed,
+        seedGroup,
       })
     } catch (e) {
       console.error(e)

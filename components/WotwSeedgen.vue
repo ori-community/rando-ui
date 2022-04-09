@@ -337,7 +337,7 @@
           this.createOnlineGame = 'normal'
         }
       },
-      '$route.query.seedId'() {
+      '$route.query.seedGroupId'() {
         this.updateSeedgenResultDialogState()
       },
       isLoggedIn(isLoggedIn) {
@@ -430,25 +430,25 @@
             switch (this.createOnlineGame) {
               case 'normal':
                 response.result.multiverseId = await this.$axios.$post('/multiverses', {
-                  seedId: response.result.seedId,
+                  seedGroupId: response.result.seedGroupId,
                 })
                 break
               case 'bingo':
                 response.result.multiverseId = await this.$axios.$post('/multiverses', {
                   bingo: {},
-                  seedId: response.result.seedId,
+                  seedGroupId: response.result.seedGroupId,
                 })
                 break
               case 'discovery_bingo':
                 response.result.multiverseId = await this.$axios.$post('/multiverses', {
                   bingo: { discovery: 2 },
-                  seedId: response.result.seedId,
+                  seedGroupId: response.result.seedGroupId,
                 })
                 break
               case 'lockout_bingo':
                 response.result.multiverseId = await this.$axios.$post('/multiverses', {
                   bingo: { lockout: true },
-                  seedId: response.result.seedId,
+                  seedGroupId: response.result.seedGroupId,
                 })
                 break
             }
@@ -467,9 +467,9 @@
 
           // Download the seed instantly for single player, non-networked games
           // and show the download dialog otherwise
-          if (!hasMultiverse && response.result.files.length === 1) {
-            const url = `${this.$axios.defaults.baseURL}/seeds/${response.result.seedId}/files/${response.result.files[0]}`
-            const fileName = `seed_${response.result.seedId}.wotwr`
+          if (!hasMultiverse && response.result.seedIds.length === 1) {
+            const url = `${this.$axios.defaults.baseURL}/seeds/${response.result.seedIds[0]}/file`
+            const fileName = `seed_${response.result.seedIds[0]}.wotwr`
 
             confettiFromElement(this.$refs.generateButton.$el, {
               disableForReducedMotion: true,
@@ -489,7 +489,7 @@
               saveAs(url, fileName)
             }
           } else if (!hasMultiverse) {
-            await this.$router.replace({ query: { seedId: response.result.seedId } })
+            await this.$router.replace({ query: { seedGroupId: response.result.seedGroupId } })
           } else {
             await this.$router.push({
               name: 'game-multiverseId',
@@ -577,8 +577,8 @@
         this.seedgenConfig.spawn = spawn
       },
       async updateSeedgenResultDialogState() {
-        if (this.$route.query.seedId) {
-          this.seedgenResult = await this.$axios.$get(`/seeds/${this.$route.query.seedId}`)
+        if (this.$route.query.seedGroupId) {
+          this.seedgenResult = await this.$axios.$get(`/seed-groups/${this.$route.query.seedGroupId}`)
           this.showResultDialog = true
         } else {
           this.seedgenResult = null

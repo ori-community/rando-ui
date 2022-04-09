@@ -102,7 +102,7 @@
                   await this.$router.push({ name: 'auth-callback', query: { jwt: url.searchParams.get('jwt') } })
                   break
                 case 'seedgen':
-                  await this.$router.push({ name: 'seedgen', query: { seedId: url.searchParams.get('seedId') } })
+                  await this.$router.push({ name: 'seedgen', query: { seedGroupId: url.searchParams.get('seedGroupId') } })
                   break
                 case 'game': {
                   const gameId = url.pathname.match(/.*\/(?<gameId>\d*)$/)?.groups.gameId

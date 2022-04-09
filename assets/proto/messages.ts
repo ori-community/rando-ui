@@ -33,7 +33,7 @@ export interface WorldInfo {
   name: string
   color: string
   members: UserInfo[]
-  seedFile?: string | undefined
+  seedId?: number | undefined
 }
 
 export interface UniverseInfo {
@@ -50,7 +50,7 @@ export interface MultiverseInfoMessage {
   universes: UniverseInfo[]
   hasBingoBoard: boolean
   spectators: UserInfo[]
-  seedId?: number | undefined
+  seedGroupId?: number | undefined
 }
 
 export interface BingoSquare {
@@ -399,7 +399,7 @@ export const UserInfo = {
 messageTypeRegistry.set(UserInfo.$type, UserInfo)
 
 function createBaseWorldInfo(): WorldInfo {
-  return { $type: 'RandoProto.WorldInfo', id: 0, name: '', color: '', members: [], seedFile: undefined }
+  return { $type: 'RandoProto.WorldInfo', id: 0, name: '', color: '', members: [], seedId: undefined }
 }
 
 export const WorldInfo = {
@@ -418,8 +418,8 @@ export const WorldInfo = {
     for (const v of message.members) {
       UserInfo.encode(v!, writer.uint32(34).fork()).ldelim()
     }
-    if (message.seedFile !== undefined) {
-      writer.uint32(42).string(message.seedFile)
+    if (message.seedId !== undefined) {
+      writer.uint32(40).int64(message.seedId)
     }
     return writer
   },
@@ -444,7 +444,7 @@ export const WorldInfo = {
           message.members.push(UserInfo.decode(reader, reader.uint32()))
           break
         case 5:
-          message.seedFile = reader.string()
+          message.seedId = longToNumber(reader.int64() as Long)
           break
         default:
           reader.skipType(tag & 7)
@@ -461,7 +461,7 @@ export const WorldInfo = {
       name: isSet(object.name) ? String(object.name) : '',
       color: isSet(object.color) ? String(object.color) : '',
       members: Array.isArray(object?.members) ? object.members.map((e: any) => UserInfo.fromJSON(e)) : [],
-      seedFile: isSet(object.seedFile) ? String(object.seedFile) : undefined,
+      seedId: isSet(object.seedId) ? Number(object.seedId) : undefined,
     }
   },
 
@@ -475,7 +475,7 @@ export const WorldInfo = {
     } else {
       obj.members = []
     }
-    message.seedFile !== undefined && (obj.seedFile = message.seedFile)
+    message.seedId !== undefined && (obj.seedId = Math.round(message.seedId))
     return obj
   },
 
@@ -485,7 +485,7 @@ export const WorldInfo = {
     message.name = object.name ?? ''
     message.color = object.color ?? ''
     message.members = object.members?.map((e) => UserInfo.fromPartial(e)) || []
-    message.seedFile = object.seedFile ?? undefined
+    message.seedId = object.seedId ?? undefined
     return message
   },
 }
@@ -578,7 +578,7 @@ export const UniverseInfo = {
 messageTypeRegistry.set(UniverseInfo.$type, UniverseInfo)
 
 function createBaseMultiverseInfoMessage(): MultiverseInfoMessage {
-  return { $type: 'RandoProto.MultiverseInfoMessage', id: 0, universes: [], hasBingoBoard: false, spectators: [], seedId: undefined }
+  return { $type: 'RandoProto.MultiverseInfoMessage', id: 0, universes: [], hasBingoBoard: false, spectators: [], seedGroupId: undefined }
 }
 
 export const MultiverseInfoMessage = {
@@ -597,8 +597,8 @@ export const MultiverseInfoMessage = {
     for (const v of message.spectators) {
       UserInfo.encode(v!, writer.uint32(34).fork()).ldelim()
     }
-    if (message.seedId !== undefined) {
-      writer.uint32(40).int64(message.seedId)
+    if (message.seedGroupId !== undefined) {
+      writer.uint32(40).int64(message.seedGroupId)
     }
     return writer
   },
@@ -623,7 +623,7 @@ export const MultiverseInfoMessage = {
           message.spectators.push(UserInfo.decode(reader, reader.uint32()))
           break
         case 5:
-          message.seedId = longToNumber(reader.int64() as Long)
+          message.seedGroupId = longToNumber(reader.int64() as Long)
           break
         default:
           reader.skipType(tag & 7)
@@ -640,7 +640,7 @@ export const MultiverseInfoMessage = {
       universes: Array.isArray(object?.universes) ? object.universes.map((e: any) => UniverseInfo.fromJSON(e)) : [],
       hasBingoBoard: isSet(object.hasBingoBoard) ? Boolean(object.hasBingoBoard) : false,
       spectators: Array.isArray(object?.spectators) ? object.spectators.map((e: any) => UserInfo.fromJSON(e)) : [],
-      seedId: isSet(object.seedId) ? Number(object.seedId) : undefined,
+      seedGroupId: isSet(object.seedGroupId) ? Number(object.seedGroupId) : undefined,
     }
   },
 
@@ -658,7 +658,7 @@ export const MultiverseInfoMessage = {
     } else {
       obj.spectators = []
     }
-    message.seedId !== undefined && (obj.seedId = Math.round(message.seedId))
+    message.seedGroupId !== undefined && (obj.seedGroupId = Math.round(message.seedGroupId))
     return obj
   },
 
@@ -668,7 +668,7 @@ export const MultiverseInfoMessage = {
     message.universes = object.universes?.map((e) => UniverseInfo.fromPartial(e)) || []
     message.hasBingoBoard = object.hasBingoBoard ?? false
     message.spectators = object.spectators?.map((e) => UserInfo.fromPartial(e)) || []
-    message.seedId = object.seedId ?? undefined
+    message.seedGroupId = object.seedGroupId ?? undefined
     return message
   },
 }

@@ -118,6 +118,9 @@
         }
       },
     },
+    mounted() {
+      console.log(this.multiverse)
+    },
     methods: {
       async join(worldId) {
         await this.$axios.post(`/multiverses/${this.multiverseId}/worlds/${worldId}`)

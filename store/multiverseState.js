@@ -19,7 +19,7 @@ const ensureMultiverseExists = (state, multiverseId) => {
       bingoBoard: null,
       bingoUniverses: [],
       markedBingoGoals: [],
-      seed: null,
+      seedGroupId: null,
     })
   }
 }
@@ -31,13 +31,12 @@ export const mutations = {
     ensureMultiverseExists(state, multiverseId)
     state.multiverses[multiverseId].bingoBoard = board
   },
-  setUniverses(state, { multiverseId, universes }) {
+  setMultiverseInfo(state, { multiverseId, multiverseInfo }) {
     ensureMultiverseExists(state, multiverseId)
-    state.multiverses[multiverseId].universes = universes
-  },
-  setSpectators(state, { multiverseId, spectators }) {
-    ensureMultiverseExists(state, multiverseId)
-    state.multiverses[multiverseId].spectators = spectators
+    state.multiverses[multiverseId].universes = multiverseInfo.universes
+    state.multiverses[multiverseId].spectators = multiverseInfo.spectators
+    state.multiverses[multiverseId].seedGroupId = multiverseInfo.seedGroupId || null
+    state.multiverses[multiverseId].gameHandlerType = multiverseInfo.gameHandlerType
   },
   setBingoUniverses(state, { multiverseId, bingoUniverses }) {
     ensureMultiverseExists(state, multiverseId)
@@ -61,8 +60,7 @@ export const mutations = {
 export const actions = {
   async fetchMultiverse({ commit, dispatch }, multiverseId) {
     const multiverse = await this.$axios.$get(`/multiverses/${multiverseId}`)
-    commit('setUniverses', { multiverseId, universes: multiverse.universes })
-    commit('setSpectators', { multiverseId, spectators: multiverse.spectators })
+    commit('setMultiverseInfo', { multiverseId, multiverseInfo: multiverse })
 
     if (multiverse.seedGroupId !== null) {
       await dispatch('fetchSeedGroup', { multiverseId, seedGroupId: multiverse.seedGroupId })
@@ -144,8 +142,7 @@ export const actions = {
             commit('setBingoBoard', { multiverseId, board: packet.board })
             break
           case 'RandoProto.MultiverseInfoMessage':
-            commit('setUniverses', { multiverseId, universes: packet.universes })
-            commit('setSpectators', { multiverseId, spectators: packet.spectators })
+            commit('setMultiverseInfo', { multiverseId, multiverseInfo: packet })
             break
           case 'RandoProto.SyncBingoUniversesMessage':
             commit('setBingoUniverses', { multiverseId, bingoUniverses: packet.bingoUniverses })

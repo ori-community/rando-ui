@@ -1,7 +1,7 @@
 <template>
   <div class='page-toolbar d-flex align-center my-4'>
     <v-scale-transition group tag='div' class='flex-gap align-center'>
-      <v-btn v-if='isElectron' key='home' depressed exact text to='/electron' x-large>
+      <v-btn key='home' depressed exact text :to='`${isElectron ? `/electron` : `/`}`'  x-large>
         <v-icon>mdi-home-outline</v-icon>
       </v-btn>
       <v-btn v-if='isElectron && currentMultiverseId !== null' key='game' exact x-large depressed text :to='{name: "game-multiverseId", params: {multiverseId: currentMultiverseId}}'>

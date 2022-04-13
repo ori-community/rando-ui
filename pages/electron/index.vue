@@ -209,10 +209,12 @@
       ]),
       ...mapGetters('electron', [
         'updateAvailable',
-        'visibleReleases',
-        'latestVisibleVersion',
         'currentSeedPathBasename',
         'isNewVersion',
+      ]),
+      ...mapGetters('version', [
+        'latestVisibleVersion',
+        'visibleReleases',
       ]),
     },
     watch: {

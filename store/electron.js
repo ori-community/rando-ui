@@ -1,9 +1,5 @@
-import sanitizeHtml from 'sanitize-html'
 import semver from 'semver'
-import * as commonmark from 'commonmark'
 import { EventBus } from '~/assets/lib/EventBus'
-
-window.semver = semver
 
 export const state = () => ({
   settings: {},
@@ -22,20 +18,12 @@ export const state = () => ({
 })
 
 export const getters = {
-  shouldShowVersion(state) {
-    return version => {
-      const updateToPrereleaseVersions = state.settingsLoaded && (state.settings.Flags.UpdateToPrereleaseVersions ?? false)
-      const prerelease = semver.prerelease(version)
-      return updateToPrereleaseVersions || prerelease === null
-    }
-  },
-  isNewVersion(state, getters) {
+  isNewVersion(state, getters, rootState, rootGetters) {
     return version => {
       if (state.currentVersion === '' || state.currentVersion === 'develop') {
         return false
       }
-
-      if (!getters.shouldShowVersion(version)) {
+      if (!rootGetters['version/shouldShowVersion'](version)) {
         return false
       }
 
@@ -47,27 +35,10 @@ export const getters = {
       }
     }
   },
-  latestAvailableRelease(state) {
-    return state.availableReleases?.length > 0
-      ? state.availableReleases[0]
-      : null
-  },
-  latestAvailableVersion(state) {
-    return state.latestAvailableRelease?.name
-  },
-  visibleReleases(state, getters) {
-    return state.availableReleases?.filter(r => getters.shouldShowVersion(r.name))
-  },
-  latestVisibleRelease(state, getters) {
-    return getters.visibleReleases?.length > 0
-      ? getters.visibleReleases[0]
-      : null
-  },
-  latestVisibleVersion(state, getters) {
-    return getters.latestVisibleRelease?.name
-  },
-  updateAvailable(state, getters) {
-    return getters.latestVisibleRelease !== null && getters.isNewVersion(getters.latestVisibleVersion)
+  updateAvailable(state, getters, rootState, rootGetters) {
+    if(rootGetters['version/latestVisibleVersion']){
+      return rootState.version.latestVisibleRelease !== null && getters.isNewVersion(rootGetters['version/latestVisibleVersion'])
+    }
   },
   currentSeedPathBasename(state) {
     if (!state.currentSeedPath) {
@@ -86,9 +57,6 @@ export const mutations = {
   },
   setCurrentVersion(state, value) {
     state.currentVersion = value
-  },
-  setAvailableReleases(state, value) {
-    state.availableReleases = value
   },
   setOfflineMode(state, value) {
     state.offlineMode = value
@@ -126,25 +94,11 @@ export const actions = {
     commit('setSettings', settings)
     await window.electronApi.invoke('settings.setSettings', settings)
   },
-  async checkForUpdates({ commit }) {
+  async checkForUpdates({ dispatch, commit }) {
     try {
       commit('setCurrentVersion', await window.electronApi.invoke('updater.getVersion'))
+      dispatch('version/updateAvailableReleases', null , {root: true})
 
-      commit(
-        'setAvailableReleases',
-        (await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/releases`))
-          .filter((release) => !release.draft && !release.prerelease)
-          .sort((a, b) => semver.compareLoose(b.name, a.name))
-          .map((release) => {
-            const parser = new commonmark.Parser()
-            const writer = new commonmark.HtmlRenderer()
-
-            return {
-              ...release,
-              bodyHtml: sanitizeHtml(writer.render(parser.parse(release.body))),
-            }
-          }),
-      )
     } catch (e) {
       commit('setOfflineMode', true)
       console.error(e)
@@ -159,8 +113,8 @@ export const actions = {
       checkForUpdatesOncePromise.finally(resolve)
     })
   },
-  async downloadAndInstallUpdate({ commit, getters }) {
-    if (getters.latestVisibleRelease) {
+  async downloadAndInstallUpdate({ commit, getters, rootGetters}) {
+    if (rootGetters['version/latestVisibleRelease']) {
       commit('setShowUpdateAvailableDialog', false)
       commit('setUpdateDownloadProgress', 0)
       commit('setUpdateDownloading', true)
@@ -169,7 +123,7 @@ export const actions = {
         commit('setUpdateDownloadProgress', progress * 100)
       })
       await window.electronApi.invoke('updater.downloadAndInstallUpdate', {
-        url: getters.latestVisibleRelease.assets.find((a) => a.name === 'WotwRandoSetup.exe').browser_download_url,
+        url: rootGetters['version/latestAvailableReleaseExe'].browser_download_url,
       })
     }
   },

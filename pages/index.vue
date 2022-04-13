@@ -1,12 +1,12 @@
 <template>
-  <v-container style='max-width:900px'>
+  <v-container>
     <div class='text-center'>
 
       <h1 class='mt-12 mb-4'>Ori and the Will of the Wisps</h1>
       <h1 class='mb-16 randomizer'>Randomizer</h1>
 
       <div class='mb-12'>
-        <div class='text-left d-inline-block'>
+        <div class='text-left d-inline-block max-900'>
           Welcome to the Ori and the Will of the Wisps Randomizer!<br>
           This is a mod for the PC version of Ori and the Will of the Wisps
           which changes the contents of pickups. So when playing the randomizer
@@ -74,5 +74,9 @@
 
   .gapped {
     gap: 0.4em;
+  }
+
+  .max-900 {
+    max-width: 900px;
   }
 </style>

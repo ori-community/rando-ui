@@ -215,7 +215,7 @@
       ...mapGetters('version', [
         'latestVisibleVersion',
         'visibleReleases',
-      ])
+      ]),
     },
     watch: {
       currentVersion: {

@@ -113,8 +113,8 @@ export const actions = {
       checkForUpdatesOncePromise.finally(resolve)
     })
   },
-  async downloadAndInstallUpdate({ commit, getters }) {
-    if (getters.latestVisibleRelease) {
+  async downloadAndInstallUpdate({ commit, getters, rootGetters}) {
+    if (rootGetters['version/latestVisibleRelease']) {
       commit('setShowUpdateAvailableDialog', false)
       commit('setUpdateDownloadProgress', 0)
       commit('setUpdateDownloading', true)
@@ -123,7 +123,7 @@ export const actions = {
         commit('setUpdateDownloadProgress', progress * 100)
       })
       await window.electronApi.invoke('updater.downloadAndInstallUpdate', {
-        url: getters.latestVisibleRelease.assets.find((a) => a.name === 'WotwRandoSetup.exe').browser_download_url,
+        url: rootGetters['version/latestVisibleRelease'].assets.find((a) => a.name === 'WotwRandoSetup.exe').browser_download_url,
       })
     }
   },

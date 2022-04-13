@@ -55,7 +55,7 @@
   export default {
     name: 'GlobalDialogs',
     computed: {
-      ...mapGetters('electron', [
+      ...mapGetters('version', [
         'latestVisibleVersion',
       ]),
       currentSupportBundleName: {

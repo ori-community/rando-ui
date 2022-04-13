@@ -1,7 +1,7 @@
 <template>
   <v-tooltip bottom :disabled='isLoggedIn'>
     <template #activator='{on: onTooltip}'>
-      <div v-on='onTooltip'>
+      <div style='display:inline' v-on='onTooltip'>
         <v-menu offset-y :disabled='!isLoggedIn'>
           <template #activator='{on: onMenu}'>
             <v-btn depressed text :disabled='!isLoggedIn' v-bind='$attrs' v-on='onMenu'>

@@ -42,13 +42,10 @@
   export default {
     name: 'Index',
     data: () => ({
-        latestRandoExeUrl: ''
+        latestRandoExeUrl: '',
     }),
     computed: {
-      ...mapGetters('version', [
-        'latestVisibleVersion',
-        'latestAvailableReleaseExe',
-      ]),
+      ...mapGetters('version', ['latestAvailableReleaseExe']),
     },
     async mounted(){
       await this.$store.dispatch('version/updateAvailableReleases')

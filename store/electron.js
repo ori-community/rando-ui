@@ -37,8 +37,10 @@ export const getters = {
       }
     }
   },
-  updateAvailable(state, getters, rootState) {
-    return rootState.version.latestVisibleRelease !== null && getters.isNewVersion(getters.latestVisibleVersion)
+  updateAvailable(state, getters, rootState, rootGetters) {
+    if(rootGetters['version/latestVisibleVersion']){
+      return rootState.version.latestVisibleRelease !== null && getters.isNewVersion(rootGetters['version/latestVisibleVersion'])
+    }
   },
   currentSeedPathBasename(state) {
     if (!state.currentSeedPath) {

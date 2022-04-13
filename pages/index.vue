@@ -4,7 +4,7 @@
 
       <h1 class='mt-12 mb-4'>Ori and the Will of the Wisps</h1>
       <h1 class='mb-16 randomizer'>Randomizer</h1>
-      
+
       <div class='mb-12'>
         <div class='text-left d-inline-block'>
           Welcome to the Ori and the Will of the Wisps Randomizer!<br>
@@ -16,18 +16,18 @@
           harder difficulties will ask you to progress by using more advanced movement options or glitches.
         </div>
       </div>
-      
-      <div class='mb-4'>
-        <v-btn color='accent' x-large :disabled='!latestRandoExeUrl' :href='latestRandoExeUrl'>
+
+      <div class='mb-4 d-flex gapped justify-center'>
+        <v-btn color='accent' x-large :loading='!latestRandoExeUrl' :href='latestRandoExeUrl'>
           <v-icon left>mdi-download</v-icon>
           Download
         </v-btn>
-        <v-btn gapped x-large text to='/seedgen'>
+        <v-btn outlined x-large text to='/seedgen'>
           <v-icon left>mdi-dice-multiple</v-icon>
           Generate a seed
         </v-btn>
-        <wotw-new-game-menu x-large />
-        <v-btn x-large text href='https://wiki.orirando.com'>
+        <wotw-new-game-menu x-large outlined />
+        <v-btn x-large outlined text href='https://wiki.orirando.com'>
           <v-icon left>mdi-book-outline</v-icon>
           Wiki
         </v-btn>
@@ -55,12 +55,14 @@
 </script>
 
 <style lang='scss' scoped>
-  h1{
+  h1 {
     filter: brightness(85%)
   }
+
   h1.randomizer {
     transform: scale(2.5);
   }
+
   .hover-transparency {
     opacity: 0.5;
     transition: opacity 200ms;
@@ -68,5 +70,9 @@
     &:hover {
       opacity: 1;
     }
+  }
+
+  .gapped {
+    gap: 0.4em;
   }
 </style>

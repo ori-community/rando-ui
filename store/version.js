@@ -19,6 +19,9 @@ export const getters = {
       ? state.availableReleases[0]
       : null
   },
+  latestAvailableReleaseExe(state, getters){
+    return getters.latestVisibleRelease?.assets.find((a) => a.name === 'WotwRandoSetup.exe')
+  },
   latestAvailableVersion(state) {
     return state.latestAvailableRelease?.name
   },

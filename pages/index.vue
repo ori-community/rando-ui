@@ -18,7 +18,7 @@
       </div>
       
       <div class='mb-4'>
-        <v-btn color='accent' x-large :disabled='!latestVisibleVersion' :href='latestRandoExeUrl'>
+        <v-btn color='accent' x-large :disabled='!latestRandoExeUrl' :href='latestRandoExeUrl'>
           <v-icon left>mdi-download</v-icon>
           Download
         </v-btn>
@@ -47,11 +47,12 @@
     computed: {
       ...mapGetters('version', [
         'latestVisibleVersion',
+        'latestAvailableReleaseExe',
       ]),
     },
     async mounted(){
       await this.$store.dispatch('version/updateAvailableReleases')
-      this.latestRandoExeUrl = `https://github.com/ori-rando/build/releases/download/${this.latestVisibleVersion}/WotwRandoSetup.exe`
+      this.latestRandoExeUrl = this.latestAvailableReleaseExe?.browser_download_url
     },
   }
 </script>

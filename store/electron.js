@@ -123,7 +123,7 @@ export const actions = {
         commit('setUpdateDownloadProgress', progress * 100)
       })
       await window.electronApi.invoke('updater.downloadAndInstallUpdate', {
-        url: rootGetters['version/latestVisibleRelease'].assets.find((a) => a.name === 'WotwRandoSetup.exe').browser_download_url,
+        url: rootGetters['version/latestAvailableReleaseExe'].browser_download_url,
       })
     }
   },

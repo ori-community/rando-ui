@@ -50,7 +50,7 @@
       ]),
     },
     async mounted(){
-      await this.$store.dispatch('version/getAvailableReleases')
+      await this.$store.dispatch('version/updateAvailableReleases')
       this.latestRandoExeUrl = `https://github.com/ori-rando/build/releases/download/${this.latestVisibleVersion}/WotwRandoSetup.exe`
     },
   }

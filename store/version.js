@@ -2,8 +2,6 @@ import * as commonmark from 'commonmark'
 import semver from 'semver'
 import sanitizeHtml from 'sanitize-html'
 
-window.semver = semver
-
 export const state = () => ({
   availableReleases: null,
 })
@@ -11,7 +9,7 @@ export const state = () => ({
 export const getters = {
   shouldShowVersion(state, getter, rootState) {
     return version => {
-      const updateToPrereleaseVersions = false  // rootState.electron.settingsLoaded && (rootState.electron.settings?.Flags?.UpdateToPrereleaseVersions ?? false)
+      const updateToPrereleaseVersions = rootState.electron.settingsLoaded && (rootState.electron.settings.Flags.UpdateToPrereleaseVersions ?? false)
       const prerelease = semver.prerelease(version)
       return updateToPrereleaseVersions || prerelease === null
     }
@@ -44,7 +42,7 @@ export const mutations = {
 }
 
 export const actions = {
-  async getAvailableReleases({ commit }) {
+  async updateAvailableReleases({ commit }) {
     try {
       commit(
         'setAvailableReleases',

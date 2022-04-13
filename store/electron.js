@@ -1,8 +1,6 @@
 import semver from 'semver'
 import { EventBus } from '~/assets/lib/EventBus'
 
-window.semver = semver
-
 export const state = () => ({
   settings: {},
   settingsLoaded: false,
@@ -99,7 +97,7 @@ export const actions = {
   async checkForUpdates({ dispatch, commit }) {
     try {
       commit('setCurrentVersion', await window.electronApi.invoke('updater.getVersion'))
-      dispatch('version/getAvailableReleases', null , {root: true})
+      dispatch('version/updateAvailableReleases', null , {root: true})
 
     } catch (e) {
       commit('setOfflineMode', true)

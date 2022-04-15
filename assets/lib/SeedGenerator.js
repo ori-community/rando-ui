@@ -15,14 +15,14 @@ export class SeedGenerator{
   }
 
   // download all seeds to seeds directory
-  async downloadAllSeeds(_showInExplorer = false){
+  async downloadAllSeeds(showInExplorer = false){
     try{
-      const _seeds = []
-      for (const file of this.files) {
-        _seeds.push(this.newSeed(file))
+      const seeds = []
+      for (const seedId of this.seedIds) {
+        seeds.push(this.newSeed(seedId))
       }
       await window.electronApi.invoke('launcher.downloadSeedsFromUrl', {
-        seeds: _seeds, showInExplorer: _showInExplorer
+        seeds, showInExplorer
       })
     } catch (e) {
       console.error(e)
@@ -56,7 +56,7 @@ export class SeedGenerator{
     switch (gameType) {
       case 'normal':
           return await this.axios.$post('/multiverses', {
-            seedGroupId: seedGroupId,
+            seedGroupId,
         })
       case 'bingo':
         return await this.axios.$post('/multiverses', {
@@ -119,7 +119,7 @@ export class SeedGenerator{
   }
 
   saveSeed(index){
-    const seed = this.newSeed(this.files[index])
+    const seed = this.newSeed(this.seedIds[index])
     saveAs(seed.url, seed.fileName)
   }
 }

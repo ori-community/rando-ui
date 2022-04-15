@@ -463,7 +463,7 @@
         let result = false
         if (isElectron()){
           result = await seedGen.downloadAllSeeds(true)
-        } else if(seedGen.files.length === 1){
+        } else if(seedGen.seedIds.length === 1){
             seedGen.saveSeed(0)
             result = true
         } else {
@@ -486,7 +486,7 @@
 
         // Download the seed instantly for single player, non-networked games
         // and show the download dialog otherwise
-        if (!seedGen.hasMultiverse && seedGen.files.length === 1) {
+        if (!seedGen.hasMultiverse && seedGen.seedIds.length === 1) {
           let result = false
           if(isElectron()){
             result = await seedGen.downloadSeed(0)
@@ -505,7 +505,7 @@
             }
           }
         } else if (!seedGen.hasMultiverse) {
-          await this.$router.replace({ query: { seedId: seedGen.seedId } })
+          await this.$router.replace({ query: { seedGroupId: seedGen.seedGroupId } })
         } else {
           await this.$router.push({
               name: 'game-multiverseId',

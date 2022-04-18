@@ -435,19 +435,19 @@
                 break
               case 'bingo':
                 response.result.multiverseId = await this.$axios.$post('/multiverses', {
-                  bingo: {},
+                  bingoConfig: {},
                   seedGroupId: response.result.seedGroupId,
                 })
                 break
               case 'discovery_bingo':
                 response.result.multiverseId = await this.$axios.$post('/multiverses', {
-                  bingo: { discovery: 2 },
+                  bingoConfig: { discovery: 2 },
                   seedGroupId: response.result.seedGroupId,
                 })
                 break
               case 'lockout_bingo':
                 response.result.multiverseId = await this.$axios.$post('/multiverses', {
-                  bingo: { lockout: true },
+                  bingoConfig: { lockout: true },
                   seedGroupId: response.result.seedGroupId,
                 })
                 break

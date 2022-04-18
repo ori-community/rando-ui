@@ -76,14 +76,14 @@ message PositionedBingoSquare {
   BingoSquare square = 2;
 }
 
-message BingoBoard {
+message BingoBoardMessage {
   repeated PositionedBingoSquare squares = 1;
   int32 size = 2;
   bool lockout = 3;
 }
 
 message SyncBoardMessage {
-  BingoBoard board = 1;
+  BingoBoardMessage board = 1;
   bool replace = 2;
 }
 

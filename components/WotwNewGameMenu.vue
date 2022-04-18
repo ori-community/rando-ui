@@ -50,19 +50,19 @@
               break
             case 'bingo':
               multiverseId = await this.$axios.$post('/multiverses', {
-                bingo: {},
+                bingoConfig: {},
               })
               break
             case 'discovery_bingo':
               multiverseId = await this.$axios.$post('/multiverses', {
-                bingo: {
+                bingoConfig: {
                   discovery: 2,
                 },
               })
               break
             case 'lockout_bingo':
               multiverseId = await this.$axios.$post('/multiverses', {
-                bingo: {
+                bingoConfig: {
                   lockout: true,
                 },
               })

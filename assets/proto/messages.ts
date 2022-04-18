@@ -91,8 +91,8 @@ export interface PositionedBingoSquare {
   square: BingoSquare | undefined
 }
 
-export interface BingoBoard {
-  $type: 'RandoProto.BingoBoard'
+export interface BingoBoardMessage {
+  $type: 'RandoProto.BingoBoardMessage'
   squares: PositionedBingoSquare[]
   size: number
   lockout: boolean
@@ -100,7 +100,7 @@ export interface BingoBoard {
 
 export interface SyncBoardMessage {
   $type: 'RandoProto.SyncBoardMessage'
-  board: BingoBoard | undefined
+  board: BingoBoardMessage | undefined
   replace: boolean
 }
 
@@ -1092,14 +1092,14 @@ export const PositionedBingoSquare = {
 
 messageTypeRegistry.set(PositionedBingoSquare.$type, PositionedBingoSquare)
 
-function createBaseBingoBoard(): BingoBoard {
-  return { $type: 'RandoProto.BingoBoard', squares: [], size: 0, lockout: false }
+function createBaseBingoBoardMessage(): BingoBoardMessage {
+  return { $type: 'RandoProto.BingoBoardMessage', squares: [], size: 0, lockout: false }
 }
 
-export const BingoBoard = {
-  $type: 'RandoProto.BingoBoard' as const,
+export const BingoBoardMessage = {
+  $type: 'RandoProto.BingoBoardMessage' as const,
 
-  encode(message: BingoBoard, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(message: BingoBoardMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     for (const v of message.squares) {
       PositionedBingoSquare.encode(v!, writer.uint32(10).fork()).ldelim()
     }
@@ -1112,10 +1112,10 @@ export const BingoBoard = {
     return writer
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): BingoBoard {
+  decode(input: _m0.Reader | Uint8Array, length?: number): BingoBoardMessage {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input)
     let end = length === undefined ? reader.len : reader.pos + length
-    const message = createBaseBingoBoard()
+    const message = createBaseBingoBoardMessage()
     while (reader.pos < end) {
       const tag = reader.uint32()
       switch (tag >>> 3) {
@@ -1136,16 +1136,16 @@ export const BingoBoard = {
     return message
   },
 
-  fromJSON(object: any): BingoBoard {
+  fromJSON(object: any): BingoBoardMessage {
     return {
-      $type: BingoBoard.$type,
+      $type: BingoBoardMessage.$type,
       squares: Array.isArray(object?.squares) ? object.squares.map((e: any) => PositionedBingoSquare.fromJSON(e)) : [],
       size: isSet(object.size) ? Number(object.size) : 0,
       lockout: isSet(object.lockout) ? Boolean(object.lockout) : false,
     }
   },
 
-  toJSON(message: BingoBoard): unknown {
+  toJSON(message: BingoBoardMessage): unknown {
     const obj: any = {}
     if (message.squares) {
       obj.squares = message.squares.map((e) => (e ? PositionedBingoSquare.toJSON(e) : undefined))
@@ -1157,8 +1157,8 @@ export const BingoBoard = {
     return obj
   },
 
-  fromPartial<I extends Exact<DeepPartial<BingoBoard>, I>>(object: I): BingoBoard {
-    const message = createBaseBingoBoard()
+  fromPartial<I extends Exact<DeepPartial<BingoBoardMessage>, I>>(object: I): BingoBoardMessage {
+    const message = createBaseBingoBoardMessage()
     message.squares = object.squares?.map((e) => PositionedBingoSquare.fromPartial(e)) || []
     message.size = object.size ?? 0
     message.lockout = object.lockout ?? false
@@ -1166,7 +1166,7 @@ export const BingoBoard = {
   },
 }
 
-messageTypeRegistry.set(BingoBoard.$type, BingoBoard)
+messageTypeRegistry.set(BingoBoardMessage.$type, BingoBoardMessage)
 
 function createBaseSyncBoardMessage(): SyncBoardMessage {
   return { $type: 'RandoProto.SyncBoardMessage', board: undefined, replace: false }
@@ -1177,7 +1177,7 @@ export const SyncBoardMessage = {
 
   encode(message: SyncBoardMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.board !== undefined) {
-      BingoBoard.encode(message.board, writer.uint32(10).fork()).ldelim()
+      BingoBoardMessage.encode(message.board, writer.uint32(10).fork()).ldelim()
     }
     if (message.replace === true) {
       writer.uint32(16).bool(message.replace)
@@ -1193,7 +1193,7 @@ export const SyncBoardMessage = {
       const tag = reader.uint32()
       switch (tag >>> 3) {
         case 1:
-          message.board = BingoBoard.decode(reader, reader.uint32())
+          message.board = BingoBoardMessage.decode(reader, reader.uint32())
           break
         case 2:
           message.replace = reader.bool()
@@ -1209,21 +1209,21 @@ export const SyncBoardMessage = {
   fromJSON(object: any): SyncBoardMessage {
     return {
       $type: SyncBoardMessage.$type,
-      board: isSet(object.board) ? BingoBoard.fromJSON(object.board) : undefined,
+      board: isSet(object.board) ? BingoBoardMessage.fromJSON(object.board) : undefined,
       replace: isSet(object.replace) ? Boolean(object.replace) : false,
     }
   },
 
   toJSON(message: SyncBoardMessage): unknown {
     const obj: any = {}
-    message.board !== undefined && (obj.board = message.board ? BingoBoard.toJSON(message.board) : undefined)
+    message.board !== undefined && (obj.board = message.board ? BingoBoardMessage.toJSON(message.board) : undefined)
     message.replace !== undefined && (obj.replace = message.replace)
     return obj
   },
 
   fromPartial<I extends Exact<DeepPartial<SyncBoardMessage>, I>>(object: I): SyncBoardMessage {
     const message = createBaseSyncBoardMessage()
-    message.board = object.board !== undefined && object.board !== null ? BingoBoard.fromPartial(object.board) : undefined
+    message.board = object.board !== undefined && object.board !== null ? BingoBoardMessage.fromPartial(object.board) : undefined
     message.replace = object.replace ?? false
     return message
   },

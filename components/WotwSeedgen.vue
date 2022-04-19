@@ -148,7 +148,7 @@
                     <v-select
                       v-model='createOnlineGame'
                       :items="[
-                          {text: 'None', value: 'none'},
+                          {text: 'No', value: 'none'},
                           {text: 'Normal', value: 'normal'},
                           {text: 'Bingo', value: 'bingo'},
                           {text: 'Discovery Bingo', value: 'discovery_bingo'},
@@ -159,6 +159,21 @@
                       :hint='!isLoggedIn ? "Only available when logged in" : ""'
                       label='Automatically create online game'
                     />
+
+                    <v-expand-transition>
+                      <div v-if="['bingo', 'discovery_bingo', 'lockout_bingo'].includes(createOnlineGame)">
+                        <div class='pb-5'>
+                          <v-slider
+                            v-model="bingoSize"
+                            :tick-labels='["1", "2", "3", "4", "5", "6", "7"]'
+                            hide-details
+                            min="1"
+                            max="7"
+                            label="Bingo Board size"
+                          />
+                        </div>
+                      </div>
+                    </v-expand-transition>
                   </div>
 
                   <v-combobox
@@ -294,6 +309,7 @@
       availableHeaders: null, // Fetched from server
       availablePresets: null, // Fetched from server
       createOnlineGame: 'none',
+      bingoSize: 5,
       loading: false,
       showResultDialog: false,
       seedgenResult: null,
@@ -435,19 +451,19 @@
                 break
               case 'bingo':
                 response.result.multiverseId = await this.$axios.$post('/multiverses', {
-                  bingoConfig: {},
+                  bingoConfig: { size: this.bingoSize },
                   seedGroupId: response.result.seedGroupId,
                 })
                 break
               case 'discovery_bingo':
                 response.result.multiverseId = await this.$axios.$post('/multiverses', {
-                  bingoConfig: { discovery: 2 },
+                  bingoConfig: { discovery: 2, size: this.bingoSize },
                   seedGroupId: response.result.seedGroupId,
                 })
                 break
               case 'lockout_bingo':
                 response.result.multiverseId = await this.$axios.$post('/multiverses', {
-                  bingoConfig: { lockout: true },
+                  bingoConfig: { lockout: true, size: this.bingoSize },
                   seedGroupId: response.result.seedGroupId,
                 })
                 break

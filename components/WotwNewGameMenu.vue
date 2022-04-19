@@ -9,11 +9,38 @@
               New game
             </v-btn>
           </template>
-          <v-list>
+          <v-list :disabled='newGameLoading'>
             <v-list-item @click='createNewGame("normal")'>Normal</v-list-item>
-            <v-list-item @click='createNewGame("bingo")'>Bingo</v-list-item>
-            <v-list-item @click='createNewGame("discovery_bingo")'>Discovery Bingo</v-list-item>
-            <v-list-item @click='createNewGame("lockout_bingo")'>Lockout Bingo</v-list-item>
+
+            <v-menu
+              v-for='bingoType in bingoTypes'
+              :key='bingoType.type'
+              offset-x
+              :disabled='!isLoggedIn'
+              :close-on-content-click='false'
+            >
+              <template #activator='{on: onNestedMenu}'>
+                <v-list-item v-on='onNestedMenu'>{{ bingoType.label }}</v-list-item>
+              </template>
+              <v-card class='pa-4' min-width='500'>
+                <v-slider
+                  v-model="bingoSize"
+                  :tick-labels='["1", "2", "3", "4", "5", "6", "7"]'
+                  min="1"
+                  max="7"
+                  label="Board size"
+                />
+                <div class='d-flex'>
+                  <v-spacer />
+                  <v-btn
+                    depressed
+                    color='accent'
+                    :loading='newGameLoading'
+                    @click='createNewGame(bingoType.type)'
+                  >Create</v-btn>
+                </div>
+              </v-card>
+            </v-menu>
           </v-list>
         </v-menu>
       </div>
@@ -29,6 +56,12 @@
     name: 'WotwNewGameMenu',
     data: () => ({
       newGameLoading: false,
+      bingoSize: 5,
+      bingoTypes: [
+        {type: 'bingo', label: 'Bingo'},
+        {type: 'discovery_bingo', label: 'Discovery Bingo'},
+        {type: 'lockout_bingo', label: 'Lockout Bingo'},
+      ],
     }),
     computed: {
       ...mapGetters('user', ['isLoggedIn']),
@@ -50,13 +83,16 @@
               break
             case 'bingo':
               multiverseId = await this.$axios.$post('/multiverses', {
-                bingoConfig: {},
+                bingoConfig: {
+                  size: this.bingoSize,
+                },
               })
               break
             case 'discovery_bingo':
               multiverseId = await this.$axios.$post('/multiverses', {
                 bingoConfig: {
                   discovery: 2,
+                  size: this.bingoSize,
                 },
               })
               break
@@ -64,6 +100,7 @@
               multiverseId = await this.$axios.$post('/multiverses', {
                 bingoConfig: {
                   lockout: true,
+                  size: this.bingoSize,
                 },
               })
               break

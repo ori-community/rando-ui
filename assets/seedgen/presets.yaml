@@ -7,9 +7,6 @@ moki:
 gorlek:
   name: Gorlek
   description: For advanced players, requires some hard paths and doesn't spawn with sword
-2022-tourney:
-  name: 2022 Tourney
-  description: Base preset for the 2022 Tourney. You don't need to select any other preset besides this one
 
 # Moki and Gorlek presets are handled separately!!
 

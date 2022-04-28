@@ -57,7 +57,7 @@
 <script>
   import presetMeta from '@/assets/seedgen/presets.yaml'
 
-  const difficultyPresets = ['moki', 'gorlek', '2022-tourney']
+  const difficultyPresets = ['moki', 'gorlek']
 
   export default {
     name: 'WotwSeedgenPresetSelect',

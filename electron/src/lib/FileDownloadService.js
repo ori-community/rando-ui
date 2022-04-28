@@ -2,8 +2,8 @@ import axios from 'axios'
 import fs from 'fs'
 import path from 'path'
 import { shell } from 'electron'
-import { SEEDS_PATH } from '@/lib/Constants'
-import { LauncherService } from '@/lib/LauncherService'
+import { LauncherService } from '~/electron/src/lib/LauncherService'
+import { RANDOMIZER_BASE_PATH, SEEDS_PATH } from '~/electron/src/lib/Constants'
 
 export class FileDownloadService {
   static async download(url, targetFile, progressCallback = () => {}) {
@@ -38,7 +38,7 @@ export class FileDownloadService {
     })
   }
 
-  static async downloadSeedFromUrl(url, fileName, setToCurrent = true) {
+  static async downloadSeedFromUrl(url, fileName, setToCurrent = true, showInExplorer = false) {
     console.log(`Downloading seed from URL: ${url}`)
 
     const originalFilenameParts = fileName.match(/(?<name>.*)\.(?<extension>[^.]*)/).groups
@@ -56,16 +56,17 @@ export class FileDownloadService {
       await LauncherService.setCurrentSeedPath(targetFile)
     }
 
+    if (showInExplorer) {
+      shell.showItemInFolder(targetFile)
+    }
+
     return targetFile
   }
 
   static async downloadSeedsFromUrl(seeds, showInExplorer = false) {
     let firstSeedFile = null
     for (const seed of seeds) {
-      const targetFile = await this.downloadSeedFromUrl(event, {
-        ...seed,
-        setToCurrent: false,
-      })
+      const targetFile = await this.downloadSeedFromUrl(seed.url, seed.fileName, false)
 
       if (!firstSeedFile) {
         firstSeedFile = targetFile

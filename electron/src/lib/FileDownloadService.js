@@ -38,7 +38,7 @@ export class FileDownloadService {
     })
   }
 
-  static async downloadSeedFromUrl(url, fileName, setToCurrent = true) {
+  static async downloadSeedFromUrl(url, fileName, setToCurrent = true, showInExplorer = false) {
     console.log(`Downloading seed from URL: ${url}`)
 
     const originalFilenameParts = fileName.match(/(?<name>.*)\.(?<extension>[^.]*)/).groups
@@ -54,6 +54,10 @@ export class FileDownloadService {
 
     if (setToCurrent) {
       await LauncherService.setCurrentSeedPath(targetFile)
+    }
+
+    if (showInExplorer) {
+      shell.showItemInFolder(targetFile)
     }
 
     return targetFile

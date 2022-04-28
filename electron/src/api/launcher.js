@@ -46,8 +46,8 @@ export default {
     }
   },
 
-  async downloadSeedFromUrl(event, { url, fileName, setToCurrent = true }) {
-    return await FileDownloadService.downloadSeedFromUrl(url, fileName, setToCurrent)
+  async downloadSeedFromUrl(event, { url, fileName, setToCurrent = true, showInExplorer = false }) {
+    return await FileDownloadService.downloadSeedFromUrl(url, fileName, setToCurrent, showInExplorer)
   },
 
   async downloadSeedsFromUrl(event, { seeds, showInExplorer = false }) {

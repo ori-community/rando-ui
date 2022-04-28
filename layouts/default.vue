@@ -27,6 +27,7 @@
   import { mapState } from 'vuex'
   import { isElectron } from '~/assets/lib/isElectron'
   import { EventBus } from '~/assets/lib/EventBus'
+  import {APIClient} from '~/assets/lib/api/APIClient'
 
   export default {
     components: {
@@ -44,6 +45,8 @@
       },
     },
     async beforeMount() {
+      APIClient.setAxios(this.$axios)
+
       EventBus.$on('notification', ({ message, color = 'accent', timeout = 10000 }) => {
         this.notifications.push({
           message,

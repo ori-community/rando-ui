@@ -1,114 +1,91 @@
-import { saveAs } from 'file-saver'
-import { EventBus } from '~/assets/lib/EventBus'
-import { getDb } from '~/assets/db/database'
+import {saveAs} from 'file-saver'
+import {EventBus} from '~/assets/lib/EventBus'
+import {getDb} from '~/assets/db/database'
+import {APIClient} from '~/assets/lib/api/APIClient'
 
-export class SeedGenerator{
-  axios = null
+const seedFromId = seedId => ({
+  url: `${APIClient.axios.defaults.baseURL}/seeds/${seedId}/file`,
+  fileName: `${seedId}.wotwr`,
+})
+
+export class SeedGeneratorResult {
   seedGroupId = null
-  multiverseId = null
-  hasMultiverse = false
   multiNames = []
-  seedIds = null
+  seedIds = []
 
-  constructor(axios){
-      this.axios = axios
+  constructor(seedGroupId, multiNames, seedIds) {
+    this.seedGroupId = seedGroupId
+    this.multiNames = multiNames
+    this.seedIds = seedIds
+  }
+
+  get hasMultipleSeeds() {
+    return this.seedIds.length > 1
+  }
+
+  downloadSeed(index) {
+    const seed = seedFromId(this.seedIds[index])
+    saveAs(seed.url, seed.fileName)
   }
 
   // download all seeds to seeds directory
-  async downloadAllSeeds(showInExplorer = false){
-    try{
-      const seeds = []
-      for (const seedId of this.seedIds) {
-        seeds.push(this.newSeed(seedId))
-      }
-      await window.electronApi.invoke('launcher.downloadSeedsFromUrl', {
-        seeds, showInExplorer
-      })
-    } catch (e) {
-      console.error(e)
-      return false
+  async saveAllSeeds(showInExplorer = false) {
+    const seeds = []
+    for (const seedId of this.seedIds) {
+      seeds.push(seedFromId(seedId))
     }
-    return true
+
+    await window.electronApi.invoke('launcher.downloadSeedsFromUrl', {
+      seeds, showInExplorer
+    })
   }
 
   // download seed to seeds directory
-  async downloadSeed(index, setToCurrent = true){
-    const seed = this.newSeed(this.seedIds[index])
-    try{
-      await window.electronApi.invoke('launcher.downloadSeedFromUrl', {
-        url: seed.url, fileName: seed.fileName, setToCurrent
-      })
-    } catch (e) {
-      console.error(e)
-      return false
-    }
-    return true
+  async saveSeed(index, setToCurrent = true) {
+    const seed = seedFromId(this.seedIds[index])
+    await window.electronApi.invoke('launcher.downloadSeedFromUrl', {
+      url: seed.url, fileName: seed.fileName, setToCurrent
+    })
   }
+}
 
-  newSeed(seedId){
-    return {
-      url: `${this.axios.defaults.baseURL}/seeds/${seedId}/file`,
-      fileName: `seed_${seedId}.wotwr`,
-    }
-  }
-
-  async generateGame(seedGroupId, gameType, bingoSize) {
-    switch (gameType) {
-      case 'normal':
-          return await this.axios.$post('/multiverses', {
-            seedGroupId,
-        })
-      case 'bingo':
-        return await this.axios.$post('/multiverses', {
-          bingo: { size: bingoSize },
-          seedGroupId: seedGroupId,
-        })
-      case 'discovery_bingo':
-        return await this.axios.$post('/multiverses', {
-          bingo: { discovery: 2, size: bingoSize },
-          seedGroupId: seedGroupId,
-        })
-      case 'lockout_bingo':
-        return await this.axios.$post('/multiverses', {
-          bingo: { lockout: true, size: bingoSize },
-          seedGroupId: seedGroupId,
-        })
-    }
-    return null
-  }
-
-  async generateSeeds(seedConfig, onlineGame, bingoSize) {
+export class SeedGeneratorAPI extends APIClient {
+  async generateSeeds(seedgenConfig) {
 
     // Convert empty string seed to null
-    if (!seedConfig.seed) {
-      seedConfig.seed = null
+    if (!seedgenConfig.seed) {
+      seedgenConfig.seed = null
     }
 
     const additionalParameters = {}
     // Fetch custom headers from IndexedDB
-    additionalParameters.customHeaders = (await (await getDb).customHeaders.bulkGet(seedConfig.customHeaders))
+    additionalParameters.customHeaders = (await (await getDb).customHeaders.bulkGet(seedgenConfig.customHeaders))
       .map(h => h.content)
 
 
     // Remove multiNames if netcode is disabled
-    if (!seedConfig.flags.includes('--multiplayer')) {
-      seedConfig.multiNames = []
+    if (!seedgenConfig.flags.includes('--multiplayer')) {
+      seedgenConfig.multiNames = []
     }
-    this.multiNames = seedConfig.multiNames
 
     // Generate seeds
-    const response = await this.axios.$post('/seeds', {
-      ...seedConfig,
+    const response = await APIClient.axios.$post('/seeds', {
+      ...seedgenConfig,
       ...additionalParameters,
     })
-    this.seedGroupId = response.result.seedGroupId
-    this.seedIds = response.result.seedIds
 
-    // Generate multiverse
-    if (seedConfig.flags.includes('--multiplayer')) {
-      this.multiverseId = await this.generateGame(this.seedGroupId, onlineGame, bingoSize)
-      this.hasMultiverse = typeof this.multiverseId === 'number'
-    }
+    console.log(response)
+    const result = new SeedGeneratorResult(
+      response.result.seedGroupId,
+      seedgenConfig.multiNames,
+      response.result.seedIds
+    )
+
+    // // Generate multiverse
+    // if (seedgenConfig.flags.includes('--multiplayer')) {
+    //   this.multiverseId = await this.generateGame(this.seedGroupId, gameType, bingoSize)
+    //   this.hasMultiverse = typeof this.multiverseId === 'number'
+    // }
 
     if (response.warnings && response.warnings.includes('WARN')) {
       EventBus.$emit('notification', {
@@ -116,10 +93,7 @@ export class SeedGenerator{
         color: 'warning',
       })
     }
-  }
 
-  saveSeed(index){
-    const seed = this.newSeed(this.seedIds[index])
-    saveAs(seed.url, seed.fileName)
+    return result
   }
 }

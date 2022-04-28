@@ -82,7 +82,7 @@
           <p>
             Select which glitches should be required to complete the seed and where you would like to spawn.
           </p>
-          <wotw-seedgen-glitch-select v-model='seedgenConfig.glitches' class='mb-6' :glitches='availableGlitches' />
+          <wotw-seedgen-glitch-select v-model='seedgenConfig.glitches' class='mb-6' :glitches='availableGlitches'/>
 
           <v-select v-model='seedgenConfig.spawn' :items='availableSpawns' label='Spawn'>
             <template #item='{item}'>
@@ -95,7 +95,7 @@
           <p>
             Select goals you want to be required to complete the seed.
           </p>
-          <wotw-seedgen-goal-select v-model='seedgenConfig.goals' :goals='availableGoals' />
+          <wotw-seedgen-goal-select v-model='seedgenConfig.goals' :goals='availableGoals'/>
         </v-tab-item>
         <v-tab-item class='pa-4'>
           <p>
@@ -108,7 +108,7 @@
           />
 
           <h3 class='mt-5 mb-2'>Custom headers</h3>
-          <wotw-seedgen-custom-header-select v-model='seedgenConfig.customHeaders' />
+          <wotw-seedgen-custom-header-select v-model='seedgenConfig.customHeaders'/>
         </v-tab-item>
         <v-tab-item class='pa-4'>
           <v-row>
@@ -146,7 +146,7 @@
                 <div v-if='seedgenConfig.flags.includes("--multiplayer")'>
                   <div class='mt-4'>
                     <v-select
-                      v-model='createOnlineGame'
+                      v-model='createOnlineGameType'
                       :items="[
                           {text: 'No', value: 'none'},
                           {text: 'Normal', value: 'normal'},
@@ -161,7 +161,7 @@
                     />
 
                     <v-expand-transition>
-                      <div v-if="['bingo', 'discovery_bingo', 'lockout_bingo'].includes(createOnlineGame)">
+                      <div v-if="['bingo', 'discovery_bingo', 'lockout_bingo'].includes(createOnlineGameType)">
                         <div class='pb-5'>
                           <v-slider
                             v-model="bingoSize"
@@ -177,6 +177,7 @@
                   </div>
 
                   <v-combobox
+                    v-if='createOnlineGameType !== "none"'
                     v-model='seedgenConfig.multiNames'
                     :items='[]'
                     hint='If you specify world names here, this seed will be a multiworld seed. Press Enter to add players.'
@@ -214,51 +215,37 @@
         <template #activator='{on}'>
           <div v-on='on'>
             <v-btn
-              v-if='isElectron || seedgenConfig.flags.includes("--multiplayer")'
-              ref='generateButton'
-              :disabled='anyPresetSelected'
-              :loading='loading'
+              v-if="isElectron"
+              ref='launchButton'
+              :disabled='anyPresetSelected || !canLaunchSeed || loading'
+              :loading='loading && launchAfterGenerating'
               color='accent'
               class='mb-3'
               x-large
-              @click='createSeeds("generate")'
+              @click='launchAfterGenerating = true; generate()'
             >
-              {{ isElectron && !(seedgenConfig.flags.includes('--multiplayer') && (createOnlineGame !== 'none' || seedgenConfig.multiNames.length > 1)) ? 'Generate and Launch' : 'Generate' }}
+              <v-icon left>mdi-play</v-icon>
+              Launch
             </v-btn>
             <v-btn
-              v-if='isElectron || !(seedgenConfig.flags.includes("--multiplayer"))'
-              ref='downloadButton'
-              :disabled='anyPresetSelected'
-              :loading='loading'
+              ref='createOrDownloadButton'
+              :disabled='anyPresetSelected || loading'
+              :loading='loading && !launchAfterGenerating'
               color='accent'
-              class='mb-3'
+              class='mb-3 ml-1'
               x-large
-              @click='createSeeds("download")'
+              @click='launchAfterGenerating = false; generate()'
             >
-              <template v-if='isElectron'><v-icon>mdi-download</v-icon></template>
-              <template v-else>Generate</template>
+              <v-icon left>{{ createOnlineGame || seedgenConfig.multiNames.length > 1 ? 'mdi-hammer' : 'mdi-download' }}</v-icon>
+              {{ createOnlineGame || seedgenConfig.multiNames.length > 1 ? 'Create' : 'Download' }}
             </v-btn>
           </div>
         </template>
         <span>Apply or unselect selected presets first</span>
       </v-tooltip>
 
-<!--      <v-btn text small @click='saveAsCustomPreset'>Save as custom preset</v-btn>-->
+      <!--      <v-btn text small @click='saveAsCustomPreset'>Save as custom preset</v-btn>-->
     </div>
-
-    <v-dialog v-model='showResultDialog' persistent max-width='400'>
-      <v-card class='relative pa-5'>
-        <v-btn
-          class='close-button'
-          color='background lighten-5'
-          icon
-          @click='$router.push({query: {result: undefined}})'
-        >
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-        <wotw-seedgen-result-view v-if='!!seedgenResult' ref='resultView' :result='seedgenResult' />
-      </v-card>
-    </v-dialog>
 
     <v-dialog v-model='showBingoHeaderWarningDialog' max-width='700'>
       <v-card>
@@ -276,8 +263,8 @@
           We recommend that you enable the Bingo header so you can warp to credits after you completed the goal.
         </v-card-text>
         <v-card-actions>
-          <v-spacer />
-          <v-btn text @click='createSeeds(functionAfterBingoWarning, true)'>Continue without</v-btn>
+          <v-spacer/>
+          <v-btn text @click='generate(true)'>Continue without</v-btn>
           <v-btn depressed color='accent' @click='addBingoHeaderAndGenerateSeed()'>Add header and generate</v-btn>
         </v-card-actions>
       </v-card>
@@ -286,15 +273,16 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex'
+  import {mapGetters} from 'vuex'
   import glitches from '~/assets/seedgen/glitches.yaml'
   import goals from '~/assets/seedgen/goals.yaml'
   import spawns from '~/assets/seedgen/spawns.yaml'
   import difficulties from '~/assets/seedgen/difficulties.yaml'
-  import { confettiFromElement } from '~/assets/lib/confettiFromElement'
-  import { isElectron } from '~/assets/lib/isElectron'
-  import { EventBus } from '~/assets/lib/EventBus'
-  import { SeedGenerator } from '@/assets/lib/SeedGenerator'
+  import {confettiFromElement} from '~/assets/lib/confettiFromElement'
+  import {isElectron} from '~/assets/lib/isElectron'
+  import {EventBus} from '~/assets/lib/EventBus'
+  import {SeedGeneratorAPI} from '@/assets/lib/SeedGenerator'
+  import {GAME_TYPE_NONE, MultiverseAPIClient} from '~/assets/lib/api/MultiverseAPIClient'
 
   const BINGO_HEADER_NAME = 'bingo'
   const LAST_SEEDGEN_CONFIG_LOCALSTORAGE_KEY = 'last_seedgen_config'
@@ -321,14 +309,12 @@
       availableDifficulties: difficulties,
       availableHeaders: null, // Fetched from server
       availablePresets: null, // Fetched from server
-      createOnlineGame: 'none',
+      createOnlineGameType: 'none',
       bingoSize: 5,
       loading: false,
-      showResultDialog: false,
-      seedgenResult: null,
       anyPresetSelected: false,
       showBingoHeaderWarningDialog: false,
-      functionAfterBingoWarning: null,
+      launchAfterGenerating: true,
       lastConfigLoaded: false,
       configReset: false,
       hasLastSeedgenConfig: false,
@@ -360,27 +346,48 @@
           ...d[1],
         }))
       },
+      canLaunchSeed() {
+        if (!isElectron()) {
+          return false
+        }
+
+        if (this.createOnlineGameType !== GAME_TYPE_NONE) {
+          return false
+        }
+
+        if (this.seedgenConfig.multiNames.length > 1) {
+          return false
+        }
+
+        return true
+      },
+      createOnlineGame() {
+        return this.createOnlineGameType !== GAME_TYPE_NONE
+      }
     },
     watch: {
       'seedgenConfig.flags'(flags, oldFlags) {
-        if (flags.includes('--multiplayer') && !oldFlags.includes('--multiplayer') && this.createOnlineGame === 'none') {
-          this.createOnlineGame = 'normal'
+        if (flags.includes('--multiplayer') && !oldFlags.includes('--multiplayer') && this.createOnlineGameType === 'none' && this.isLoggedIn) {
+          this.createOnlineGameType = 'normal'
+        } else if (!flags.includes('--multiplayer') && oldFlags.includes('--multiplayer')) {
+          this.createOnlineGameType = 'none'
         }
       },
-      '$route.query.seedGroupId'() {
-        this.updateSeedgenResultDialogState()
-      },
       isLoggedIn(isLoggedIn) {
-        if (isLoggedIn && this.createOnlineGame === 'none') {
-          this.createOnlineGame = 'normal'
+        if (isLoggedIn && this.createOnlineGameType === 'none') {
+          this.createOnlineGameType = 'normal'
         } else if (!isLoggedIn) {
-          this.createOnlineGame = 'none'
+          this.createOnlineGameType = 'none'
+        }
+      },
+      createOnlineGameType(type) {
+        if (type === GAME_TYPE_NONE) {
+          this.seedgenConfig.multiNames = []
         }
       },
     },
     async mounted() {
       await this.fetchServerConfig()
-      this.updateSeedgenResultDialogState()
 
       this.$emit('loaded')
 
@@ -396,7 +403,7 @@
           this.seedgenConfig.headers.push(BINGO_HEADER_NAME)
         }
 
-        await this.createSeeds(this.functionAfterBingoWarning)
+        await this.generate()
       },
       loadLastSeedgenConfig() {
         this.seedgenConfig = JSON.parse(window.localStorage.getItem(LAST_SEEDGEN_CONFIG_LOCALSTORAGE_KEY))
@@ -405,7 +412,7 @@
           this.lastConfigLoaded = false
         }, 4000)
       },
-      resetConfig(){
+      resetConfig() {
         this.seedgenConfig = generateNewSeedgenConfig()
         this.configReset = true
         setTimeout(() => {
@@ -413,7 +420,7 @@
         }, 1000)
       },
 
-      async createSeeds(functionType, ignoreMissingBingoHeader = false){
+      async generate(ignoreMissingBingoHeader = false) {
         if (this.loading) {
           return
         }
@@ -424,28 +431,53 @@
 
         // check if bingo game selected and bingo headers missing
         if (
-          ['bingo', 'discovery_bingo'].includes(this.createOnlineGame) &&
+          ['bingo', 'discovery_bingo'].includes(this.createOnlineGameType) &&
           !this.seedgenConfig.headers.includes(BINGO_HEADER_NAME) &&
           !ignoreMissingBingoHeader
         ) {
-          this.functionAfterBingoWarning = functionType
           this.showBingoHeaderWarningDialog = true
           return
         }
-        
+
         this.showBingoHeaderWarningDialog = false
-        this.functionAfterBingoWarning = null
 
         this.loading = true
 
         try {
-          switch (functionType){
-            case 'download':
-              await this.downloadSeeds()
-              break
-            case 'generate':
-              await this.generateSeeds()
-              break
+          const seedGenerator = new SeedGeneratorAPI()
+          const result = await seedGenerator.generateSeeds(this.seedgenConfig)
+
+          if (!this.createOnlineGame) {
+            if (result.hasMultipleSeeds) {
+              throw new Error('You somehow managed to generate a multi without an online game. This is not supported. Please report this bug.')
+            } else {
+              if (isElectron()) {
+                if (this.launchAfterGenerating) {
+                  await result.saveSeed(0, true)
+                } else {
+                  await result.saveAllSeeds(true)
+                }
+              } else {
+                result.downloadSeed(0)
+              }
+
+              confettiFromElement(
+                (this.launchAfterGenerating ? this.$refs.launchButton : this.$refs.createOrDownloadButton).$el, {
+                disableForReducedMotion: true,
+                zIndex: 100000,
+              })
+
+              if (isElectron() && this.launchAfterGenerating) {
+                await this.$store.dispatch('electron/launch')
+              }
+            }
+          } else { // We have an online game...
+            const multiverseId = await MultiverseAPIClient.createMultiverse(result.seedGroupId, this.createOnlineGameType, this.bingoSize)
+
+            await this.$router.push({
+              name: 'game-multiverseId',
+              params: {multiverseId},
+            })
           }
         } catch (e) {
           console.error(e)
@@ -456,64 +488,7 @@
         }
         this.loading = false
       },
-      async downloadSeeds() {
-        const seedGen = new SeedGenerator(this.$axios)
-        await seedGen.generateSeeds(this.seedgenConfig, '')
-
-        let result = false
-        if (isElectron()){
-          result = await seedGen.downloadAllSeeds(true)
-        } else if(seedGen.seedIds.length === 1){
-            seedGen.saveSeed(0)
-            result = true
-        } else {
-            EventBus.$emit('notification', {
-              message: 'Downloading several seeds not implemented',
-              color: 'error',
-            })
-            result = false
-        }
-        if (result){
-          confettiFromElement(this.$refs.downloadButton.$el, {
-              disableForReducedMotion: true,
-              zIndex: 100000,
-            })
-        }
-      },
-      async generateSeeds() {  
-        const seedGen = new SeedGenerator(this.$axios)
-        await seedGen.generateSeeds(this.seedgenConfig, this.createOnlineGame)
-
-        // Download the seed instantly for single player, non-networked games
-        // and show the download dialog otherwise
-        if (!seedGen.hasMultiverse && seedGen.seedIds.length === 1) {
-          let result = false
-          if(isElectron()){
-            result = await seedGen.downloadSeed(0)
-          } else {
-            result = seedGen.saveSeed(0)
-          }
-          if(result){
-            confettiFromElement(this.$refs.generateButton.$el, {
-              disableForReducedMotion: true,
-              zIndex: 100000,
-              })
-            try {
-              await this.$store.dispatch('electron/launch')
-            } catch (e) {
-              console.error(e)
-            }
-          }
-        } else if (!seedGen.hasMultiverse) {
-          await this.$router.replace({ query: { seedGroupId: seedGen.seedGroupId } })
-        } else {
-          await this.$router.push({
-              name: 'game-multiverseId',
-              params: { multiverseId: seedGen.multiverseId },
-            })
-        }
-      },
-      applyPresets({ presets, override }) {
+      applyPresets({presets, override}) {
         if (override) {
           this.seedgenConfig = generateNewSeedgenConfig()
         }
@@ -582,15 +557,6 @@
         this.seedgenConfig.goals = Array.from(goals)
         this.seedgenConfig.flags = Array.from(flags)
         this.seedgenConfig.spawn = spawn
-      },
-      async updateSeedgenResultDialogState() {
-        if (this.$route.query.seedGroupId) {
-          this.seedgenResult = await this.$axios.$get(`/seed-groups/${this.$route.query.seedGroupId}`)
-          this.showResultDialog = true
-        } else {
-          this.seedgenResult = null
-          this.showResultDialog = false
-        }
       },
     },
   }

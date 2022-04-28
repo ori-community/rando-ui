@@ -8,9 +8,13 @@
 
 <script>
   import { isElectron } from '~/assets/lib/isElectron'
-  export default {
-    async mounted() {
+  import {APIClient} from '~/assets/lib/api/APIClient'
 
+  export default {
+    beforeMount() {
+      APIClient.setAxios(this.$axios)
+    },
+    async mounted() {
       if (isElectron()) {
         window.electronApi.on('main.settingsChanged', (event, settings) => {
           this.$store.commit('electron/setSettings', settings)

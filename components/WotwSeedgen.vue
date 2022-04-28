@@ -281,7 +281,7 @@
   import {confettiFromElement} from '~/assets/lib/confettiFromElement'
   import {isElectron} from '~/assets/lib/isElectron'
   import {EventBus} from '~/assets/lib/EventBus'
-  import {SeedGeneratorAPI} from '@/assets/lib/SeedGenerator'
+  import {SeedGeneratorAPI} from '~/assets/lib/api/SeedGeneratorAPI'
   import {GAME_TYPE_NONE, MultiverseAPIClient} from '~/assets/lib/api/MultiverseAPIClient'
 
   const BINGO_HEADER_NAME = 'bingo'

@@ -14,7 +14,7 @@
         <template v-else>
           <v-scroll-x-transition>
             <v-card v-if='!!motd' class='mb-6 motd' color='background lighten-2'>
-              <v-card-text class='motd-text' v-html='motd' />
+              <v-card-text class='motd-text' v-html='motd'/>
               <img class='motd-ori' src='~/assets/images/ori_lurk.png'>
             </v-card>
           </v-scroll-x-transition>
@@ -27,9 +27,13 @@
                   <v-chip v-if='isNewVersion(release.name)' class='ml-2' small color='accent'>New</v-chip>
                 </v-card-title>
                 <v-card-text class='release-changelog'>
-                  <div v-html='release.bodyHtml' />
+                  <div v-html='release.bodyHtml'/>
                   <div class='d-flex justify-end'>
                     <em class='text-caption grey--text'>
+                      <div v-if="!!getSetupAssetFromRelease(release)" class="mr-2 d-inline">
+                        {{ getSetupAssetFromRelease(release).download_count }}
+                        <v-icon small color="grey">mdi-download-outline</v-icon>
+                      </div>
                       {{ formatDateRelative(release.published_at) }}
                     </em>
                   </div>
@@ -51,7 +55,7 @@
               Version {{ latestVisibleVersion }} is available!
 
               <div v-if='updateDownloading'>
-                <v-progress-linear class='mt-3' :value='updateDownloadProgress' />
+                <v-progress-linear class='mt-3' :value='updateDownloadProgress'/>
               </div>
               <v-btn v-else class='mt-3' depressed block @click='downloadAndInstallUpdate'>Install update</v-btn>
             </template>
@@ -77,7 +81,7 @@
           </v-card>
 
           <div class='text-center mt-5'>
-            <wotw-new-game-menu block />
+            <wotw-new-game-menu block/>
           </div>
 
           <v-btn text block class='mt-3' @click='openWiki'>
@@ -169,10 +173,10 @@
 </template>
 
 <script>
-  import { mapGetters, mapMutations, mapState } from 'vuex'
+  import {mapGetters, mapMutations, mapState} from 'vuex'
   import sanitizeHtml from 'sanitize-html'
-  import { parse } from 'date-fns'
-  import { formatsDates } from '~/assets/lib/formatsDates'
+  import {parse} from 'date-fns'
+  import {formatsDates} from '~/assets/lib/formatsDates'
 
   export default {
     name: 'Index',
@@ -185,7 +189,7 @@
     head: () => ({
       title: 'Home',
       meta: [
-        { hid: 'robots', name: 'robots', content: 'noindex' },
+        {hid: 'robots', name: 'robots', content: 'noindex'},
       ],
     }),
     computed: {
@@ -250,8 +254,18 @@
       ...mapMutations('electron', [
         'setCurrentSeedPath',
       ]),
-      async downloadAndInstallUpdate() {
-        await this.$store.dispatch('electron/downloadAndInstallUpdate')
+      getSetupAssetFromRelease(release) {
+        return release.assets.find(a => a.name === 'WotwRandoSetup.exe')
+      },
+      async downloadAndInstallUpdate(release = null) {
+        if (release) {
+          const url = this.getSetupAssetFromRelease(release)?.browser_download_url
+          if (url) {
+            await this.$store.dispatch('electron/downloadAndInstallUpdate', {url})
+          }
+        } else {
+          await this.$store.dispatch('electron/downloadAndInstallUpdate')
+        }
       },
       async launch(seedFile = null, forceLaunch = false) {
         await this.$store.dispatch('electron/launch', {

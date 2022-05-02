@@ -113,7 +113,7 @@ export const actions = {
       checkForUpdatesOncePromise.finally(resolve)
     })
   },
-  async downloadAndInstallUpdate({ commit, getters, rootGetters}) {
+  async downloadAndInstallUpdate({ commit, getters, rootGetters}, { url = null }) {
     if (rootGetters['version/latestVisibleRelease']) {
       commit('setShowUpdateAvailableDialog', false)
       commit('setUpdateDownloadProgress', 0)
@@ -123,7 +123,7 @@ export const actions = {
         commit('setUpdateDownloadProgress', progress * 100)
       })
       await window.electronApi.invoke('updater.downloadAndInstallUpdate', {
-        url: rootGetters['version/latestAvailableReleaseExe'].browser_download_url,
+        url: url ?? rootGetters['version/latestAvailableReleaseExe'].browser_download_url,
       })
     }
   },

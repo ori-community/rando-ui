@@ -24,17 +24,17 @@ export class MultiverseAPIClient extends APIClient {
         })
       case GAME_TYPE_BINGO:
         return await APIClient.axios.$post('/multiverses', {
-          bingo: {size: bingoSize},
+          bingoConfig: {size: bingoSize},
           seedGroupId,
         })
       case GAME_TYPE_DISCOVERY_BINGO:
         return await APIClient.axios.$post('/multiverses', {
-          bingo: {discovery: 2, size: bingoSize},
+          bingoConfig: {discovery: 2, size: bingoSize},
           seedGroupId,
         })
       case GAME_TYPE_LOCKOUT_BINGO:
         return await APIClient.axios.$post('/multiverses', {
-          bingo: {lockout: true, size: bingoSize},
+          bingoConfig: {lockout: true, size: bingoSize},
           seedGroupId,
         })
     }

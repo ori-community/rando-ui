@@ -34,6 +34,8 @@
     "monaco-editor": "^0.27.0",
     "monaco-editor-webpack-plugin": "^4.1.2",
     "nuxt": "^2.15.8",
+    "pixi-viewport": "^4.34.4",
+    "pixi.js": "^6.3.2",
     "protobufjs": "^6.11.2",
     "sanitize-html": "^2.5.1",
     "semver": "^7.3.5",

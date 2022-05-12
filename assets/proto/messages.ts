@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { messageTypeRegistry } from './typeRegistry'
 import Long from 'long'
-import _m0 from 'protobufjs/minimal'
+import * as _m0 from 'protobufjs/minimal'
 
 export const protobufPackage = 'RandoProto'
 
@@ -1845,9 +1845,9 @@ function bytesFromBase64(b64: string): Uint8Array {
 const btoa: (bin: string) => string = globalThis.btoa || ((bin) => globalThis.Buffer.from(bin, 'binary').toString('base64'))
 function base64FromBytes(arr: Uint8Array): string {
   const bin: string[] = []
-  for (const byte of arr) {
+  arr.forEach((byte) => {
     bin.push(String.fromCharCode(byte))
-  }
+  })
   return btoa(bin.join(''))
 }
 

@@ -1,7 +1,12 @@
 <template>
   <div ref="container" class="relative">
     <v-snackbar :value="loading" transition="scroll-y-transition" bottom left>
-      Loading map: {{ Math.round(loadingProgressValue / loadingProgressMax * 100.0) }}%...
+      <template v-if="!!customLoadingText">
+        {{ customLoadingText }}
+      </template>
+      <template v-else>
+        Loading map: {{ Math.round(loadingProgressValue / loadingProgressMax * 100.0) }}%...
+      </template>
     </v-snackbar>
     <canvas ref="canvas" class="fill-canvas"/>
   </div>
@@ -23,21 +28,27 @@
       loading: true,
       loadingProgressValue: 0,
       loadingProgressMax: 1,
+      customLoadingText: null,
+      isDestroyed: false,
     }),
     async mounted() {
-      const app = new PIXI.Application({
+      this.app = new PIXI.Application({
         view: this.$refs.canvas,
         backgroundColor: 0x000000,
         resizeTo: this.$refs.container,
-        antialias: false,
+        antialias: true,
       })
+      const app = this.app
 
-      const viewport = new Viewport({
+      this.viewport = new Viewport({
         interaction: app.renderer.plugins.interaction // the interaction module is important for wheel to work properly when renderer.view is placed or scaled
       })
+      const viewport = this.viewport
 
       new ResizeObserver(() => {
-        viewport.resize()
+        if (!this.isDestroyed) {
+          viewport.resize()
+        }
       }).observe(this.$refs.canvas)
 
       app.stage.addChild(viewport)
@@ -102,14 +113,35 @@
       }
 
       await Promise.allSettled(promises)
-      app.loader.load(() => {
-        console.log('Map loaded. Calling renderFn...')
+      app.loader.load(async () => {
+        console.log('Map loaded.')
+        await this.renderOverlay()
+      })
+    },
+    beforeDestroy() {
+      this.isDestroyed = true
+      this.app?.destroy(true, {
+        children: true,
+        texture: true,
+        baseTexture: true,
+      })
+    },
+    methods: {
+      async renderOverlay() {
+        this.loading = true
+
+        if (!this.renderContainer) {
+          this.renderContainer = new PIXI.Container()
+          this.viewport.addChild(this.renderContainer)
+        }
+
         if (this.renderFn) {
-          this.renderFn(app, viewport)
+          this.customLoadingText = 'Loading overlays...'
+          await this.renderFn(this.app, this.renderContainer)
         }
 
         this.loading = false
-      })
+      }
     }
   }
 </script>

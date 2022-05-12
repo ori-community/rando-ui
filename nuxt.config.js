@@ -14,7 +14,6 @@ Object.assign(env, {
   WS_BASE_URL: (process.env.API_SECURE === 'true' ? 'wss://' : 'ws://') + env.API_HOST + '/api',
 })
 
-
 export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
@@ -40,22 +39,14 @@ export default {
       { hid: 'og:image', property: 'og:image', content: 'https://wotw.orirando.com/icon.png' },
       { hid: 'apple-mobile-web-app-title', property: 'apple-mobile-web-app-title', content: 'Ori Randomizer' },
     ],
-    link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-    ],
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
-  css: [
-    '@mdi/font/css/materialdesignicons.css',
-    '@fontsource/nunito-sans/index.css',
-  ],
+  css: ['@mdi/font/css/materialdesignicons.css', '@fontsource/nunito-sans/index.css'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [
-    '~/plugins/restoreAuthState.js',
-    '~/plugins/api.client.js',
-  ],
+  plugins: ['~/plugins/restoreAuthState.js', '~/plugins/api.client.js'],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -125,10 +116,19 @@ export default {
         test: /\.ya?ml$/,
         use: 'js-yaml-loader',
       })
+      config.module.rules.push({
+        test: /\.worker\.js$/,
+        use: {
+          loader: 'worker-loader',
+          options: {
+            chunkFilename: '[id].[contenthash].worker.js',
+          },
+        },
+      })
     },
   },
 
   router: {
-    mode: process.env.IS_ELECTRON === 'true' ? 'hash' : 'history'
+    mode: process.env.IS_ELECTRON === 'true' ? 'hash' : 'history',
   },
 }

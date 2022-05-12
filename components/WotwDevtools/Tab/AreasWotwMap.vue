@@ -16,6 +16,10 @@
           <div>{{ selection.name }}</div>
           <div>Position: {{ selection.position.x }}, {{ selection.position.y }}</div>
         </template>
+        <template v-else-if="selectionType === 'error'">
+          <h3>Error</h3>
+          <pre>{{ selection.message }}</pre>
+        </template>
       </v-card>
     </v-slide-y-transition>
     <wotw-map ref="map" :render-fn="renderFn" class="flex-grow-1" />
@@ -206,8 +210,14 @@
             redrawCircle()
             container.addChild(circle)
           }
+
+          if (this.selectionType === 'error') {
+            this.selection = null
+          }
         } catch (e) {
           console.error(e)
+          this.selection = e
+          this.selectionType = 'error'
         }
 
         this.renderingOverlay = false

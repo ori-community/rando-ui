@@ -18,7 +18,7 @@
         </template>
         <template v-else-if="selectionType === 'error'">
           <h3>Error</h3>
-          <pre>{{ selection.message }}</pre>
+          <pre class="overflow-auto">{{ selection.message }}</pre>
         </template>
       </v-card>
     </v-slide-y-transition>
@@ -239,5 +239,6 @@
     top: 1em;
     right: 1em;
     z-index: 10;
+    max-width: calc(100% - 2em);
   }
 </style>

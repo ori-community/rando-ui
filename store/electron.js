@@ -113,7 +113,7 @@ export const actions = {
       checkForUpdatesOncePromise.finally(resolve)
     })
   },
-  async downloadAndInstallUpdate({ commit, getters, rootGetters}, { url = null }) {
+  async downloadAndInstallUpdate({ commit, getters, rootGetters}, { url = null } = {}) {
     if (rootGetters['version/latestVisibleRelease']) {
       commit('setShowUpdateAvailableDialog', false)
       commit('setUpdateDownloadProgress', 0)

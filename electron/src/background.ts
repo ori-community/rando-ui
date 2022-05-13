@@ -75,9 +75,6 @@ async function createWindow() {
     if (!process.env.IS_TEST) window.webContents.openDevTools()
   } else {
     createProtocol('app')
-    protocol.registerSchemesAsPrivileged([
-      { scheme: 'app', privileges: { standard: true, supportFetchAPI: true, secure: true } }
-    ])
 
     // Load the index.html when not in development
     await window.loadURL(getElectronUrl('/electron'))
@@ -129,7 +126,7 @@ if (!app.requestSingleInstanceLock()) {
 } else {
   // Scheme must be registered before the app is ready
   protocol.registerSchemesAsPrivileged([
-    { scheme: 'app', privileges: { secure: true, standard: true } },
+    { scheme: 'app', privileges: { secure: true, standard: true, supportFetchAPI: true } },
   ])
 
   app.setAsDefaultProtocolClient('ori-rando')

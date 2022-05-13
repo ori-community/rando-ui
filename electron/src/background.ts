@@ -6,7 +6,7 @@ import { getElectronUrl, registerUIIpcApi, uiIpc } from './api'
 import fs from 'fs'
 import { SettingsService } from '~/electron/src/lib/SettingsService'
 import { CrashDetectService } from '~/electron/src/lib/CrashDetectService'
-import { SEEDS_PATH, UPDATE_PATH } from '~/electron/src/lib/Constants'
+import {RANDOMIZER_BASE_PATH, SEEDS_PATH, UPDATE_PATH} from '~/electron/src/lib/Constants'
 import { RandoIPCService } from '~/electron/src/lib/RandoIPCService'
 import { Stats } from '@/lib/StatsCollector'
 import { LocalTrackerWebSocketService } from '@/lib/LocalTrackerWebSocketService'
@@ -111,9 +111,9 @@ async function createWindow() {
 }
 
 if (isDevelopment) {
-  fs.mkdirSync('./work-dir/randomizer', {recursive: true})
-  fs.mkdirSync('./work-dir/seeds', {recursive: true})
-  fs.mkdirSync('./work-dir/update', {recursive: true})
+  fs.mkdirSync(RANDOMIZER_BASE_PATH, {recursive: true})
+  fs.mkdirSync(SEEDS_PATH, {recursive: true})
+  fs.mkdirSync(UPDATE_PATH, {recursive: true})
   process.chdir('./work-dir')
 } else {
   process.chdir(path.dirname(process.argv0))

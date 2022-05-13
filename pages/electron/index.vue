@@ -57,7 +57,7 @@
               <div v-if='updateDownloading'>
                 <v-progress-linear class='mt-3' :value='updateDownloadProgress'/>
               </div>
-              <v-btn v-else class='mt-3' depressed block @click='downloadAndInstallUpdate'>Install update</v-btn>
+              <v-btn v-else class='mt-3' depressed block @click='downloadAndInstallUpdate()'>Install update</v-btn>
             </template>
             <template v-else>
               You are running the latest version.

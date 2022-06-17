@@ -22,8 +22,8 @@ export const getters = {
   latestAvailableReleaseExe(state, getters){
     return getters.latestVisibleRelease?.assets.find((a) => a.name === 'WotwRandoSetup.exe')
   },
-  latestAvailableVersion(state) {
-    return state.latestAvailableRelease?.name
+  latestAvailableVersion(state, getters) {
+    return getters.latestAvailableRelease?.name
   },
   visibleReleases(state, getters) {
     return state.availableReleases?.filter(r => getters.shouldShowVersion(r.name))

@@ -7,6 +7,7 @@ export const state = () => ({
   currentVersion: '',
   availableReleases: null,
   updateDownloading: false,
+  updateReleaseName: null,
   updateDownloadProgress: 0,
   launching: false,
   offlineMode: false,
@@ -70,6 +71,9 @@ export const mutations = {
   setUpdateDownloading(state, value) {
     state.updateDownloading = value
   },
+  setUpdateReleaseName(state, value) {
+    state.updateReleaseName = value
+  },
   setLaunching(state, value) {
     state.launching = value
   },
@@ -113,7 +117,7 @@ export const actions = {
       checkForUpdatesOncePromise.finally(resolve)
     })
   },
-  async downloadAndInstallUpdate({ commit, getters, rootGetters}, { url = null } = {}) {
+  async downloadAndInstallUpdate({ commit, getters, rootGetters }, { url = null, releaseName = null } = {}) {
     if (rootGetters['version/latestVisibleRelease']) {
       commit('setShowUpdateAvailableDialog', false)
       commit('setUpdateDownloadProgress', 0)
@@ -122,8 +126,19 @@ export const actions = {
       window.electronApi.on('updater.downloadProgress', (event, progress) => {
         commit('setUpdateDownloadProgress', progress * 100)
       })
+
+      let resolvedUrl = url
+
+      if (!resolvedUrl) {
+        const release = rootGetters['version/latestAvailableReleaseExe']
+        resolvedUrl = release.browser_download_url
+        commit('setUpdateReleaseName', rootGetters['version/latestAvailableVersion'])
+      } else {
+        commit('setUpdateReleaseName', releaseName)
+      }
+
       await window.electronApi.invoke('updater.downloadAndInstallUpdate', {
-        url: url ?? rootGetters['version/latestAvailableReleaseExe'].browser_download_url,
+        url: resolvedUrl,
       })
     }
   },

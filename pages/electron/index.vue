@@ -21,7 +21,7 @@
 
           <v-scroll-x-transition>
             <div v-if='!!motd && !!visibleReleases'>
-              <v-card v-for='release in visibleReleases' :key='release.id' class='mb-2'>
+              <v-card v-for='release in visibleReleases' :key='release.id' class='release mb-2'>
                 <v-card-title class='d-block'>
                   Version {{ release.name }}
                   <v-chip v-if='isNewVersion(release.name)' class='ml-2' small color='accent'>New</v-chip>
@@ -29,13 +29,28 @@
                 <v-card-text class='release-changelog'>
                   <div v-html='release.bodyHtml'/>
                   <div class='d-flex justify-end'>
-                    <em class='text-caption grey--text'>
-                      <div v-if="!!getSetupAssetFromRelease(release)" class="mr-2 d-inline">
-                        {{ getSetupAssetFromRelease(release).download_count }}
-                        <v-icon small color="grey">mdi-download-outline</v-icon>
-                      </div>
-                      {{ formatDateRelative(release.published_at) }}
-                    </em>
+                    <div class='d-flex align-end'>
+                      <template v-if="!!getSetupAssetFromRelease(release)">
+                        <v-btn
+                          :disabled="updateDownloading"
+                          text
+                          x-small
+                          class="install-button mr-3"
+                          @click="downloadAndInstallUpdate(release)"
+                        >
+                          <template v-if="isNewVersion(release.name)">Install</template>
+                          <template v-else-if="release.name === currentVersion">Re-install</template>
+                          <template v-else>Downgrade</template>
+                        </v-btn>
+                        <div class="text-caption grey--text mr-3 d-inline">
+                          {{ getSetupAssetFromRelease(release).download_count }}
+                          <v-icon small color="grey">mdi-download-outline</v-icon>
+                        </div>
+                      </template>
+                      <span class="text-caption grey--text">
+                        {{ formatDateRelative(release.published_at) }}
+                      </span>
+                    </div>
                   </div>
                 </v-card-text>
               </v-card>
@@ -52,12 +67,21 @@
               to get automatic updates.
             </template>
             <template v-else-if='updateAvailable'>
-              Version {{ latestVisibleVersion }} is available!
+              <template v-if="updateDownloading">
+                Downloading {{ !!updateReleaseName ? `version ${updateReleaseName}` : `update` }}...
+
+                <v-progress-linear class='mt-3' :value='updateDownloadProgress'/>
+              </template>
+              <template v-else>
+                Version {{ latestVisibleVersion }} is available!
+
+                <v-btn class='mt-3' depressed block @click='downloadAndInstallUpdate()'>Install update</v-btn>
+              </template>
 
               <div v-if='updateDownloading'>
-                <v-progress-linear class='mt-3' :value='updateDownloadProgress'/>
+
               </div>
-              <v-btn v-else class='mt-3' depressed block @click='downloadAndInstallUpdate()'>Install update</v-btn>
+
             </template>
             <template v-else>
               You are running the latest version.
@@ -201,6 +225,7 @@
         'settingsLoaded',
         'currentVersion',
         'updateDownloading',
+        'updateReleaseName',
         'updateDownloadProgress',
         'launching',
         'offlineMode',
@@ -261,7 +286,7 @@
         if (release) {
           const url = this.getSetupAssetFromRelease(release)?.browser_download_url
           if (url) {
-            await this.$store.dispatch('electron/downloadAndInstallUpdate', {url})
+            await this.$store.dispatch('electron/downloadAndInstallUpdate', {url, releaseName: release.name})
           }
         } else {
           await this.$store.dispatch('electron/downloadAndInstallUpdate')
@@ -380,6 +405,21 @@
 
     ul:not(:last-of-type) {
       margin-bottom: 0.75em;
+    }
+  }
+
+  .release {
+    .install-button {
+      opacity: 0;
+      transform: translateX(8px);
+      transition: opacity 200ms, transform 200ms;
+    }
+
+    &:hover {
+      .install-button {
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
   }
 </style>

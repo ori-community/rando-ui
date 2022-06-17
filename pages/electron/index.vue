@@ -62,26 +62,17 @@
         <div class='sticky'>
           <v-card :color='updateAvailable ? `warning darken-1` : `background lighten-1`' class='pa-4'>
             <h3>Version: {{ currentVersion }}</h3>
-            <template v-if='currentVersion === "develop"'>
+            <template v-if="updateDownloading">
+              Downloading {{ !!updateReleaseName ? `version ${updateReleaseName}` : `update` }}...
+              <v-progress-linear class='mt-3' :value='updateDownloadProgress'/>
+            </template>
+            <template v-else-if='currentVersion === "develop"'>
               You are running a development build. Download the latest stable version
               to get automatic updates.
             </template>
             <template v-else-if='updateAvailable'>
-              <template v-if="updateDownloading">
-                Downloading {{ !!updateReleaseName ? `version ${updateReleaseName}` : `update` }}...
-
-                <v-progress-linear class='mt-3' :value='updateDownloadProgress'/>
-              </template>
-              <template v-else>
-                Version {{ latestVisibleVersion }} is available!
-
-                <v-btn class='mt-3' depressed block @click='downloadAndInstallUpdate()'>Install update</v-btn>
-              </template>
-
-              <div v-if='updateDownloading'>
-
-              </div>
-
+              Version {{ latestVisibleVersion }} is available!
+              <v-btn class='mt-3' depressed block @click='downloadAndInstallUpdate()'>Install update</v-btn>
             </template>
             <template v-else>
               You are running the latest version.

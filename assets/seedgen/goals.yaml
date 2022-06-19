@@ -1,16 +1,25 @@
 TREES:
   name: All Trees
+  parameters: false
   description: |
     Requires all Ancestral Trees to be activated before finishing the game
 WISPS:
   name: All Wisps
+  parameters: false
   description: |
     Requires all Wisps to be collected before finishing the game
 QUESTS:
   name: All Quests
+  parameters: false
   description: |
     Requires all Quests to be completed before finishing the game
 RELICS:
   name: World Tour
+  parameters: true
   description: |
     Spreads special relic pickups throughout certain zones. All relics must be collected before finishing the game
+BINGO:
+  name: Bingo
+  parameters: true
+  description: |
+    Complete a set amount of random task following the rules of bingo

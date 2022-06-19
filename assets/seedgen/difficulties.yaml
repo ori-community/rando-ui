@@ -12,4 +12,4 @@ UNSAFE:
   name: Unsafe
   level: 3
   description: |
-    Super hard game paths, don't try at home
+    Super hard and unvalidated game paths. Don't try at home

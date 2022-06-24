@@ -2,6 +2,10 @@ const fs = require('fs')
 const path = require('path')
 
 module.exports = {
+  transpileDependencies: [
+    'dot-prop'
+  ],
+
   pluginOptions: {
     electronBuilder: {
       buildDependenciesFromSource: true,

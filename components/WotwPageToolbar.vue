@@ -54,7 +54,7 @@
             <v-icon left>mdi-application-cog-outline</v-icon>
             Settings
           </v-list-item>
-          <v-list-item v-if='settingsLoaded && settings.Flags.Dev' exact x-large depressed text @click='openRandoDevtools'>
+          <v-list-item v-if='settingsLoaded && settings["Flags.Dev"]' exact x-large depressed text @click='openRandoDevtools'>
             <v-icon left>mdi-application-braces-outline</v-icon>
             Rando Devtools
           </v-list-item>

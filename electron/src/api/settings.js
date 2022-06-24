@@ -2,11 +2,11 @@ import { SettingsService } from '~/electron/src/lib/SettingsService'
 import { dialog } from 'electron'
 
 export default {
-  async readSettings() {
+  async getSettings() {
     return await SettingsService.getCurrentSettings()
   },
-  async setSettings(event, settings) {
-    await SettingsService.setSettings(settings)
+  async setSetting(event, { key, value }) {
+    await SettingsService.setSetting(key, value)
   },
   async selectSteamPath() {
     const result = await dialog.showOpenDialog({
@@ -23,7 +23,4 @@ export default {
 
     return null
   },
-  shouldShowImportInfoDialog() {
-    return SettingsService.shouldShowImportInfoDialog()
-  }
 }

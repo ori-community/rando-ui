@@ -24,10 +24,10 @@ export default {
   async resetWindowRect() {
     await SettingsService.transaction(settings => {
       const rect = LocalTrackerService.getInitialWindowRect()
-      settings.LocalTracker.X = rect.x
-      settings.LocalTracker.Y = rect.y
-      settings.LocalTracker.Width = rect.width
-      settings.LocalTracker.Height = rect.height
+      settings['LocalTracker.X'] = rect.x
+      settings['LocalTracker.Y'] = rect.y
+      settings['LocalTracker.Width'] = rect.width
+      settings['LocalTracker.Height'] = rect.height
       return settings
     })
 

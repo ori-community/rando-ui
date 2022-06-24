@@ -149,41 +149,6 @@
         </div>
       </v-col>
     </v-row>
-
-    <v-dialog v-model='shouldShowImportInfoDialog' max-width='600' persistent>
-      <v-card class='pa-6'>
-        <h1 class='text-center mb-4'>Hi there! Welcome to 1.0</h1>
-
-        <div class='text-center'>
-          This is our biggest release yet. Thank you all for having played the
-          beta versions of the randomizer. Enjoy the update!
-        </div>
-
-        <div class='py-10 text-center'>
-          <img width='64' src='~/assets/images/ori_glow.png'>
-        </div>
-
-        <h2>Important changes</h2>
-        <ul>
-          <li>We <b>imported your old settings</b> and <b>removed</b> the old randomizer. There may be some files left
-            in your old randomizer folder, which you can delete if you want.
-          </li>
-          <li>The randomizer is now installed like any other application. Start it through the <b>Start Menu</b>,
-            uninstall in in the Windows Settings app.
-          </li>
-          <li>Generate and play seeds <b>directly in the launcher</b>.</li>
-          <li>You now need to <b>log in</b> to the launcher to play online games</li>
-          <li>Online games have <b>Multiverses</b>. To play Co-Op, play in the same World. To play Multiworld, create
-            multiple worlds in the same Universe.
-          </li>
-          <li>Configure <b>Controller and Keyboard rebindings</b> interactively in the launcher settings.</li>
-        </ul>
-
-        <v-btn class='mt-8' block depressed color='accent' @click='shouldShowImportInfoDialog = false'>
-          Let's go
-        </v-btn>
-      </v-card>
-    </v-dialog>
   </v-container>
 </template>
 
@@ -197,7 +162,6 @@
     name: 'Index',
     mixins: [formatsDates],
     data: () => ({
-      shouldShowImportInfoDialog: false,
       motd: '',
       supportBundleLoading: false,
     }),
@@ -259,8 +223,6 @@
       }
     },
     async mounted() {
-      this.shouldShowImportInfoDialog = await window.electronApi.invoke('settings.shouldShowImportInfoDialog')
-
       // We might already have a seed path from launching...
       if (this.currentSeedPath === null) {
         this.$store.commit('electron/setCurrentSeedPath', await window.electronApi.invoke('launcher.getCurrentSeedPath'))

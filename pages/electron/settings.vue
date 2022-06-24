@@ -11,7 +11,7 @@
           <v-tab>System</v-tab>
 
           <v-tab-item class='pa-5'>
-            <wotw-rando-settings @loaded='settingsLoaded = true' />
+            <wotw-rando-settings />
           </v-tab-item>
           <v-tab-item class='pa-5'>
             <wotw-rebind-settings type='controller' />
@@ -37,14 +37,17 @@
 </template>
 
 <script>
+  import { mapState } from 'vuex'
   import { EventBus } from '~/assets/lib/EventBus'
 
   export default {
     name: 'Settings',
     data: () => ({
-      settingsLoaded: false,
       addExceptionForWindowsDefenderLoading: false,
     }),
+    computed: {
+      ...mapState('electron', ['settingsLoaded']),
+    },
     methods: {
       async addExceptionForWindowsDefender() {
         this.addExceptionForWindowsDefenderLoading = true

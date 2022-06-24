@@ -31,10 +31,6 @@ export function getWindow() {
 async function createWindow() {
   registerUIIpcApi()
 
-  if (await SettingsService.importSettingsFromOldInstallation()) {
-    console.log('Successfully imported old settings.')
-  }
-
   // Create the browser window.
   window = new BrowserWindow({
     width: 800,

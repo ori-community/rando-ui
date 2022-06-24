@@ -4,10 +4,10 @@ export default async ({ $axios, env }, inject) => {
   const $paths = {}
 
   if (isElectron()) {
-    const settings = await window.electronApi.invoke('settings.readSettings')
-    $paths.API_BASE_URL = `http${settings.Flags.Insecure ? '' : 's'}://${settings.Paths.URL}/api`
-    $paths.WS_BASE_URL = `ws${settings.Flags.Insecure ? '' : 's'}://${settings.Paths.URL}/api`
-    $paths.UI_BASE_URL = `http${settings.Flags.Insecure ? '' : 's'}://${settings.Paths.URL}`
+    const settings = await window.electronApi.invoke('settings.getSettings')
+    $paths.API_BASE_URL = `http${settings['Flags.Insecure'] ? '' : 's'}://${settings['Paths.URL']}/api`
+    $paths.WS_BASE_URL = `ws${settings['Flags.Insecure'] ? '' : 's'}://${settings['Paths.URL']}/api`
+    $paths.UI_BASE_URL = `http${settings['Flags.Insecure'] ? '' : 's'}://${settings['Paths.URL']}`
   } else {
     $paths.API_BASE_URL = env.API_BASE_URL
     $paths.WS_BASE_URL = env.WS_BASE_URL

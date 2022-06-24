@@ -1,15 +1,15 @@
 <template>
-  <v-row v-if='settings !== null'>
+  <v-row v-if='settings !== null && settingsLoaded'>
     <v-col cols='12' md='6'>
       <div class='mb-8'>
         <h3>Cutscenes</h3>
         <v-checkbox
-          v-model='settings.Flags.ShowShortCutscenes'
+          v-model='settings["Flags.ShowShortCutscenes"]'
           label='Restore Short Cutscenes'
           messages='Enables the short-but-unskippable cutscenes normally removed by the randomizer.'
         />
         <v-checkbox
-          v-model='settings.Flags.ShowLongCutscenes'
+          v-model='settings["Flags.ShowLongCutscenes"]'
           label='Restore Long Cutscenes'
           messages='Enables the long, unskippable cutscenes normally removed by the randomizer.'
         />
@@ -17,27 +17,27 @@
       <div class='mb-8'>
         <h3>Map</h3>
         <v-checkbox
-          v-model='settings.Flags.HideQuestFilter'
+          v-model='settings["Flags.HideQuestFilter"]'
           label='Hide Quest Filter'
           messages='Never show the Quests filter in the in-game map'
         />
         <v-checkbox
-          v-model='settings.Flags.HideWarpFilter'
+          v-model='settings["Flags.HideWarpFilter"]'
           label='Hide Warp Filter'
           messages='Never show the Warp filter in the in-game map'
         />
         <v-checkbox
-          v-model='settings.Flags.HideCollectableFilter'
+          v-model='settings["Flags.HideCollectableFilter"]'
           label='Hide Collectibles Filter'
           messages='Never show the Collectables filter in the in-game map'
         />
         <v-checkbox
-          v-model='settings.Flags.AlwaysShowWarps'
+          v-model='settings["Flags.AlwaysShowWarps"]'
           label='Always Show Warps'
           messages='Always show Spirit Wells on the in-game map, no matter what filter'
         />
         <v-checkbox
-          v-model='settings.Flags.AlwaysShowKeystoneDoors'
+          v-model='settings["Flags.AlwaysShowKeystoneDoors"]'
           label='Always Show Keystone Doors'
           messages='Always show Keystone Doors on the in-game map, no matter what filter'
         />
@@ -52,7 +52,7 @@
           messages='Disables the world map that opens when zooming out'
         />
         <v-checkbox
-          v-model='settings.Flags.DisableQuestFocus'
+          v-model='settings["Flags.DisableQuestFocus"]'
           label='Disable Quest Focus'
           messages="Don't snap the map to quest nodes when mousing over the quest list"
         />
@@ -60,7 +60,7 @@
       <div class='mb-8'>
         <h3>Miscellaneous</h3>
         <v-checkbox
-          v-model='settings.Flags.ShowStatsAfterFinish'
+          v-model='settings["Flags.ShowStatsAfterFinish"]'
           label='Show Stats after Finish'
           messages='Show stats in the launcher after finishing a game'
         />
@@ -70,12 +70,12 @@
           messages='Bored of seeing "X Spirit Light"? This setting is for you!'
         />
         <v-checkbox
-          v-model='settings.Flags.AlwaysShowKeystones'
+          v-model='settings["Flags.AlwaysShowKeystones"]'
           label='Always Show Keystones'
           messages='Keep your keystone count visible while playing'
         />
         <v-checkbox
-          v-model='settings.Flags.DisableShowSecrets'
+          v-model='settings["Flags.DisableShowSecrets"]'
           label='Disable always showing secret areas'
           messages='By default, the randomizer shows all secrets without having the Sense Shard equipped'
         />
@@ -85,32 +85,32 @@
       <div class='mb-8'>
         <h3>Control Options</h3>
         <v-checkbox
-          v-model='settings.Flags.GrappleMouseControl'
+          v-model='settings["Flags.GrappleMouseControl"]'
           label='Grapple Mouse Aiming'
           messages='Enables aiming Grapple with your mouse cursor'
         />
         <v-checkbox
-          v-model='settings.Flags.BurrowMouseControl'
+          v-model='settings["Flags.BurrowMouseControl"]'
           label='Burrow Mouse Aiming'
           messages='Enables aiming Burrow with your mouse cursor'
         />
         <v-checkbox
-          v-model='settings.Flags.WaterDashMouseControl'
+          v-model='settings["Flags.WaterDashMouseControl"]'
           label='Swimming Mouse Aiming'
           messages='Enable Swimming and Water Dashing towards your mouse cursor'
         />
         <v-checkbox
-          v-model='settings.Flags.InvertSwim'
+          v-model='settings["Flags.InvertSwim"]'
           label='Invert swim speeds'
           messages='Swim fast by default. Hold jump to swim slower instead'
         />
         <v-checkbox
-          v-model='settings.Flags.CursorLock'
+          v-model='settings["Flags.CursorLock"]'
           label='Lock Cursor to Window'
           messages='Prevents the mouse cursor from moving outside the game window'
         />
         <v-checkbox
-          v-model='settings.Flags.DisableAutoAim'
+          v-model='settings["Flags.DisableAutoAim"]'
           label='Disable Autoaim'
           messages='Disables Autoaiming for Spike, Bow and Shuriken'
         />
@@ -119,7 +119,7 @@
         <h3>Launch settings</h3>
 
         <v-text-field
-          v-model='settings.Paths.Steam'
+          v-model='settings["Paths.Steam"]'
           readonly
           label='Steam path'
           append-icon='mdi-folder-search-outline'
@@ -127,12 +127,12 @@
         />
 
         <v-checkbox
-          v-model='settings.Flags.DisableNetcode'
+          v-model='settings["Flags.DisableNetcode"]'
           label='Disable Netcode'
           messages='Checking this option prevents the randomizer from communicating with the rando server. With netcode disabled, bingo autotracking and other networked features will be unavailable.'
         />
         <v-checkbox
-          v-model='settings.Flags.UseWinStore'
+          v-model='settings["Flags.UseWinStore"]'
           label='Use Windows Store'
           messages='Launch the rando using the windows store version of the game.'
         />
@@ -141,48 +141,48 @@
         <h3>Tracker</h3>
 
         <v-checkbox
-          v-model='settings.Flags.LaunchWithTracker'
+          v-model='settings["Flags.LaunchWithTracker"]'
           label='Launch with Item Tracker'
           messages='Automatically open the item tracker when launching the randomizer'
         />
 
         <v-expand-transition>
           <v-checkbox
-            v-if='settings.Flags.LaunchWithTracker'
-            v-model='settings.Flags.UseBuiltinTracker'
+            v-if='settings["Flags.LaunchWithTracker"]'
+            v-model='settings["Flags.UseBuiltinTracker"]'
             label='Use builtin tracker'
             messages='Use the builtin item tracker. This will replace the current tracker in the long term'
           />
         </v-expand-transition>
 
         <v-checkbox
-          v-model='settings.LocalTracker.AlwaysOnTop'
+          v-model='settings["LocalTracker.AlwaysOnTop"]'
           label='Builtin tracker always on top'
           messages='Show builtin tracker on top of other windows'
         />
 
         <v-checkbox
-          v-model='settings.LocalTracker.Transparent'
+          v-model='settings["LocalTracker.Transparent"]'
           label='Builtin tracker transparent'
           messages='Make the builtin Item Tracker transparent.'
         />
 
         <v-checkbox
-          v-model='settings.LocalTracker.IgnoreMouse'
+          v-model='settings["LocalTracker.IgnoreMouse"]'
           label='Ignore mouse in builtin tracker'
           messages='This is helpful if you want to show the tracker above the game. Note that you cannot move/resize the tracker with this option enabled.'
         />
 
         <v-checkbox
-          v-model='settings.LocalTracker.ShowWillowHearts'
+          v-model='settings["LocalTracker.ShowWillowHearts"]'
           label='Show willow hearts built in tracker'
           messages='Shows the amount of destroyed willow hearts.'
         />
 
         <v-expand-transition>
           <v-checkbox
-            v-if='settings.LocalTracker.ShowWillowHearts'
-            v-model='settings.LocalTracker.HideHeartsUntilFirstHeart'
+            v-if='settings["LocalTracker.ShowWillowHearts"]'
+            v-model='settings["LocalTracker.HideHeartsUntilFirstHeart"]'
             label='Hide counter until first heart is destroyed'
             messages='Only shows the amount of willow hearts when at least one heart is destroyed'
           />
@@ -199,20 +199,20 @@
           </template>
         </v-btn>
       </div>
-      <div v-if='settings.Flags.Dev' class='mb-8'>
+      <div v-if='settings["Flags.Dev"]' class='mb-8'>
         <h3>Developer Tools</h3>
         <v-checkbox
-          v-model='settings.Flags.Dev'
+          v-model='settings["Flags.Dev"]'
           label='Enable Developer Tools'
           messages='Welcome to the world of fun'
         />
         <v-checkbox
-          v-model='settings.Flags.UpdateToPrereleaseVersions'
+          v-model='settings["Flags.UpdateToPrereleaseVersions"]'
           label='Update to prerelease versions'
           messages='Search for and ask to update to unreleased unstable versions'
         />
         <v-checkbox
-          v-model='settings.Flags.WaitForDebugger'
+          v-model='settings["Flags.WaitForDebugger"]'
           label='Wait for Debugger'
           messages='The Randomizer will wait for a debugger to attach before initialization'
         />
@@ -222,13 +222,13 @@
           messages='Enable Debug Controls by default'
         />
         <v-text-field
-          v-model='settings.Paths.URL'
+          v-model='settings["Paths.URL"]'
           label='Server URL'
           class='mt-4'
           messages='Press Ctrl+R after changing this setting for it to apply in the launcher'
         />
         <v-text-field
-          v-model='settings.Paths.UdpPort'
+          v-model='settings["Paths.UdpPort"]'
           label='UDP Port'
         />
         <v-checkbox
@@ -242,111 +242,77 @@
 </template>
 
 <script>
-  import {mapState} from 'vuex'
-  import cloneDeep from 'lodash.clonedeep'
-  import isEqual from 'lodash.isequal'
+  import { hasSettings } from '~/assets/lib/hasSettings'
 
   export default {
+    mixins: [hasSettings],
     data: () => ({
-      settings: null,
       debugStreak: 0,
       localTrackerPositionReset: false,
     }),
-    head() {
-      return {
-        title: 'WotwRandoSettings',
-      }
-    },
+    head: () => ({
+      title: 'WotwRandoSettings',
+    }),
     computed: {
-      ...mapState('electron', {storeSettings: 'settings'}),
-      ...mapState('electron', ['settingsLoaded']),
       useRandomCurrencyNames: {
         get() {
-          return !this.settings.Flags.BoringMoney
+          return !this.settings['Flags.BoringMoney']
         },
         set(value) {
-          this.settings.Flags.BoringMoney = !value
+          this.settings['Flags.BoringMoney'] = !value
         }
       },
       disableWorldMap: {
         get() {
-          return !this.settings.Flags.WorldMapEnabled
+          return !this.settings['Flags.WorldMapEnabled']
         },
         set(value) {
-          this.settings.Flags.WorldMapEnabled = !value
+          this.settings['Flags.WorldMapEnabled'] = !value
         }
       },
       enableDebugControls: {
         get() {
-          return !this.settings.Flags.DisableDebugControls
+          return !this.settings['Flags.DisableDebugControls']
         },
         set(value) {
-          this.settings.Flags.DisableDebugControls = !value
+          this.settings['Flags.DisableDebugControls'] = !value
         }
       },
       showTransparentIcons: {
         get() {
-          return this.settings.Values.MapIconTransparency > 0.0;
+          return this.settings['Values.MapIconTransparency'] > 0.0;
         },
         set(value) {
-          this.settings.Values.MapIconTransparency = value ? 0.25 : 0.0
+          this.settings['Values.MapIconTransparency'] = value ? 0.25 : 0.0
         }
       },
       useSecureConnection: {
         get() {
-          return !this.settings.Flags.Insecure
+          return !this.settings['Flags.Insecure']
         },
         set(value) {
-          this.settings.Flags.Insecure = !value
+          this.settings['Flags.Insecure'] = !value
         }
       },
-    },
-    watch: {
-      settings: {
-        deep: true,
-        async handler(settings) {
-          await this.$store.dispatch('electron/setSettings', cloneDeep(settings))
-        }
-      },
-      settingsLoaded: {
-        immediate: true,
-        handler(loaded) {
-          if (loaded) {
-            this.updateSettings()
-          }
-        },
-      },
-      storeSettings: {
-        deep: true,
-        handler(storeSettings) {
-          if (!isEqual(this.settings, storeSettings)) {
-            this.updateSettings()
-          }
-        }
-      }
     },
     mounted() {
       document.addEventListener('keydown', this.onKeyDown)
-      this.$emit('loaded')
     },
     beforeDestroy() {
       document.removeEventListener('keydown', this.onKeyDown)
     },
     methods: {
-      updateSettings() {
-        this.settings = cloneDeep(this.storeSettings)
-      },
       async selectSteamPath() {
         const newPath = await window.electronApi.invoke('settings.selectSteamPath')
         if (newPath) {
-          this.settings.Paths.Steam = newPath
+          this.settings['Paths.Steam'] = newPath
         }
       },
       onKeyDown(event) {
-        if (this.settings !== null && !this.settings.Flags.Dev) {
+        if (this.settings !== null && !this.settings['Flags.Dev']) {
           event.key === 'Control' ? this.debugStreak++ : this.debugStreak = 0;
           if (this.debugStreak === 5) {
-            this.settings.Flags.Dev = true
+            this.settings['Flags.Dev'] = true
             this.debugStreak = 0
           }
         }

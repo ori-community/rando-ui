@@ -92,15 +92,16 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex'
   import { decodePacket } from '~/assets/proto/ProtoUtil'
   import { ResetTracker, TrackerFlagsUpdate, TrackerUpdate } from '~/assets/proto/messages'
   import { applyTransparentWindowStyles, isOBS } from '~/assets/lib/obs'
   import { isElectron } from '~/assets/lib/isElectron'
   import { confettiFromElement } from '~/assets/lib/confettiFromElement'
+  import { hasSettings } from '~/assets/lib/hasSettings'
 
   export default {
     name: 'Tracker',
+    mixins: [hasSettings],
     layout: 'plain',
     data: () => ({
       connected: false,
@@ -115,7 +116,6 @@
       title: 'Item Tracker',
     },
     computed: {
-      ...mapState('electron', ['settings', 'settingsLoaded']),
       trackerSource() {
         const source = this.$route.query.source
 

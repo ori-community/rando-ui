@@ -24,7 +24,7 @@
           this.$store.commit('electron/setRandoIpcConnected', connected)
         })
 
-        this.$store.commit('electron/setSettings', await window.electronApi.invoke('settings.readSettings'))
+        this.$store.commit('electron/setSettings', await window.electronApi.invoke('settings.getSettings'))
         this.$store.commit('electron/setRandoIpcConnected', await window.electronApi.invoke('randoIpc.isConnected'))
       }
 

@@ -9,7 +9,7 @@ export const state = () => ({
 export const getters = {
   shouldShowVersion(state, getter, rootState) {
     return version => {
-      const updateToPrereleaseVersions = rootState.electron.settingsLoaded && (rootState.electron.settings.Flags.UpdateToPrereleaseVersions ?? false)
+      const updateToPrereleaseVersions = rootState.electron.settingsLoaded && (rootState.electron.settings['Flags.UpdateToPrereleaseVersions'] ?? false)
       const prerelease = semver.prerelease(version)
       return updateToPrereleaseVersions || prerelease === null
     }

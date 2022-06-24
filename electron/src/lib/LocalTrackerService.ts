@@ -15,29 +15,29 @@ export class LocalTrackerService {
       !LocalTrackerService.window.isDestroyed()
     ) {
       if (
-        settings.LocalTracker.Transparent !==
-        oldSettings.LocalTracker.Transparent
+        settings['LocalTracker.Transparent'] !==
+        oldSettings['LocalTracker.Transparent']
       ) {
         LocalTrackerService.openLocalTracker(true)
         return
       }
 
       if (
-        settings.LocalTracker.AlwaysOnTop !==
-        oldSettings.LocalTracker.AlwaysOnTop
+        settings['LocalTracker.AlwaysOnTop'] !==
+        oldSettings['LocalTracker.AlwaysOnTop']
       ) {
         LocalTrackerService.window.setAlwaysOnTop(
-          settings.LocalTracker.AlwaysOnTop,
+          settings['LocalTracker.AlwaysOnTop'],
           'normal',
         )
       }
 
       if (
-        settings.LocalTracker.IgnoreMouse !==
-        oldSettings.LocalTracker.IgnoreMouse
+        settings['LocalTracker.IgnoreMouse'] !==
+        oldSettings['LocalTracker.IgnoreMouse']
       ) {
         LocalTrackerService.window.setIgnoreMouseEvents(
-          settings.LocalTracker.IgnoreMouse,
+          settings['LocalTracker.IgnoreMouse'],
           {
             forward: true,
           },
@@ -47,17 +47,14 @@ export class LocalTrackerService {
   }
 
   private static async saveWindowRect() {
-    await SettingsService.transaction((settings: any) => {
-      if (LocalTrackerService.window) {
-        const position = LocalTrackerService.window.getPosition()
-        const size = LocalTrackerService.window.getSize()
-        settings.LocalTracker.X = position[0]
-        settings.LocalTracker.Y = position[1]
-        settings.LocalTracker.Width = size[0]
-        settings.LocalTracker.Height = size[1]
-        return settings
-      }
-    })
+    if (LocalTrackerService.window) {
+      const position = LocalTrackerService.window.getPosition()
+      const size = LocalTrackerService.window.getSize()
+      await SettingsService.setSetting('LocalTracker.X', position[0])
+      await SettingsService.setSetting('LocalTracker.Y', position[1])
+      await SettingsService.setSetting('LocalTracker.Width', size[0])
+      await SettingsService.setSetting('LocalTracker.Height', size[1])
+    }
   }
 
   static close() {
@@ -78,10 +75,10 @@ export class LocalTrackerService {
       const settings = await SettingsService.getCurrentSettings()
 
       this.window = WindowService.createWindow({
-        backgroundColor: settings.LocalTracker.Transparent
+        backgroundColor: settings['LocalTracker.Transparent']
           ? undefined
           : '#050e17',
-        transparent: settings.LocalTracker.Transparent,
+        transparent: settings['LocalTracker.Transparent'],
         frame: false,
         show: false,
         paintWhenInitiallyHidden: true,
@@ -93,23 +90,23 @@ export class LocalTrackerService {
 
       this.window.once('ready-to-show', () => {
         this.window?.setPosition(
-          Number(settings.LocalTracker.X),
-          Number(settings.LocalTracker.Y),
+          Number(settings['LocalTracker.X']),
+          Number(settings['LocalTracker.Y']),
         )
         this.window?.setSize(
-          Number(settings.LocalTracker.Width),
-          Number(settings.LocalTracker.Height),
+          Number(settings['LocalTracker.Width']),
+          Number(settings['LocalTracker.Height']),
         )
         this.window?.show()
       })
 
       this.window.setAspectRatio(700 / 405)
 
-      if (settings.LocalTracker.AlwaysOnTop) {
+      if (settings['LocalTracker.AlwaysOnTop']) {
         this.window.setAlwaysOnTop(true, 'normal')
       }
 
-      if (settings.LocalTracker.IgnoreMouse) {
+      if (settings['LocalTracker.IgnoreMouse']) {
         this.window.setIgnoreMouseEvents(true, {
           forward: true,
         })

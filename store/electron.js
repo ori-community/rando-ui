@@ -1,5 +1,6 @@
 import semver from 'semver'
 import { EventBus } from '~/assets/lib/EventBus'
+import { hasOwnProperty } from '~/assets/lib/hasOwnProperty'
 
 export const state = () => ({
   settings: {},
@@ -37,7 +38,7 @@ export const getters = {
     }
   },
   updateAvailable(state, getters, rootState, rootGetters) {
-    if(rootGetters['version/latestVisibleVersion']){
+    if (rootGetters['version/latestVisibleVersion']) {
       return rootState.version.latestVisibleRelease !== null && getters.isNewVersion(rootGetters['version/latestVisibleVersion'])
     }
   },
@@ -55,6 +56,13 @@ export const mutations = {
   setSettings(state, settings) {
     state.settings = settings
     state.settingsLoaded = true
+  },
+  setSetting(state, { key, value }) {
+    if (!hasOwnProperty(state.settings, key)) {
+      throw new Error(`Tried to set setting '${key}' that does not exist`)
+    }
+
+    state.settings[key] = value
   },
   setCurrentVersion(state, value) {
     state.currentVersion = value
@@ -94,14 +102,14 @@ export const mutations = {
 let checkForUpdatesOncePromise = null
 
 export const actions = {
-  async setSettings({ commit }, settings) {
-    commit('setSettings', settings)
-    await window.electronApi.invoke('settings.setSettings', settings)
+  async setSetting({ commit }, { key, value }) {
+    commit('setSetting', { key, value })
+    await window.electronApi.invoke('settings.setSetting', { key, value })
   },
   async checkForUpdates({ dispatch, commit }) {
     try {
       commit('setCurrentVersion', await window.electronApi.invoke('updater.getVersion'))
-      dispatch('version/updateAvailableReleases', null , {root: true})
+      dispatch('version/updateAvailableReleases', null, { root: true })
 
     } catch (e) {
       commit('setOfflineMode', true)

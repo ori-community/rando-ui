@@ -1,0 +1,10 @@
+goalHeaders:
+- bingo
+- trees
+
+categories:
+  qol:
+    name: Quality of Life
+    headers:
+    - autoplant
+    - teleporter_refill

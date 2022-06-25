@@ -1,51 +1,38 @@
 <template>
   <div>
-    <h2 class='mb-3'>Select base preset</h2>
-    <div class='difficulty-presets'>
+    <div class="difficulty-presets">
       <v-card
-        v-for='presetName in difficultyPresets'
-        :key='presetName'
-        elevation='0'
+        v-for="presetName in difficultyPresets"
+        :key="presetName"
+        elevation="0"
         ripple
         hover
-        class='pa-4'
-        :color='presetStates[presetName] ? "secondary" : "background lighten-2"'
-        @click.native='setDifficultyPreset(presetName)'
+        class="pa-4"
+        :color="presetStates[presetName] ? 'secondary' : 'background lighten-2'"
+        @click.native="setDifficultyPreset(presetName)"
       >
-        <h2>{{ presetMeta[presetName].name }}</h2>
+        <h4>{{ presetMeta[presetName].name }}</h4>
         <span>{{ presetMeta[presetName].description }}</span>
       </v-card>
     </div>
-
-    <h3 class='mt-8 mb-3'>Additional options</h3>
-    <div
-      v-for='preset in sortedPresets'
-      :key='preset.name'
-      class='d-inline-block mr-1 mb-1'
-    >
-      <wotw-seedgen-preset-button
-        v-model='presetStates[preset.name]'
-        :preset='preset'
-      />
-    </div>
-    <div class='text-center'>
+    <div class="text-center">
       <v-expand-transition>
-        <div v-show='anyPresetSelected || presetsApplied'>
-          <div v-if='anyPresetSelected || !presetsApplied' class='mt-6'>
-            <v-tooltip bottom :disabled='overrideSettings'>
-              <template #activator='{on}'>
-                <v-btn color='accent' depressed x-large v-on='on' @click='onApplyPresetsButtonClick'>
+        <div>
+          <div v-if="anyPresetSelected || !presetsApplied" class="mt-6">
+            <v-tooltip bottom :disabled="overrideSettings">
+              <template #activator="{ on }">
+                <v-btn :disabled="!(anyPresetSelected || presetsApplied)" color="accent" depressed x-large v-on="on" @click="onApplyPresetsButtonClick">
                   <v-icon left>{{ overrideSettings ? 'mdi-call-merge' : 'mdi-file-replace-outline' }}</v-icon>
-                  {{ overrideSettings ? 'Override presets' : 'Apply Presets' }}
+                  {{ overrideSettings ? 'Override settings' : 'Apply settings' }}
                 </v-btn>
               </template>
               <span>Hold <kbd>Ctrl</kbd> to override existing settings</span>
             </v-tooltip>
           </div>
-          <div v-else class='mt-6'>
+          <div v-else class="mt-6">
             <v-btn x-large disabled>
               <v-icon left>mdi-check</v-icon>
-              Presets applied
+              settings applied
             </v-btn>
           </div>
         </div>
@@ -76,15 +63,11 @@
     }),
     computed: {
       anyPresetSelected() {
-        return Object.values(this.presetStates).some(s => s)
+        return Object.values(this.presetStates).some((s) => s)
       },
       sortedPresets() {
-        const keys = Object
-          .keys(presetMeta)
-          .filter(p => !difficultyPresets.includes(p.toLowerCase()))
-        return [...this.presets]
-          .filter(p => keys.includes(p.name.toLowerCase()))
-          .sort((a, b) => keys.indexOf(a.name) - keys.indexOf(b.name))
+        const keys = Object.keys(presetMeta).filter((p) => !difficultyPresets.includes(p.toLowerCase()))
+        return [...this.presets].filter((p) => keys.includes(p.name.toLowerCase())).sort((a, b) => keys.indexOf(a.name) - keys.indexOf(b.name))
       },
     },
     watch: {
@@ -93,7 +76,7 @@
         handler() {
           this.$emit('any-preset-selected', this.anyPresetSelected)
         },
-      }
+      },
     },
     created() {
       this.resetPresetStates()
@@ -154,6 +137,9 @@
         this.$emit('apply', { presets: selectedPresets, override: this.overrideSettings })
         this.resetPresetStates()
         this.presetsApplied = true
+        setTimeout(() => {
+          this.presetsApplied = false
+        }, 2000)
       },
       setDifficultyPreset(name) {
         for (const difficultyPreset of difficultyPresets) {
@@ -164,7 +150,7 @@
   }
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
   .difficulty-presets {
     display: grid;
     grid-template-columns: 1fr 1fr;

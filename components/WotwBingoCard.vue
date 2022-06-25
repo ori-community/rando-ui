@@ -1,21 +1,24 @@
 <template>
-  <div class='bingo-card' @click='$emit("click")'>
-    <div class='bingo-card-inner' :class='{
-      flipped: cardShouldBeFlipped,
-      marked,
-      "top-marked": markedNeighborMask & 0b1000,
-      "left-marked": markedNeighborMask & 0b0100,
-      "right-marked": markedNeighborMask & 0b0010,
-      "bottom-marked": markedNeighborMask & 0b0001,
-    }'>
-      <v-card elevation='0' class='front' :style='cardStyle' color='background lighten-1'>
-        <div class='content d-flex flex-column'>
-          <template v-if='!!square'>
-            <div class='square-text pa-2' :class='{expand: !hasGoals}'>{{ square.text }}</div>
-            <template v-if='hasGoals'>
+  <div class="bingo-card" @click="$emit('click')">
+    <div
+      class="bingo-card-inner"
+      :class="{
+        flipped: cardShouldBeFlipped,
+        marked,
+        'top-marked': markedNeighborMask & 0b1000,
+        'left-marked': markedNeighborMask & 0b0100,
+        'right-marked': markedNeighborMask & 0b0010,
+        'bottom-marked': markedNeighborMask & 0b0001,
+      }"
+    >
+      <v-card elevation="0" class="front" :style="cardStyle" color="background lighten-1">
+        <div class="content d-flex flex-column">
+          <template v-if="!!square">
+            <div class="square-text pa-2" :class="{ expand: !hasGoals }">{{ square.text }}</div>
+            <template v-if="hasGoals">
               <v-spacer />
-              <div class='px-2 pt-1 pb-2 square-goals' :class='{"bigger-text": goalsShouldBeLarge}'>
-                <div v-for='goal in square.goals' :key='goal.text' class='goal' :class='{completed: goal.completed}'>
+              <div class="px-2 pt-1 pb-2 square-goals" :class="{ 'bigger-text': goalsShouldBeLarge }">
+                <div v-for="goal in square.goals" :key="goal.text" class="goal" :class="{ completed: goal.completed }">
                   {{ goal.text }}
                 </div>
               </div>
@@ -23,10 +26,10 @@
             </template>
           </template>
         </div>
-        <div class='attention-effect' :class='{active: attentionEffectActive}'></div>
+        <div class="attention-effect" :class="{ active: attentionEffectActive }"></div>
       </v-card>
-      <v-card elevation='0' class='back' color='background lighten-1'>
-        <img alt='' src='~/assets/images/ori_think.png' class='ori-think'>
+      <v-card elevation="0" class="back" color="background lighten-1">
+        <img alt="" src="~/assets/images/ori_think.png" class="ori-think" />
       </v-card>
     </div>
   </div>
@@ -54,7 +57,7 @@
       },
       hiddenUniverses: {
         type: Array,
-        default: () => ([]),
+        default: () => [],
       },
       highlightUniverse: {
         type: Number,
@@ -98,15 +101,12 @@
         const highlightSplitPercentage = 33
 
         const nonHighlightedColors = this.square.completedBy
-          .filter(universeId => (!this.hiddenUniverses.includes(universeId) && universeId !== this.highlightUniverse) || this.isLockout)
+          .filter((universeId) => (!this.hiddenUniverses.includes(universeId) && universeId !== this.highlightUniverse) || this.isLockout)
           .sort((a, b) => b - a)
-          .map(universeId => this.universeColors[universeId])
+          .map((universeId) => this.universeColors[universeId])
         const stops = []
 
-        const shouldHighlight =
-          !!this.highlightUniverse &&
-          !this.hiddenUniverses.includes(this.highlightUniverse) &&
-          !this.isLockout
+        const shouldHighlight = !!this.highlightUniverse && !this.hiddenUniverses.includes(this.highlightUniverse) && !this.isLockout
 
         for (let i = 0; i < nonHighlightedColors.length; i++) {
           const stopStart = (i / nonHighlightedColors.length) * (shouldHighlight ? highlightSplitPercentage : 100)
@@ -137,11 +137,8 @@
         }
       },
       stateHash() {
-        return [
-          this.square?.goals.map(g => g.completed ? '+' : '-').join(),
-          this.square?.goals.map(g => g.text).join(),
-        ].join()
-      }
+        return [this.square?.goals.map((g) => (g.completed ? '+' : '-')).join(), this.square?.goals.map((g) => g.text).join()].join()
+      },
     },
     watch: {
       async stateHash(value, oldValue) {
@@ -159,17 +156,17 @@
         if (this.attentionEffect) {
           this.attentionEffectActive = true
         }
-        
+
         // TODO: Do this properly
         setTimeout(() => {
           this.attentionEffectActive = false
         }, 2000)
-      }
-    }
+      },
+    },
   }
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
   .bingo-card {
     perspective: 500px;
     position: relative;

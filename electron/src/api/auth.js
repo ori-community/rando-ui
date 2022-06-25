@@ -7,7 +7,7 @@ const JWT_PATH = `${RANDOMIZER_BASE_PATH}/.jwt`
 export default {
   async startOAuthFlow(event, baseUrl, forceWindowLogin = false) {
     if (app.isDefaultProtocolClient('ori-rando') && !forceWindowLogin) {
-      await shell.openExternal(`${baseUrl}/login?redir=ori-rando://authenticate`)
+      await shell.openExternal(`${baseUrl}/login?redirect=ori-rando://authenticate`)
     } else {
       const loginWindow = new BrowserWindow({
         width: 800,
@@ -19,7 +19,7 @@ export default {
         },
       })
 
-      await loginWindow.loadURL(`${baseUrl}/login?redir=ori-rando://authenticate`)
+      await loginWindow.loadURL(`${baseUrl}/login?redirect=ori-rando://authenticate`)
 
       return await new Promise((resolve, reject) => {
         loginWindow.on('close', reject)

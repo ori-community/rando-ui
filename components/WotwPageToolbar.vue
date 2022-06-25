@@ -171,7 +171,7 @@
             })
           }
         } else {
-          window.location.href = `${this.$axios.defaults.baseURL}/login?redir=${this.buildAbsoluteUrl('/auth/callback')}`
+          window.location.href = `${this.$axios.defaults.baseURL}/login?redirect=${this.buildAbsoluteUrl('/auth/callback')}`
         }
       },
       logout() {

@@ -132,7 +132,8 @@ export class SettingsService {
         }
         console.log(`SettingsService: Migrations finished`)
 
-        await SettingsService.setSettings(settings)
+        flatSettings = settings
+        await SettingsService.writeSettingsDebounced()
       } else {
         console.log(`SettingsService: Nothing to migrate`)
       }

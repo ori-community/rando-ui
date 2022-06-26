@@ -1,0 +1,12 @@
+qol:
+  name: Quality Of Life
+world:
+  name: World Settings
+items:
+  name: Item Pool
+shops:
+  name: Shops
+hints:
+  name: Hints
+game:
+  name: Game Settings

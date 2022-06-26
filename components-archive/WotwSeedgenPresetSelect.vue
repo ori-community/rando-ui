@@ -42,7 +42,7 @@
 </template>
 
 <script>
-  import presetMeta from '@/assets/seedgen/presets.yaml'
+  import presetMeta from '~/assets/seedgen/presets.yaml'
 
   const difficultyPresets = ['moki', 'gorlek']
 

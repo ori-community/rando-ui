@@ -20,7 +20,7 @@
 </template>
 
 <script>
-  import presetMeta from '@/assets/seedgen/presets.yaml'
+  import presetMeta from '~/assets/seedgen/presets.yaml'
 
   export default {
     name: 'WotwSeedgenPresetButton',

@@ -3,7 +3,7 @@
     <h1 class='text-center mt-12 mb-6'>Seed Generator</h1>
 
     <v-scroll-y-transition>
-      <wotw-seedgen v-show='loaded' @loaded='loaded = true' />
+      <wotw-seedgen />
     </v-scroll-y-transition>
   </v-container>
 </template>

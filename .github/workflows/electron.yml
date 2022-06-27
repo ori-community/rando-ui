@@ -32,7 +32,7 @@ jobs:
       working-directory: .\\electron
       run: |
         npm ci
-        npm run electron:build -w
+        npm run electron:build -- -w
     - name: Archive artifacts
       uses: actions/upload-artifact@v2
       with:

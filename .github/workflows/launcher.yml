@@ -1,4 +1,4 @@
-name: electron
+name: launcher
 
 on:
   push:

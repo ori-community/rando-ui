@@ -1,4 +1,4 @@
-name: ci
+name: web-ui-image
 
 on:
   push:

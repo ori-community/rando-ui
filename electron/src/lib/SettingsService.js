@@ -77,12 +77,7 @@ const sendSettingsToUI = () => {
 }
 
 const writeSettingsDebouncedImpl = debounce(async () => {
-  const settingsObject = {}
-  for (const [key, value] of Object.entries(flatSettings)) {
-    set(settingsObject, key, value)
-  }
-
-  await fs.promises.writeFile(SETTINGS_PATH, ini.encode(settingsObject), { encoding: 'utf16le' })
+  await SettingsService.writeSettings()
 }, 1000)
 
 let flatSettings = null
@@ -178,6 +173,13 @@ export class SettingsService {
     return cloneDeep(flatSettings)
   }
 
+  /**
+   * Set a single setting (specified by `key`) to a value.
+   * This will queue a settings write
+   * @param key
+   * @param value
+   * @returns {Promise<void>}
+   */
   static async setSetting(key, value) {
     const currentSettings = await this.getCurrentSettings()
 
@@ -186,9 +188,27 @@ export class SettingsService {
       flatSettings[key] = value
       await this.writeSettingsDebounced()
       this.events.emit('setting-changed', key, value, oldValue)
+      sendSettingsToUI()
     }
   }
 
+  /**
+   * Writes settings to disk immediately
+   * @returns {Promise<void>}
+   */
+  static async writeSettings() {
+    const settingsObject = {}
+    for (const [key, value] of Object.entries(flatSettings)) {
+      set(settingsObject, key, value)
+    }
+
+    await fs.promises.writeFile(SETTINGS_PATH, ini.encode(settingsObject), { encoding: 'utf16le' })
+  }
+
+  /**
+   * Queues a settings write, or writes immediately if the last write is >1s ago
+   * @returns {Promise<void>}
+   */
   static async writeSettingsDebounced() {
     await writeSettingsDebouncedImpl()
   }

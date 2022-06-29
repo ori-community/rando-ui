@@ -132,8 +132,8 @@
       isOBS,
       isElectron,
       showWillowHearts() {
-        const showWillowHearts = this.$route.query.hearts === 'true' || this.settings?.LocalTracker?.ShowWillowHearts
-        const hideHeartsUntilFirstOne = this.$route.query.hideHeartsUntilFirst === 'true' || this.settings?.LocalTracker?.HideHeartsUntilFirstHeart
+        const showWillowHearts = this.$route.query.hearts === 'true' || this.settings['LocalTracker.ShowWillowHearts']
+        const hideHeartsUntilFirstOne = this.$route.query.hideHeartsUntilFirst === 'true' || this.settings['LocalTracker.HideHeartsUntilFirstHeart']
 
         return showWillowHearts && (!hideHeartsUntilFirstOne || this.heartCount > 0)
       },

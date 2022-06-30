@@ -9,39 +9,32 @@ import { WindowService } from '@/lib/WindowService'
 export class LocalTrackerService {
   private static window: BrowserWindow | null = null
 
-  private static onSettingsChanged(settings: any, oldSettings: any) {
+  private static onSettingChanged(key: any, value: any, oldValue: any) {
     if (
       LocalTrackerService.window &&
       !LocalTrackerService.window.isDestroyed()
     ) {
-      if (
-        settings['LocalTracker.Transparent'] !==
-        oldSettings['LocalTracker.Transparent']
-      ) {
-        LocalTrackerService.openLocalTracker(true)
-        return
-      }
+      switch (key) {
 
-      if (
-        settings['LocalTracker.AlwaysOnTop'] !==
-        oldSettings['LocalTracker.AlwaysOnTop']
-      ) {
-        LocalTrackerService.window.setAlwaysOnTop(
-          settings['LocalTracker.AlwaysOnTop'],
-          'normal',
-        )
-      }
+        case 'LocalTracker.Transparent':
+          LocalTrackerService.openLocalTracker(true)
+          break
 
-      if (
-        settings['LocalTracker.IgnoreMouse'] !==
-        oldSettings['LocalTracker.IgnoreMouse']
-      ) {
-        LocalTrackerService.window.setIgnoreMouseEvents(
-          settings['LocalTracker.IgnoreMouse'],
-          {
-            forward: true,
-          },
-        )
+        case 'LocalTracker.AlwaysOnTop':
+          LocalTrackerService.window.setAlwaysOnTop(
+            value,
+            'normal',
+          )
+          break
+
+        case 'LocalTracker.IgnoreMouse':
+          LocalTrackerService.window.setIgnoreMouseEvents(
+            value,
+            {
+              forward: true,
+            },
+          )
+          break
       }
     }
   }
@@ -64,7 +57,7 @@ export class LocalTrackerService {
   }
 
   static async openLocalTracker(forceReopenWindow = false) {
-    SettingsService.events.on('settings-changed', LocalTrackerService.onSettingsChanged)
+    SettingsService.events.on('setting-changed', LocalTrackerService.onSettingChanged)
 
     if (!this.window || this.window.isDestroyed() || forceReopenWindow) {
       if (this.window?.isDestroyed() === false) {

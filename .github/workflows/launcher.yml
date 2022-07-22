@@ -15,24 +15,23 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: 16
-        cache: 'npm'
-        cache-dependency-path: '**/package-lock.json'
+        cache: 'yarn'
 
-    - run: npm ci
+    - run: yarn install
 
     - name: Generate client
       run: |
         $env:API_HOST = "${{ github.event.inputs.api_host || 'dev.wotw.orirando.com' }}"
         $env:API_SECURE = "true"
         $env:IS_ELECTRON = "true"
-        npm run generate
+        yarn run generate
         copy .\dist\* .\electron\public\
 
     - name: Build electron
       working-directory: .\\electron
       run: |
-        npm ci
-        npm run electron:build -- -w
+        yarn install
+        yarn run electron:build -- -w
     - name: Archive artifacts
       uses: actions/upload-artifact@v2
       with:

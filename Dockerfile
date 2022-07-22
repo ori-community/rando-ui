@@ -14,7 +14,7 @@ RUN yarn install \
  && yarn generate
 
 # Stage 2
-FROM nginx:1.19-alpine
+FROM nginx:1.23.1-alpine
 
 COPY --from=build /app/dist /app
 COPY ./docker/nginx/* /etc/nginx/conf.d/

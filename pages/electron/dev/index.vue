@@ -24,7 +24,7 @@
 
 <style lang='scss' scoped>
   .tabs-no-background {
-    &::v-deep .v-tabs-items {
+    &:deep(.v-tabs-items) {
       background-color: transparent !important;
       flex-grow: 1;
     }

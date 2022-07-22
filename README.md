@@ -6,15 +6,15 @@ This repository contains the web frontend as well as the Electron based desktop 
 ## Running locally
 
 ```shell
-npm install # Install dependencies
+yarn install # Install dependencies
 
-npm run dev # Run the frontend on localhost:3000
+yarn run dev # Run the frontend on localhost:3000
 ```
 
 You can also specify the API host that the frontend should use as well as if secure connections should be used (https, wss) as environment variables. E.g. on UNIX systems:
 
 ```shell
-API_HOST=dev.wotw.orirando.com API_SECURE=true npm run dev
+API_HOST=dev.wotw.orirando.com API_SECURE=true yarn run dev
 ```
 
 The API host will default to `127.0.0.1:8081` and secure connections are disabled by default, which matches the default configuration for `ori-rando/wotw-server`.
@@ -26,7 +26,7 @@ The API host will default to `127.0.0.1:8081` and secure connections are disable
 
 ```shell
 cd electron
-npm run electron:serve
+yarn run electron:serve
 ```
 
 If you want to test features that require the randomizer executables to be present (such as launching the randomizer), you need to copy the `randomizer` directory from your Ori Randomizer installation to `electron/work-dir` (that directory does not exist by default and will be created when launching the desktop client for the first time).

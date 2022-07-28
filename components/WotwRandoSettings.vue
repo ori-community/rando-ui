@@ -51,11 +51,6 @@
           label='Disable World Map'
           messages='Disables the world map that opens when zooming out'
         />
-        <v-checkbox
-          v-model='settings["Flags.DisableQuestFocus"]'
-          label='Disable Quest Focus'
-          messages="Don't snap the map to quest nodes when mousing over the quest list"
-        />
       </div>
       <div class='mb-8'>
         <h3>Miscellaneous</h3>

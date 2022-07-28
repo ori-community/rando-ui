@@ -38,7 +38,6 @@ const getDefaultSettings = () => {
       DisableNetcode: false,
       LaunchWithTracker: false,
       UseBuiltinTracker: false,
-      DisableQuestFocus: true,
       BoringMoney: true,
       WaitForDebugger: false,
       InvertSwim: false,

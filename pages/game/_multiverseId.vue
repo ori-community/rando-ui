@@ -2,12 +2,21 @@
   <div>
     <v-container>
       <div class='d-flex justify-center align-center mt-12 mb-6'>
-        <h1 class='text-center ml-8'>
+        <v-tooltip top open-delay='500'>
+          <template #activator='{on}'>
+            <v-btn class='ml-2' :disabled='!canLock || lockGameLoading' icon v-on='on' @click='toggleGameLock'>
+              <v-icon :class='multiverse?.locked ? "lock-animation" : "unlock-animation"'>{{ multiverse?.locked ? 'mdi-lock' : 'mdi-lock-open-outline' }}</v-icon>
+            </v-btn>
+          </template>
+          <span v-if='canLock'>{{ multiverse?.locked ? 'Unlock' : 'Lock' }} this game</span>
+          <span v-else>This game is {{ multiverse?.locked ? 'locked' : 'unlocked' }}</span>
+        </v-tooltip>
+        <h1 class='text-center mx-4'>
           Game <small>#</small>{{ multiverseId }}
         </h1>
         <v-tooltip top open-delay='500'>
-          <template #activator='{on}' :disabled='!gameLinkCopied'>
-            <v-btn class='ml-2' v-on='on' icon :disabled='gameLinkCopied' @click='copyGameLink'>
+          <template #activator='{on}'>
+            <v-btn v-on='on' icon :disabled='gameLinkCopied' @click='copyGameLink'>
               <v-icon>{{ gameLinkCopied ? 'mdi-clipboard-check-outline' : 'mdi-link' }}</v-icon>
             </v-btn>
           </template>
@@ -37,14 +46,14 @@
         <div v-if='isLoggedIn && multiverseReady'>
           <wotw-multiverse-view :multiverse='multiverse' />
 
-          <div v-if="devtoolsEnabled" class="mt-5">
-            <v-card class="pa-4">
+          <div v-if='devtoolsEnabled' class='mt-5'>
+            <v-card class='pa-4'>
               <h3>Dispatch custom event</h3>
-              <v-text-field v-model="dev.customEventName" label="Event" />
+              <v-text-field v-model='dev.customEventName' label='Event' />
 
-              <div class="d-flex">
+              <div class='d-flex'>
                 <v-spacer />
-                <v-btn depressed color="accent" @click="dispatchCustomEvent">
+                <v-btn depressed color='accent' @click='dispatchCustomEvent'>
                   Dispatch
                 </v-btn>
               </div>
@@ -95,7 +104,7 @@
             </template>
             <template v-else>
               <v-icon left>mdi-semantic-web</v-icon>
-             Enable Overlay
+              Enable Overlay
             </template>
           </v-btn>
           <v-btn
@@ -262,6 +271,7 @@
       seedgenResultVisible: false,
       hideSeedgenResultCompletely: false,
       bingoOverlayEnabled: false,
+      lockGameLoading: false,
       dev: {
         customEventName: '',
       },
@@ -334,7 +344,13 @@
       },
       isBingoBoardOverlay() {
         return this.$route.query.isBingoBoardOverlay === 'true'
-      }
+      },
+      isPlayer() {
+        return this.multiverse?.universes.some(u => u.worlds.some(w => w.members.some(m => m.id === this.user.id))) ?? false
+      },
+      canLock() {
+        return this.isPlayer
+      },
     },
     watch: {
       userLoaded: {
@@ -516,6 +532,21 @@
           console.error(e)
         }
       },
+      async toggleGameLock() {
+        if (this.lockGameLoading) {
+          return
+        }
+
+        this.lockGameLoading = true
+
+        try {
+          await this.$axios.post(`/multiverses/${this.multiverseId}/toggle-lock`)
+        } catch (e) {
+          console.error(e)
+        }
+
+        this.lockGameLoading = false
+      },
     },
   }
 </script>
@@ -567,5 +598,41 @@
       top: 1em;
       z-index: 10;
     }
+  }
+
+  @keyframes lock-animation {
+    0% {
+      transform: translateY(0);
+    }
+
+    25% {
+      transform: translateY(5px);
+    }
+
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes unlock-animation {
+    0% {
+      transform: translateY(0);
+    }
+
+    25% {
+      transform: translateY(-5px);
+    }
+
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  .lock-animation {
+    animation: lock-animation 0.25s forwards ease-out;
+  }
+
+  .unlock-animation {
+    animation: unlock-animation 0.25s forwards ease-out;
   }
 </style>

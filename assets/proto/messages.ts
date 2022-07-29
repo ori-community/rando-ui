@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { messageTypeRegistry } from './typeRegistry'
 import Long from 'long'
-import * as _m0 from 'protobufjs/minimal'
+import _m0 from 'protobufjs/minimal'
 
 export const protobufPackage = 'RandoProto'
 
@@ -51,6 +51,49 @@ export interface MultiverseInfoMessage {
   hasBingoBoard: boolean
   spectators: UserInfo[]
   seedGroupId?: number | undefined
+  handlerType: MultiverseInfoMessage_GameHandlerType
+  handlerInfo: Uint8Array
+  visibility?: VisibilityMessage | undefined
+  locked: boolean
+}
+
+export enum MultiverseInfoMessage_GameHandlerType {
+  Normal = 0,
+  HideAndSeek = 1,
+  UNRECOGNIZED = -1,
+}
+
+export function multiverseInfoMessage_GameHandlerTypeFromJSON(object: any): MultiverseInfoMessage_GameHandlerType {
+  switch (object) {
+    case 0:
+    case 'Normal':
+      return MultiverseInfoMessage_GameHandlerType.Normal
+    case 1:
+    case 'HideAndSeek':
+      return MultiverseInfoMessage_GameHandlerType.HideAndSeek
+    case -1:
+    case 'UNRECOGNIZED':
+    default:
+      return MultiverseInfoMessage_GameHandlerType.UNRECOGNIZED
+  }
+}
+
+export function multiverseInfoMessage_GameHandlerTypeToJSON(object: MultiverseInfoMessage_GameHandlerType): string {
+  switch (object) {
+    case MultiverseInfoMessage_GameHandlerType.Normal:
+      return 'Normal'
+    case MultiverseInfoMessage_GameHandlerType.HideAndSeek:
+      return 'HideAndSeek'
+    case MultiverseInfoMessage_GameHandlerType.UNRECOGNIZED:
+    default:
+      return 'UNRECOGNIZED'
+  }
+}
+
+export interface VisibilityMessage {
+  $type: 'RandoProto.VisibilityMessage'
+  hiddenInWorld: string[]
+  hiddenOnMap: string[]
 }
 
 export interface BingoSquare {
@@ -578,7 +621,18 @@ export const UniverseInfo = {
 messageTypeRegistry.set(UniverseInfo.$type, UniverseInfo)
 
 function createBaseMultiverseInfoMessage(): MultiverseInfoMessage {
-  return { $type: 'RandoProto.MultiverseInfoMessage', id: 0, universes: [], hasBingoBoard: false, spectators: [], seedGroupId: undefined }
+  return {
+    $type: 'RandoProto.MultiverseInfoMessage',
+    id: 0,
+    universes: [],
+    hasBingoBoard: false,
+    spectators: [],
+    seedGroupId: undefined,
+    handlerType: 0,
+    handlerInfo: new Uint8Array(),
+    visibility: undefined,
+    locked: false,
+  }
 }
 
 export const MultiverseInfoMessage = {
@@ -599,6 +653,18 @@ export const MultiverseInfoMessage = {
     }
     if (message.seedGroupId !== undefined) {
       writer.uint32(40).int64(message.seedGroupId)
+    }
+    if (message.handlerType !== 0) {
+      writer.uint32(48).int32(message.handlerType)
+    }
+    if (message.handlerInfo.length !== 0) {
+      writer.uint32(58).bytes(message.handlerInfo)
+    }
+    if (message.visibility !== undefined) {
+      VisibilityMessage.encode(message.visibility, writer.uint32(66).fork()).ldelim()
+    }
+    if (message.locked === true) {
+      writer.uint32(72).bool(message.locked)
     }
     return writer
   },
@@ -625,6 +691,18 @@ export const MultiverseInfoMessage = {
         case 5:
           message.seedGroupId = longToNumber(reader.int64() as Long)
           break
+        case 6:
+          message.handlerType = reader.int32() as any
+          break
+        case 7:
+          message.handlerInfo = reader.bytes()
+          break
+        case 8:
+          message.visibility = VisibilityMessage.decode(reader, reader.uint32())
+          break
+        case 9:
+          message.locked = reader.bool()
+          break
         default:
           reader.skipType(tag & 7)
           break
@@ -641,6 +719,10 @@ export const MultiverseInfoMessage = {
       hasBingoBoard: isSet(object.hasBingoBoard) ? Boolean(object.hasBingoBoard) : false,
       spectators: Array.isArray(object?.spectators) ? object.spectators.map((e: any) => UserInfo.fromJSON(e)) : [],
       seedGroupId: isSet(object.seedGroupId) ? Number(object.seedGroupId) : undefined,
+      handlerType: isSet(object.handlerType) ? multiverseInfoMessage_GameHandlerTypeFromJSON(object.handlerType) : 0,
+      handlerInfo: isSet(object.handlerInfo) ? bytesFromBase64(object.handlerInfo) : new Uint8Array(),
+      visibility: isSet(object.visibility) ? VisibilityMessage.fromJSON(object.visibility) : undefined,
+      locked: isSet(object.locked) ? Boolean(object.locked) : false,
     }
   },
 
@@ -659,6 +741,10 @@ export const MultiverseInfoMessage = {
       obj.spectators = []
     }
     message.seedGroupId !== undefined && (obj.seedGroupId = Math.round(message.seedGroupId))
+    message.handlerType !== undefined && (obj.handlerType = multiverseInfoMessage_GameHandlerTypeToJSON(message.handlerType))
+    message.handlerInfo !== undefined && (obj.handlerInfo = base64FromBytes(message.handlerInfo !== undefined ? message.handlerInfo : new Uint8Array()))
+    message.visibility !== undefined && (obj.visibility = message.visibility ? VisibilityMessage.toJSON(message.visibility) : undefined)
+    message.locked !== undefined && (obj.locked = message.locked)
     return obj
   },
 
@@ -669,11 +755,86 @@ export const MultiverseInfoMessage = {
     message.hasBingoBoard = object.hasBingoBoard ?? false
     message.spectators = object.spectators?.map((e) => UserInfo.fromPartial(e)) || []
     message.seedGroupId = object.seedGroupId ?? undefined
+    message.handlerType = object.handlerType ?? 0
+    message.handlerInfo = object.handlerInfo ?? new Uint8Array()
+    message.visibility = object.visibility !== undefined && object.visibility !== null ? VisibilityMessage.fromPartial(object.visibility) : undefined
+    message.locked = object.locked ?? false
     return message
   },
 }
 
 messageTypeRegistry.set(MultiverseInfoMessage.$type, MultiverseInfoMessage)
+
+function createBaseVisibilityMessage(): VisibilityMessage {
+  return { $type: 'RandoProto.VisibilityMessage', hiddenInWorld: [], hiddenOnMap: [] }
+}
+
+export const VisibilityMessage = {
+  $type: 'RandoProto.VisibilityMessage' as const,
+
+  encode(message: VisibilityMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.hiddenInWorld) {
+      writer.uint32(10).string(v!)
+    }
+    for (const v of message.hiddenOnMap) {
+      writer.uint32(18).string(v!)
+    }
+    return writer
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): VisibilityMessage {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input)
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = createBaseVisibilityMessage()
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.hiddenInWorld.push(reader.string())
+          break
+        case 2:
+          message.hiddenOnMap.push(reader.string())
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): VisibilityMessage {
+    return {
+      $type: VisibilityMessage.$type,
+      hiddenInWorld: Array.isArray(object?.hiddenInWorld) ? object.hiddenInWorld.map((e: any) => String(e)) : [],
+      hiddenOnMap: Array.isArray(object?.hiddenOnMap) ? object.hiddenOnMap.map((e: any) => String(e)) : [],
+    }
+  },
+
+  toJSON(message: VisibilityMessage): unknown {
+    const obj: any = {}
+    if (message.hiddenInWorld) {
+      obj.hiddenInWorld = message.hiddenInWorld.map((e) => e)
+    } else {
+      obj.hiddenInWorld = []
+    }
+    if (message.hiddenOnMap) {
+      obj.hiddenOnMap = message.hiddenOnMap.map((e) => e)
+    } else {
+      obj.hiddenOnMap = []
+    }
+    return obj
+  },
+
+  fromPartial<I extends Exact<DeepPartial<VisibilityMessage>, I>>(object: I): VisibilityMessage {
+    const message = createBaseVisibilityMessage()
+    message.hiddenInWorld = object.hiddenInWorld?.map((e) => e) || []
+    message.hiddenOnMap = object.hiddenOnMap?.map((e) => e) || []
+    return message
+  },
+}
+
+messageTypeRegistry.set(VisibilityMessage.$type, VisibilityMessage)
 
 function createBaseBingoSquare(): BingoSquare {
   return { $type: 'RandoProto.BingoSquare', text: '', completedBy: [], goals: [] }

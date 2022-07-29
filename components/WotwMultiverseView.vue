@@ -4,8 +4,8 @@
       <wotw-universe-view
         v-for='universe in multiverse.universes'
         :key='universe.id'
-        :can-join='!isSpectating'
-        :can-create-world='multiverse.seedGroupId === null'
+        :can-join='!isSpectating && !multiverse.locked'
+        :can-create-world='multiverse.seedGroupId === null && !multiverse.locked'
         :disabled='loading'
         :hide-color='multiverse.universes.length < 2'
         :universe='universe'
@@ -16,11 +16,23 @@
       />
     </v-scroll-y-reverse-transition>
 
-    <div v-if='!isSpectating' class='action-buttons mt-4'>
+    <div v-if='isSpectating' class='text-center mt-4'>
+      <v-alert class='d-inline-block' color='info darken'>
+        <v-icon left>mdi-monitor-eye</v-icon>
+        You are spectating this game.
+      </v-alert>
+    </div>
+    <div v-else-if='multiverse.locked' class='text-center mt-4'>
+      <v-alert class='d-inline-block' color='info darken'>
+        <v-icon left>mdi-lock</v-icon>
+        This multiverse is locked.
+      </v-alert>
+    </div>
+    <div v-else class='action-buttons mt-4'>
       <v-tooltip :disabled='canCreateUniverse' bottom>
-        <span>
-          You ran out of space in your multiverse.
-        </span>
+      <span>
+        You ran out of space in your multiverse.
+      </span>
         <template #activator='{on}'>
           <div class='d-inline-block' v-on='on'>
             <v-btn :disabled='loading || !canCreateUniverse' large text @click='createWorld()'>
@@ -32,12 +44,6 @@
       </v-tooltip>
 
       <slot name='additional-buttons' />
-    </div>
-    <div v-else class='text-center mt-4'>
-      <v-alert class='d-inline-block' color='info darken'>
-        <v-icon left>mdi-monitor-eye</v-icon>
-        You are spectating this game.
-      </v-alert>
     </div>
   </div>
 </template>

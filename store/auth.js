@@ -23,6 +23,15 @@ export const mutations = {
   setJwtState(state, jwt) {
     state.jwt = jwt
   },
+  restoreJwt(state, jwt) {
+    if (jwt) {
+      this.$axios.setToken(jwt, 'Bearer')
+      WebSocketFactory.jwt = jwt
+    } else {
+      this.$axios.setToken(false)
+      WebSocketFactory.jwt = null
+    }
+  },
 }
 
 export const actions = {
@@ -35,18 +44,16 @@ export const actions = {
       jwtStorageKey = await getJwtStorageKey()
     }
 
+    commit('restoreJwt', jwt)
+
     if (jwt) {
-      this.$axios.setToken(jwt, 'Bearer')
       window.localStorage.setItem(jwtStorageKey, jwt)
-      WebSocketFactory.jwt = jwt
 
       if (isElectron()) {
         await generateClientJwt(this.$axios)
       }
     } else {
-      this.$axios.setToken(false)
       window.localStorage.removeItem(jwtStorageKey)
-      WebSocketFactory.jwt = null
 
       if (isElectron()) {
         await window.electronApi.invoke('auth.deleteClientJwt')

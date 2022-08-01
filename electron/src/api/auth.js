@@ -47,6 +47,10 @@ export default {
     await fs.promises.writeFile(JWT_PATH, jwt, { encoding: 'utf-8' })
   },
   async deleteClientJwt() {
-    await fs.promises.unlink(JWT_PATH)
+    try {
+      await fs.promises.unlink(JWT_PATH)
+    } catch (e) {
+      console.error(e)
+    }
   },
 }

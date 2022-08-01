@@ -37,7 +37,6 @@ const getDefaultSettings = () => {
       WaterDashMouseControl: false,
       DisableNetcode: false,
       LaunchWithTracker: false,
-      UseBuiltinTracker: false,
       BoringMoney: true,
       WaitForDebugger: false,
       InvertSwim: false,
@@ -119,8 +118,6 @@ export class SettingsService {
           '2.0.0-beta.72'() {
             settings['Paths.Host'] = settings['Paths.URL']
             delete settings['Paths.URL']
-
-
           },
         }
 

@@ -144,14 +144,7 @@ export class LauncherService {
       await waitForProcess('injector.exe', 10)
 
       if (settings['Flags.LaunchWithTracker']) {
-        if (settings['Flags.UseBuiltinTracker']) {
-          await LocalTrackerService.openLocalTracker()
-        } else {
-          spawn(`start -FilePath "${RANDOMIZER_BASE_PATH.replaceAll('/', '\\')}\\ItemTracker.exe"`, {
-            shell: 'powershell.exe',
-            stdio: 'inherit',
-          }).unref()
-        }
+        await LocalTrackerService.openLocalTracker()
       }
 
       if (settings['Flags.UseWinStore']) {

@@ -4,5 +4,13 @@
   "vueIndentScriptAndStyle": true,
   "trailingComma": "all",
   "jsxSingleQuote": false,
-  "printWidth": 160
+  "printWidth": 160,
+  "overrides": [
+    {
+      "files": ["*.vue"],
+      "options": {
+        "printWidth": 80
+      }
+    }
+  ]
 }

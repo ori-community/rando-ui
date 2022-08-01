@@ -18,7 +18,7 @@ const getDefaultSettings = () => {
     Paths: {
       Steam: 'C:\\Program Files (x86)\\Steam\\steam.exe',
       UdpPort: 31415,
-      URL: 'wotw.orirando.com',
+      Host: 'wotw.orirando.com',
     },
     Flags: {
       UseWinStore: false,
@@ -101,12 +101,12 @@ export class SettingsService {
         const currentIsPrerelease = semver.prerelease(currentVersion)
 
         if (lastIsPrerelease && !currentIsPrerelease) {
-          settings['Paths.URL'] = 'wotw.orirando.com'
+          settings['Paths.Host'] = 'wotw.orirando.com'
           settings['Paths.UdpPort'] = 31415
           settings['Flags.Dev'] = false
           settings['Flags.DisableDebugControls'] = true
         } else if (!lastIsPrerelease && currentIsPrerelease) {
-          settings['Paths.URL'] = 'dev.wotw.orirando.com'
+          settings['Paths.Host'] = 'dev.wotw.orirando.com'
           settings['Paths.UdpPort'] = 31416
           settings['Flags.Dev'] = true
           settings['Flags.DisableDebugControls'] = false
@@ -116,6 +116,12 @@ export class SettingsService {
           // '1.0.0'() {
           //   ...
           // },
+          '2.0.0-beta.72'() {
+            settings['Paths.Host'] = settings['Paths.URL']
+            delete settings['Paths.URL']
+
+
+          },
         }
 
         for (const migrationVersion of Object.keys(migrations)) {

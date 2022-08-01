@@ -217,8 +217,8 @@
           messages='Enable Debug Controls by default'
         />
         <v-text-field
-          v-model='settings["Paths.URL"]'
-          label='Server URL'
+          v-model='settings["Paths.Host"]'
+          label='Server Host'
           class='mt-4'
           messages='Press Ctrl+R after changing this setting for it to apply in the launcher'
         />

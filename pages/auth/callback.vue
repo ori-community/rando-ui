@@ -5,26 +5,19 @@
 </template>
 
 <script>
-  import { isElectron } from '~/assets/lib/isElectron'
-  import { generateClientJwt } from '~/assets/electron/generateClientJwt'
-
   export default {
     name: 'Callback',
     async middleware({ app, route }) {
       const authJwt = route.query.jwt
 
-      // Exchange short lived token with a long lived one
+      // Exchange short-lived token with a long-lived one
       if (authJwt) {
         app.$axios.setToken(authJwt, 'Bearer')
         const token = await app.$axios.$post('/tokens/', {
           scopes: ['*'],
         })
-        app.store.commit('auth/setJwt', token)
 
-        if (isElectron()) {
-          await generateClientJwt(app.$axios)
-        }
-
+        await app.store.dispatch('auth/setJwt', token)
         await app.store.dispatch('user/updateUser')
       }
 

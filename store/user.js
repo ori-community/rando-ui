@@ -34,7 +34,7 @@ export const actions = {
       commit('setUser', user)
 
       if (isElectron() && !!user) {
-        if (!await window.electronApi.invoke('auth.hasClientJwt')) {
+        if (await window.electronApi.invoke('auth.getClientJwt') === null) {
           await generateClientJwt(this.$axios)
         }
       }

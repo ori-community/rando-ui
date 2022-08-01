@@ -36,13 +36,17 @@ export default {
       })
     }
   },
+  async getClientJwt() {
+    try {
+      return await fs.promises.readFile(JWT_PATH, { encoding: 'utf-8' })
+    } catch (e) {
+      return null
+    }
+  },
   async setClientJwt(event, jwt) {
     await fs.promises.writeFile(JWT_PATH, jwt, { encoding: 'utf-8' })
   },
   async deleteClientJwt() {
     await fs.promises.unlink(JWT_PATH)
   },
-  hasClientJwt() {
-    return fs.existsSync(JWT_PATH)
-  }
 }

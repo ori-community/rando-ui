@@ -355,11 +355,11 @@
     watch: {
       userLoaded: {
         immediate: true,
-        handler(userLoaded) {
+        async handler(userLoaded) {
           if (userLoaded && !this.isLoggedIn) {
             if (this.$route.query.jwt) {
-              this.$store.commit('auth/setJwt', this.$route.query.jwt)
-              this.$store.dispatch('user/updateUser')
+              await this.$store.dispatch('auth/setJwt', this.$route.query.jwt)
+              await this.$store.dispatch('user/updateUser')
             }
           }
         },

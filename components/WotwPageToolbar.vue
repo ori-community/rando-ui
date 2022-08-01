@@ -171,15 +171,12 @@
             })
           }
         } else {
+          this.$store.commit('auth/setRedirectPath', window.location.href)
           window.location.href = `${this.$axios.defaults.baseURL}/login?redirect=${this.buildAbsoluteUrl('/auth/callback')}`
         }
       },
-      logout() {
-        if (isElectron()) {
-          window.electronApi.invoke('auth.deleteClientJwt')
-        }
-
-        this.$store.commit('auth/setJwt', null)
+      async logout() {
+        await this.$store.dispatch('auth/setJwt', null)
         this.$store.commit('user/setUser', null)
       },
       openChangeNicknameDialog() {

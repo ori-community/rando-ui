@@ -171,7 +171,7 @@
             })
           }
         } else {
-          this.$store.commit('auth/setRedirectPath', window.location.href)
+          this.$store.commit('auth/setRedirectPath', window.location.pathname + window.location.search)
           window.location.href = `${this.$axios.defaults.baseURL}/login?redirect=${this.buildAbsoluteUrl('/auth/callback')}`
         }
       },

@@ -6,7 +6,7 @@
 
 <script>
   // import * as PIXI from 'pixi.js'
-  import spawns from '@/assets/map-overlays/spawns'
+  import { renderFn as spawns } from '@/assets/map-overlays/spawns'
 
   const OVERLAYS = {
     spawns,
@@ -26,8 +26,8 @@
         for (const overlayName of this.enabledOverlays) {
           await OVERLAYS[overlayName](app, container)
         }
-      }
-    }
+      },
+    },
   }
 </script>
 

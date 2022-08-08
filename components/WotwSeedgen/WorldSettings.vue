@@ -1,30 +1,18 @@
 <template>
-  <div></div>
+  <div>
+    <wotw-seedgen-world-settings-preset-select v-model='model' />
+  </div>
 </template>
 
 <script>
-  import cloneDeep from 'lodash.clonedeep'
+  import { hasModelObject } from '~/assets/lib/hasModelObject'
 
   export default {
     name: 'WotwSeedgenWorldSettings',
-    props: {
-      value: {
-        type: Object,
-        required: true,
-      },
-    },
-    data: (vm) => ({
-      modelReference: vm.value,
-      model: cloneDeep(vm.value),
+    mixins: [hasModelObject],
+    data: () => ({
+      presetSelectDone: false,
     }),
-    watch: {
-      value(newValue) {
-        if (newValue !== this.modelReference) {
-          this.modelReference = newValue
-          this.model = cloneDeep(newValue)
-        }
-      },
-    },
   }
 </script>
 

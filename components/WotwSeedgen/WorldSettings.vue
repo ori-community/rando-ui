@@ -1,6 +1,6 @@
 <template>
   <div>
-    <wotw-seedgen-world-settings-preset-select v-model='model' />
+
   </div>
 </template>
 

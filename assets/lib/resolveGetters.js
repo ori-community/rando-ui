@@ -1,4 +1,4 @@
-export const ungetterify = (obj) => {
+export const resolveGetters = (obj) => {
   const keys = Object.keys(obj)
 
   const prototype = Object.getPrototypeOf(obj)
@@ -17,12 +17,12 @@ export const ungetterify = (obj) => {
     if (Array.isArray(value)) {
       clone[key] = value.map(v =>
         typeof v === 'object'
-          ? ungetterify(v)
+          ? resolveGetters(v)
           : v
       )
     } else {
       clone[key] = typeof value === 'object'
-        ? ungetterify(value)
+        ? resolveGetters(value)
         : value
     }
 

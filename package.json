@@ -16,7 +16,7 @@
   "dependencies": {
     "@fontsource/nunito-sans": "^4.5.0",
     "@math.gl/core": "^3.5.7",
-    "@mdi/font": "^7.0.96",
+    "@mdi/font": "^6.9.96",
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/pwa": "^3.3.5",
     "@octokit/rest": "^18.10.0",

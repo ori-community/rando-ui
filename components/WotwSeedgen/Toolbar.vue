@@ -2,9 +2,8 @@
   <div class="d-flex align-center">
     <v-tabs
       v-if="preset.world_settings.length >= 2"
+      v-model='model'
       background-color="transparent"
-      :value="value"
-      @input="(value) => $emit('input', value)"
     >
       <v-tab
         v-for="(worldPreset, index) in preset.world_settings"
@@ -45,13 +44,12 @@
 </template>
 
 <script>
+  import { hasModelObject } from '~/assets/lib/hasModelObject'
+
   export default {
     name: 'WotwSeedgenToolbar',
+    mixins: [hasModelObject],
     props: {
-      value: {
-        type: Number,
-        required: true,
-      },
       preset: {
         type: Object,
         required: true,

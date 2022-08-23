@@ -1,19 +1,19 @@
-moki:
+Moki:
   name: Moki
   level: 1
   description: |
     The default game paths, designed for players who have finished the game at least once
-gorlek:
+Gorlek:
   name: Gorlek
   level: 2
   description: |
     Intermediate game paths for more advanced players. More precise utilisation of skills is required
-kii:
+Kii:
   name: Kii
   level: 3
   description: |
     Advanced game paths for players seeking a challenge.
-unsafe:
+Unsafe:
   name: Unsafe
   level: 4
   description: |

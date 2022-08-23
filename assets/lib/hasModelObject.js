@@ -3,7 +3,7 @@ import cloneDeep from 'lodash.clonedeep'
 export const hasModelObject = {
   props: {
     value: {
-      type: Object,
+      type: Object | String | Number,
       required: true,
     },
   },

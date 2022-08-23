@@ -1,24 +1,66 @@
-SWORDSENTRYJUMP:
+SwordSentryJump:
   name: Sword Sentry Jump
-  description: |
-HAMMERSENTRYJUMP:
+  description: Grounded Sentry Jumps with Sword
+HammerSentryJump:
   name: Hammer Sentry Jump
-  description: |
-SHURIKENBREAK:
+  description: Grounded Sentry Jump with Hammer
+ShurikenBreak:
   name: Shuriken Break
-  description: |
-SENTRYBREAK:
+  description: Breaking Walls from behind with Shuriken
+SentryBreak:
   name: Sentry Break
-  description: |
-SPEARBREAK:
-  name: Spear Break
-  description: |
-HAMMERBREAK:
+  description: Breaking Walls from behind with Sentry
+HammerBreak:
   name: Hammer Break
-  description: |
-SENTRYBURN:
+  description: Breaking Walls from behind with Hammer
+SpearBreak:
+  name: Spear Break
+  description: Breaking Walls from behind with Spear
+SentryBurn:
   name: Sentry Burn
-  description: |
-REMOVEKILLPLANE:
-  name: Remove kill plane
-  description: |
+  description: Melting Ice using Sentries
+RemoveKillPlane:
+  name: Remove Kill Plane
+  description: Removing Shriek's Killplane at Feeding Grounds
+LaunchSwap:
+  name: Launch Swap
+  description: Using the weapon wheel to cancel Launch
+SentrySwap:
+  name: Sentry Swap
+  description: Using the weapon wheel to cancel Sentry
+FlashSwap:
+  name: Flash Swap
+  description: Using the weapon wheel to cancel Flash
+BlazeSwap:
+  name: Blaze Swap
+  description: Using the weapon wheel to cancel Blaze
+WaveDash:
+  name: Wave Dash
+  description: Gaining speed off a wall with Regenerate and Dash
+GrenadeJump:
+  name: Grenade Jump
+  description: Preserving jump momentum with Grenade
+HammerJump:
+  name: Hammer Jump
+  description: Preserving Double Jump momentum with Hammer
+SwordJump:
+  name: Sword Jump
+  description: Preserving Double Jump momentum with Sword
+GrenadeRedirect:
+  name: Grenade Redirect
+  description: Redirecting projectiles with Grenade
+SentryRedirect:
+  name: Sentry Redirect
+  description: Redirecting projectiles with Sentry
+PauseHover:
+  name: Pause Hover
+  description: Cancelling falling momentum through the pause menu
+GlideJump:
+  name: Glide Jump
+  description: Storing a grounded jump into the air with Glide
+GlideHammerJump:
+  name: Glide Hammer Jump
+  description: Preserving Glide Jump momentum with Hammer
+SpearJump:
+  name: Spear Jump
+  description: Storing a grounded jump into the air with Spear

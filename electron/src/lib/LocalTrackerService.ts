@@ -8,12 +8,15 @@ import { WindowService } from '@/lib/WindowService'
 
 export class LocalTrackerService {
   private static window: BrowserWindow | null = null
+  private static isSubscribedToSettings: boolean = false
 
   private static onSettingChanged(key: any, value: any, oldValue: any) {
     if (
       LocalTrackerService.window &&
       !LocalTrackerService.window.isDestroyed()
     ) {
+      console.log(key)
+
       switch (key) {
 
         case 'LocalTracker.Transparent':
@@ -57,7 +60,10 @@ export class LocalTrackerService {
   }
 
   static async openLocalTracker(forceReopenWindow = false) {
-    SettingsService.events.on('setting-changed', LocalTrackerService.onSettingChanged)
+    if (!this.isSubscribedToSettings) {
+      SettingsService.events.on('setting-changed', LocalTrackerService.onSettingChanged)
+      this.isSubscribedToSettings = true
+    }
 
     if (!this.window || this.window.isDestroyed() || forceReopenWindow) {
       if (this.window?.isDestroyed() === false) {

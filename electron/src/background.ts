@@ -29,6 +29,8 @@ export function getWindow() {
 }
 
 async function createWindow() {
+  await SettingsService.migrateSettingsVersion()
+
   registerUIIpcApi()
 
   // Create the browser window.
@@ -61,8 +63,6 @@ async function createWindow() {
     ChatControlService.close()
     BingoBoardOverlayService.close()
   })
-
-  await SettingsService.migrateSettingsVersion()
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode

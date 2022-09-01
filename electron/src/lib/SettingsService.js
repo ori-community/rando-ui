@@ -93,6 +93,8 @@ export class SettingsService {
       const lastVersion = (await fs.promises.readFile(LAST_VERSION_FILE, { encoding: 'utf-8' })).trim()
 
       if (lastVersion !== currentVersion && lastVersion !== 'develop') {
+        console.log(`SettingsService: Migrating from ${lastVersion} to ${currentVersion}`)
+
         const settings = await SettingsService.getCurrentSettings()
 
         // When switching from non-beta to beta or from beta to non-beta
@@ -130,7 +132,7 @@ export class SettingsService {
         console.log(`SettingsService: Migrations finished`)
 
         flatSettings = settings
-        await SettingsService.writeSettingsDebounced()
+        await SettingsService.writeSettings()
       } else {
         console.log(`SettingsService: Nothing to migrate`)
       }

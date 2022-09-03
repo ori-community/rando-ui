@@ -3,9 +3,9 @@
     <div v-if="library !== null">
       <wotw-seedgen-toolbar
         v-model="currentWorldIndex"
-        :preset="gameSettings"
-        :disabled="addingNewWorld"
-        @add-world="addingNewWorld = true"
+        :universe-preset="universeSettings"
+        :adding-new-world="addingNewWorld"
+        @add-world="addNewWorld()"
       />
 
       <v-card class="pa-5 seedgen">
@@ -15,8 +15,8 @@
           @done="onWorldSetupDone"
         />
         <wotw-seedgen-world-settings
-          v-else-if="gameSettings.world_settings.length > 0"
-          v-model="gameSettings.world_settings[currentWorldIndex]"
+          v-else-if="universeSettings.world_settings.length > 0"
+          v-model="universeSettings.world_settings[currentWorldIndex]"
         />
       </v-card>
     </div>
@@ -29,7 +29,7 @@
 
   const SeedgenWASM = import('@ori-rando/wotw-seedgen-wasm-ui')
 
-  const createDefaultGameSettings = () => ({
+  const createDefaultUniverseSettings = () => ({
     world_settings: [],
     disable_logic_filter: false,
     seed: null,
@@ -38,17 +38,28 @@
   export default {
     name: 'WotwSeedgen',
     data: () => ({
-      gameSettings: createDefaultGameSettings(),
+      universeSettings: createDefaultUniverseSettings(),
       addingNewWorld: true,
       currentWorldIndex: 0,
     }),
     computed: {
       ...mapState('seedgen', ['library']),
     },
+    watch: {
+      currentWorldIndex(value, oldValue) {
+        if (this.addingNewWorld && oldValue === this.universeSettings.world_settings.length) {
+          this.addingNewWorld = false
+        }
+      },
+    },
     mounted() {
       this.$store.dispatch('seedgen/fetchLibrary')
     },
     methods: {
+      addNewWorld() {
+        this.addingNewWorld = true
+        this.currentWorldIndex = this.universeSettings.world_settings.length
+      },
       async onWorldSetupDone(presets) {
         const seedgen = await SeedgenWASM
 
@@ -64,10 +75,10 @@
           )
         }
 
-        this.gameSettings.world_settings.push(
+        this.universeSettings.world_settings.push(
           JSON.parse(worldSettings.toJson()),
         )
-        this.currentWorldIndex = this.gameSettings.world_settings.length - 1
+        this.currentWorldIndex = this.universeSettings.world_settings.length - 1
         this.addingNewWorld = false
       },
     },

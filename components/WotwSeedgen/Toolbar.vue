@@ -1,17 +1,26 @@
 <template>
   <div class="d-flex align-center">
     <v-tabs
-      v-if="preset.world_settings.length >= 2"
+      v-if="displayedWorldCount >= 2"
       v-model='model'
       background-color="transparent"
     >
       <v-tab
-        v-for="(worldPreset, index) in preset.world_settings"
+        v-for="(worldPreset, index) in universePreset.world_settings"
         :key="index"
         :disabled="disabled"
       >
         <v-icon left>mdi-earth</v-icon>
         {{ index + 1 }}
+      </v-tab>
+
+      <v-tab
+        v-if="addingNewWorld"
+        key="new-world"
+        :disabled="disabled"
+      >
+        <v-icon left>mdi-earth</v-icon>
+        new
       </v-tab>
 
       <div class='d-flex align-center pl-3'>
@@ -25,7 +34,7 @@
       Multiworld
     </v-btn>
 
-    <v-spacer />
+    <v-spacer/>
 
     <v-menu offset-y left close-on-content-click :disabled="disabled">
       <template #activator="{ on, attrs }">
@@ -44,13 +53,13 @@
 </template>
 
 <script>
-  import { hasModelObject } from '~/assets/lib/hasModelObject'
+  import {hasModelObject} from '~/assets/lib/hasModelObject'
 
   export default {
     name: 'WotwSeedgenToolbar',
     mixins: [hasModelObject],
     props: {
-      preset: {
+      universePreset: {
         type: Object,
         required: true,
       },
@@ -58,7 +67,16 @@
         type: Boolean,
         default: false,
       },
+      addingNewWorld: {
+        type: Boolean,
+        default: false,
+      },
     },
+    computed: {
+      displayedWorldCount() {
+        return this.universePreset.world_settings.length + (this.addingNewWorld ? 1 : 0)
+      }
+    }
   }
 </script>
 

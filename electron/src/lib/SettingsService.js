@@ -24,8 +24,6 @@ const getDefaultSettings = () => {
       UseWinStore: false,
       Dev: false,
       MuteInjectLogs: false,
-      ShowShortCutscenes: false,
-      ShowLongCutscenes: false,
       HideQuestFilter: false,
       HideWarpFilter: false,
       HideCollectableFilter: false,

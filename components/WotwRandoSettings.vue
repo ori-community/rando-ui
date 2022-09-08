@@ -2,19 +2,6 @@
   <v-row v-if='settings !== null && settingsLoaded'>
     <v-col cols='12' md='6'>
       <div class='mb-8'>
-        <h3>Cutscenes</h3>
-        <v-checkbox
-          v-model='settings["Flags.ShowShortCutscenes"]'
-          label='Restore Short Cutscenes'
-          messages='Enables the short-but-unskippable cutscenes normally removed by the randomizer.'
-        />
-        <v-checkbox
-          v-model='settings["Flags.ShowLongCutscenes"]'
-          label='Restore Long Cutscenes'
-          messages='Enables the long, unskippable cutscenes normally removed by the randomizer.'
-        />
-      </div>
-      <div class='mb-8'>
         <h3>Map</h3>
         <v-checkbox
           v-model='settings["Flags.HideQuestFilter"]'
@@ -75,6 +62,28 @@
           messages='By default, the randomizer shows all secrets without having the Sense Shard equipped'
         />
       </div>
+      <div class='mb-8'>
+        <h3>Launch settings</h3>
+
+        <v-text-field
+          v-model='settings["Paths.Steam"]'
+          readonly
+          label='Steam path'
+          append-icon='mdi-folder-search-outline'
+          @click:append='selectSteamPath'
+        />
+
+        <v-checkbox
+          v-model='settings["Flags.DisableNetcode"]'
+          label='Disable Netcode'
+          messages='Checking this option prevents the randomizer from communicating with the rando server. With netcode disabled, bingo autotracking and other networked features will be unavailable.'
+        />
+        <v-checkbox
+          v-model='settings["Flags.UseWinStore"]'
+          label='Use Windows Store'
+          messages='Launch the rando using the windows store version of the game.'
+        />
+      </div>
     </v-col>
     <v-col cols='12' md='6'>
       <div class='mb-8'>
@@ -108,28 +117,6 @@
           v-model='settings["Flags.DisableAutoAim"]'
           label='Disable Autoaim'
           messages='Disables Autoaiming for Spike, Bow and Shuriken'
-        />
-      </div>
-      <div class='mb-8'>
-        <h3>Launch settings</h3>
-
-        <v-text-field
-          v-model='settings["Paths.Steam"]'
-          readonly
-          label='Steam path'
-          append-icon='mdi-folder-search-outline'
-          @click:append='selectSteamPath'
-        />
-
-        <v-checkbox
-          v-model='settings["Flags.DisableNetcode"]'
-          label='Disable Netcode'
-          messages='Checking this option prevents the randomizer from communicating with the rando server. With netcode disabled, bingo autotracking and other networked features will be unavailable.'
-        />
-        <v-checkbox
-          v-model='settings["Flags.UseWinStore"]'
-          label='Use Windows Store'
-          messages='Launch the rando using the windows store version of the game.'
         />
       </div>
       <div class='mb-8'>

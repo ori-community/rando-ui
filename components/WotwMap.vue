@@ -14,7 +14,6 @@
 
 <script>
   import * as PIXI from 'pixi.js'
-  import {Assets} from '@pixi/assets'
   import {Viewport} from 'pixi-viewport'
 
   export default {
@@ -39,7 +38,6 @@
         resizeTo: this.$refs.container,
         antialias: true,
       })
-
       const app = this.app
 
       this.viewport = new Viewport({
@@ -99,25 +97,26 @@
 
             this.loadingProgressMax++
 
-            const asset = await Assets.load(tileResource.default)
+            app.loader.add(`tile-${x}_${y}`, tileResource.default, (resource) => {
+              resource.texture.mipmap = PIXI.MIPMAP_MODES.ON
+              const tileSprite = new PIXI.Sprite(resource.texture)
+              tileSprite.x = 512 * x * TILE_SCALE + MAP_OFFSET_X
+              tileSprite.y = 512 * y * TILE_SCALE + MAP_OFFSET_Y
+              tileSprite.scale.x = TILE_SCALE
+              tileSprite.scale.y = TILE_SCALE
+              viewport.addChild(tileSprite)
 
-            asset.texture.mipmap = PIXI.MIPMAP_MODES.ON
-            const tileSprite = new PIXI.Sprite(asset.texture)
-            tileSprite.x = 512 * x * TILE_SCALE + MAP_OFFSET_X
-            tileSprite.y = 512 * y * TILE_SCALE + MAP_OFFSET_Y
-            tileSprite.scale.x = TILE_SCALE
-            tileSprite.scale.y = TILE_SCALE
-            viewport.addChild(tileSprite)
-
-            this.loadingProgressValue++
+              this.loadingProgressValue++
+            })
           })())
         }
       }
 
       await Promise.allSettled(promises)
-
-      console.log('Map loaded.')
-      await this.renderOverlay()
+      app.loader.load(async () => {
+        console.log('Map loaded.')
+        await this.renderOverlay()
+      })
     },
     beforeDestroy() {
       this.isDestroyed = true

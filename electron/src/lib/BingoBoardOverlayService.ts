@@ -41,9 +41,9 @@ export class BingoBoardOverlayService {
       this.window.setIgnoreMouseEvents(true, {
         forward: true,
       })
-
-      await this.window.loadURL(getElectronUrl(`/game/${multiverseId}?isBingoBoardOverlay=true&registerInteractiveHandlers=false`))
     }
+
+    await this.window.loadURL(getElectronUrl(`/game/${multiverseId}?isBingoBoardOverlay=true&registerInteractiveHandlers=false`))
   }
 
   static async show() {

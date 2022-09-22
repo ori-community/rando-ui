@@ -126,8 +126,6 @@
           }
         }
 
-        console.log(stops)
-
         if (stops.length === 0) {
           return {}
         }

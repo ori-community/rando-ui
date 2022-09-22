@@ -23,7 +23,7 @@
         new
       </v-tab>
 
-      <div class='d-flex align-center pl-3'>
+      <div v-if="!addingNewWorld" class='d-flex align-center pl-3'>
         <v-btn :disabled="disabled" icon @click="$emit('add-world')">
           <v-icon>mdi-plus</v-icon>
         </v-btn>

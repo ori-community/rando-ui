@@ -8,17 +8,21 @@
         @add-world="addNewWorld()"
       />
 
-      <v-card class="pa-5 seedgen">
-        <wotw-seedgen-world-preset-setup
-          v-if="addingNewWorld"
-          class="preset-setup"
-          @done="onWorldSetupDone"
-        />
-        <wotw-seedgen-world-settings
-          v-else-if="universeSettings.world_settings.length > 0"
-          v-model="universeSettings.world_settings[currentWorldIndex]"
-        />
-      </v-card>
+      <v-slide-y-reverse-transition :duration="{enter: 200, leave: 0}" mode="out-in">
+        <v-card :key="currentWorldIndex" class="pa-5 seedgen">
+          <v-scroll-x-reverse-transition :duration="{enter: 200, leave: 0}" mode="out-in">
+            <wotw-seedgen-world-preset-setup
+              v-if="addingNewWorld"
+              class="preset-setup"
+              @done="onWorldSetupDone"
+            />
+            <wotw-seedgen-world-settings
+              v-else-if="universeSettings.world_settings.length > 0"
+              v-model="universeSettings.world_settings[currentWorldIndex]"
+            />
+          </v-scroll-x-reverse-transition>
+        </v-card>
+      </v-slide-y-reverse-transition>
     </div>
   </throttled-spinner>
 </template>

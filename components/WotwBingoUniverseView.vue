@@ -1,25 +1,29 @@
 <template>
-  <v-card class='universe-view' :class='{"universe-hidden": universeHidden}' @click='$emit("click")'>
-    <v-sheet :color='universeHidden ? "" : universe.color' class='color-stripe'>
-      <div v-if='!!bingoUniverse' class='squares px-2'>
-        {{ bingoUniverse.squares }}
+  <v-card
+    class="universe-view"
+    :class="{ 'universe-hidden': universeHidden }"
+    @click="$emit('click')"
+  >
+    <v-sheet :color="universeHidden ? '' : universe.color" class="color-stripe">
+      <div v-if="!!bingoUniverse" class="squares px-2">
+        {{ universeHidden ? '?' : bingoUniverse.squares }}
       </div>
     </v-sheet>
-    <div v-if='!!universe' class='pa-2 players'>
-      <template v-for='world in universe.worlds'>
+    <div v-if="!!universe" class="pa-2 players">
+      <template v-for="world in universe.worlds">
         <wotw-player-view
-          v-for='player in world.members'
-          :key='player.id'
-          class='player-view'
-          :user='player'
-          :size='24'
+          v-for="player in world.members"
+          :key="player.id"
+          class="player-view"
+          :user="player"
+          :size="24"
         />
       </template>
     </div>
     <v-spacer />
-    <div v-if='!!bingoUniverse' class='lines px-3'>
-      <v-icon size='16'>mdi-vector-line</v-icon>
-      {{ bingoUniverse.lines }}
+    <div v-if="!!bingoUniverse" class="lines px-3">
+      <v-icon size="16">mdi-vector-line</v-icon>
+      {{ universeHidden ? '?' : bingoUniverse.lines }}
     </div>
   </v-card>
 </template>
@@ -41,7 +45,7 @@
       universeHidden: {
         type: Boolean,
         default: false,
-      }
+      },
     },
     computed: {
       ...mapState('user', ['user']),
@@ -49,7 +53,7 @@
   }
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
   .universe-view {
     overflow: hidden;
     display: flex;

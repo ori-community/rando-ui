@@ -1,38 +1,62 @@
 <template>
   <div>
     <v-container>
-      <div class='d-flex justify-center align-center mt-12 mb-6'>
-        <v-tooltip top open-delay='500'>
-          <template #activator='{on}'>
-            <v-btn class='ml-2' :disabled='!canLock || lockGameLoading' icon v-on='on' @click='toggleGameLock'>
-              <v-icon :class='multiverse?.locked ? "lock-animation" : "unlock-animation"'>{{ multiverse?.locked ? 'mdi-lock' : 'mdi-lock-open-outline' }}</v-icon>
+      <div class="d-flex justify-center align-center mt-12 mb-6">
+        <v-tooltip top open-delay="500">
+          <template #activator="{ on }">
+            <v-btn
+              class="ml-2"
+              :disabled="!canLock || lockGameLoading"
+              icon
+              v-on="on"
+              @click="toggleGameLock"
+            >
+              <v-icon
+                :class="
+                  multiverse?.locked ? 'lock-animation' : 'unlock-animation'
+                "
+                >{{
+                  multiverse?.locked ? 'mdi-lock' : 'mdi-lock-open-outline'
+                }}</v-icon
+              >
             </v-btn>
           </template>
-          <span v-if='canLock'>{{ multiverse?.locked ? 'Unlock' : 'Lock' }} this game</span>
-          <span v-else>This game is {{ multiverse?.locked ? 'locked' : 'unlocked' }}</span>
+          <span v-if="canLock"
+            >{{ multiverse?.locked ? 'Unlock' : 'Lock' }} this game</span
+          >
+          <span v-else
+            >This game is {{ multiverse?.locked ? 'locked' : 'unlocked' }}</span
+          >
         </v-tooltip>
-        <h1 class='text-center mx-4'>
+        <h1 class="text-center mx-4">
           Game <small>#</small>{{ multiverseId }}
         </h1>
-        <v-tooltip top open-delay='500'>
-          <template #activator='{on}'>
-            <v-btn v-on='on' icon :disabled='gameLinkCopied' @click='copyGameLink'>
-              <v-icon>{{ gameLinkCopied ? 'mdi-clipboard-check-outline' : 'mdi-link' }}</v-icon>
+        <v-tooltip top open-delay="500">
+          <template #activator="{ on }">
+            <v-btn
+              v-on="on"
+              icon
+              :disabled="gameLinkCopied"
+              @click="copyGameLink"
+            >
+              <v-icon>{{
+                gameLinkCopied ? 'mdi-clipboard-check-outline' : 'mdi-link'
+              }}</v-icon>
             </v-btn>
           </template>
           <span>Copy game link</span>
         </v-tooltip>
       </div>
 
-      <div class='text-center my-6'>
+      <div class="text-center my-6">
         <v-tooltip bottom>
-          <template #activator='{on}'>
+          <template #activator="{ on }">
             <v-btn
-              v-if='!isElectron'
-              v-on='on'
-              color='accent'
+              v-if="!isElectron"
+              v-on="on"
+              color="accent"
               x-large
-              @click='openInLauncher'
+              @click="openInLauncher"
             >
               <v-icon left>mdi-launch</v-icon>
               Open in Launcher
@@ -43,27 +67,28 @@
       </div>
 
       <throttled-spinner>
-        <div v-if='isLoggedIn && multiverseReady'>
-          <wotw-multiverse-view :multiverse='multiverse' />
+        <div v-if="isLoggedIn && multiverseReady">
+          <wotw-multiverse-view :multiverse="multiverse" />
 
-          <div v-if='devtoolsEnabled' class='mt-5'>
-            <v-card class='pa-4'>
+          <div v-if="devtoolsEnabled" class="mt-5">
+            <v-card class="pa-4">
               <h3>Dispatch custom event</h3>
-              <v-text-field v-model='dev.customEventName' label='Event' />
+              <v-text-field v-model="dev.customEventName" label="Event" />
 
-              <div class='d-flex'>
+              <div class="d-flex">
                 <v-spacer />
-                <v-btn depressed color='accent' @click='dispatchCustomEvent'>
+                <v-btn depressed color="accent" @click="dispatchCustomEvent">
                   Dispatch
                 </v-btn>
               </div>
             </v-card>
           </div>
         </div>
-        <div v-if='!isLoggedIn && userLoaded' class='text-center'>
-          <v-alert class='d-inline-block' color='error darken-3'>
-            <template v-if='isOBS'>
-              <b>DO NOT</b> add this page to OBS directly. Please use the "Embed" feature above the board.
+        <div v-if="!isLoggedIn && userLoaded" class="text-center">
+          <v-alert class="d-inline-block" color="error darken-3">
+            <template v-if="isOBS">
+              <b>DO NOT</b> add this page to OBS directly. Please use the
+              "Embed" feature above the board.
             </template>
             <template v-else>
               You need to be logged in to view this game.
@@ -73,13 +98,13 @@
       </throttled-spinner>
     </v-container>
 
-    <template v-if='isLoggedIn && multiverseReady && !!multiverse.bingoBoard'>
+    <template v-if="isLoggedIn && multiverseReady && !!multiverse.bingoBoard">
       <v-container>
-        <h2 class='text-center mb-3 mt-8'>Bingo board</h2>
+        <h2 class="text-center mb-3 mt-8">Bingo board</h2>
 
-        <div class='text-center mb-1'>
-          <v-btn text @click='centerBoard'>
-            <template v-if='showBoard'>
+        <div class="text-center mb-1">
+          <v-btn text @click="centerBoard">
+            <template v-if="showBoard">
               <v-icon left>mdi-image-filter-center-focus-strong-outline</v-icon>
               Center on screen
             </template>
@@ -88,17 +113,17 @@
               Show board
             </template>
           </v-btn>
-          <v-btn text @click='boardSettingsOpen = true'>
+          <v-btn text @click="boardSettingsOpen = true">
             <v-icon left>mdi-cog-outline</v-icon>
             Settings
           </v-btn>
           <v-btn
-            v-if='isElectron'
-            :disabled='bingoOverlayEnabled'
+            v-if="isElectron"
+            :disabled="bingoOverlayEnabled"
             text
-            @click='enableBingoOverlay'
+            @click="enableBingoOverlay"
           >
-            <template v-if='bingoOverlayEnabled'>
+            <template v-if="bingoOverlayEnabled">
               <v-icon left>mdi-check</v-icon>
               Overlay enabled
             </template>
@@ -108,12 +133,12 @@
             </template>
           </v-btn>
           <v-btn
-            :disabled='embedUrlCopied'
-            :loading='embedUrlLoading'
+            :disabled="embedUrlCopied"
+            :loading="embedUrlLoading"
             text
-            @click='createEmbedUrl'
+            @click="createEmbedUrl"
           >
-            <template v-if='embedUrlCopied'>
+            <template v-if="embedUrlCopied">
               <v-icon left>mdi-check</v-icon>
               URL Copied
             </template>
@@ -122,53 +147,76 @@
               Embed (OBS)
             </template>
           </v-btn>
-          <v-btn :disabled='isSpectating' text @click='spectateDialogOpen = true'>
+          <v-btn
+            :disabled="isSpectating"
+            text
+            @click="spectateDialogOpen = true"
+          >
             <v-icon left>mdi-monitor-eye</v-icon>
             Spectate
           </v-btn>
         </div>
       </v-container>
 
-      <div ref='boardContainer' :class='{"px-1": !boardSettings.obsMode}' class='board-container'>
-        <template v-if='showBoard'>
+      <div
+        ref="boardContainer"
+        :class="{ 'px-1': !boardSettings.obsMode }"
+        class="board-container"
+      >
+        <template v-if="showBoard">
           <wotw-bingo-board
-            :edge-labels='boardSettings.edgeLabels'
-            :multiverse='multiverse'
-            :hidden-universes='hiddenUniverses'
-            :highlight-universe='highlightedUniverseId'
-            :own-universe-id='ownUniverseId'
-            :card-attention-effect='boardSettings.cardAttentionEffect'
-            class='board'
+            :edge-labels="boardSettings.edgeLabels"
+            :multiverse="multiverse"
+            :hidden-universes="hiddenUniverses"
+            :highlight-universe="highlightedUniverseId"
+            :own-universe-id="ownUniverseId"
+            :card-attention-effect="boardSettings.cardAttentionEffect"
+            class="board"
           />
-          <div class='sidebar px-5'>
-            <transition-group class='bingo-universes' name='list'>
+          <div class="sidebar px-5">
+            <transition-group class="bingo-universes" name="list">
               <div
-                v-for='(bingoUniverse, index) in sortedBingoUniverses'
-                :key='bingoUniverse.universeId'
-                :style='{zIndex: sortedBingoUniverses.length - index}'
-                class='relative'
+                v-for="(bingoUniverse, index) in sortedBingoUniverses"
+                :key="bingoUniverse.universeId"
+                :style="{ zIndex: sortedBingoUniverses.length - index }"
+                class="relative"
               >
                 <wotw-bingo-universe-view
-                  :bingo-universe='bingoUniverse'
-                  :universe='multiverse.universes.find(u => u.id === bingoUniverse.universeId)'
-                  :universe-hidden='hiddenUniverses.includes(bingoUniverse.universeId)'
-                  @click='toggleUniverseVisibility(bingoUniverse.universeId)'
-                  @click.native.ctrl.capture.stop='toggleUniverseVisibility(bingoUniverse.universeId, true)'
+                  :bingo-universe="bingoUniverse"
+                  :universe="
+                    multiverse.universes.find(
+                      (u) => u.id === bingoUniverse.universeId,
+                    )
+                  "
+                  :universe-hidden="
+                    hiddenUniverses.includes(bingoUniverse.universeId)
+                  "
+                  @click="toggleUniverseVisibility(bingoUniverse.universeId)"
+                  @click.native.ctrl.capture.stop="
+                    toggleUniverseVisibility(bingoUniverse.universeId, true)
+                  "
                 />
               </div>
 
               <div
-                v-if='!boardSettings.hideSpectators && multiverse.spectators.length > 0'
-                key='spectators'
-                class='mt-4'
+                v-if="
+                  !boardSettings.hideSpectators &&
+                  multiverse.spectators.length > 0
+                "
+                key="spectators"
+                class="mt-4"
               >
-                <div class='text-caption'>Spectators</div>
+                <div class="text-caption">Spectators</div>
 
-                <v-tooltip v-for='spectator in multiverse.spectators' :key='spectator.id' top>
+                <v-tooltip
+                  v-for="spectator in multiverse.spectators"
+                  :key="spectator.id"
+                  top
+                >
                   <span>{{ spectator.name }}</span>
-                  <template #activator='{on}'>
-                    <span v-on='on'>
-                      <discord-avatar :user='spectator' />
+                  <template #activator="{ on }">
+                    <span v-on="on">
+                      <discord-avatar :user="spectator" />
                     </span>
                   </template>
                 </v-tooltip>
@@ -178,63 +226,77 @@
         </template>
       </div>
 
-      <v-dialog v-model='boardSettingsOpen' max-width='500'>
-        <v-card class='pa-5 relative'>
+      <v-dialog v-model="boardSettingsOpen" max-width="500">
+        <v-card class="pa-5 relative">
           <h2>Bingo settings</h2>
 
           <v-btn
-            class='close-button'
-            color='background lighten-5'
+            class="close-button"
+            color="background lighten-5"
             icon
-            @click='boardSettingsOpen = false'
+            @click="boardSettingsOpen = false"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn>
 
           <v-checkbox
-            v-model='boardSettings.edgeLabels'
-            hint='Show coordinates around the board'
-            label='Edge Labels'
+            v-model="boardSettings.edgeLabels"
+            hint="Show coordinates around the board"
+            label="Edge Labels"
             persistent-hint
           />
 
           <v-checkbox
-            v-model='boardSettings.highlightOwnUniverse'
-            hint='Reserve bottom left parts of bingo squares for your team. Greatly improves overview of your progress.'
-            label='Highlight own team'
+            v-model="boardSettings.highlightOwnUniverse"
+            hint="Reserve bottom left parts of bingo squares for your team. Greatly improves overview of your progress."
+            label="Highlight own team"
             persistent-hint
           />
 
           <v-checkbox
-            v-model='boardSettings.hideSpectators'
-            hint='Hide spectators from the player list next to the board'
-            label='Hide spectators'
+            v-model="boardSettings.hideSpectators"
+            hint="Hide spectators from the player list next to the board"
+            label="Hide spectators"
             persistent-hint
           />
 
           <v-checkbox
-            v-model='boardSettings.cardAttentionEffect'
-            hint='Flash cards when their value changes'
-            label='Flash cards'
+            v-model="boardSettings.cardAttentionEffect"
+            hint="Flash cards when their value changes"
+            label="Flash cards"
             persistent-hint
           />
         </v-card>
       </v-dialog>
 
-      <v-dialog v-model='spectateDialogOpen' :persistent='spectateLoading' max-width='500'>
-        <v-card class='pa-5 relative'>
+      <v-dialog
+        v-model="spectateDialogOpen"
+        :persistent="spectateLoading"
+        max-width="500"
+      >
+        <v-card class="pa-5 relative">
           <h2>Spectate this game</h2>
 
           Spectating the game lets you see all squares that have been discovered
-          by at least one team.<br>
+          by at least one team.<br />
           Please note that you <b>cannot join this game anymore</b> after you
           chose to spectate.
 
-          <div class='d-flex justify-end'>
-            <v-btn :disabled='spectateLoading' class='mr-1' text @click='spectateDialogOpen = false'>
+          <div class="d-flex justify-end">
+            <v-btn
+              :disabled="spectateLoading"
+              class="mr-1"
+              text
+              @click="spectateDialogOpen = false"
+            >
               Cancel
             </v-btn>
-            <v-btn :loading='spectateLoading' color='accent' depressed @click='spectate'>
+            <v-btn
+              :loading="spectateLoading"
+              color="accent"
+              depressed
+              @click="spectate"
+            >
               Spectate
             </v-btn>
           </div>
@@ -299,9 +361,14 @@
         // Only return bingo teams for which we have a team
         const universes = this.multiverse.universes
         return [
-          ...this.multiverse.bingoUniverses.filter(b => universes.some(u => u.id === b.universeId)),
+          ...this.multiverse.bingoUniverses.filter((b) =>
+            universes.some((u) => u.id === b.universeId),
+          ),
         ].sort((a, b) => {
-          const rankDifference = b.rank - a.rank
+          const aRank = this.hiddenUniverses.includes(a.universeId) ? 0 : a.rank
+          const bRank = this.hiddenUniverses.includes(b.universeId) ? 0 : b.rank
+
+          const rankDifference = bRank - aRank
 
           if (rankDifference === 0) {
             return a.universeId - b.universeId
@@ -314,11 +381,9 @@
         return this.multiverse.universes.length < 8
       },
       ownUniverse() {
-        return this.multiverse.universes.find(
-          universe => universe.worlds.find(
-            world => world.members.find(
-              player => player.id === this.user?.id,
-            ),
+        return this.multiverse.universes.find((universe) =>
+          universe.worlds.find((world) =>
+            world.members.find((player) => player.id === this.user?.id),
           ),
         )
       },
@@ -326,7 +391,10 @@
         return this.ownUniverse?.id
       },
       highlightedUniverseId() {
-        if (!this.boardSettings.highlightOwnUniverse || this.multiverse.universes.length <= 1) {
+        if (
+          !this.boardSettings.highlightOwnUniverse ||
+          this.multiverse.universes.length <= 1
+        ) {
           return null
         }
 
@@ -337,7 +405,7 @@
           return false
         }
 
-        return this.multiverse.spectators.some(s => s.id === this.user.id)
+        return this.multiverse.spectators.some((s) => s.id === this.user.id)
       },
       launcherUrl() {
         return `ori-rando://game/${this.multiverseId}`
@@ -346,7 +414,11 @@
         return this.$route.query.isBingoBoardOverlay === 'true'
       },
       isPlayer() {
-        return this.multiverse?.universes.some(u => u.worlds.some(w => w.members.some(m => m.id === this.user.id))) ?? false
+        return (
+          this.multiverse?.universes.some((u) =>
+            u.worlds.some((w) => w.members.some((m) => m.id === this.user.id)),
+          ) ?? false
+        )
       },
       canLock() {
         return this.isPlayer
@@ -368,7 +440,10 @@
         immediate: true,
         async handler(isLoggedIn) {
           if (isLoggedIn) {
-            await this.$store.dispatch('multiverseState/fetchMultiverse', this.multiverseId)
+            await this.$store.dispatch(
+              'multiverseState/fetchMultiverse',
+              this.multiverseId,
+            )
             await this.$store.dispatch('multiverseState/connectMultiverse', {
               multiverseId: this.multiverseId,
             })
@@ -379,7 +454,10 @@
       boardSettings: {
         deep: true,
         handler(boardSettings) {
-          window.localStorage.setItem('boardSettings', JSON.stringify(boardSettings))
+          window.localStorage.setItem(
+            'boardSettings',
+            JSON.stringify(boardSettings),
+          )
         },
       },
       // Probably solved?
@@ -427,14 +505,18 @@
     },
     methods: {
       async join(worldId) {
-        await this.$axios.post(`/multiverses/${this.multiverseId}/worlds/${worldId}`)
+        await this.$axios.post(
+          `/multiverses/${this.multiverseId}/worlds/${worldId}`,
+        )
         await this.$store.dispatch('multiverseState/connectMultiverse', {
           multiverseId: this.multiverseId,
           reconnect: true,
         })
       },
       async createWorld(universeId = null) {
-        await this.$axios.post(`/multiverses/${this.multiverseId}/${universeId}/worlds`)
+        await this.$axios.post(
+          `/multiverses/${this.multiverseId}/${universeId}/worlds`,
+        )
       },
       centerBoard() {
         this.$refs.boardContainer.scrollIntoView({
@@ -445,13 +527,21 @@
       },
       toggleUniverseVisibility(universeId, exclusive = false) {
         if (exclusive) {
-          if (this.hiddenUniverses.length === this.sortedBingoUniverses.length - 1 && !this.hiddenUniverses.includes(universeId)) {
+          if (
+            this.hiddenUniverses.length ===
+              this.sortedBingoUniverses.length - 1 &&
+            !this.hiddenUniverses.includes(universeId)
+          ) {
             this.hiddenUniverses = []
           } else {
-            this.hiddenUniverses = this.sortedBingoUniverses.map(b => b.universeId).filter(u => u !== universeId)
+            this.hiddenUniverses = this.sortedBingoUniverses
+              .map((b) => b.universeId)
+              .filter((u) => u !== universeId)
           }
         } else if (this.hiddenUniverses.includes(universeId)) {
-          this.hiddenUniverses = this.hiddenUniverses.filter(u => u !== universeId)
+          this.hiddenUniverses = this.hiddenUniverses.filter(
+            (u) => u !== universeId,
+          )
         } else {
           this.hiddenUniverses.push(universeId)
         }
@@ -473,7 +563,10 @@
           },
         })
 
-        const url = new URL(targetRoute.href.replace('/#', ''), this.$paths.UI_BASE_URL)
+        const url = new URL(
+          targetRoute.href.replace('/#', ''),
+          this.$paths.UI_BASE_URL,
+        )
         await window.navigator.clipboard.writeText(url.toString())
 
         this.embedUrlLoading = false
@@ -485,7 +578,10 @@
         }, 4000)
       },
       async copyGameLink() {
-        const url = new URL(`/game/${this.multiverseId}`, this.$paths.UI_BASE_URL)
+        const url = new URL(
+          `/game/${this.multiverseId}`,
+          this.$paths.UI_BASE_URL,
+        )
         await navigator.clipboard.writeText(url.toString())
         this.gameLinkCopied = true
 
@@ -497,7 +593,10 @@
         this.spectateLoading = true
 
         try {
-          await this.$store.dispatch('multiverseState/spectateMultiverse', this.multiverseId)
+          await this.$store.dispatch(
+            'multiverseState/spectateMultiverse',
+            this.multiverseId,
+          )
           this.spectateDialogOpen = false
         } catch (e) {
           console.error(e)
@@ -506,10 +605,14 @@
         this.spectateLoading = false
       },
       onScroll() {
-        this.hideSeedgenResultCompletely = document.scrollingElement.scrollTop > 200
+        this.hideSeedgenResultCompletely =
+          document.scrollingElement.scrollTop > 200
       },
       async enableBingoOverlay() {
-        await window.electronApi.invoke('bingoBoardOverlay.prepare', this.multiverseId)
+        await window.electronApi.invoke(
+          'bingoBoardOverlay.prepare',
+          this.multiverseId,
+        )
         this.bingoOverlayEnabled = true
 
         setTimeout(() => {
@@ -527,7 +630,9 @@
       },
       async dispatchCustomEvent() {
         try {
-          await this.$axios.post(`/multiverses/${this.multiverseId}/event/${this.dev.customEventName}`)
+          await this.$axios.post(
+            `/multiverses/${this.multiverseId}/event/${this.dev.customEventName}`,
+          )
         } catch (e) {
           console.error(e)
         }
@@ -540,7 +645,9 @@
         this.lockGameLoading = true
 
         try {
-          await this.$axios.post(`/multiverses/${this.multiverseId}/toggle-lock`)
+          await this.$axios.post(
+            `/multiverses/${this.multiverseId}/toggle-lock`,
+          )
         } catch (e) {
           console.error(e)
         }
@@ -551,7 +658,7 @@
   }
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
   .universes {
     align-items: flex-start;
     display: flex;

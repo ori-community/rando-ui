@@ -45,6 +45,7 @@ const getDefaultSettings = () => {
       DisableShowSecrets: false,
       DisableAutoAim: false,
       AlwaysShowKeystoneDoors: false,
+      SelectInLogicFilterByDefault: true,
       Insecure: false,
     },
     Values: {

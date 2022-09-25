@@ -57,6 +57,11 @@
           messages='Keep your keystone count visible while playing'
         />
         <v-checkbox
+          v-model='settings["Flags.SelectInLogicFilterByDefault"]'
+          label='Start with In Logic filter'
+          messages='Select the In Logic map filter by default instead of the All filter'
+        />
+        <v-checkbox
           v-model='settings["Flags.DisableShowSecrets"]'
           label='Disable always showing secret areas'
           messages='By default, the randomizer shows all secrets without having the Sense Shard equipped'

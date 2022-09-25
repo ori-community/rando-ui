@@ -10,7 +10,7 @@ export default {
   },
   async selectSteamPath() {
     const result = await dialog.showOpenDialog({
-      defaultPath: (await SettingsService.getCurrentSettings()).Paths.Steam,
+      defaultPath: (await SettingsService.getCurrentSettings())['Paths.Steam'],
       properties: ['openFile'],
       filters: [
         { name: 'Executables', extensions: ['exe'] },

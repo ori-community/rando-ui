@@ -13,7 +13,7 @@ export class WindowService {
       },
       paintWhenInitiallyHidden: true,
       show: false,
-      backgroundColor: '#050e17',
+      backgroundColor: options.transparent ? undefined : '#050e17',
       darkTheme: true,
       ...options,
     })

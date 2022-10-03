@@ -9,7 +9,7 @@
     {
       "files": ["*.vue"],
       "options": {
-        "printWidth": 80
+        "printWidth": 120
       }
     }
   ]

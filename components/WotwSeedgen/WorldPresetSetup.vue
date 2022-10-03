@@ -2,6 +2,24 @@
   <div>
     <v-window vertical :value="state">
       <v-window-item value="select_base_preset">
+        <template v-if="universeSettings.world_settings.length > 0">
+          <h2 class="mb-3">Copy settings from an existing world</h2>
+
+          <div class="mb-5">
+            <v-btn
+              v-for="(world, index) in universeSettings.world_settings"
+              :key="index"
+              depressed
+              color="background lighten-2"
+              class="mr-2"
+              @click="onCopyFromWorldClicked(index)"
+            >
+              <v-icon left>mdi-earth</v-icon>
+              {{ index + 1 }}
+            </v-btn>
+          </div>
+        </template>
+
         <h2 class="mb-3">Select a base preset</h2>
 
         <v-card
@@ -22,7 +40,7 @@
         </v-card>
 
         <div class="mt-5 text-right">
-          or <a @click="$emit('done', [])">start from scratch</a>
+          or <a @click="$emit('create-new-world', [])">start from scratch</a>
         </div>
       </v-window-item>
 
@@ -32,9 +50,9 @@
           Select any amount of additional configuration presets to apply in
           addition to the
           <b>{{
-              library.worldPresets[selectedBasePresetId]?.info?.name ??
-              selectedBasePresetId
-            }}</b>
+            library.worldPresets[selectedBasePresetId]?.info?.name ??
+            selectedBasePresetId
+          }}</b>
           preset.
         </div>
 
@@ -65,6 +83,12 @@
 
   export default {
     name: 'WorldPresetSetup',
+    props: {
+      universeSettings: {
+        type: Object,
+        required: true,
+      },
+    },
     data: () => ({
       selectedBasePresetId: null,
       selectedOverlayPresets: [],
@@ -105,7 +129,13 @@
         }
       },
       onDoneClicked() {
-        this.$emit('done', [this.selectedBasePresetId].concat(this.selectedOverlayPresets))
+        this.$emit(
+          'create-new-world',
+          [this.selectedBasePresetId].concat(this.selectedOverlayPresets),
+        )
+      },
+      onCopyFromWorldClicked(worldIndex) {
+        this.$emit('copy-from-world', worldIndex)
       },
     },
   }

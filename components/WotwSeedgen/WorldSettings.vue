@@ -73,6 +73,10 @@
           </v-btn>
         </div>
       </v-col>
+
+      <v-col cols="12">
+        <wotw-seedgen-headers-select v-model="model.headers" />
+      </v-col>
     </v-row>
   </div>
 </template>
@@ -99,7 +103,7 @@
             icon: 'mdi-map-marker-question-outline',
           },
           {
-            name: 'Random Position',
+            name: 'Random Position (Beta)',
             id: 'FullyRandom',
             icon: 'mdi-shuffle',
           },

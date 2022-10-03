@@ -7,6 +7,9 @@ export type SeedgenLibrary = {
     [id: string]: any,
   },
   headers: {
-    [id: string]: any,
+    [id: string]: {
+      content: string,
+      name: string,
+    },
   },
 }

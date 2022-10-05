@@ -1,5 +1,7 @@
 <template>
   <div>
+    <h2 class="mb-2">General</h2>
+
     <v-row>
       <v-col cols="12" md="6">
         <v-select

@@ -32,7 +32,7 @@
     },
     methods: {
       async launchOrDownloadSeed() {
-        const url = `${this.$axios.defaults.baseURL}/seeds/${this.seedId}/file`
+        const url = `${this.$axios.defaults.baseURL}/world-seeds/${this.seedId}/file`
         const fileName = `${this.seedId}.wotwr`
 
         if (isElectron()) {

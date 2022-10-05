@@ -1,20 +1,24 @@
 <template>
-  <div>
-    <div v-for="(headers, category) in groupedVisibleHeaders" :key="category" class="mb-5">
+  <v-row>
+    <v-col v-for="(headers, category) in groupedVisibleHeaders" :key="category" cols="12" md="6" lg="4" xl="3">
       <h2 class="mb-2">{{ category }}</h2>
 
       <div class="headers-group">
         <v-tooltip v-for="header in headers" :key="header.name" top>
           <template #activator="{ on }">
-            <wotw-seedgen-toggleable-button v-model="headerSelectedStates[header.name]" v-on="on">
+            <wotw-seedgen-toggleable-button
+              v-model="headerSelectedStates[header.name]"
+              :description="header.description"
+              v-on="on"
+            >
               {{ header.displayName }}
             </wotw-seedgen-toggleable-button>
           </template>
           <span>{{ header.description }}</span>
         </v-tooltip>
       </div>
-    </div>
-  </div>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -68,8 +72,10 @@
           groupedVisibleHeaders[category] = headers
         }
 
-        // eslint-disable-next-line dot-notation
-        groupedVisibleHeaders['Other'] = uncategorizedHeaders
+        if (uncategorizedHeaders.length > 0) {
+          // eslint-disable-next-line dot-notation
+          groupedVisibleHeaders['Other'] = uncategorizedHeaders
+        }
 
         // Sort headers in categories
         for (const headers of Object.values(groupedVisibleHeaders)) {
@@ -110,7 +116,7 @@
           }
 
           this.model = selectedHeaders
-        }
+        },
       },
       model: {
         immediate: true,
@@ -136,7 +142,6 @@
   .headers-group {
     display: flex;
     flex-wrap: wrap;
-    flex-grow: 0;
     gap: 0.4em;
   }
 </style>

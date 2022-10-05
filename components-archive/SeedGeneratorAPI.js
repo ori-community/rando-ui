@@ -1,10 +1,10 @@
 import {saveAs} from 'file-saver'
 import {EventBus} from '~/assets/lib/EventBus'
 import {getDb} from '~/assets/db/database'
-import {APIClient} from '~/assets/lib/api/APIClient'
+import {AxiosAPI} from '~/assets/lib/api/AxiosAPI'
 
 const seedFromId = seedId => ({
-  url: `${APIClient.axios.defaults.baseURL}/seeds/${seedId}/file`,
+  url: `${AxiosAPI.axios.defaults.baseURL}/world-seeds/${seedId}/file`,
   fileName: `${seedId}.wotwr`,
 })
 
@@ -49,7 +49,7 @@ export class SeedGeneratorResult {
   }
 }
 
-export class SeedGeneratorAPI extends APIClient {
+export class SeedGeneratorAPI extends AxiosAPI {
   async generateSeeds(seedgenConfig) {
 
     // Convert empty string seed to null
@@ -69,7 +69,7 @@ export class SeedGeneratorAPI extends APIClient {
     }
 
     // Generate seeds
-    const response = await APIClient.axios.$post('/seeds', {
+    const response = await AxiosAPI.axios.$post('/seeds', {
       ...seedgenConfig,
       ...additionalParameters,
     })

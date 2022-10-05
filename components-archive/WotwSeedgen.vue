@@ -158,7 +158,7 @@
                         :input-value="data.selected"
                         @click:close="data.parent.selectItem(data.item)"
                       >
-                        <v-avatar class="accent white--text" left v-text="data.item.slice(0, 1).toUpperCase()"></v-avatar>
+                        <!-- <v-avatar class="accent white--text" left v-text="data.item.slice(0, 1).toUpperCase()"></v-avatar> -->
                         {{ data.item }}
                       </v-chip>
                     </template>
@@ -254,7 +254,7 @@
           <h3 class='mt-5 mb-2'>Custom headers</h3>
           <wotw-seedgen-custom-header-select v-model='seedgenConfig.customHeaders'/>
         </v-tab-item>
-        
+
       </v-tabs> -->
       </v-tabs>
     </v-card>
@@ -333,8 +333,8 @@
   import { confettiFromElement } from '~/assets/lib/confettiFromElement'
   import { isElectron } from '~/assets/lib/isElectron'
   import { EventBus } from '~/assets/lib/EventBus'
-  import { SeedGeneratorAPI } from '~/assets/lib/api/SeedGeneratorAPI'
-  import { GAME_TYPE_NONE, MultiverseAPIClient } from '~/assets/lib/api/MultiverseAPIClient'
+  import { SeedGeneratorAPI } from '~/components-archive/SeedGeneratorAPI'
+  import { GAME_TYPE_NONE, MultiverseAPIClient } from '~/components-archive/MultiverseAPIClient'
 
   const BINGO_HEADER_NAME = 'bingo'
   const LAST_SEEDGEN_CONFIG_LOCALSTORAGE_KEY = 'last_seedgen_config'

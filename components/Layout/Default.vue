@@ -29,9 +29,9 @@
   import { mapState } from 'vuex'
   import { isElectron } from '~/assets/lib/isElectron'
   import { EventBus } from '~/assets/lib/EventBus'
-  import {APIClient} from '~/assets/lib/api/APIClient'
 
   export default {
+    name: 'LayoutDefault',
     components: {
       VSnackbars,
     },
@@ -53,8 +53,6 @@
       },
     },
     async beforeMount() {
-      APIClient.setAxios(this.$axios)
-
       EventBus.$on('notification', ({ message, color = 'accent', timeout = 10000 }) => {
         this.notifications.push({
           message,
@@ -64,8 +62,6 @@
           top: true,
           centered: true,
         })
-
-        console.log(this.notifications)
       })
 
       if (isElectron()) {

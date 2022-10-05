@@ -20,27 +20,35 @@
                 @copy-from-world="createNewWorldFromExistingWorld"
               />
               <wotw-seedgen-world-settings
-                v-else-if="universeSettings.world_settings.length > 0"
-                v-model="universeSettings.world_settings[currentWorldIndex]"
+                v-else-if="universeSettings.worldSettings.length > 0"
+                v-model="universeSettings.worldSettings[currentWorldIndex]"
               />
             </v-scroll-x-reverse-transition>
           </v-card>
         </v-slide-y-reverse-transition>
       </div>
 
-      <div class="buttons">
-        <v-tooltip v-for="(action, index) in availableActions" :key="index" :disabled="!action.hint" bottom>
-          <template #activator="{ on }">
-            <div v-on="on">
-              <v-btn :disabled="action.disabled" color="accent" x-large @click="action.handler">
-                <v-icon left>{{ action.icon }}</v-icon>
-                {{ action.label }}
-              </v-btn>
-            </div>
-          </template>
-          <span class="text-pre">{{ action.hint }}</span>
-        </v-tooltip>
-      </div>
+      <v-scroll-y-transition>
+        <div v-if="availableActions.length > 0" class="buttons">
+          <v-tooltip v-for="action in availableActions" :key="action.id" :disabled="!action.hint" bottom>
+            <template #activator="{ on }">
+              <div v-on="on">
+                <v-btn
+                  :disabled="action.disabled || loading"
+                  :loading="loading && action.id === runningActionId"
+                  color="accent"
+                  x-large
+                  @click="action.handler"
+                >
+                  <v-icon left>{{ action.icon }}</v-icon>
+                  {{ action.label }}
+                </v-btn>
+              </div>
+            </template>
+            <span class="text-pre">{{ action.hint }}</span>
+          </v-tooltip>
+        </div>
+      </v-scroll-y-transition>
     </div>
   </throttled-spinner>
 </template>
@@ -50,13 +58,15 @@
   import cloneDeep from 'lodash.clonedeep'
   import { createFileAccessForLibrary } from '~/assets/seedgen/createFileAccess'
   import { isElectron } from '~/assets/lib/isElectron'
+  import { UISeedGenerator } from '~/assets/lib/api/UISeedGenerator'
 
   const SeedgenWASM = import('@ori-rando/wotw-seedgen-wasm-ui')
 
   const createDefaultUniverseSettings = () => ({
-    world_settings: [],
-    disable_logic_filter: false,
+    worldSettings: [],
+    disableLogicFilter: false,
     seed: null,
+    // online: Added when generating the seed
   })
 
   export default {
@@ -65,6 +75,9 @@
       universeSettings: createDefaultUniverseSettings(),
       addingNewWorld: true,
       currentWorldIndex: 0,
+      loading: false,
+      runningActionId: null,
+      useLocalSeedgen: false,
     }),
     computed: {
       isElectron,
@@ -75,74 +88,96 @@
 
         /*
 
-        what can we do after generating seeds?
+    what can we do after generating seeds?
 
-        - Launch: If one world and Electron
-        - Download: If one world and Web
-        - Play Co-op: If one world and logged in
-        - Play Multiworld: If 2+ worlds and logged in
-        - Play Bingo: Any world count and logged in. Ask for board size, lockout, discovery and full clear/lines/cards
+    - Launch: If one world and Electron
+    - Download: If one world and Web
+    - Play Co-op: If one world and logged in
+    - Play Multiworld: If 2+ worlds and logged in
+    - Play Bingo: Any world count and logged in. Ask for board size, lockout, discovery and full clear/lines/cards
 
-        anything else?
+    */
 
-        */
-
-        if (this.universeSettings.world_settings.length === 0) {
+        if (this.universeSettings.worldSettings.length === 0) {
           return actions
         }
 
-        if (this.universeSettings.world_settings.length === 1) {
+        if (this.universeSettings.worldSettings.length === 1) {
           if (this.isElectron) {
             actions.push({
+              id: 'play_offline',
               label: 'Play Offline',
               icon: 'mdi-start',
-              handler: () => {},
+              handler: async () => {},
             })
           } else {
             actions.push({
+              id: 'play_download',
               label: 'Download',
               icon: 'mdi-download',
-              handler: () => {},
+              handler: async () => {
+                await this.generateSeed()
+                // TODO: Actually download
+              },
             })
           }
 
           actions.push({
+            id: 'play_coop',
             label: 'Play Co-op',
             icon: 'mdi-account-multiple-outline',
             hint: this.isLoggedIn
               ? 'Play online co-op with friends.\nAll items are shared.\nYou can optionally race other teams.'
               : 'You must be logged in to play online games.',
             disabled: !this.isLoggedIn,
-            handler: () => {},
+            handler: async () => {
+              const seedgenResponse = await this.generateSeed()
+
+              const multiverseId = await this.$axios.$post('/multiverses', {
+                seedId: seedgenResponse.result.seedId,
+              })
+
+              await this.$router.push({ name: 'game-multiverseId', params: { multiverseId } })
+            },
           })
-        } else if (this.universeSettings.world_settings.length >= 2) {
+        } else if (this.universeSettings.worldSettings.length >= 2) {
           actions.push({
+            id: 'play_multiworld',
             label: 'Play Multiworld',
             icon: 'mdi-account-supervisor-circle-outline',
             hint: this.isLoggedIn
               ? 'Play online multiworld with friends.\nPlayers in the same world share everything and can find items for other worlds.\nYou can optionally race other teams by creating multiple universes.'
               : 'You must be logged in to play online games.',
             disabled: !this.isLoggedIn,
-            handler: () => {},
+            handler: async () => {},
           })
         }
 
         actions.push({
+          id: 'play_bingo',
           label: 'Play Bingo',
           icon: 'mdi-checkerboard',
           hint: this.isLoggedIn
             ? 'Play online bingo alone or with friends.\nWhen playing with friends, players in the same universe work as one team while optionally racing players in other universes.'
             : 'You must be logged in to play online games.',
           disabled: !this.isLoggedIn,
-          handler: () => {},
+          handler: async () => {},
         })
 
-        return actions
+        return actions.map((action) => ({
+          ...action,
+          handler: async () => {
+            this.loading = true
+            this.runningActionId = action.id
+            await action.handler()
+            this.loading = false
+          },
+        }))
       },
     },
     watch: {
       currentWorldIndex(value, oldValue) {
-        if (this.addingNewWorld && oldValue === this.universeSettings.world_settings.length) {
+        if (this.addingNewWorld && oldValue === this.universeSettings.worldSettings.length) {
           this.addingNewWorld = false
         }
       },
@@ -153,7 +188,7 @@
     methods: {
       addNewWorld() {
         this.addingNewWorld = true
-        this.currentWorldIndex = this.universeSettings.world_settings.length
+        this.currentWorldIndex = this.universeSettings.worldSettings.length
       },
       async createNewWorldWithPresets(presets) {
         const seedgen = await SeedgenWASM
@@ -167,15 +202,36 @@
           worldSettings.applyWorldPreset(seedgen.WorldPreset.fromJson(presetJson), fileAccess)
         }
 
-        this.universeSettings.world_settings.push(JSON.parse(worldSettings.toJson()))
-        this.currentWorldIndex = this.universeSettings.world_settings.length - 1
+        this.universeSettings.worldSettings.push(JSON.parse(worldSettings.toJson()))
+        this.currentWorldIndex = this.universeSettings.worldSettings.length - 1
         this.addingNewWorld = false
       },
       createNewWorldFromExistingWorld(worldIndex) {
-        const copiedWorld = cloneDeep(this.universeSettings.world_settings[worldIndex])
-        this.universeSettings.world_settings.push(copiedWorld)
-        this.currentWorldIndex = this.universeSettings.world_settings.length - 1
+        const copiedWorld = cloneDeep(this.universeSettings.worldSettings[worldIndex])
+        this.universeSettings.worldSettings.push(copiedWorld)
+        this.currentWorldIndex = this.universeSettings.worldSettings.length - 1
         this.addingNewWorld = false
+      },
+      /**
+       * @param online
+       * @param systemAddedHeaders InlineHeaders {name?, content} that are added by the system, such as the dynamic Bingo header
+       * @returns {Promise<any>}
+       */
+      async generateSeed(online = false, systemAddedHeaders = []) {
+        this.loading = true
+
+        const settings = cloneDeep(this.universeSettings)
+        settings.online = online
+
+        for (const worldSetting of this.universeSettings.worldSettings) {
+          worldSetting.inlineHeaders.push(...systemAddedHeaders)
+        }
+
+        const uiSeedGenerator = new UISeedGenerator(this.$axios)
+
+        const seedgenResponse = await uiSeedGenerator.generateSeed(settings)
+        this.loading = false
+        return seedgenResponse
       },
     },
   }

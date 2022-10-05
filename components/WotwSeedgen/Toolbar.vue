@@ -6,7 +6,7 @@
       background-color="transparent"
     >
       <v-tab
-        v-for="(worldPreset, index) in universePreset.world_settings"
+        v-for="(worldPreset, index) in universePreset.worldSettings"
         :key="index"
         :disabled="disabled"
       >
@@ -74,7 +74,7 @@
     },
     computed: {
       displayedWorldCount() {
-        return this.universePreset.world_settings.length + (this.addingNewWorld ? 1 : 0)
+        return this.universePreset.worldSettings.length + (this.addingNewWorld ? 1 : 0)
       }
     }
   }

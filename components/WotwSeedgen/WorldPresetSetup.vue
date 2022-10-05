@@ -2,12 +2,12 @@
   <div>
     <v-window vertical :value="state">
       <v-window-item value="select_base_preset">
-        <template v-if="universeSettings.world_settings.length > 0">
+        <template v-if="universeSettings.worldSettings.length > 0">
           <h2 class="mb-3">Copy settings from an existing world</h2>
 
           <div class="mb-5">
             <v-btn
-              v-for="(world, index) in universeSettings.world_settings"
+              v-for="(world, index) in universeSettings.worldSettings"
               :key="index"
               depressed
               color="background lighten-2"

@@ -4,7 +4,7 @@
     <v-card-title class='d-flex'>
       <div class='world-title'>
         <div>{{ world.name }} <copyable-info v-if="devtoolsEnabled" :value="world.id" /></div>
-        <wotw-seed-button v-if='!!world.seedId' :seed-id='world.seedId' />
+        <wotw-seed-button v-if='!!world.seedId' :world-seed-id='world.seedId' />
       </div>
     </v-card-title>
     <v-card-text>

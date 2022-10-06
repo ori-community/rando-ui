@@ -1,8 +1,8 @@
 <template>
   <v-tooltip open-delay="500" top :disabled="!isElectron">
-    <template #activator="{on, attrs}">
-      <v-btn v-bind="attrs" :loading='loading' icon text outlined @click='launchOrDownloadSeed' v-on="on">
-        <v-icon>{{ (isElectron && !forceDownload) ? 'mdi-play' : 'mdi-download' }}</v-icon>
+    <template #activator="{ on, attrs }">
+      <v-btn v-bind="attrs" :loading="loading" icon text outlined @click="launchOrDownloadSeed" v-on="on">
+        <v-icon>{{ isElectron && !forceDownload ? 'mdi-play' : 'mdi-download' }}</v-icon>
       </v-btn>
     </template>
     <span>Hold <kbd>Ctrl</kbd> to download</span>
@@ -12,13 +12,13 @@
 <script>
   import { saveAs } from 'file-saver'
   import { isElectron } from '~/assets/lib/isElectron'
-  import {holdControl} from '~/assets/lib/holdControl'
+  import { holdControl } from '~/assets/lib/holdControl'
 
   export default {
     name: 'WotwSeedButton',
     mixins: [holdControl('forceDownload')],
     props: {
-      seedId: {
+      worldSeedId: {
         type: [String, Number],
         required: true,
       },
@@ -32,8 +32,8 @@
     },
     methods: {
       async launchOrDownloadSeed() {
-        const url = `${this.$axios.defaults.baseURL}/world-seeds/${this.seedId}/file`
-        const fileName = `${this.seedId}.wotwr`
+        const url = `${this.$axios.defaults.baseURL}/world-seeds/${this.worldSeedId}/file`
+        const fileName = `${this.worldSeedId}.wotwr`
 
         if (isElectron()) {
           this.loading = true
@@ -64,6 +64,4 @@
   }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

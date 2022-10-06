@@ -34,6 +34,13 @@
             <template #activator="{ on }">
               <div v-on="on">
                 <v-btn
+                  :ref="
+                    (el) => {
+                      if (action.id === runningActionId) {
+                        runningActionElement = el
+                      }
+                    }
+                  "
                   :disabled="action.disabled || loading"
                   :loading="loading && action.id === runningActionId"
                   color="accent"
@@ -59,6 +66,7 @@
   import { createFileAccessForLibrary } from '~/assets/seedgen/createFileAccess'
   import { isElectron } from '~/assets/lib/isElectron'
   import { UISeedGenerator } from '~/assets/lib/api/UISeedGenerator'
+  import { confettiFromElement } from "~/assets/lib/confettiFromElement";
 
   const SeedgenWASM = import('@ori-rando/wotw-seedgen-wasm-ui')
 
@@ -77,6 +85,7 @@
       currentWorldIndex: 0,
       loading: false,
       runningActionId: null,
+      runningActionElement: null, // For confetti
       useLocalSeedgen: false,
     }),
     computed: {
@@ -86,17 +95,15 @@
       availableActions() {
         const actions = []
 
-        /*
-
-    what can we do after generating seeds?
-
-    - Launch: If one world and Electron
-    - Download: If one world and Web
-    - Play Co-op: If one world and logged in
-    - Play Multiworld: If 2+ worlds and logged in
-    - Play Bingo: Any world count and logged in. Ask for board size, lockout, discovery and full clear/lines/cards
-
-    */
+        /**
+         * what can we do after generating seeds?
+         *
+         * - Launch: If one world and Electron
+         * - Download: If one world and Web
+         * - Play Co-op: If one world and logged in
+         * - Play Multiworld: If 2+ worlds and logged in
+         * - Play Bingo: Any world count and logged in. Ask for board size, lockout, discovery and full clear/lines/CanvasRenderingContext2DSettings
+         */
 
         if (this.universeSettings.worldSettings.length === 0) {
           return actions
@@ -108,16 +115,38 @@
               id: 'play_offline',
               label: 'Play Offline',
               icon: 'mdi-start',
-              handler: async () => {},
+              handler: async () => {
+                const seedgenResponse = await this.generateSeed()
+
+                await seedgenResponse.electronApi.downloadSeed({
+                  setToCurrent: true,
+                })
+
+                await this.$store.dispatch('electron/launch')
+              },
+            })
+
+            actions.push({
+              id: 'save',
+              label: 'Save',
+              icon: 'mdi-download',
+              handler: async () => {
+                const seedgenResponse = await this.generateSeed()
+
+                await seedgenResponse.electronApi.downloadSeed({
+                  setToCurrent: false,
+                  showInExplorer: true,
+                })
+              },
             })
           } else {
             actions.push({
-              id: 'play_download',
+              id: 'download',
               label: 'Download',
               icon: 'mdi-download',
               handler: async () => {
-                await this.generateSeed()
-                // TODO: Actually download
+                const seedgenResponse = await this.generateSeed()
+                seedgenResponse.webApi.downloadSeed()
               },
             })
           }
@@ -134,7 +163,7 @@
               const seedgenResponse = await this.generateSeed()
 
               const multiverseId = await this.$axios.$post('/multiverses', {
-                seedId: seedgenResponse.result.seedId,
+                seedId: seedgenResponse.data.result.seedId,
               })
 
               await this.$router.push({ name: 'game-multiverseId', params: { multiverseId } })
@@ -149,7 +178,15 @@
               ? 'Play online multiworld with friends.\nPlayers in the same world share everything and can find items for other worlds.\nYou can optionally race other teams by creating multiple universes.'
               : 'You must be logged in to play online games.',
             disabled: !this.isLoggedIn,
-            handler: async () => {},
+            handler: async () => {
+              const seedgenResponse = await this.generateSeed()
+
+              const multiverseId = await this.$axios.$post('/multiverses', {
+                seedId: seedgenResponse.data.result.seedId,
+              })
+
+              await this.$router.push({ name: 'game-multiverseId', params: { multiverseId } })
+            },
           })
         }
 
@@ -171,6 +208,15 @@
             this.runningActionId = action.id
             await action.handler()
             this.loading = false
+
+            await this.$nextTick()
+
+            if (this.runningActionElement !== null) {
+              confettiFromElement(this.runningActionElement.$el, {
+                disableForReducedMotion: true,
+                zIndex: 100000,
+              })
+            }
           },
         }))
       },
@@ -215,7 +261,7 @@
       /**
        * @param online
        * @param systemAddedHeaders InlineHeaders {name?, content} that are added by the system, such as the dynamic Bingo header
-       * @returns {Promise<any>}
+       * @returns {Promise<SeedgenResponse>}
        */
       async generateSeed(online = false, systemAddedHeaders = []) {
         this.loading = true

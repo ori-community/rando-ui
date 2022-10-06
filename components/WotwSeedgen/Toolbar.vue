@@ -29,7 +29,7 @@
         </v-btn>
       </div>
     </v-tabs>
-    <v-btn v-else class='my-1' :disabled="disabled" text @click="$emit('add-world')">
+    <v-btn v-else class='my-1' :disabled="disabled || universePreset.worldSettings.length === 0" text @click="$emit('add-world')">
       <v-icon left>mdi-plus</v-icon>
       Multiworld
     </v-btn>

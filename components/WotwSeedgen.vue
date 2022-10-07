@@ -160,7 +160,7 @@
               : 'You must be logged in to play online games.',
             disabled: !this.isLoggedIn,
             handler: async () => {
-              const seedgenResponse = await this.generateSeed()
+              const seedgenResponse = await this.generateSeed(true)
 
               const multiverseId = await this.$axios.$post('/multiverses', {
                 seedId: seedgenResponse.data.result.seedId,
@@ -179,7 +179,7 @@
               : 'You must be logged in to play online games.',
             disabled: !this.isLoggedIn,
             handler: async () => {
-              const seedgenResponse = await this.generateSeed()
+              const seedgenResponse = await this.generateSeed(true)
 
               const multiverseId = await this.$axios.$post('/multiverses', {
                 seedId: seedgenResponse.data.result.seedId,

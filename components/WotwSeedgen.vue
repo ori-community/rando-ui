@@ -114,7 +114,7 @@
             actions.push({
               id: 'play_offline',
               label: 'Play Offline',
-              icon: 'mdi-start',
+              icon: 'mdi-play-outline',
               handler: async () => {
                 const seedgenResponse = await this.generateSeed()
 
@@ -129,7 +129,7 @@
             actions.push({
               id: 'save',
               label: 'Save',
-              icon: 'mdi-download',
+              icon: 'mdi-content-save-outline',
               handler: async () => {
                 const seedgenResponse = await this.generateSeed()
 
@@ -143,7 +143,7 @@
             actions.push({
               id: 'download',
               label: 'Download',
-              icon: 'mdi-download',
+              icon: 'mdi-download-outline',
               handler: async () => {
                 const seedgenResponse = await this.generateSeed()
                 seedgenResponse.webApi.downloadSeed()

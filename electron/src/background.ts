@@ -6,20 +6,16 @@ import { getElectronUrl, registerUIIpcApi, uiIpc } from './api'
 import fs from 'fs'
 import { SettingsService } from '~/electron/src/lib/SettingsService'
 import { CrashDetectService } from '~/electron/src/lib/CrashDetectService'
-import {RANDOMIZER_BASE_PATH, SEEDS_PATH, UPDATE_PATH} from '~/electron/src/lib/Constants'
+import { RANDOMIZER_BASE_PATH, SEEDS_PATH, UPDATE_PATH } from '~/electron/src/lib/Constants'
 import { RandoIPCService } from '~/electron/src/lib/RandoIPCService'
-import { Stats } from '@/lib/StatsCollector'
 import { LocalTrackerWebSocketService } from '@/lib/LocalTrackerWebSocketService'
 import { LocalTrackerService } from '@/lib/LocalTrackerService'
 import { ChatControlService } from '@/lib/ChatControlService'
-import {BingoBoardOverlayService} from '@/lib/BingoBoardOverlayService'
+import { BingoBoardOverlayService } from '@/lib/BingoBoardOverlayService'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
-let window: BrowserWindow|null = null
-
-const stats = Stats.create()
-console.log(JSON.stringify(stats))
+let window: BrowserWindow | null = null
 
 /**
  * @returns {BrowserWindow}
@@ -29,6 +25,7 @@ export function getWindow() {
 }
 
 async function createWindow() {
+  await SettingsService.makeSureSettingsFileExists()
   await SettingsService.migrateSettingsVersion()
 
   registerUIIpcApi()
@@ -42,8 +39,7 @@ async function createWindow() {
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: !!(process.env
-          .ELECTRON_NODE_INTEGRATION as unknown) as boolean,
+      nodeIntegration: !!(process.env.ELECTRON_NODE_INTEGRATION as unknown) as boolean,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
     },
@@ -107,23 +103,21 @@ async function createWindow() {
 }
 
 if (isDevelopment) {
-  fs.mkdirSync(RANDOMIZER_BASE_PATH, {recursive: true})
-  fs.mkdirSync(SEEDS_PATH, {recursive: true})
-  fs.mkdirSync(UPDATE_PATH, {recursive: true})
+  fs.mkdirSync(RANDOMIZER_BASE_PATH, { recursive: true })
+  fs.mkdirSync(SEEDS_PATH, { recursive: true })
+  fs.mkdirSync(UPDATE_PATH, { recursive: true })
   process.chdir('./work-dir')
 } else {
   process.chdir(path.dirname(process.argv0))
-  fs.mkdirSync(SEEDS_PATH, {recursive: true})
-  fs.mkdirSync(UPDATE_PATH, {recursive: true})
+  fs.mkdirSync(SEEDS_PATH, { recursive: true })
+  fs.mkdirSync(UPDATE_PATH, { recursive: true })
 }
 
 if (!app.requestSingleInstanceLock()) {
   app.quit()
 } else {
   // Scheme must be registered before the app is ready
-  protocol.registerSchemesAsPrivileged([
-    { scheme: 'app', privileges: { secure: true, standard: true, supportFetchAPI: true } },
-  ])
+  protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: true, standard: true, supportFetchAPI: true } }])
 
   app.setAsDefaultProtocolClient('ori-rando')
 

@@ -5,7 +5,9 @@
         v-model="currentWorldIndex"
         :universe-preset="universeSettings"
         :adding-new-world="addingNewWorld"
+        :disabled="loading"
         @add-world="addNewWorld()"
+        @start-over="resetEverything()"
       />
 
       <div class="mb-12">
@@ -232,6 +234,11 @@
       this.$store.dispatch('seedgen/fetchLibrary')
     },
     methods: {
+      resetEverything() {
+        this.universeSettings = createDefaultUniverseSettings()
+        this.currentWorldIndex = 0
+        this.addingNewWorld = true
+      },
       addNewWorld() {
         this.addingNewWorld = true
         this.currentWorldIndex = this.universeSettings.worldSettings.length

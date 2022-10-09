@@ -12,5 +12,5 @@ export type ParsedHeader = {
   hidden: boolean
   category?: string
   content: string
-  parameters: ParsedHeaderParameter[]
+  parametersByIdentifier: {string: ParsedHeaderParameter}
 }

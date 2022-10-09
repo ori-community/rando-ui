@@ -240,7 +240,7 @@
       restoreDefaultHeaderParam(header, param) {
         this.headerArgStates[header.headerName][param.name] = this.getTypedValue(param.default, param.type)
       },
-      getModifiedHeaderArgCount(header) {
+      getModifiedHeaderArgCountgetModifiedHeaderArgCount(header) {
         let count = 0
         for (const param of header.params) {
           if (this.isHeaderParamModified(header, param)) {

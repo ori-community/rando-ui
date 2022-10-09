@@ -4,7 +4,9 @@ import HeaderParserWorker from '~/assets/lib/workers/headerParser.worker'
 export const state = () => ({
   /** @var {SeedgenLibrary|null} library */
   library: null,
-  parsedHeaders: [],
+
+  /** @var {{string: ParsedHeader}} parsedHeaders */
+  parsedHeadersByName: {},
 })
 
 export const getters = {
@@ -15,8 +17,8 @@ export const mutations = {
   setLibrary(state, library) {
     state.library = library
   },
-  setParsedHeaders(state, parsedHeaders) {
-    state.parsedHeaders = parsedHeaders
+  setParsedHeadersByName(state, parsedHeadersByName) {
+    state.parsedHeadersByName = parsedHeadersByName
   },
 }
 
@@ -30,10 +32,10 @@ export const actions = {
   },
   async parseLibraryHeaders({ commit, state }) {
     const worker = new WebworkerPromise(new HeaderParserWorker())
-    const parsedHeaders = await worker.postMessage({
+    const parsedHeadersByName = await worker.postMessage({
       headers: Object.values(state.library.headers)
     })
 
-    commit('setParsedHeaders', parsedHeaders)
+    commit('setParsedHeadersByName', parsedHeadersByName)
   }
 }

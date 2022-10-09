@@ -77,7 +77,7 @@
       </v-col>
 
       <v-col cols="12">
-        <wotw-seedgen-headers-select v-model="model.headers" />
+        <wotw-seedgen-headers-select v-model="model.headers" :header-config.sync="model.headerConfig" />
       </v-col>
     </v-row>
   </div>

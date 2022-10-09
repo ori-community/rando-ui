@@ -1,8 +1,8 @@
 <template>
   <v-tooltip top :disabled="!description" open-delay="500" max-width="300">
     <template #activator="{ on }">
-      <v-card elevation="0" class="d-inline-block" v-bind="$attrs" :color="value ? 'secondary' : 'background lighten-2'" v-on="on">
-        <v-btn text depressed class="text-none" @click="onButtonClick">
+      <v-card elevation="0" class="d-inline-flex" color="background lighten-3" v-bind="$attrs" v-on="on">
+        <v-btn depressed :color="value ? 'secondary' : 'background lighten-2'" class="text-none" @click="onButtonClick">
           <slot />
         </v-btn>
         <slot name="append" />

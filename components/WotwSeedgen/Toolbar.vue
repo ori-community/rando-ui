@@ -44,8 +44,12 @@
       </template>
       <v-list>
         <v-list-item x-large depressed text :disabled="disabled" @click="$emit('start-over')">
-          <v-icon left>mdi-restore</v-icon>
+          <v-icon left>mdi-delete-outline</v-icon>
           Start over
+        </v-list-item>
+        <v-list-item x-large depressed text :disabled="disabled" @click="$emit('restore-last-config')">
+          <v-icon left>mdi-restore</v-icon>
+          Restore last config
         </v-list-item>
       </v-list>
     </v-menu>

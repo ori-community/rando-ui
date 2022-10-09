@@ -8,6 +8,7 @@
         :disabled="loading"
         @add-world="addNewWorld()"
         @start-over="resetEverything()"
+        @restore-last-config="restoreLastConfig()"
       />
 
       <div class="mb-12">
@@ -63,13 +64,14 @@
 </template>
 
 <script>
-  import { mapState, mapGetters } from 'vuex'
+  import { mapGetters, mapState } from 'vuex'
   import cloneDeep from 'lodash.clonedeep'
   import { createFileAccessForLibrary } from '~/assets/seedgen/createFileAccess'
   import { isElectron } from '~/assets/lib/isElectron'
   import { UISeedGenerator } from '~/assets/lib/api/UISeedGenerator'
-  import { confettiFromElement } from "~/assets/lib/confettiFromElement";
+  import { confettiFromElement } from '~/assets/lib/confettiFromElement'
 
+  const SEEDGEN_LAST_CONFIG_KEY = 'seedgen-last-config'
   const SeedgenWASM = import('@ori-rando/wotw-seedgen-wasm-ui')
 
   const createDefaultUniverseSettings = () => ({
@@ -235,6 +237,7 @@
     },
     methods: {
       resetEverything() {
+        this.snapshotCurrentConfig()
         this.universeSettings = createDefaultUniverseSettings()
         this.currentWorldIndex = 0
         this.addingNewWorld = true
@@ -268,9 +271,10 @@
       /**
        * @param online
        * @param systemAddedHeaders InlineHeaders {name?, content} that are added by the system, such as the dynamic Bingo header
+       * @param snapshotCurrentConfig
        * @returns {Promise<SeedgenResponse>}
        */
-      async generateSeed(online = false, systemAddedHeaders = []) {
+      async generateSeed(online = false, systemAddedHeaders = [], snapshotCurrentConfig = true) {
         this.loading = true
 
         const settings = cloneDeep(this.universeSettings)
@@ -284,7 +288,31 @@
 
         const seedgenResponse = await uiSeedGenerator.generateSeed(settings)
         this.loading = false
+
+        if (snapshotCurrentConfig) {
+          this.snapshotCurrentConfig()
+        }
+
         return seedgenResponse
+      },
+      /**
+       * Used for the "Restore last config" button
+       */
+      snapshotCurrentConfig() {
+        if (this.universeSettings.worldSettings.length === 0) {
+          return
+        }
+
+        window.localStorage.setItem(SEEDGEN_LAST_CONFIG_KEY, JSON.stringify(this.universeSettings))
+      },
+      restoreLastConfig() {
+        const lastConfigJson = window.localStorage.getItem(SEEDGEN_LAST_CONFIG_KEY)
+
+        if (lastConfigJson) {
+          this.universeSettings = JSON.parse(lastConfigJson)
+          this.currentWorldIndex = 0
+          this.addingNewWorld = false
+        }
       },
     },
   }

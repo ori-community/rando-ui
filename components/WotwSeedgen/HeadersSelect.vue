@@ -120,7 +120,7 @@
   import { mapState } from 'vuex'
   import { hasModelObject } from '~/assets/lib/hasModelObject'
 
-  const ParameterType = Object.freeze({
+  export const ParameterType = Object.freeze({
     Bool: 0,
     Int: 1,
     Float: 2,
@@ -242,9 +242,11 @@
           for (const header of this.parsedHeaders) {
             for (const parameter of Object.values(header.parametersByIdentifier)) {
               if (!(parameter.identifier in this.headerParameterStates[header.name])) {
-                this.$set(this.headerParameterStates[header.name], parameter.identifier, this.getTypedValue(
-                  parameter.default_value, parameter.parameter_type
-                ))
+                this.$set(
+                  this.headerParameterStates[header.name],
+                  parameter.identifier,
+                  this.getTypedValue(parameter.default_value, parameter.parameter_type),
+                )
               }
             }
           }
@@ -299,13 +301,27 @@
           // the watcher for parsedHeaders has run
 
           this.$nextTick(() => {
-            for (const config of headerConfig) {
-              const parameter = this.parsedHeadersByName[config.headerName].parametersByIdentifier[config.configName]
+            const parameterValuesByParameterIdentifierByHeaderName = {}
 
-              this.headerParameterStates[config.headerName][config.configName] = this.getTypedValue(
+            for (const config of headerConfig) {
+              if (!(config.headerName in parameterValuesByParameterIdentifierByHeaderName)) {
+                parameterValuesByParameterIdentifierByHeaderName[config.headerName] = {}
+              }
+
+              const parameter = this.parsedHeadersByName[config.headerName].parametersByIdentifier[config.configName]
+              parameterValuesByParameterIdentifierByHeaderName[config.headerName][config.configName] = this.getTypedValue(
                 config.configValue,
                 parameter.parameter_type,
               )
+            }
+
+            for (const header of this.parsedHeaders) {
+              for (const parameter of Object.values(header.parametersByIdentifier)) {
+                this.headerParameterStates[header.name][parameter.identifier] = this.getTypedValue(
+                  parameterValuesByParameterIdentifierByHeaderName[header.name]?.[parameter.identifier] ?? parameter.default_value,
+                  parameter.parameter_type,
+                )
+              }
             }
           })
         },

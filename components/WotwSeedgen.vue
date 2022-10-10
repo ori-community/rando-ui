@@ -31,8 +31,8 @@
         </v-slide-y-reverse-transition>
       </div>
 
-      <v-scroll-y-transition>
-        <div v-if="availableActions.length > 0" class="buttons">
+      <v-scroll-x-reverse-transition :duration="{ enter: 200, leave: 0 }" mode="out-in">
+        <div v-if="availableActions.length > 0" key="buttons" class="buttons">
           <v-tooltip v-for="action in availableActions" :key="action.id" :disabled="!action.hint" bottom>
             <template #activator="{ on }">
               <div v-on="on">
@@ -58,7 +58,8 @@
             <span class="text-pre">{{ action.hint }}</span>
           </v-tooltip>
         </div>
-      </v-scroll-y-transition>
+        <div v-else key="empty"></div>
+      </v-scroll-x-reverse-transition>
     </div>
   </throttled-spinner>
 </template>

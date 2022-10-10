@@ -29,6 +29,7 @@
           item-text="name"
           label="Difficulty"
           prepend-icon="mdi-gauge"
+          hide-details
         >
           <template #item="{ item }">
             <div>
@@ -39,6 +40,7 @@
             </div>
           </template>
         </v-select>
+        <v-checkbox v-model="model.hard" label="Play on Hard mode" />
       </v-col>
       <v-col cols="12">
         <div class="d-flex align-center">

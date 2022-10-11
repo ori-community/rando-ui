@@ -28,6 +28,7 @@
       />
     </v-col>
     <v-col cols="12">
+      <h3 class="mb-2">Bingo Goal</h3>
       <div class="goals-grid mb-5">
         <v-card
           :color="selectedGoalType === 'cards' ? 'secondary' : 'background lighten-2'"

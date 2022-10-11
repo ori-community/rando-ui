@@ -43,7 +43,7 @@
             <v-text-field
               :key="parameter.identifier"
               v-model="headerParameterStates[headerParameterEditor.header.name][parameter.identifier]"
-              :label="parameter.identifier"
+              :label="capitalCase(parameter.identifier)"
               :hint="parameter.documentation"
               persistent-hint
             >
@@ -67,7 +67,7 @@
               :key="parameter.identifier"
               v-model="headerParameterStates[headerParameterEditor.header.name][parameter.identifier]"
               type="number"
-              :label="parameter.identifier"
+              :label="capitalCase(parameter.identifier)"
               :hint="parameter.documentation"
               :step="parameter.parameter_type === ParameterType.Float ? 0.1 : 1.0"
               persistent-hint
@@ -87,7 +87,7 @@
             <v-checkbox
               :key="parameter.identifier"
               v-model="headerParameterStates[headerParameterEditor.header.name][parameter.identifier]"
-              :label="parameter.identifier"
+              :label="capitalCase(parameter.identifier)"
               :hint="parameter.documentation"
               persistent-hint
             >
@@ -118,6 +118,7 @@
 
 <script>
   import { mapState } from 'vuex'
+  import { capitalCase } from 'capital-case'
   import { hasModelObject } from '~/assets/lib/hasModelObject'
 
   export const ParameterType = Object.freeze({
@@ -309,16 +310,15 @@
               }
 
               const parameter = this.parsedHeadersByName[config.headerName].parametersByIdentifier[config.configName]
-              parameterValuesByParameterIdentifierByHeaderName[config.headerName][config.configName] = this.getTypedValue(
-                config.configValue,
-                parameter.parameter_type,
-              )
+              parameterValuesByParameterIdentifierByHeaderName[config.headerName][config.configName] =
+                this.getTypedValue(config.configValue, parameter.parameter_type)
             }
 
             for (const header of this.parsedHeaders) {
               for (const parameter of Object.values(header.parametersByIdentifier)) {
                 this.headerParameterStates[header.name][parameter.identifier] = this.getTypedValue(
-                  parameterValuesByParameterIdentifierByHeaderName[header.name]?.[parameter.identifier] ?? parameter.default_value,
+                  parameterValuesByParameterIdentifierByHeaderName[header.name]?.[parameter.identifier] ??
+                    parameter.default_value,
                   parameter.parameter_type,
                 )
               }
@@ -351,6 +351,7 @@
       },
     },
     methods: {
+      capitalCase,
       getTypedValue(value, type) {
         switch (type) {
           case ParameterType.Int:

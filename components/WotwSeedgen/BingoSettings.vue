@@ -2,7 +2,7 @@
   <v-row>
     <v-col cols="12">
       <span>
-        Board size: <strong>{{ model.size }} × {{ model.size }} lines = {{ totalCardCount }} cards</strong>
+        Board size: <strong>{{ model.size }} × {{ model.size }} = {{ totalCardCount }} cards</strong>
       </span>
       <v-slider v-model="model.size" prepend-icon="mdi-resize" min="1" max="7" hide-details />
     </v-col>

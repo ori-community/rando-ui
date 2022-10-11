@@ -64,13 +64,13 @@
 
     <v-dialog v-model="bingoSettingsDialogOpen" :persistent="loading" max-width="600">
       <v-card class="pa-5">
-        <h3 class="mb-5">Bingo Settings</h3>
+        <h2 class="mb-5">Bingo Settings</h2>
 
         <wotw-seedgen-bingo-settings v-model="bingoSettings" />
 
         <div class="d-flex">
           <v-spacer />
-          <v-btn color="accent" :loading="bingoLoading" depressed @click="createBingoGame()"> Done</v-btn>
+          <v-btn color="accent" :loading="bingoLoading" depressed @click="createBingoGame()">Play Bingo</v-btn>
         </div>
       </v-card>
     </v-dialog>

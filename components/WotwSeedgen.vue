@@ -62,7 +62,7 @@
       </v-scroll-x-reverse-transition>
     </div>
 
-    <v-dialog v-model="bingoSettingsDialogOpen" :persistent="loading" max-width="600">
+    <v-dialog v-model="bingoSettingsDialogOpen" :persistent="bingoLoading" max-width="600">
       <v-card class="pa-5">
         <h2 class="mb-5">Bingo Settings</h2>
 

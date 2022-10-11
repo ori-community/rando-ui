@@ -97,6 +97,8 @@
     // online: Added when generating the seed
   })
 
+  class SilentError extends Error {}
+
   export default {
     name: 'WotwSeedgen',
     data: () => ({
@@ -111,6 +113,7 @@
       bingoSettings: new BingoSettings(),
       bingoSettingsDialogOpen: false,
       bingoSettingsDialogPromiseResolve: null,
+      bingoSettingsDialogPromiseReject: null,
     }),
     computed: {
       isElectron,
@@ -223,11 +226,20 @@
             : 'You must be logged in to play online games.',
           disabled: !this.isLoggedIn,
           handler: async () => {
-            await new Promise((resolve) => {
+            await new Promise((resolve, reject) => {
               this.bingoSettingsDialogPromiseResolve = () => {
-                this.bingoSettingsDialogOpen = false
+                this.bingoSettingsDialogPromiseResolve = null
+                this.bingoSettingsDialogPromiseReject = null
                 resolve()
               }
+
+              this.bingoSettingsDialogPromiseReject = () => {
+                this.bingoSettingsDialogPromiseResolve = null
+                this.bingoSettingsDialogPromiseReject = null
+                this.bingoSettingsDialogOpen = false
+                reject(new SilentError("Bingo settings cancelled"))
+              }
+
               this.bingoSettingsDialogOpen = true
             })
           },
@@ -241,21 +253,26 @@
 
             try {
               await action.handler()
+
+              await this.$nextTick()
+
+              if (this.runningActionElement !== null) {
+                confettiFromElement(this.runningActionElement.$el, {
+                  disableForReducedMotion: true,
+                  zIndex: 100000,
+                })
+              }
             } catch (e) {
-              console.error(e)
-              EventBus.$emit('main.error', e)
+              if (!(e instanceof SilentError)) {
+                console.error(e)
+                EventBus.$emit('notification', {
+                  message: String(e),
+                  color: 'error',
+                })
+              }
             }
 
             this.loading = false
-
-            await this.$nextTick()
-
-            if (this.runningActionElement !== null) {
-              confettiFromElement(this.runningActionElement.$el, {
-                disableForReducedMotion: true,
-                zIndex: 100000,
-              })
-            }
           },
         }))
       },
@@ -267,8 +284,8 @@
         }
       },
       bingoSettingsDialogOpen(isOpen) {
-        if (!isOpen && this.bingoSettingsDialogPromiseResolve !== null) {
-          this.bingoSettingsDialogPromiseResolve()
+        if (!isOpen) {
+          this.bingoSettingsDialogPromiseReject?.()
         }
       },
     },

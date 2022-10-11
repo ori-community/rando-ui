@@ -6,7 +6,7 @@
           <template #activator='{on: onMenu}'>
             <v-btn depressed text :disabled='!isLoggedIn' v-bind='$attrs' v-on='onMenu'>
               <v-icon left>mdi-plus</v-icon>
-              New game
+              Manual game
             </v-btn>
           </template>
           <v-list :disabled='newGameLoading'>

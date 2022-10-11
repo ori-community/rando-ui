@@ -61,6 +61,19 @@
         <div v-else key="empty"></div>
       </v-scroll-x-reverse-transition>
     </div>
+
+    <v-dialog v-model="bingoSettingsDialogOpen" :persistent="loading" max-width="600">
+      <v-card class="pa-5">
+        <h3 class="mb-5">Bingo Settings</h3>
+
+        <wotw-seedgen-bingo-settings v-model="bingoSettings" />
+
+        <div class="d-flex">
+          <v-spacer />
+          <v-btn color="accent" :loading="bingoLoading" depressed @click="createBingoGame()"> Done</v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
   </throttled-spinner>
 </template>
 
@@ -71,6 +84,8 @@
   import { isElectron } from '~/assets/lib/isElectron'
   import { UISeedGenerator } from '~/assets/lib/api/UISeedGenerator'
   import { confettiFromElement } from '~/assets/lib/confettiFromElement'
+  import { BingoSettings } from '~/components/WotwSeedgen/BingoSettings'
+  import { EventBus } from '~/assets/lib/EventBus'
 
   const SEEDGEN_LAST_CONFIG_KEY = 'seedgen-last-config'
   const SeedgenWASM = import('@ori-rando/wotw-seedgen-wasm-ui')
@@ -89,9 +104,13 @@
       addingNewWorld: true,
       currentWorldIndex: 0,
       loading: false,
+      bingoLoading: false,
       runningActionId: null,
       runningActionElement: null, // For confetti
       useLocalSeedgen: false,
+      bingoSettings: new BingoSettings(),
+      bingoSettingsDialogOpen: false,
+      bingoSettingsDialogPromiseResolve: null,
     }),
     computed: {
       isElectron,
@@ -203,7 +222,15 @@
             ? 'Play online bingo alone or with friends.\nWhen playing with friends, players in the same universe work as one team while optionally racing players in other universes.'
             : 'You must be logged in to play online games.',
           disabled: !this.isLoggedIn,
-          handler: async () => {},
+          handler: async () => {
+            await new Promise((resolve) => {
+              this.bingoSettingsDialogPromiseResolve = () => {
+                this.bingoSettingsDialogOpen = false
+                resolve()
+              }
+              this.bingoSettingsDialogOpen = true
+            })
+          },
         })
 
         return actions.map((action) => ({
@@ -211,7 +238,14 @@
           handler: async () => {
             this.loading = true
             this.runningActionId = action.id
-            await action.handler()
+
+            try {
+              await action.handler()
+            } catch (e) {
+              console.error(e)
+              EventBus.$emit('main.error', e)
+            }
+
             this.loading = false
 
             await this.$nextTick()
@@ -230,6 +264,11 @@
       currentWorldIndex(value, oldValue) {
         if (this.addingNewWorld && oldValue === this.universeSettings.worldSettings.length) {
           this.addingNewWorld = false
+        }
+      },
+      bingoSettingsDialogOpen(isOpen) {
+        if (!isOpen && this.bingoSettingsDialogPromiseResolve !== null) {
+          this.bingoSettingsDialogPromiseResolve()
         }
       },
     },
@@ -314,6 +353,69 @@
           this.currentWorldIndex = 0
           this.addingNewWorld = false
         }
+      },
+      async createBingoGame() {
+        this.bingoLoading = true
+
+        try {
+          const generatedBingoHeaderLines = []
+
+          switch (this.bingoSettings.goalType) {
+            case 'cards':
+              generatedBingoHeaderLines.push(
+                `10|0|4|25|1|6|$(10|1) card completed`,
+                `10|0|4|26|1|6|$(10|1) cards completed`,
+                `10|0|4|27|1|6|$(10|1) cards completed`,
+                `10|0>=${this.bingoSettings.goalAmount}|8|9|104|bool|true`
+              )
+              break
+            case 'lines':
+              generatedBingoHeaderLines.push(
+                `10|1|4|25|1|6|$(10|1) line completed`,
+                `10|1|4|26|1|6|$(10|1) lines completed`,
+                `10|1|4|27|1|6|$(10|1) lines completed`,
+                `10|1>=${this.bingoSettings.goalAmount}|8|9|104|bool|true`
+              )
+              break
+            case 'all':
+              generatedBingoHeaderLines.push(
+                `10|0|4|25|1|6|$(10|1) card completed`,
+                `10|0|4|26|1|6|$(10|1) cards completed`,
+                `10|0|4|27|1|6|$(10|1) cards completed`,
+                `10|0>=${this.bingoSettings.size * this.bingoSettings.size}|8|9|104|bool|true`
+              )
+              break
+          }
+
+          generatedBingoHeaderLines.push(
+            `9|104|8|34543|11226|bool|true`,
+            `9|104|6|Bingo complete! Press Alt+C to warp to credits`
+          )
+
+          const seedgenResponse = await this.generateSeed(true, [
+            {
+              name: '__bingo_generated',
+              content: generatedBingoHeaderLines.join('\n'),
+            },
+          ])
+
+          const multiverseId = await this.$axios.$post('/multiverses', {
+            seedId: seedgenResponse.data.result.seedId,
+            bingoConfig: {
+              discovery: this.bingoSettings.discovery,
+              lockout: this.bingoSettings.lockout,
+              size: this.bingoSettings.size,
+            }
+          })
+
+          this.bingoSettingsDialogPromiseResolve?.()
+          await this.$router.push({ name: 'game-multiverseId', params: { multiverseId } })
+        } catch (e) {
+          console.error(e)
+          EventBus.$emit('main.error', e)
+        }
+
+        this.bingoLoading = false
       },
     },
   }

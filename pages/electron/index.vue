@@ -1,35 +1,37 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols='12' md='9' order-md='0' order='1'>
-        <template v-if='offlineMode'>
-          <div class='pa-6 text-center'>
-            <v-icon size='64'>mdi-cloud-off-outline</v-icon>
+      <v-col cols="12" md="9" order-md="0" order="1">
+        <template v-if="offlineMode">
+          <div class="pa-6 text-center">
+            <v-icon size="64">mdi-cloud-off-outline</v-icon>
             <div>
-              You appear to be offline<br>
-              <span class='text-lurk'>(or we broke the server)</span>
+              You appear to be offline<br />
+              <span class="text-lurk">(or we broke the server)</span>
             </div>
           </div>
         </template>
         <template v-else>
           <v-scroll-x-transition>
-            <v-card v-if='!!motd' class='mb-6 motd' color='background lighten-2'>
-              <v-card-text class='motd-text' v-html='motd'/>
-              <img class='motd-ori' src='~/assets/images/ori_lurk.png'>
+            <v-card v-if="!!motd" class="mb-6 motd" color="background lighten-2">
+              <v-card-text class="motd-text">
+                <div v-html="motd" />
+              </v-card-text>
+              <img class="motd-ori" alt="" src="~/assets/images/ori_lurk.png" />
             </v-card>
           </v-scroll-x-transition>
 
           <v-scroll-x-transition>
-            <div v-if='!!motd && !!visibleReleases'>
-              <v-card v-for='release in visibleReleases' :key='release.id' class='release mb-2'>
-                <v-card-title class='d-block'>
+            <div v-if="!!motd && !!visibleReleases">
+              <v-card v-for="release in visibleReleases" :key="release.id" class="release mb-2">
+                <v-card-title class="d-block">
                   Version {{ release.name }}
-                  <v-chip v-if='isNewVersion(release.name)' class='ml-2' small color='accent'>New</v-chip>
+                  <v-chip v-if="isNewVersion(release.name)" class="ml-2" small color="accent">New</v-chip>
                 </v-card-title>
-                <v-card-text class='release-changelog'>
-                  <div v-html='release.bodyHtml'/>
-                  <div class='d-flex justify-end'>
-                    <div class='d-flex align-end'>
+                <v-card-text class="release-changelog">
+                  <div v-html="release.bodyHtml" />
+                  <div class="d-flex justify-end">
+                    <div class="d-flex align-end">
                       <template v-if="!!getSetupAssetFromRelease(release)">
                         <v-btn
                           :disabled="updateDownloading"
@@ -58,89 +60,86 @@
           </v-scroll-x-transition>
         </template>
       </v-col>
-      <v-col cols='12' md='3' order-md='1' order='0'>
-        <div class='sticky'>
-          <v-card :color='updateAvailable ? `warning darken-1` : `background lighten-1`' class='pa-4'>
+      <v-col cols="12" md="3" order-md="1" order="0">
+        <div class="sticky">
+          <v-card :color="updateAvailable ? `warning darken-1` : `background lighten-1`" class="pa-4">
             <h3>Version: {{ currentVersion }}</h3>
             <template v-if="updateDownloading">
               Downloading {{ !!updateReleaseName ? `version ${updateReleaseName}` : `update` }}...
-              <v-progress-linear class='mt-3' :value='updateDownloadProgress'/>
+              <v-progress-linear class="mt-3" :value="updateDownloadProgress" />
             </template>
-            <template v-else-if='currentVersion === "develop"'>
-              You are running a development build. Download the latest stable version
-              to get automatic updates.
+            <template v-else-if="currentVersion === 'develop'">
+              You are running a development build. Download the latest stable version to get automatic updates.
             </template>
-            <template v-else-if='updateAvailable'>
+            <template v-else-if="updateAvailable">
               Version {{ latestVisibleVersion }} is available!
-              <v-btn class='mt-3' depressed block @click='downloadAndInstallUpdate()'>Install update</v-btn>
+              <v-btn class="mt-3" depressed block @click="downloadAndInstallUpdate()">Install update</v-btn>
             </template>
-            <template v-else>
-              You are running the latest version.
-            </template>
+            <template v-else> You are running the latest version. </template>
           </v-card>
 
           <v-btn
             x-large
-            color='accent'
+            color="accent"
             block
-            class='mt-6'
-            :class='{"bottom-border-radius-0": currentSeedPath !== null}'
-            :loading='launching'
-            @click='launch()'
+            class="mt-6"
+            :class="{ 'bottom-border-radius-0': currentSeedPath !== null }"
+            :loading="launching"
+            @click="launch()"
           >
-            <img class='launch-icon' src='../../assets/images/launch.png' alt=''>
+            <img class="launch-icon" src="../../assets/images/launch.png" alt="" />
             Launch
           </v-btn>
-          <v-card v-if='currentSeedPath !== null' class='pa-2 text-center top-border-radius-0 current-seed-path'>
+          <v-card v-if="currentSeedPath !== null" class="pa-2 text-center top-border-radius-0 current-seed-path">
             {{ currentSeedPathBasename }}
           </v-card>
 
-          <div class='text-center mt-5'>
-            <wotw-new-game-menu block/>
+          <div class="text-center mt-5">
+            <wotw-new-game-menu block />
           </div>
 
-          <v-btn text block class='mt-3' @click='openWiki'>
+          <v-btn text block class="mt-3" @click="openWiki">
             <v-icon left>mdi-book-outline</v-icon>
             Read the Wiki
           </v-btn>
 
-          <div class='py-4 text-center hoverable'>
+          <div class="py-4 text-center hoverable">
             <v-tooltip bottom>
               <span>Open seeds directory</span>
-              <template #activator='{on}'>
-                <v-btn icon v-on='on' @click='openSeedsDirectory'>
+              <template #activator="{ on }">
+                <v-btn icon v-on="on" @click="openSeedsDirectory">
                   <v-icon>mdi-folder-eye-outline</v-icon>
                 </v-btn>
               </template>
             </v-tooltip>
             <v-tooltip bottom>
               <span>Open randomizer directory</span>
-              <template #activator='{on}'>
-                <v-btn icon v-on='on' @click='openRandomizerDirectory'>
+              <template #activator="{ on }">
+                <v-btn icon v-on="on" @click="openRandomizerDirectory">
                   <v-icon>mdi-folder-cog-outline</v-icon>
                 </v-btn>
               </template>
             </v-tooltip>
             <v-tooltip bottom>
               <span>Create support bundle</span>
-              <template #activator='{on}'>
-                <v-btn icon :loading='supportBundleLoading' v-on='on' @click='createSupportBundle'>
+              <template #activator="{ on }">
+                <v-btn icon :loading="supportBundleLoading" v-on="on" @click="createSupportBundle">
                   <v-icon>mdi-bug-outline</v-icon>
                 </v-btn>
               </template>
             </v-tooltip>
             <v-tooltip bottom>
               <span>GitHub</span>
-              <template #activator='{on}'>
-                <v-btn icon v-on='on' @click='openGitHub'>
+              <template #activator="{ on }">
+                <v-btn icon v-on="on" @click="openGitHub">
                   <v-icon>mdi-github</v-icon>
                 </v-btn>
               </template>
             </v-tooltip>
             <v-tooltip bottom>
               <span>Discord</span>
-              <template #activator='{on}'>
-                <v-btn icon v-on='on' @click='openDiscord'>
+              <template #activator="{ on }">
+                <v-btn icon v-on="on" @click="openDiscord">
                   <v-icon>mdi-discord</v-icon>
                 </v-btn>
               </template>
@@ -153,10 +152,10 @@
 </template>
 
 <script>
-  import {mapGetters, mapMutations, mapState} from 'vuex'
+  import { mapGetters, mapMutations, mapState } from 'vuex'
   import sanitizeHtml from 'sanitize-html'
-  import {parse} from 'date-fns'
-  import {formatsDates} from '~/assets/lib/formatsDates'
+  import { parse } from 'date-fns'
+  import { formatsDates } from '~/assets/lib/formatsDates'
 
   export default {
     name: 'Index',
@@ -167,14 +166,10 @@
     }),
     head: () => ({
       title: 'Home',
-      meta: [
-        {hid: 'robots', name: 'robots', content: 'noindex'},
-      ],
+      meta: [{ hid: 'robots', name: 'robots', content: 'noindex' }],
     }),
     computed: {
-      ...mapState('user', [
-        'user'
-      ]),
+      ...mapState('user', ['user']),
       ...mapState('electron', [
         'settings',
         'settingsLoaded',
@@ -188,58 +183,55 @@
         'currentSupportBundleName',
         'showUpdateAvailableDialog',
       ]),
-      ...mapState('multiverseState', [
-        'multiverses'
-      ]),
-      ...mapGetters('electron', [
-        'updateAvailable',
-        'currentSeedPathBasename',
-        'isNewVersion',
-      ]),
-      ...mapGetters('version', [
-        'latestVisibleVersion',
-        'visibleReleases',
-      ]),
+      ...mapState('multiverseState', ['multiverses']),
+      ...mapGetters('electron', ['updateAvailable', 'currentSeedPathBasename', 'isNewVersion']),
+      ...mapGetters('version', ['latestVisibleVersion', 'visibleReleases']),
     },
     watch: {
       currentVersion: {
         immediate: true,
         async handler(version) {
           if (version) {
-            this.motd = sanitizeHtml((await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/motd/wotw`, {
-              params: {
-                version,
+            this.motd = sanitizeHtml(
+              (
+                await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/motd/wotw`, {
+                  params: {
+                    version,
+                  },
+                })
+              ).motd,
+              {
+                allowedClasses: {
+                  '*': ['mb-*'],
+                },
               },
-            })).motd, {
-              allowedClasses: {
-                '*': ['mb-*'],
-              },
-            }).replaceAll(/#(\d+:\d+)#/g, ((substring, utcTime) => {
+            ).replaceAll(/#(\d+:\d+)#/g, (substring, utcTime) => {
               const time = parse(`${utcTime}+00`, 'HH:mmx', new Date())
               return this.formatDateObject(time, 'p')
-            }))
+            })
           }
         },
-      }
+      },
     },
     async mounted() {
       // We might already have a seed path from launching...
       if (this.currentSeedPath === null) {
-        this.$store.commit('electron/setCurrentSeedPath', await window.electronApi.invoke('launcher.getCurrentSeedPath'))
+        this.$store.commit(
+          'electron/setCurrentSeedPath',
+          await window.electronApi.invoke('launcher.getCurrentSeedPath'),
+        )
       }
     },
     methods: {
-      ...mapMutations('electron', [
-        'setCurrentSeedPath',
-      ]),
+      ...mapMutations('electron', ['setCurrentSeedPath']),
       getSetupAssetFromRelease(release) {
-        return release.assets.find(a => a.name === 'WotwRandoSetup.exe')
+        return release.assets.find((a) => a.name === 'WotwRandoSetup.exe')
       },
       async downloadAndInstallUpdate(release = null) {
         if (release) {
           const url = this.getSetupAssetFromRelease(release)?.browser_download_url
           if (url) {
-            await this.$store.dispatch('electron/downloadAndInstallUpdate', {url, releaseName: release.name})
+            await this.$store.dispatch('electron/downloadAndInstallUpdate', { url, releaseName: release.name })
           }
         } else {
           await this.$store.dispatch('electron/downloadAndInstallUpdate')
@@ -247,7 +239,8 @@
       },
       async launch(seedFile = null, forceLaunch = false) {
         await this.$store.dispatch('electron/launch', {
-          seedFile, forceLaunch
+          seedFile,
+          forceLaunch,
         })
       },
       openWiki() {
@@ -276,12 +269,12 @@
         }
 
         this.supportBundleLoading = false
-      }
+      },
     },
   }
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
   .launch-icon {
     height: 2.25em;
     width: auto;
@@ -332,7 +325,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     border-top-width: 0;
-    color: rgba(255, 255, 255, 0.5)
+    color: rgba(255, 255, 255, 0.5);
   }
 
   .text-lurk {
@@ -345,7 +338,7 @@
   }
 </style>
 
-<style lang='scss'>
+<style lang="scss">
   .release-changelog {
     h1,
     h2,

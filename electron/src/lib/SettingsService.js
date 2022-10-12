@@ -96,29 +96,15 @@ export class SettingsService {
 
         const settings = await SettingsService.getCurrentSettings()
 
-        // When switching from non-beta to beta or from beta to non-beta
-        const lastIsPrerelease = semver.prerelease(lastVersion)
-        const currentIsPrerelease = semver.prerelease(currentVersion)
-
-        if (lastIsPrerelease && !currentIsPrerelease) {
-          settings['Paths.Host'] = 'wotw.orirando.com'
-          settings['Paths.UdpPort'] = 31415
-          settings['Flags.Dev'] = false
-          settings['Flags.DisableDebugControls'] = true
-        } else if (!lastIsPrerelease && currentIsPrerelease) {
-          settings['Paths.Host'] = 'dev.wotw.orirando.com'
-          settings['Paths.UdpPort'] = 31416
-          settings['Flags.Dev'] = true
-          settings['Flags.DisableDebugControls'] = false
-        }
-
         const migrations = {
           // '1.0.0'() {
           //   ...
           // },
           '2.0.0-beta.72'() {
-            settings['Paths.Host'] = settings['Paths.URL']
-            delete settings['Paths.URL']
+            if (settings['Paths.URL']) {
+              settings['Paths.Host'] = settings['Paths.URL']
+              delete settings['Paths.URL']
+            }
           },
         }
 
@@ -129,6 +115,24 @@ export class SettingsService {
           }
         }
         console.log(`SettingsService: Migrations finished`)
+
+        // When switching from non-beta to beta or from beta to non-beta
+        const lastIsPrerelease = semver.prerelease(lastVersion)
+        const currentIsPrerelease = semver.prerelease(currentVersion)
+
+        if (lastIsPrerelease && !currentIsPrerelease) {
+          settings['Paths.Host'] = 'wotw.orirando.com'
+          settings['Paths.UdpPort'] = 31415
+          settings['Flags.Dev'] = false
+          settings['Flags.DisableDebugControls'] = true
+          console.log(`SettingsService: Switching to stable server`)
+        } else if (!lastIsPrerelease && currentIsPrerelease) {
+          settings['Paths.Host'] = 'dev.wotw.orirando.com'
+          settings['Paths.UdpPort'] = 31416
+          settings['Flags.Dev'] = true
+          settings['Flags.DisableDebugControls'] = false
+          console.log(`SettingsService: Switching to dev server`)
+        }
 
         flatSettings = settings
         await SettingsService.writeSettings()

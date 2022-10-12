@@ -95,6 +95,8 @@ export class SettingsService {
         console.log(`SettingsService: Migrating from ${lastVersion} to ${currentVersion}`)
 
         const settings = await SettingsService.getCurrentSettings()
+        const lastIsPrerelease = semver.prerelease(lastVersion)
+        const currentIsPrerelease = semver.prerelease(currentVersion)
 
         const migrations = {
           // '1.0.0'() {
@@ -104,6 +106,13 @@ export class SettingsService {
             if (settings['Paths.URL']) {
               settings['Paths.Host'] = settings['Paths.URL']
               delete settings['Paths.URL']
+            }
+          },
+          '2.0.0-beta.104'() {
+            if (!settings['Paths.Host']) {
+              settings['Paths.Host'] = currentIsPrerelease
+                ? 'dev.wotw.orirando.com'
+                : 'wotw.orirando.com'
             }
           },
         }
@@ -117,9 +126,6 @@ export class SettingsService {
         console.log(`SettingsService: Migrations finished`)
 
         // When switching from non-beta to beta or from beta to non-beta
-        const lastIsPrerelease = semver.prerelease(lastVersion)
-        const currentIsPrerelease = semver.prerelease(currentVersion)
-
         if (lastIsPrerelease && !currentIsPrerelease) {
           settings['Paths.Host'] = 'wotw.orirando.com'
           settings['Paths.UdpPort'] = 31415

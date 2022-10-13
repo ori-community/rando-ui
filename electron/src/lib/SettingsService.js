@@ -142,6 +142,7 @@ export class SettingsService {
 
         flatSettings = settings
         await SettingsService.writeSettings()
+        sendSettingsToUI()
       } else {
         console.log(`SettingsService: Nothing to migrate`)
       }

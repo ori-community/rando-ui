@@ -9,6 +9,7 @@
         @add-world="addNewWorld()"
         @start-over="resetEverything()"
         @restore-last-config="restoreLastConfig()"
+        @delete-world="deleteWorld"
       />
 
       <div class="mb-12">
@@ -237,7 +238,7 @@
                 this.bingoSettingsDialogPromiseResolve = null
                 this.bingoSettingsDialogPromiseReject = null
                 this.bingoSettingsDialogOpen = false
-                reject(new SilentError("Bingo settings cancelled"))
+                reject(new SilentError('Bingo settings cancelled'))
               }
 
               this.bingoSettingsDialogOpen = true
@@ -383,7 +384,7 @@
                 `10|0|4|25|1|6|$(10|0) card completed`,
                 `10|0|4|26|1|6|$(10|0) cards completed`,
                 `10|0|4|27|1|6|$(10|0) cards completed`,
-                `10|0>=${this.bingoSettings.goalAmount}|8|9|104|bool|true`
+                `10|0>=${this.bingoSettings.goalAmount}|8|9|104|bool|true`,
               )
               break
             case 'lines':
@@ -391,7 +392,7 @@
                 `10|1|4|25|1|6|$(10|1) line completed`,
                 `10|1|4|26|1|6|$(10|1) lines completed`,
                 `10|1|4|27|1|6|$(10|1) lines completed`,
-                `10|1>=${this.bingoSettings.goalAmount}|8|9|104|bool|true`
+                `10|1>=${this.bingoSettings.goalAmount}|8|9|104|bool|true`,
               )
               break
             case 'all':
@@ -399,14 +400,14 @@
                 `10|0|4|25|1|6|$(10|0) card completed`,
                 `10|0|4|26|1|6|$(10|0) cards completed`,
                 `10|0|4|27|1|6|$(10|0) cards completed`,
-                `10|0>=${this.bingoSettings.size * this.bingoSettings.size}|8|9|104|bool|true`
+                `10|0>=${this.bingoSettings.size * this.bingoSettings.size}|8|9|104|bool|true`,
               )
               break
           }
 
           generatedBingoHeaderLines.push(
             `9|104|8|34543|11226|bool|true`,
-            `9|104|6|Bingo complete! Press Alt+C to warp to credits`
+            `9|104|6|Bingo complete! Press Alt+C to warp to credits`,
           )
 
           const seedgenResponse = await this.generateSeed(true, [
@@ -422,7 +423,7 @@
               discovery: this.bingoSettings.discovery,
               lockout: this.bingoSettings.lockout,
               size: this.bingoSettings.size,
-            }
+            },
           })
 
           this.bingoSettingsDialogPromiseResolve?.()
@@ -433,6 +434,15 @@
         }
 
         this.bingoLoading = false
+      },
+      deleteWorld(worldIndex) {
+        this.universeSettings.worldSettings.splice(worldIndex, 1)
+
+        this.currentWorldIndex = Math.min(this.currentWorldIndex, this.universeSettings.worldSettings.length - 1)
+
+        if (this.universeSettings.worldSettings.length === 0) {
+          this.addingNewWorld = true
+        }
       },
     },
   }

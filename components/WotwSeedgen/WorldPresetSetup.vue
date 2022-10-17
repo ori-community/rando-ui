@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-window vertical :value="state">
-      <v-window-item value="select_base_preset">
+      <v-window-item value="select_base_preset" active-class="active-window-item">
         <template v-if="universeSettings.worldSettings.length > 0">
           <h2 class="mb-3">Copy settings from an existing world</h2>
 
@@ -44,8 +44,17 @@
         </div>
       </v-window-item>
 
-      <v-window-item value="select_overlay_presets">
-        <h2>Good choice! Anything else?</h2>
+      <v-window-item value="select_overlay_presets" active-class="active-window-item">
+        <div class="d-flex align-center">
+          <h2 class="mr-3">
+            Good choice! Anything else?
+          </h2>
+          <v-spacer />
+          <v-btn small text @click="state = 'select_base_preset'">
+            <v-icon left>mdi-arrow-left</v-icon>
+            Back
+          </v-btn>
+        </div>
         <div class="mb-4">
           Select any amount of additional configuration presets to apply in
           addition to the
@@ -155,5 +164,10 @@
   .overlay-presets-container {
     display: flex;
     gap: 0.3em;
+  }
+
+  :deep(.active-window-item) {
+    z-index: 1;
+    background-color: var(--v-background-lighten1);
   }
 </style>

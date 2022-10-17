@@ -380,9 +380,9 @@
           switch (this.bingoSettings.goalType) {
             case 'cards':
               generatedBingoHeaderLines.push(
-                `10|0|4|25|1|6|$(10|1) card completed`,
-                `10|0|4|26|1|6|$(10|1) cards completed`,
-                `10|0|4|27|1|6|$(10|1) cards completed`,
+                `10|0|4|25|1|6|$(10|0) card completed`,
+                `10|0|4|26|1|6|$(10|0) cards completed`,
+                `10|0|4|27|1|6|$(10|0) cards completed`,
                 `10|0>=${this.bingoSettings.goalAmount}|8|9|104|bool|true`
               )
               break
@@ -396,9 +396,9 @@
               break
             case 'all':
               generatedBingoHeaderLines.push(
-                `10|0|4|25|1|6|$(10|1) card completed`,
-                `10|0|4|26|1|6|$(10|1) cards completed`,
-                `10|0|4|27|1|6|$(10|1) cards completed`,
+                `10|0|4|25|1|6|$(10|0) card completed`,
+                `10|0|4|26|1|6|$(10|0) cards completed`,
+                `10|0|4|27|1|6|$(10|0) cards completed`,
                 `10|0>=${this.bingoSettings.size * this.bingoSettings.size}|8|9|104|bool|true`
               )
               break

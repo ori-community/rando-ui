@@ -316,11 +316,12 @@
 
             for (const header of this.parsedHeaders) {
               for (const parameter of Object.values(header.parametersByIdentifier)) {
-                this.headerParameterStates[header.name][parameter.identifier] = this.getTypedValue(
-                  parameterValuesByParameterIdentifierByHeaderName[header.name]?.[parameter.identifier] ??
-                    parameter.default_value,
-                  parameter.parameter_type,
-                )
+                const existingValue =
+                  parameterValuesByParameterIdentifierByHeaderName[header.name]?.[parameter.identifier]
+
+                if (existingValue === undefined) {
+                  this.headerParameterStates[header.name][parameter.identifier] = this.getTypedValue(parameter.default_value, parameter.parameter_type)
+                }
               }
             }
           })

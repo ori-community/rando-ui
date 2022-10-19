@@ -338,7 +338,7 @@
         const settings = cloneDeep(this.universeSettings)
         settings.online = online
 
-        for (const worldSetting of this.universeSettings.worldSettings) {
+        for (const worldSetting of settings.worldSettings) {
           worldSetting.inlineHeaders.push(...systemAddedHeaders)
         }
 

@@ -92,7 +92,7 @@
           })
 
           window.electronApi.on('game.gameFinished', () => {
-            if (this.settingsLoaded && this.settings.Flags.ShowStatsAfterFinish) {
+            if (this.settingsLoaded && this.settings['Flags.ShowStatsAfterFinish']) {
               this.$router.push({ name: 'electron-stats' })
               window.electronApi.invoke('launcher.focusMainWindow')
             }

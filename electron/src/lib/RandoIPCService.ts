@@ -1,45 +1,40 @@
-  import { Socket } from 'net'
+import { Socket } from "net";
 import throttle from 'lodash.throttle'
 import { uiIpc } from '@/api'
 import { UberId } from '~/assets/lib/types/UberStates'
 import { LocalTrackerWebSocketService } from '@/lib/LocalTrackerWebSocketService'
-  import {BingoBoardOverlayService} from '@/lib/BingoBoardOverlayService'
-  import { Exception } from 'sass'
+import { BingoBoardOverlayService } from '@/lib/BingoBoardOverlayService'
 
 const PIPE_NAME = 'wotw_rando'
 const PIPE_PATH = '\\\\.\\pipe\\'
 
-interface NodeSocket extends Socket {
-  readyState?: string,
-}
-
-let socket: NodeSocket|null = null
+let socket: Socket | null = null
 let lastRequestId = 0
 
 interface Request {
-  type: 'request',
-  method: string,
-  id: number,
-  payload: any,
+  type: 'request'
+  method: string
+  id: number
+  payload: any
 }
 
 interface Response {
-  type: 'response',
-  id: number,
-  payload: any,
+  type: 'response'
+  id: number
+  payload: any
 }
 
 interface QueuedRequest {
-  request: Request,
-  expectsResponse: boolean,
+  request: Request
+  expectsResponse: boolean
 }
 
-const outgoingRequestHandlers: {[requestId: number]: {resolve?: (arg?: any) => any, promise?: Promise<any>}} = {}
+const outgoingRequestHandlers: { [requestId: number]: { resolve?: (arg?: any) => any; promise?: Promise<any> } } = {}
 const outgoingRequestQueue: QueuedRequest[] = []
 let outgoingRequestsRunning = 0
 
 const notifyUberStateChangedThrottled: (state: number, group: number, value: number) => void = throttle((state: number, group: number, value: number) => {
-  uiIpc.queueSend('game.uberStateChanged', {state, group, value})
+  uiIpc.queueSend('game.uberStateChanged', { state, group, value })
 }, 500)
 
 const makeRequest = (method: string, payload: any): Request => ({
@@ -86,10 +81,10 @@ export class RandoIPCService {
     }
 
     if (socket === null || socket.destroyed) {
-      return new Promise<void>(((resolve, reject) => {
+      return new Promise<void>((resolve, reject) => {
         try {
           socket = new Socket()
-          socket.on('error', error => {
+          socket.on('error', (error) => {
             console.log('RandoIPC: Could not connect,', error.message)
             uiIpc.queueSend('randoIpc.setConnected', false)
             reject(error)
@@ -104,11 +99,11 @@ export class RandoIPCService {
             await LocalTrackerWebSocketService.forceRefreshAll()
             resolve()
           })
-          socket.on('data', data => {
+          socket.on('data', (data) => {
             const message = JSON.parse(data.toString())
 
             if (message.type === 'request') {
-              this.handleIncomingRequest(message).catch(error => console.log('RandoIPC: Could not handle incoming request', error))
+              this.handleIncomingRequest(message).catch((error) => console.log('RandoIPC: Could not handle incoming request', error))
             } else if (message.type === 'response') {
               console.log(`< ${message.id}`)
 
@@ -124,7 +119,7 @@ export class RandoIPCService {
           console.log('RandoIPC: Error while connecting to pipe:', e)
           reject(e)
         }
-      }))
+      })
     }
   }
 
@@ -150,12 +145,12 @@ export class RandoIPCService {
   static async handleIncomingRequest(request: Request) {
     switch (request.method) {
       case 'notify_on_uber_state_changed': {
-        const {group, state, value} = request.payload
+        const { group, state, value } = request.payload
         if (group === 34543 && state === 11226 && value) {
           uiIpc.queueSend('game.gameFinished')
         }
 
-        LocalTrackerWebSocketService.reportUberState({group, state, value})
+        LocalTrackerWebSocketService.reportUberState({ group, state, value })
         break
       }
       case 'notify_on_reload':
@@ -164,7 +159,7 @@ export class RandoIPCService {
         break
       }
       case 'notify_input': {
-        const {type, pressed} = request.payload
+        const { type, pressed } = request.payload
 
         if (pressed) {
           switch (type) {

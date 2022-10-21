@@ -481,7 +481,7 @@
           },
         })
 
-        const url = new URL(targetRoute.href.replace('/#', ''), this.$paths.UI_BASE_URL)
+        const url = new URL(targetRoute.href.replace('#/', ''), this.$paths.UI_BASE_URL)
         await window.navigator.clipboard.writeText(url.toString())
 
         this.embedUrlLoading = false

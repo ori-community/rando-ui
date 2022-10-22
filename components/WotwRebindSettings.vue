@@ -290,10 +290,15 @@
       getButtonNameForUnityId(targetUnityId) {
         const button = Object.entries(this.availableButtons)
           .find(([, {unityId}]) => unityId === targetUnityId)
-        return button[1].displayName ?? button[0]
+
+        if (!button) {
+          return `[Button id=${targetUnityId}]`
+        }
+
+        return button[1].displayName ?? button[0];
       },
       onKeyOrMouseDown(event) {
-        if (!this.bindingEditor.dialogOpen) {
+        if (!this.bindingEditor.dialogOpen || this.type !== 'kbm') {
           return
         }
 
@@ -302,7 +307,7 @@
 
         if (!event.repeated) {
           const unityId = InputRebindService.getKbmEventUnityId(event)
-          console.log(unityId)
+
           if (unityId && !this.bindingEditor.pressedButtons.includes(unityId)) {
             this.bindingEditor.pressedButtons.push(unityId)
           }

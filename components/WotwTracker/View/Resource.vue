@@ -1,57 +1,69 @@
 <template>
-  <div class='resource-view'>
-    <div class='resource-grid'>
-      <div class='line full-width'>
-        <div class='image'>
-          <img src='@/assets/images/tracker/spirit_light.png'>
+  <div class="resource-view">
+    <div class="resource-grid">
+      <div class="line full-width">
+        <div class="image">
+          <img src="@/assets/images/tracker/spirit_light.png" />
         </div>
-        <div class='value'>{{ spiritLight }}</div>
-        <div v-if="finished" class='image hype'>
-          <img src='@/assets/images/ori_hype.png'>
+        <div class="value">{{ spiritLight }}</div>
+        <div v-if="finished == 1" class="image hype">
+          <img src="@/assets/images/ori_hype.png" />
         </div>
       </div>
 
-      <div class='line'>
-        <div class='image'>
-          <img src='@/assets/images/tracker/keystone.png'>
+      <div class="line">
+        <div class="image">
+          <img src="@/assets/images/tracker/keystone.png" />
         </div>
-        <div class='value'>{{ keystones }}</div>
+        <div class="value">{{ keystones }}</div>
       </div>
-      <div class='line'>
-        <div class='image'>
-          <img src='@/assets/images/tracker/gorlek_ore.png'>
+      <div class="line">
+        <div class="image">
+          <img src="@/assets/images/tracker/gorlek_ore.png" />
         </div>
-        <div class='value'>{{ gorlekOre }}</div>
+        <div class="value">
+          {{ gorlekOre }}<span class="small">/{{ gorlekOreCollected }}</span>
+        </div>
       </div>
-      <div v-if='flags.includes("All Trees")' class='line'>
-        <div class='image'>
-          <img src='@/assets/images/tracker/tree.png'>
+      <div v-if="flags.includes('Force Trees')" class="line">
+        <div class="image">
+          <img src="@/assets/images/tracker/tree.png" />
         </div>
-        <div class='value' :class='{completed: treeCount === totalTreeCount}'>{{ treeCount }}<span class='small'>/{{ totalTreeCount }}</span></div>
+        <div class="value" :class="{ completed: treeCount === totalTreeCount }">
+          {{ treeCount }}<span class="small">/{{ totalTreeCount }}</span>
+        </div>
       </div>
-      <div v-if='flags.includes("All Wisps")' class='line'>
-        <div class='image'>
-          <img src='@/assets/images/tracker/wisp.png'>
+      <div v-if="flags.includes('Force Wisps')" class="line">
+        <div class="image">
+          <img src="@/assets/images/tracker/wisp.png" />
         </div>
-        <div class='value' :class='{completed: wispCount === totalWispCount}'>{{ wispCount }}<span class='small'>/{{ totalWispCount }}</span></div>
+        <div class="value" :class="{ completed: wispCount === totalWispCount }">
+          {{ wispCount }}<span class="small">/{{ totalWispCount }}</span>
+        </div>
       </div>
-      <div v-if='flags.includes("Relics")' class='line'>
-        <div class='image'>
-          <img src='@/assets/images/tracker/map_stone.png'>
+      <div v-if="flags.includes('World Tour')" class="line">
+        <div class="image">
+          <img src="@/assets/images/tracker/map_stone.png" />
         </div>
-        <div class='value' :class='{completed: relicCount === totalRelicCount}'>{{ relicCount }}<span class='small'>/{{ totalRelicCount }}</span></div>
+        <div class="value" :class="{ completed: relicCount === totalRelicCount }">
+          {{ relicCount }}<span class="small">/{{ totalRelicCount }}</span>
+        </div>
       </div>
-      <div v-if='flags.includes("All Quests")' class='line'>
-        <div class='image'>
-          <img src='@/assets/images/tracker/quest.png'>
+      <div v-if="flags.includes('Force Quests')" class="line">
+        <div class="image">
+          <img src="@/assets/images/tracker/quest.png" />
         </div>
-        <div class='value' :class='{completed: questCount === totalQuestCount}'>{{ questCount }}<span class='small'>/{{ totalQuestCount }}</span></div>
+        <div class="value" :class="{ completed: questCount === totalQuestCount }">
+          {{ questCount }}<span class="small">/{{ totalQuestCount }}</span>
+        </div>
       </div>
-      <div v-if='showWillowHearts' class='line'>
-        <div class='image'>
-          <img src='@/assets/images/tracker/willow_heart.png'>
+      <div v-if="showWillowHearts" class="line">
+        <div class="image">
+          <img src="@/assets/images/tracker/willow_heart.png" />
         </div>
-        <div class='value' :class='{completed: heartCount === totalHeartCount}'>{{ heartCount }}<span class='small'>/{{ totalHeartCount }}</span></div>
+        <div class="value" :class="{ completed: heartCount === totalHeartCount }">
+          {{ heartCount }}<span class="small">/{{ totalHeartCount }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -66,6 +78,10 @@
         default: 0,
       },
       gorlekOre: {
+        type: Number,
+        default: 0,
+      },
+      gorlekOreCollected: {
         type: Number,
         default: 0,
       },
@@ -119,29 +135,29 @@
       },
       flags: {
         type: Array,
-        default: () => ([]),
+        default: () => [],
       },
       finished: {
-        type: Boolean,
-        default: false,
-      }
+        type: Number,
+        default: 0,
+      },
     },
   }
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
   .resource-view {
     position: relative;
     padding-top: 1vw;
     padding-bottom: 1vw;
-    padding-left: 2vw;
+    padding-left: 1vw;
   }
 
   .resource-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-auto-rows: 17%;
-    gap: 1vw;
+    gap: 0.5vw;
     height: 100%;
     align-content: center;
 
@@ -154,7 +170,7 @@
       flex-shrink: 1;
 
       .value {
-        padding-right: 1vw;
+        padding-right: 0.5vw;
       }
 
       &:not(.full-width) {
@@ -162,7 +178,7 @@
           flex-direction: row;
 
           .value {
-            padding-left: 1vw;
+            padding-left: 0.5vw;
           }
         }
       }
@@ -196,7 +212,7 @@
         font-weight: 600;
 
         &.completed {
-          color: var(--v-success-base)
+          color: var(--v-success-base);
         }
 
         .small {

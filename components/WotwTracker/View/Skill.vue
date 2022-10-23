@@ -1,10 +1,10 @@
 <template>
-  <div class='skill' :class='{active: Boolean(active)}'>
-    <img class='skill-image' :src='imageSource' alt='' />
+  <div class="skill" :class="{ active: Boolean(active) }">
+    <img class="skill-image" :src="imageSource" alt="" />
 
-    <div class='tree' :class='{active: Boolean(tree)}'>
-      <div class='shadow'></div>
-      <img src='@/assets/images/tracker/tree.png' alt='' />
+    <div class="tree" :class="{ active: Boolean(tree) }">
+      <div class="shadow"></div>
+      <img src="@/assets/images/tracker/tree.png" alt="" />
     </div>
   </div>
 </template>
@@ -24,7 +24,7 @@
       tree: {
         type: Number,
         default: 0,
-      }
+      },
     },
     computed: {
       imageSource() {
@@ -34,7 +34,7 @@
   }
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
   .skill {
     position: relative;
     display: flex;
@@ -51,7 +51,7 @@
     &.active {
       .skill-image {
         opacity: 1;
-        filter: grayscale(0) brightness(1.0);
+        filter: grayscale(0) brightness(1);
         transform: scale(1);
       }
     }

@@ -87,6 +87,7 @@ const TRACKED_UBER_STATES: TrackedUberState[] = [
 
   { uberId: { group: 15, state: 0 }, trackingId: 'resource_spirit_light' },
   { uberId: { group: 15, state: 1 }, trackingId: 'resource_gorlek_ore' },
+  { uberId: { group: 6, state: 5 }, trackingId: 'resource_gorlek_ore_collected' },
   { uberId: { group: 15, state: 2 }, trackingId: 'resource_keystones' },
 
   { uberId: { group: 15, state: 500 }, trackingId: 'relic_count_total' },

@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class='teleporter' :class='{active: Boolean(active)}'>
-      <img class='teleporter-image' src='@/assets/images/tracker/teleporter_alt.png' alt=''/>
+    <div class="teleporter" :class="{ active: Boolean(active) }">
+      <img class="teleporter-image" src="@/assets/images/tracker/teleporter_alt.png" alt="" />
     </div>
-    <div class='teleporter-name'>{{ name }}</div>
+    <div class="teleporter-name">{{ name }}</div>
   </div>
 </template>
 
@@ -18,12 +18,12 @@
       name: {
         type: String,
         required: true,
-      }
+      },
     },
   }
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
   .teleporter {
     position: relative;
     display: flex;
@@ -40,7 +40,7 @@
     &.active {
       .teleporter-image {
         opacity: 1;
-        filter: grayscale(0) brightness(1.0);
+        filter: grayscale(0) brightness(1);
         transform: scale(1);
       }
     }

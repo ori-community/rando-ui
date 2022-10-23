@@ -1,7 +1,5 @@
 <template>
-  <div>
-    goals
-  </div>
+  <div>goals</div>
 </template>
 
 <script>
@@ -10,6 +8,4 @@
   }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

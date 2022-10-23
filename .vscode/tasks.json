@@ -4,7 +4,7 @@
 		{
 			"type": "shell",
 			"label": "Install/Update dependencies",
-			"command": "npm install; cd electron; npm install",
+			"command": "yarn install; cd electron; yarn install",
 			"problemMatcher": []
 		},
 		{
@@ -16,13 +16,13 @@
 					"API_SECURE": "true"
 				}
 			},
-			"command": "npm run dev",
+			"command": "yarn dev",
 			"problemMatcher": []
 		},
 		{
 			"type": "shell",
 			"label": "Run Electron",
-			"command": "npm run electron:serve",
+			"command": "yarn electron:serve",
 			"options": {
 				"cwd": "${workspaceFolder}/electron"
 			},

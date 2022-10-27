@@ -3,10 +3,7 @@
     <h2>Population Cache Viewer</h2>
 
     <v-row>
-      <v-col cols="6">
-        <v-text-field v-model="worldId" label="World ID" />
-      </v-col>
-      <v-col cols="6">
+      <v-col cols="12">
         <v-text-field v-model="playerId" label="Player ID" />
       </v-col>
     </v-row>
@@ -22,14 +19,13 @@
 <script>
   export default {
     data: vm => ({
-      worldId: vm.$route.query.worldId ?? '',
       playerId: vm.$route.query.playerId ?? vm.$store.state.user.user?.id ?? '',
       cacheContent: null,
     }),
     methods: {
       async fetch() {
         try {
-          this.cacheContent = await this.$axios.$get(`/dev/caches/population/${this.worldId}/${this.playerId}`)
+          this.cacheContent = await this.$axios.$get(`/dev/caches/population/${this.playerId}`)
         } catch (e) {
           this.cacheContent = e
           console.error(e)

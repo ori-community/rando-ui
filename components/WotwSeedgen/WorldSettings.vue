@@ -72,7 +72,7 @@
             </template>
           </v-select>
 
-          <v-btn text small @click="selectAllOrNoTricks"> Select {{ allTricksSelected ? 'None' : 'All' }} </v-btn>
+          <v-btn text small @click="selectAllOrNoTricks">Select {{ allTricksSelected ? 'None' : 'All' }}</v-btn>
         </div>
       </v-col>
 
@@ -167,7 +167,7 @@
                   this.model.headerConfig.push({
                     headerName: header.name,
                     configName: parameter.identifier,
-                    configValue: randomValue
+                    configValue: randomValue ? 'true' : 'false',
                   })
                 }
               }

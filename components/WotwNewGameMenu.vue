@@ -41,6 +41,8 @@
                 </div>
               </v-card>
             </v-menu>
+
+            <v-list-item @click='createNewGame("infection")'>Infection (beta)</v-list-item>
           </v-list>
         </v-menu>
       </div>
@@ -101,6 +103,13 @@
                 bingoConfig: {
                   lockout: true,
                   size: this.bingoSize,
+                },
+              })
+              break
+            case 'infection':
+              multiverseId = await this.$axios.$post('/multiverses', {
+                infectionConfig: {
+                  playerRevealIntervalIncreasePerSeeker: 10,
                 },
               })
               break

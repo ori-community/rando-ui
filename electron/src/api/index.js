@@ -11,6 +11,7 @@ import bingoBoardOverlay from './bingoBoardOverlay'
 import devtools from './devtools'
 import randoIpc from './randoIpc'
 import seedgen from './seedgen'
+import tas from './tas'
 
 export default {
   settings,
@@ -26,4 +27,5 @@ export default {
   devtools,
   randoIpc,
   seedgen,
+  tas,
 }

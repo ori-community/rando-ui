@@ -4,6 +4,7 @@ import { uiIpc } from '@/api'
 import { UberId } from '~/assets/lib/types/UberStates'
 import { LocalTrackerWebSocketService } from '@/lib/LocalTrackerWebSocketService'
 import { BingoBoardOverlayService } from '@/lib/BingoBoardOverlayService'
+import { TASService } from "@/lib/TASService";
 
 const PIPE_NAME = 'wotw_rando'
 const PIPE_PATH = '\\\\.\\pipe\\'
@@ -169,6 +170,15 @@ export class RandoIPCService {
           }
         }
 
+        break
+      }
+      case 'notify_tas_current_frame_updated': {
+        const { current_frame: currentFrame } = request.payload
+        TASService.reportCurrentFrameChanged(currentFrame)
+        break
+      }
+      case 'notify_tas_timeline_loaded': {
+        TASService.reportTimelineLoaded()
         break
       }
     }

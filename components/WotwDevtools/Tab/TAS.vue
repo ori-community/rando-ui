@@ -51,7 +51,7 @@
           <template #activator="{ on }">
             <v-btn icon v-on="on" @click="timelinePlaybackActive = !timelinePlaybackActive">
               <v-icon v-if="timelinePlaybackActive" color="green accent-3">mdi-movie-open-play</v-icon>
-              <v-icon v-else color="grey">mdi-movie-open-off-outline</v-icon>
+              <v-icon v-else color="red">mdi-movie-open-off-outline</v-icon>
             </v-btn>
           </template>
           <span>Timeline playback {{ timelinePlaybackActive ? 'disabled' : 'enabled' }}</span>

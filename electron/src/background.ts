@@ -6,7 +6,7 @@ import { getElectronUrl, registerUIIpcApi, uiIpc } from './api'
 import fs from 'fs'
 import { SettingsService } from '~/electron/src/lib/SettingsService'
 import { CrashDetectService } from '~/electron/src/lib/CrashDetectService'
-import { RANDOMIZER_BASE_PATH, SEEDS_PATH, UPDATE_PATH } from '~/electron/src/lib/Constants'
+import { LAUNCHER_WORKING_DIR, RANDOMIZER_BASE_PATH, SEEDS_PATH, UPDATE_PATH } from "~/electron/src/lib/Constants";
 import { RandoIPCService } from '~/electron/src/lib/RandoIPCService'
 import { LocalTrackerWebSocketService } from '@/lib/LocalTrackerWebSocketService'
 import { LocalTrackerService } from '@/lib/LocalTrackerService'
@@ -106,11 +106,11 @@ if (isDevelopment) {
   fs.mkdirSync(RANDOMIZER_BASE_PATH, { recursive: true })
   fs.mkdirSync(SEEDS_PATH, { recursive: true })
   fs.mkdirSync(UPDATE_PATH, { recursive: true })
-  process.chdir('./work-dir')
+  process.chdir(LAUNCHER_WORKING_DIR)
 } else {
-  process.chdir(path.dirname(process.argv0))
   fs.mkdirSync(SEEDS_PATH, { recursive: true })
   fs.mkdirSync(UPDATE_PATH, { recursive: true })
+  process.chdir(LAUNCHER_WORKING_DIR)
 }
 
 if (!app.requestSingleInstanceLock()) {

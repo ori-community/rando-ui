@@ -106,8 +106,6 @@ export class RandoIPCService {
             if (message.type === 'request') {
               this.handleIncomingRequest(message).catch((error) => console.log('RandoIPC: Could not handle incoming request', error))
             } else if (message.type === 'response') {
-              console.log(`< ${message.id}`)
-
               if (message.id in outgoingRequestHandlers) {
                 outgoingRequestHandlers[message.id].resolve?.(message.payload)
               }
@@ -125,7 +123,6 @@ export class RandoIPCService {
   }
 
   static async send(message: any) {
-    console.log(`> ${message.id || '-'}`)
     message = JSON.stringify(message)
 
     await new Promise<void>((resolve, reject) => {

@@ -1,6 +1,9 @@
 import { RandoIPCService } from '~/electron/src/lib/RandoIPCService'
 
 export default {
+  async getRealMousePosition() {
+    return await RandoIPCService.request('tas.get_real_mouse_position')
+  },
   async getState() {
     return await RandoIPCService.request('tas.get_state')
   },

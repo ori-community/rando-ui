@@ -1,50 +1,48 @@
 <template>
-  <div class='pa-5'>
-    <template v-if='!randoIpcConnected'>
-      Randomizer IPC not connected
-    </template>
+  <div class="pa-5">
+    <template v-if="!randoIpcConnected"> Randomizer IPC not connected </template>
     <template v-else>
-      <div class='d-flex align-end mb-4'>
-        <v-text-field v-model='search' label='Search' hide-details prepend-inner-icon='mdi-magnify' />
-        <v-btn :loading='loading' icon class='ml-4' @click='reload'>
+      <div class="d-flex align-end mb-4">
+        <v-text-field v-model="search" label="Search" hide-details prepend-inner-icon="mdi-magnify" />
+        <v-btn :loading="loading" icon class="ml-4" @click="reload">
           <v-icon>mdi-reload</v-icon>
         </v-btn>
       </div>
 
-      <div class='d-flex'>
+      <div class="d-flex">
         <div>
           <v-treeview
             dense
             activatable
             hoverable
-            :items='tree'
-            :open.sync='open'
-            :load-children='loadSubtreeForItem'
-            :search='search'
-            :filter='filter'
-            :active.sync='active'
+            :items="tree"
+            :open.sync="open"
+            :load-children="loadSubtreeForItem"
+            :search="search"
+            :filter="filter"
+            :active.sync="active"
             return-object
-            loading-icon='mdi-loading'
-            item-key='instance_id'
+            loading-icon="mdi-loading"
+            item-key="instance_id"
             transition
           >
-            <template #label='{ item }'>
-          <span class='tree-item'>
-            {{ item.name }}
+            <template #label="{ item }">
+              <span class="tree-item" @contextmenu.prevent="onItemContextMenu(item)">
+                <span :class="{ disabled: !item.active }">
+                  {{ item.name }}
+                </span>
 
-            <v-icon v-if='!item.childrenLoaded' class='not-loaded'>
-              mdi-dots-horizontal-circle-outline
-            </v-icon>
-          </span>
+                <v-icon v-if="!item.childrenLoaded" class="not-loaded" small>mdi-dots-horizontal-circle-outline</v-icon>
+              </span>
             </template>
           </v-treeview>
         </div>
-        <div class='pl-2'>
-          <div class='sticky'>
-            <template v-if='!activeItem'>
+        <div class="pl-2">
+          <div class="sticky">
+            <template v-if="!activeItem">
               <em>Select an item to inspect</em>
             </template>
-            <wotw-devtools-node-renderer v-else :node='activeItem' />
+            <wotw-devtools-node-renderer v-else :node="activeItem" />
           </div>
         </div>
       </div>
@@ -69,9 +67,7 @@
         return this.activeItem?.value
       },
       activeItem() {
-        return this.active.length > 0
-          ? this.active[0]
-          : null
+        return this.active.length > 0 ? this.active[0] : null
       },
     },
     watch: {
@@ -94,10 +90,8 @@
         return item.name.toLowerCase().includes(search.toLowerCase())
       },
       async getSubtree(path, instanceId = null) {
-        return (await window.electronApi.invoke('devtools.getGameObjectChildren', path, instanceId))?.map(item => {
-          item.children = item.children_count > 0
-            ? []
-            : undefined
+        return (await window.electronApi.invoke('devtools.getGameObjectChildren', path, instanceId))?.map((item) => {
+          item.children = item.children_count > 0 ? [] : undefined
           item.childrenLoaded = item.children_count === 0
           item.value = null
           item.fullValueLoaded = false
@@ -116,7 +110,7 @@
         const tree = await this.getSubtree('')
 
         const loadSubtreeIfOpenOrBelowLevel = async (root, level) => {
-          if (!root.childrenLoaded && (this.open.some(o => o.path === root.path) || level > 0)) {
+          if (!root.childrenLoaded && (this.open.some((o) => o.path === root.path) || level > 0)) {
             await this.loadSubtreeForItem(root)
           }
 
@@ -140,17 +134,30 @@
       },
       async loadValueForItem(item) {
         try {
-          item.value = (await window.electronApi.invoke('devtools.getGameObject', item.path, item.instance_id)).value
+          const fetchedItem = await window.electronApi.invoke('devtools.getGameObject', item.path, item.instance_id)
+
+          for (const key of Object.keys(fetchedItem)) {
+            this.$set(item, key, fetchedItem[key])
+          }
+
           item.fullValueLoaded = true
         } catch (e) {
           console.error(e)
+        }
+      },
+      async onItemContextMenu(item) {
+        await window.electronApi.invoke('devtools.setGameObjectActive', item.path, item.instance_id, !item.active)
+        await this.loadValueForItem(item)
+
+        if (item.childrenLoaded) {
+          await this.loadSubtreeForItem(item)
         }
       },
     },
   }
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
   .tree-item {
     cursor: pointer;
 
@@ -162,5 +169,9 @@
   .sticky {
     position: sticky;
     top: 1em;
+  }
+
+  .disabled {
+    opacity: 0.5;
   }
 </style>

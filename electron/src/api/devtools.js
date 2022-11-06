@@ -13,4 +13,8 @@ export default {
   async getGameObjectChildren(event, path, instanceId) {
     return await RandoIPCService.request('get_children', { path, instance_id: instanceId })
   },
+
+  async setGameObjectActive(event, path, instanceId, active) {
+    return await RandoIPCService.emit('set_game_object_active', { path, instance_id: instanceId, value: active })
+  },
 }

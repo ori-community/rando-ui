@@ -6,7 +6,7 @@
       <div>Target FPS: {{ targetFps }}</div>
       <div>Frame: {{ currentFrame }}</div>
       <div>
-        Real Mouse Position:
+        Real Mouse Position (UI Space):
 
         <template v-if="realMousePositionUpdateActive">
           {{ realMousePosition.x.toFixed(3) }}, {{ realMousePosition.y.toFixed(3) }}

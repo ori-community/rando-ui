@@ -29,4 +29,4 @@ cd electron
 yarn run electron:serve
 ```
 
-If you want to test features that require the randomizer executables to be present (such as launching the randomizer), you need to copy the `randomizer` directory from your Ori Randomizer installation to `electron/work-dir` (that directory does not exist by default and will be created when launching the desktop client for the first time).
+On Windows, the base directory when running in development mode is `C:\moon`. The default settings of `ori-rando/wotw-client` should automatically install into `C:\moon\randomizer`. You might need to copy additional files in there. The easiest way is to install an official release of the Randomizer into `C:\moon` and build `ori-rando/wotw-client` afterwards to override the binaries to the newly compiled ones.

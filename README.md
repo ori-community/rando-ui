@@ -26,6 +26,8 @@ The API host will default to `127.0.0.1:8081` and secure connections are disable
 
 ```shell
 cd electron
+
+yarn install # Install Launcher dependencies
 yarn run electron:serve
 ```
 

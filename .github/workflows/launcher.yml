@@ -7,7 +7,7 @@ on:
 
 jobs:
   electron:
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
     - name: Checkout 🛎
       uses: actions/checkout@master
@@ -16,6 +16,7 @@ jobs:
       with:
         node-version: 16
         cache: 'yarn'
+        cache-dependency-path: '**/yarn.lock'
 
     - run: yarn install
 
@@ -25,17 +26,23 @@ jobs:
         $env:API_SECURE = "true"
         $env:IS_ELECTRON = "true"
         yarn run generate
-        copy .\dist\* .\electron\public\
+        Copy-item -Force -Recurse -Verbose ".\dist\*" -Destination ".\electron\public\"
 
     - name: Build electron
       working-directory: .\\electron
       run: |
         yarn install
         yarn run electron:build -- -w
+
+    - name: Write Git revision
+      run: |
+        md -Path '.\electron\dist_electron\win-unpacked\randomizer'
+        git rev-parse HEAD > .\electron\dist_electron\win-unpacked\randomizer\launcher.revision
+
     - name: Archive artifacts
       uses: actions/upload-artifact@v2
       with:
         name: launcher
-        retention-days: 1
+        retention-days: 7
         path: |
           .\electron\dist_electron\win-unpacked\*

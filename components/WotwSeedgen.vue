@@ -10,6 +10,7 @@
         @start-over="resetEverything()"
         @restore-last-config="restoreLastConfig()"
         @delete-world="deleteWorld"
+        @copy-world="createNewWorldFromExistingWorld"
       />
 
       <div class="mb-12">

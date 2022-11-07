@@ -37,6 +37,10 @@
 
     <v-menu v-model="worldMenuOpen" :position-x="worldMenuX" :position-y="worldMenuY" absolute offset-y>
       <v-list>
+        <v-list-item :disabled="disabled" @click="$emit('copy-world', worldMenuWorldIndex)">
+          <v-icon left>mdi-content-duplicate</v-icon>
+          Copy world
+        </v-list-item>
         <v-list-item :disabled="disabled" @click="$emit('delete-world', worldMenuWorldIndex)">
           <v-icon left>mdi-delete-outline</v-icon>
           Delete world

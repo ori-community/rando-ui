@@ -6961,6 +6961,11 @@ klona@^2.0.4:
   resolved "https://registry.yarnpkg.com/klona/-/klona-2.0.5.tgz#d166574d90076395d9963aa7a928fabb8d76afbc"
   integrity sha512-pJiBpiXMbt7dkzXe8Ghj/u4FfXOOa98fPW+bihOJ4SjnoijweJrNThJfd3ifXpXhREjpoF2mZVH1GfS9LV3kHQ==
 
+konva@^8.3.13:
+  version "8.3.13"
+  resolved "https://registry.yarnpkg.com/konva/-/konva-8.3.13.tgz#c1adc986ddf5dde4790c0ed47eef8d40a313232e"
+  integrity sha512-O5VxHfRfTj4PscTglQH1NimS8+CC5hQYLeB8YQstu8MN/i2L8GjA1T9d7xxzITF2TD5+xcIs5ei7en3cztbNXg==
+
 last-call-webpack-plugin@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/last-call-webpack-plugin/-/last-call-webpack-plugin-3.0.0.tgz#9742df0e10e3cf46e5c0381c2de90d3a7a2d7555"
@@ -8182,9 +8187,9 @@ pixi-dashed-line@^1.4.2:
   integrity sha512-THMJdKc+IrzZTxSm/EncJT2i0VQmRLTn8EVpshA9JnvYBjTk6xiqtVUFQBe72yr4Kzp4UJ9JCKdDdqzdWtUKbw==
 
 pixi-viewport@^4.34.4:
-  version "4.35.1"
-  resolved "https://registry.yarnpkg.com/pixi-viewport/-/pixi-viewport-4.35.1.tgz#e803216f010c4bdb2db11dce4c66ee922d2d523a"
-  integrity sha512-IQ7dBPe93T7b3rxIC09RAfm2cze+BQCp/CdqGeoKhjx4nwFxJQ6JcTa2Hg+uJJEr7EvJBqvbywhfyL6bcPPp0g==
+  version "4.37.0"
+  resolved "https://registry.yarnpkg.com/pixi-viewport/-/pixi-viewport-4.37.0.tgz#5ecdb8c453a8b7ff7e1ed96be511980d4144f5f1"
+  integrity sha512-bF22o1WbWeQ3TTHnxh5MYPzjXiKAG2ezAV6rm1oaEbA66hZAAU6lCs7BgwmEBiZKgHNGko1bIJQUSe7cXWJVCw==
 
 pixi.js@~6.4.2:
   version "6.4.2"
@@ -10976,6 +10981,11 @@ vue-json-pretty@^1.8.2:
   version "1.9.2"
   resolved "https://registry.yarnpkg.com/vue-json-pretty/-/vue-json-pretty-1.9.2.tgz#a84c438a6e20929fa162ca84d6e3b797bee6947e"
   integrity sha512-FHAYmZAazhVC6Wi+Zi9DVYha+oZb9uylJPGkl/yTYLxlqLMxmnaVC2R8ZwaYzt6TBGvkLe3Y2D2vgyJCDBJy1w==
+
+vue-konva@^2:
+  version "2.1.7"
+  resolved "https://registry.yarnpkg.com/vue-konva/-/vue-konva-2.1.7.tgz#1d94471e0b6a3d4139e118a22b4c907f4a091f9c"
+  integrity sha512-uKFp1/tGbt9HAcTXukk/PuPtCMfCSmNyU3Feo3Av4XVfcoBgVQA69+H9r2VQMX+Vwphez1qSfGf7ZNstM3nYRw==
 
 vue-loader@^15.9.7:
   version "15.10.0"

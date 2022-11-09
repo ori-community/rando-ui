@@ -16,7 +16,7 @@
   export default {
     layout: 'plain',
     data: () => ({
-      tab: 0,
+      tab: 2,
     }),
     head: {
       title: 'Client Devtools'

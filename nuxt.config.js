@@ -46,7 +46,7 @@ export default {
   css: ['@mdi/font/css/materialdesignicons.css', '@fontsource/nunito-sans/index.css'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: ['~/plugins/restoreAuthState.js', '~/plugins/api.client.js'],
+  plugins: ['~/plugins/restoreAuthState.js', '~/plugins/api.client.js', '~/plugins/konva.js'],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,

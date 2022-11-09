@@ -20,7 +20,7 @@
 
       <div class="playback-controls">
         <v-tooltip open-delay="600" bottom>
-          <template #activator="{on}">
+          <template #activator="{ on }">
             <v-btn icon v-on="on" @click="loadTimelineFromFile">
               <v-icon>mdi-file-refresh-outline</v-icon>
             </v-btn>
@@ -29,7 +29,7 @@
         </v-tooltip>
 
         <v-tooltip open-delay="600" bottom>
-          <template #activator="{on}">
+          <template #activator="{ on }">
             <v-btn icon v-on="on" @click="rewindTimeline">
               <v-icon>mdi-skip-backward</v-icon>
             </v-btn>
@@ -38,7 +38,7 @@
         </v-tooltip>
 
         <v-tooltip open-delay="600" bottom>
-          <template #activator="{on}">
+          <template #activator="{ on }">
             <v-btn fab color="accent" large v-on="on" @click="framesteppingEnabled = !framesteppingEnabled">
               <v-icon v-if="!framesteppingEnabled" size="48">mdi-pause</v-icon>
               <v-icon v-else size="48">mdi-play</v-icon>
@@ -66,6 +66,8 @@
           <span>Next Frame</span>
         </v-tooltip>
       </div>
+
+      <wotw-tas-timeline v-model="timeline" :frame.sync="currentFrame" />
     </template>
   </div>
 </template>
@@ -85,6 +87,48 @@
       },
       framesteppingEnabled: false,
       timelinePlaybackActive: false,
+      timeline: [ // TODO: Remove later
+        { frame: 0, type: 'MousePosition', mode: 'OriRelative', x: 3.0, y: 1.0 },
+        { frame: 0, duration: 10, type: 'Action', action: 'Down' },
+        { frame: 0, duration: 10, type: 'Action', action: 'Jump' },
+        { frame: 11, duration: 1, type: 'Action', action: 'Ability1' },
+        { frame: 13, type: 'MousePosition', x: 0, y: 3 },
+        { frame: 13, duration: 2, type: 'Action', action: 'OpenWeaponWheel' },
+        { frame: 14, duration: 1, type: 'Action', action: 'Ability1' },
+        { frame: 16, type: 'MousePosition', x: -1.2, y: 2.7 },
+        { frame: 16, duration: 2, type: 'Action', action: 'OpenWeaponWheel' },
+        { frame: 17, duration: 1, type: 'Action', action: 'Ability1' },
+        { frame: 50, duration: 1, type: 'Action', action: 'Jump' },
+        { frame: 100, duration: 1, type: 'Action', action: 'Jump' },
+        { frame: 100, type: 'MousePosition', mode: 'OriRelative', x: 3.0, y: -3.0 },
+        { frame: 146, duration: 2, type: 'Action', action: 'Grapple' },
+        { frame: 147, type: 'MousePosition', mode: 'OriRelative', x: 0.5, y: -3.0 },
+        { frame: 178, duration: 1, type: 'Action', action: 'Dash' },
+        { frame: 186, type: 'MousePosition', mode: 'OriRelative', x: 1.0, y: -3.0 },
+        { frame: 203, duration: 1, type: 'Action', action: 'Dash' },
+        { frame: 220, type: 'MousePosition', mode: 'OriRelative', x: 3.0, y: -0.7 },
+        { frame: 228, duration: 1, type: 'Action', action: 'Dash' },
+        { frame: 253, duration: 1, type: 'Action', action: 'Dash' },
+        { frame: 278, duration: 1, type: 'Action', action: 'Dash' },
+        { frame: 296, type: 'MousePosition', mode: 'OriRelative', x: 3.0, y: 1.0 },
+        { frame: 303, duration: 1, type: 'Action', action: 'Dash' },
+        { frame: 327, type: 'MousePosition', mode: 'OriRelative', x: 0.5, y: 3.0 },
+        { frame: 328, duration: 1, type: 'Action', action: 'Dash' },
+        { frame: 380, type: 'MousePosition', mode: 'OriRelative', x: 4.0, y: 0.0 },
+        { frame: 386, duration: 1, type: 'Action', action: 'Jump' },
+        { frame: 390, duration: 60, type: 'Action', action: 'Right' },
+        { frame: 400, duration: 1, type: 'Action', action: 'Jump' },
+        { frame: 415, duration: 2, type: 'Action', action: 'Grapple' },
+        { frame: 440, duration: 10, type: 'Action', action: 'Down' },
+        { frame: 440, duration: 10, type: 'Action', action: 'Jump' },
+        { frame: 451, duration: 1, type: 'Action', action: 'Ability1' },
+        { frame: 453, type: 'MousePosition', x: 0, y: 3 },
+        { frame: 453, duration: 2, type: 'Action', action: 'OpenWeaponWheel' },
+        { frame: 454, duration: 1, type: 'Action', action: 'Ability1' },
+        { frame: 456, type: 'MousePosition', x: -1.2, y: 2.7 },
+        { frame: 456, duration: 2, type: 'Action', action: 'OpenWeaponWheel' },
+        { frame: 457, duration: 1, type: 'Action', action: 'Ability1' },
+      ],
     }),
     computed: {
       ...mapState('electron', ['randoIpcConnected']),

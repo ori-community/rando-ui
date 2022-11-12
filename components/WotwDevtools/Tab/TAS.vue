@@ -94,6 +94,7 @@
         x: 0,
         y: 0,
       },
+      isSyncingStateFromIPC: false,
       timeline: [ // TODO: Remove later
         { frame: 0, type: 'MousePosition', mode: 'OriRelative', x: 3.0, y: 1.0 },
         { frame: 0, duration: 10, type: 'Action', action: 'Down' },
@@ -150,10 +151,18 @@
         },
       },
       framesteppingEnabled(value) {
+        if (this.isSyncingStateFromIPC) {
+          return
+        }
+
         window.electronApi.invoke('tas.setFramesteppingEnabled', { enabled: value })
       },
       timelinePlaybackActive(value) {
-        window.electronApi.invoke('tas.setTimelinePlaybackActive', { active: value })
+        if (this.isSyncingStateFromIPC) {
+          return
+        }
+
+        window.electronApi.invoke('tas.setTimelinePlaybackActive', { active: value });
       },
       realMousePositionUpdateActive(value) {
         if (this.updateRealMousePositionIntervalId !== null) {
@@ -192,12 +201,14 @@
         this.realMousePosition.y = y
       },
       onStateChanged(state) {
+        this.isSyncingStateFromIPC = true
         this.framesteppingEnabled = state.framestepping_enabled
         this.timelinePlaybackActive = state.timeline_playback_active
         this.currentFrame = state.timeline_current_frame
         this.targetFps = state.timeline_fps
         this.gameLoading = state.game_loading
         this.oriPosition = state.ori_position
+        this.isSyncingStateFromIPC = false
       },
       async updateState() {
         const state = await window.electronApi.invoke('tas.getState')

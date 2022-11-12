@@ -17,6 +17,8 @@
           <v-icon v-else>mdi-eye-outline</v-icon>
         </v-btn>
       </div>
+      <div>Ori Position: {{ oriPosition.x.toFixed(3) }}, {{ oriPosition.y.toFixed(3) }}</div>
+      <div>Game loading: {{ gameLoading }}</div>
 
       <div class="playback-controls">
         <v-tooltip open-delay="600" bottom>
@@ -87,6 +89,11 @@
       },
       framesteppingEnabled: false,
       timelinePlaybackActive: false,
+      gameLoading: false,
+      oriPosition: {
+        x: 0,
+        y: 0,
+      },
       timeline: [ // TODO: Remove later
         { frame: 0, type: 'MousePosition', mode: 'OriRelative', x: 3.0, y: 1.0 },
         { frame: 0, duration: 10, type: 'Action', action: 'Down' },
@@ -164,8 +171,8 @@
       },
     },
     mounted() {
-      window.electronApi.on('tas.currentFrameChanged', (event, { frame }) => {
-        this.currentFrame = frame
+      window.electronApi.on('tas.stateChanged', (event, { state }) => {
+        this.onStateChanged(state);
       })
 
       window.electronApi.on('tas.timelineLoaded', () => {
@@ -184,13 +191,17 @@
         this.realMousePosition.x = x
         this.realMousePosition.y = y
       },
-      async updateState() {
-        const state = await window.electronApi.invoke('tas.getState')
-
+      onStateChanged(state) {
         this.framesteppingEnabled = state.framestepping_enabled
         this.timelinePlaybackActive = state.timeline_playback_active
         this.currentFrame = state.timeline_current_frame
         this.targetFps = state.timeline_fps
+        this.gameLoading = state.game_loading
+        this.oriPosition = state.ori_position
+      },
+      async updateState() {
+        const state = await window.electronApi.invoke('tas.getState')
+        this.onStateChanged(state)
       },
       loadTimelineFromFile() {
         window.electronApi.invoke('tas.loadTimelineFromFile')

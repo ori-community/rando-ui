@@ -169,9 +169,8 @@ export class RandoIPCService {
 
         break
       }
-      case 'notify_tas_current_frame_updated': {
-        const { current_frame: currentFrame } = request.payload
-        TASService.reportCurrentFrameChanged(currentFrame)
+      case 'notify_tas_state_changed': {
+        TASService.reportStateChanged(request.payload)
         break
       }
       case 'notify_tas_timeline_loaded': {

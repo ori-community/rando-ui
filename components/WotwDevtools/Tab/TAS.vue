@@ -5,18 +5,7 @@
       <h1>TAS</h1>
       <div>Target FPS: {{ targetFps }}</div>
       <div>Frame: {{ currentFrame }}</div>
-      <div>
-        Real Mouse Position (UI Space):
-
-        <template v-if="realMousePositionUpdateActive">
-          {{ realMousePosition.x.toFixed(3) }}, {{ realMousePosition.y.toFixed(3) }}
-        </template>
-
-        <v-btn x-small icon @click="realMousePositionUpdateActive = !realMousePositionUpdateActive">
-          <v-icon v-if="realMousePositionUpdateActive">mdi-eye-off-outline</v-icon>
-          <v-icon v-else>mdi-eye-outline</v-icon>
-        </v-btn>
-      </div>
+      <div>Real Mouse Position (UI Space): {{ realMousePosition.x.toFixed(3) }}, {{ realMousePosition.y.toFixed(3) }}</div>
       <div>Ori Position: {{ oriPosition.x.toFixed(3) }}, {{ oriPosition.y.toFixed(3) }}</div>
       <div>Game loading: {{ gameLoading }}</div>
 
@@ -41,7 +30,7 @@
 
         <v-tooltip open-delay="600" bottom>
           <template #activator="{ on }">
-            <v-btn fab color="accent" large v-on="on" @click="framesteppingEnabled = !framesteppingEnabled">
+            <v-btn fab color="accent" large v-on="on" @click="setFramesteppingEnabled(!framesteppingEnabled)">
               <v-icon v-if="!framesteppingEnabled" size="48">mdi-pause</v-icon>
               <v-icon v-else size="48">mdi-play</v-icon>
             </v-btn>
@@ -51,7 +40,7 @@
 
         <v-tooltip open-delay="600" bottom>
           <template #activator="{ on }">
-            <v-btn icon v-on="on" @click="timelinePlaybackActive = !timelinePlaybackActive">
+            <v-btn icon v-on="on" @click="setTimelinePlaybackActive(!timelinePlaybackActive)">
               <v-icon v-if="timelinePlaybackActive" color="green accent-3">mdi-movie-open-play</v-icon>
               <v-icon v-else color="red">mdi-movie-open-off-outline</v-icon>
             </v-btn>
@@ -79,10 +68,8 @@
 
   export default {
     data: () => ({
-      updateRealMousePositionIntervalId: null,
       targetFps: 60,
       currentFrame: 0,
-      realMousePositionUpdateActive: false,
       realMousePosition: {
         x: 0,
         y: 0,
@@ -94,7 +81,6 @@
         x: 0,
         y: 0,
       },
-      isSyncingStateFromIPC: false,
       timeline: [ // TODO: Remove later
         { frame: 0, type: 'MousePosition', mode: 'OriRelative', x: 3.0, y: 1.0 },
         { frame: 0, duration: 10, type: 'Action', action: 'Down' },
@@ -164,20 +150,6 @@
 
         window.electronApi.invoke('tas.setTimelinePlaybackActive', { active: value });
       },
-      realMousePositionUpdateActive(value) {
-        if (this.updateRealMousePositionIntervalId !== null) {
-          clearInterval(this.updateRealMousePositionIntervalId)
-          this.updateRealMousePositionIntervalId = null
-        }
-
-        if (value) {
-          this.updateRealMousePositionIntervalId = setInterval(() => {
-            if (this.randoIpcConnected) {
-              this.updateRealMousePosition()
-            }
-          }, 100)
-        }
-      },
     },
     mounted() {
       window.electronApi.on('tas.stateChanged', (event, { state }) => {
@@ -188,31 +160,25 @@
         this.updateState()
       })
     },
-    beforeDestroy() {
-      if (this.updateRealMousePositionIntervalId !== null) {
-        clearInterval(this.updateRealMousePositionIntervalId)
-        this.updateRealMousePositionIntervalId = null
-      }
-    },
     methods: {
-      async updateRealMousePosition() {
-        const { x, y } = await window.electronApi.invoke('tas.getRealMousePosition')
-        this.realMousePosition.x = x
-        this.realMousePosition.y = y
-      },
       onStateChanged(state) {
-        this.isSyncingStateFromIPC = true
         this.framesteppingEnabled = state.framestepping_enabled
         this.timelinePlaybackActive = state.timeline_playback_active
         this.currentFrame = state.timeline_current_frame
         this.targetFps = state.timeline_fps
         this.gameLoading = state.game_loading
         this.oriPosition = state.ori_position
-        this.isSyncingStateFromIPC = false
+        this.realMousePosition = state.real_mouse_position
       },
       async updateState() {
         const state = await window.electronApi.invoke('tas.getState')
         this.onStateChanged(state)
+      },
+      setFramesteppingEnabled(enabled) {
+        window.electronApi.invoke('tas.setFramesteppingEnabled', { enabled })
+      },
+      setTimelinePlaybackActive(active) {
+        window.electronApi.invoke('tas.setTimelinePlaybackActive', { active });
       },
       loadTimelineFromFile() {
         window.electronApi.invoke('tas.loadTimelineFromFile')

@@ -4,10 +4,11 @@
     <template v-else>
       <h1>TAS</h1>
       <div>Target FPS: {{ targetFps }}</div>
-      <div>Frame: {{ currentFrame }}</div>
+      <div>Frame: {{ currentFrame === 0 ? '-' : currentFrame }}</div>
       <div>Real Mouse Position (UI Space): {{ realMousePosition.x.toFixed(3) }}, {{ realMousePosition.y.toFixed(3) }}</div>
       <div>Ori Position: {{ oriPosition.x.toFixed(3) }}, {{ oriPosition.y.toFixed(3) }}</div>
       <div>Game loading: {{ gameLoading }}</div>
+      <div>RNG State: {{ rngState }}</div>
 
       <div class="playback-controls">
         <v-tooltip open-delay="600" bottom>
@@ -70,6 +71,7 @@
     data: () => ({
       targetFps: 60,
       currentFrame: 0,
+      rngState: 0,
       realMousePosition: {
         x: 0,
         y: 0,
@@ -136,20 +138,6 @@
           }
         },
       },
-      framesteppingEnabled(value) {
-        if (this.isSyncingStateFromIPC) {
-          return
-        }
-
-        window.electronApi.invoke('tas.setFramesteppingEnabled', { enabled: value })
-      },
-      timelinePlaybackActive(value) {
-        if (this.isSyncingStateFromIPC) {
-          return
-        }
-
-        window.electronApi.invoke('tas.setTimelinePlaybackActive', { active: value });
-      },
     },
     mounted() {
       window.electronApi.on('tas.stateChanged', (event, { state }) => {
@@ -165,6 +153,7 @@
         this.framesteppingEnabled = state.framestepping_enabled
         this.timelinePlaybackActive = state.timeline_playback_active
         this.currentFrame = state.timeline_current_frame
+        this.rngState = state.timeline_current_rng_state
         this.targetFps = state.timeline_fps
         this.gameLoading = state.game_loading
         this.oriPosition = state.ori_position

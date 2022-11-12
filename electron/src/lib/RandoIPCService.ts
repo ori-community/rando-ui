@@ -174,7 +174,7 @@ export class RandoIPCService {
         break
       }
       case 'notify_tas_timeline_loaded': {
-        TASService.reportTimelineLoaded()
+        TASService.reportTimelineLoaded(request.payload?.tas_config ?? null)
         break
       }
     }

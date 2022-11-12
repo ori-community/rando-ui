@@ -45,6 +45,10 @@
       fill: '#1976D2',
       stroke: '#85bbf0',
     },
+    GameReload: {
+      fill: '#7f0000',
+      stroke: '#f05545',
+    },
     MouseAngle: {
       fill: '#2E7D32',
       stroke: '#9ddda1',
@@ -52,6 +56,14 @@
     MousePosition: {
       fill: '#BF360C',
       stroke: '#f1a189',
+    },
+    Position: {
+      fill: '#524c00',
+      stroke: '#b4a647',
+    },
+    RNGState: {
+      fill: '#f57f17',
+      stroke: '#ffc67e',
     },
   }
 

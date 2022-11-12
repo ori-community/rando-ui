@@ -5,7 +5,7 @@ export class TASService {
     uiIpc.queueSend("tas.stateChanged", {state})
   }
 
-  static reportTimelineLoaded() {
-    uiIpc.queueSend("tas.timelineLoaded")
+  static reportTimelineLoaded(tasConfig: any) {
+    uiIpc.queueSend("tas.timelineLoaded", {tasConfig})
   }
 }

@@ -159,21 +159,18 @@ export class SettingsService {
   }
 
   static async readSettingsToCache() {
-    if (!fs.existsSync(SETTINGS_PATH)) {
-      console.log('Settings file not found, using default settings...')
-      flatSettings = getDefaultSettings()
+    let settingsObject = getDefaultSettings()
+
+    if (fs.existsSync(SETTINGS_PATH)) {
+      const settingsIniContent = await fs.promises.readFile(SETTINGS_PATH, { encoding: 'utf16le' });
+      settingsObject = merge(settingsObject, ini.parse(settingsIniContent.trimStart()))
     } else {
-      const settings = await fs.promises.readFile(SETTINGS_PATH, { encoding: 'utf16le' })
+      console.log("Settings file not found. Using default settings.");
+    }
 
-      const settingsObject = merge(
-        getDefaultSettings(),
-        ini.parse(settings.trimStart()),
-      )
-
-      flatSettings = {}
-      for (const leafNode of leafNodes(settingsObject)) {
-        flatSettings[leafNode] = get(settingsObject, leafNode)
-      }
+    flatSettings = {}
+    for (const leafNode of leafNodes(settingsObject)) {
+      flatSettings[leafNode] = get(settingsObject, leafNode)
     }
 
     sendSettingsToUI()

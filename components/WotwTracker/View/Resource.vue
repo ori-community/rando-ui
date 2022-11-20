@@ -25,7 +25,7 @@
           {{ gorlekOre }}<span class="small">/{{ gorlekOreCollected }}</span>
         </div>
       </div>
-      <div v-if="flags.includes('Force Trees')" class="line">
+      <div v-if="flags.includes('All Trees')" class="line">
         <div class="image">
           <img src="@/assets/images/tracker/tree.png" />
         </div>
@@ -33,7 +33,7 @@
           {{ treeCount }}<span class="small">/{{ totalTreeCount }}</span>
         </div>
       </div>
-      <div v-if="flags.includes('Force Wisps')" class="line">
+      <div v-if="flags.includes('All Wisps')" class="line">
         <div class="image">
           <img src="@/assets/images/tracker/wisp.png" />
         </div>
@@ -41,7 +41,7 @@
           {{ wispCount }}<span class="small">/{{ totalWispCount }}</span>
         </div>
       </div>
-      <div v-if="flags.includes('World Tour')" class="line">
+      <div v-if="flags.includes('Relics')" class="line">
         <div class="image">
           <img src="@/assets/images/tracker/map_stone.png" />
         </div>
@@ -49,7 +49,7 @@
           {{ relicCount }}<span class="small">/{{ totalRelicCount }}</span>
         </div>
       </div>
-      <div v-if="flags.includes('Force Quests')" class="line">
+      <div v-if="flags.includes('All Quests')" class="line">
         <div class="image">
           <img src="@/assets/images/tracker/quest.png" />
         </div>

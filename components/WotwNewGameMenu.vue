@@ -42,7 +42,7 @@
               </v-card>
             </v-menu>
 
-            <v-list-item @click='createNewGame("infection")'>Infection (beta)</v-list-item>
+            <v-list-item v-if="$store.state.dev.devtoolsEnabled" @click='createNewGame("infection")'>Infection (WIP)</v-list-item>
           </v-list>
         </v-menu>
       </div>

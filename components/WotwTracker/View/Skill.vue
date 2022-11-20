@@ -1,10 +1,10 @@
 <template>
-  <div class='skill' :class='{active: Boolean(active)}'>
-    <img class='skill-image' :src='imageSource' alt='' />
+  <div class="skill" :class="{ active: acquired }">
+    <img class="skill-image" :src="imageSource" alt="" />
 
-    <div class='tree' :class='{active: Boolean(tree)}'>
-      <div class='shadow'></div>
-      <img src='@/assets/images/tracker/tree.png' alt='' />
+    <div class="tree" :class="{ active: treeAcquired }">
+      <div class="shadow"></div>
+      <img src="@/assets/images/tracker/tree.png" alt="" />
     </div>
   </div>
 </template>
@@ -17,14 +17,14 @@
         type: String,
         required: true,
       },
-      active: {
-        type: Number,
-        default: 0,
+      acquired: {
+        type: Boolean,
+        default: false,
       },
-      tree: {
-        type: Number,
-        default: 0,
-      }
+      treeAcquired: {
+        type: Boolean,
+        default: false,
+      },
     },
     computed: {
       imageSource() {
@@ -34,7 +34,7 @@
   }
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
   .skill {
     position: relative;
     display: flex;
@@ -51,7 +51,7 @@
     &.active {
       .skill-image {
         opacity: 1;
-        filter: grayscale(0) brightness(1.0);
+        filter: grayscale(0) brightness(1);
         transform: scale(1);
       }
     }

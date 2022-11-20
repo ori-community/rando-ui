@@ -1,5 +1,5 @@
 # Stage 1
-FROM node:16-alpine as build
+FROM node:18-alpine as build
 
 ARG API_HOST=wotw.orirando.com
 ARG API_SECURE=true
@@ -14,7 +14,7 @@ RUN yarn install \
  && yarn generate
 
 # Stage 2
-FROM nginx:1.23.1-alpine
+FROM nginx:1.23.2-alpine
 
 COPY --from=build /app/dist /app
 COPY ./docker/nginx/* /etc/nginx/conf.d/

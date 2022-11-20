@@ -86,7 +86,7 @@
   import { isElectron } from '~/assets/lib/isElectron'
   import { UISeedGenerator } from '~/assets/lib/api/UISeedGenerator'
   import { confettiFromElement } from '~/assets/lib/confettiFromElement'
-  import { BingoSettings } from '~/components/WotwSeedgen/BingoSettings'
+  import { BingoSettings } from "~/assets/lib/BingoSettings";
   import { EventBus } from '~/assets/lib/EventBus'
 
   const SEEDGEN_LAST_CONFIG_KEY = 'seedgen-last-config'

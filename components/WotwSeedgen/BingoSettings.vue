@@ -88,16 +88,8 @@
   </v-row>
 </template>
 
-<script lang="ts">
+<script>
   import { hasModelObject } from '~/assets/lib/hasModelObject'
-
-  export class BingoSettings {
-    discovery: null | number = null
-    lockout: boolean = false
-    size: number = 5
-    goalType: 'cards' | 'lines' | 'all' = 'lines'
-    goalAmount: number = 3
-  }
 
   export default {
     name: 'BingoSettings',

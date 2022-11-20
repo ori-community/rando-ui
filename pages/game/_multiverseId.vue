@@ -92,10 +92,6 @@
               Show board
             </template>
           </v-btn>
-          <v-btn text @click="boardSettingsOpen = true">
-            <v-icon left>mdi-cog-outline</v-icon>
-            Settings
-          </v-btn>
           <v-btn v-if="isElectron" :disabled="bingoOverlayEnabled" text @click="enableBingoOverlay">
             <template v-if="bingoOverlayEnabled">
               <v-icon left>mdi-check</v-icon>
@@ -106,20 +102,46 @@
               Enable Overlay
             </template>
           </v-btn>
-          <v-btn :disabled="embedUrlCopied" :loading="embedUrlLoading" text @click="createEmbedUrl">
-            <template v-if="embedUrlCopied">
-              <v-icon left>mdi-check</v-icon>
-              URL Copied
-            </template>
-            <template v-else>
-              <v-icon left>mdi-semantic-web</v-icon>
-              Embed (OBS)
-            </template>
-          </v-btn>
           <v-btn :disabled="isSpectating" text @click="spectateDialogOpen = true">
             <v-icon left>mdi-monitor-eye</v-icon>
             Spectate
           </v-btn>
+
+          <v-menu offset-y :close-on-content-click="!embedUrlLoading && !bingothonTokenLoading">
+            <template #activator="{ on, attrs }">
+              <v-btn icon v-bind="attrs" class="ml-2" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item @click="boardSettingsOpen = true">
+                <v-icon left>mdi-cog-outline</v-icon>
+                Settings
+              </v-list-item>
+              <v-list-item :disabled="embedUrlCopied || embedUrlLoading" @click="createEmbedUrl">
+                <template v-if="embedUrlCopied">
+                  <v-icon left>mdi-check</v-icon>
+                  URL Copied
+                </template>
+                <template v-else>
+                  <v-icon left>mdi-semantic-web</v-icon>
+                  <template v-if="embedUrlLoading">Generating URL...</template>
+                  <template v-else>Embed (OBS)</template>
+                </template>
+              </v-list-item>
+              <v-list-item :disabled="bingothonTokenCopied || bingothonTokenLoading" @click="createBingothonToken">
+                <template v-if="bingothonTokenCopied">
+                  <v-icon left>mdi-check</v-icon>
+                  Token Copied
+                </template>
+                <template v-else>
+                  <v-icon left>mdi-key</v-icon>
+                  <template v-if="bingothonTokenLoading">Generating Token...</template>
+                  <template v-else>Create Bingothon Token</template>
+                </template>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </div>
       </v-container>
 
@@ -238,6 +260,8 @@
       loading: false,
       embedUrlLoading: false,
       embedUrlCopied: false,
+      bingothonTokenLoading: false,
+      bingothonTokenCopied: false,
       gameLinkCopied: false,
       multiverseReady: false,
       showBoard: false,
@@ -490,6 +514,20 @@
 
         setTimeout(() => {
           this.embedUrlCopied = false
+        }, 4000)
+      },
+      async createBingothonToken() {
+        this.bingothonTokenLoading = true
+
+        const token = await this.$axios.$post('/bingothon/token')
+
+        await window.navigator.clipboard.writeText(token)
+
+        this.bingothonTokenLoading = false
+        this.bingothonTokenCopied = true
+
+        setTimeout(() => {
+          this.bingothonTokenCopied = false
         }, 4000)
       },
       async copyGameLink() {

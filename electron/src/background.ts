@@ -1,17 +1,17 @@
 import { app, BrowserWindow, protocol } from 'electron'
-import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import * as path from 'path'
 import { getElectronUrl, registerUIIpcApi, uiIpc } from './api'
 import fs from 'fs'
 import { SettingsService } from '~/electron/src/lib/SettingsService'
 import { CrashDetectService } from '~/electron/src/lib/CrashDetectService'
-import { LAUNCHER_WORKING_DIR, RANDOMIZER_BASE_PATH, SEEDS_PATH, UPDATE_PATH } from "~/electron/src/lib/Constants";
+import { LAUNCHER_WORKING_DIR, RANDOMIZER_BASE_PATH, SEEDS_PATH, UPDATE_PATH } from '~/electron/src/lib/Constants'
 import { RandoIPCService } from '~/electron/src/lib/RandoIPCService'
 import { LocalTrackerWebSocketService } from '@/lib/LocalTrackerWebSocketService'
 import { LocalTrackerService } from '@/lib/LocalTrackerService'
 import { ChatControlService } from '@/lib/ChatControlService'
 import { BingoBoardOverlayService } from '@/lib/BingoBoardOverlayService'
+import { createProtocol } from '@/lib/createProtocol'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -117,7 +117,12 @@ if (!app.requestSingleInstanceLock()) {
   app.quit()
 } else {
   // Scheme must be registered before the app is ready
-  protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: true, standard: true, supportFetchAPI: true } }])
+  protocol.registerSchemesAsPrivileged([
+    {
+      scheme: 'app',
+      privileges: { secure: true, standard: true, supportFetchAPI: true },
+    },
+  ])
 
   app.setAsDefaultProtocolClient('ori-rando')
 

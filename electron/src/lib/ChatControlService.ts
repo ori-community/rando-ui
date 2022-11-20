@@ -1,5 +1,4 @@
 import { BrowserWindow, dialog } from 'electron'
-import path from 'path'
 import { getElectronUrl, uiIpc } from '@/api'
 import { RandoIPCService } from '@/lib/RandoIPCService'
 import { Jexl } from 'jexl'

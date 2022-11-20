@@ -1,5 +1,4 @@
 import { BrowserWindow, Rectangle, screen } from 'electron'
-import path from 'path'
 import { getElectronUrl } from '@/api'
 import { LocalTrackerWebSocketService } from '@/lib/LocalTrackerWebSocketService'
 import debounce from 'lodash.debounce'
@@ -10,7 +9,7 @@ export class LocalTrackerService {
   private static window: BrowserWindow | null = null
   private static isSubscribedToSettings: boolean = false
 
-  private static onSettingChanged(key: any, value: any, oldValue: any) {
+  private static onSettingChanged(key: any, value: any) {
     if (
       LocalTrackerService.window &&
       !LocalTrackerService.window.isDestroyed()

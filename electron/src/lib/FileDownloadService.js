@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import { shell } from 'electron'
 import { LauncherService } from '~/electron/src/lib/LauncherService'
-import { RANDOMIZER_BASE_PATH, SEEDS_PATH } from '~/electron/src/lib/Constants'
+import { SEEDS_PATH } from '~/electron/src/lib/Constants'
 
 export class FileDownloadService {
   static async download(url, targetFile, progressCallback = () => {}) {

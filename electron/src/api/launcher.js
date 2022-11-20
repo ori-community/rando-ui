@@ -1,7 +1,6 @@
 import { LauncherService } from '~/electron/src/lib/LauncherService'
 import { RANDOMIZER_BASE_PATH, SEEDS_PATH } from '~/electron/src/lib/Constants'
 import path from 'path'
-import fs from 'fs'
 import { FileDownloadService } from '~/electron/src/lib/FileDownloadService'
 import { shell } from 'electron'
 import { getWindow } from '@/background'

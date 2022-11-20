@@ -49,9 +49,6 @@ module.exports = {
           name: 'Ori and the Will of the Wisps Randomizer URL handler',
           schemes: ['ori-rando'],
         }],
-        extraMetadata: {
-          main: "background.js",
-        }
       },
     },
   },

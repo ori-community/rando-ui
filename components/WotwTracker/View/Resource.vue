@@ -6,7 +6,7 @@
           <img src="@/assets/images/tracker/spirit_light.png" />
         </div>
         <div class="value">{{ spiritLight }}</div>
-        <div v-if="finished == 1" class="image hype">
+        <div v-if="gameFinished" class="image hype">
           <img src="@/assets/images/ori_hype.png" />
         </div>
       </div>
@@ -137,9 +137,9 @@
         type: Array,
         default: () => [],
       },
-      finished: {
-        type: Number,
-        default: 0,
+      gameFinished: {
+        type: Boolean,
+        default: false,
       },
     },
   }

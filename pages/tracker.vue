@@ -4,13 +4,12 @@
       <div v-if='connected && receivedPacket' ref='tracker' key='tracker' class='tracker-container' :class='{ done: showDone }'>
         <div class='tracker'>
           <wotw-tracker-skills-resources
-            :seedFlags='seedFlags'
-            :trackedValues='trackedValues'
-            :heartCount='heartCount'
-            :showWillowHearts='showWillowHearts'
-            :gameFinished='trackedValues.game_finished'
+            :seed-flags='seedFlags'
+            :tracked-values='trackedValues'
+            :heart-count='heartCount'
+            :show-willow-hearts='showWillowHearts'
           />
-          <wotw-tracker-teleporters v-if="showTeleporters" :trackedValues="trackedValues" />
+          <wotw-tracker-teleporters v-if="showTeleporters" :tracked-values="trackedValues" />
           <div class="done-label">
             <div ref="hype" class="hype">
               <img src="@/assets/images/ori_hype.png" />
@@ -79,7 +78,7 @@
       showWillowHearts() {
         const showWillowHearts = this.$route.query.hearts === 'true' || this.settings['LocalTracker.ShowWillowHearts']
         const hideHeartsUntilFirstOne = this.$route.query.hideHeartsUntilFirst === 'true' || this.settings['LocalTracker.HideHeartsUntilFirstHeart']
-        
+
         return showWillowHearts && (!hideHeartsUntilFirstOne || this.heartCount > 0)
       },
       showTeleporters() {

@@ -1,13 +1,13 @@
 <template>
   <div class="skills pa-1">
-    <WotwTrackerViewSkill skill="spike" :active="trackedValues.skill_spike" />
-    <WotwTrackerViewSkill skill="sentry" :active="trackedValues.skill_sentry" />
-    <WotwTrackerViewSkill skill="blaze" :active="trackedValues.skill_blaze" />
-    <WotwTrackerViewSkill skill="flap" :active="trackedValues.skill_flap" />
-    <WotwTrackerViewSkill class="clean-water" skill="clean_water" :active="trackedValues.skill_clean_water" />
+    <WotwTrackerViewSkill skill="spike" :acquired="trackedValues.skill_spike > 0" />
+    <WotwTrackerViewSkill skill="sentry" :acquired="trackedValues.skill_sentry > 0" />
+    <WotwTrackerViewSkill skill="blaze" :acquired="trackedValues.skill_blaze > 0" />
+    <WotwTrackerViewSkill skill="flap" :acquired="trackedValues.skill_flap > 0" />
+    <WotwTrackerViewSkill class="clean-water" skill="clean_water" :acquired="trackedValues.skill_clean_water > 0" />
     <WotwTrackerViewResource
       class="resource-view"
-      :finished="trackedValues.game_finished"
+      :game-finished="trackedValues.game_finished > 0"
       :flags="seedFlags"
       :spirit-light="trackedValues.resource_spirit_light"
       :gorlek-ore="trackedValues.resource_gorlek_ore"
@@ -25,29 +25,29 @@
       :relic-count="trackedValues.relic_count"
       :heart-count="heartCount"
     />
-    <WotwTrackerViewSkill skill="hammer" :active="trackedValues.skill_hammer" />
-    <WotwTrackerViewSkill skill="shuriken" :active="trackedValues.skill_shuriken" />
-    <WotwTrackerViewSkill skill="water_breath" :active="trackedValues.skill_water_breath" />
-    <WotwTrackerViewSkill skill="glide" :active="trackedValues.skill_glide" />
+    <WotwTrackerViewSkill skill="hammer" :acquired="trackedValues.skill_hammer > 0" />
+    <WotwTrackerViewSkill skill="shuriken" :acquired="trackedValues.skill_shuriken > 0" />
+    <WotwTrackerViewSkill skill="water_breath" :acquired="trackedValues.skill_water_breath > 0" />
+    <WotwTrackerViewSkill skill="glide" :acquired="trackedValues.skill_glide > 0" />
 
-    <WotwTrackerViewSkill skill="sword" :tree="trackedValues.tree_sword" :active="trackedValues.skill_sword" />
-    <WotwTrackerViewSkill skill="bow" :tree="trackedValues.tree_bow" :active="trackedValues.skill_bow" />
-    <WotwTrackerViewSkill skill="bash" :tree="trackedValues.tree_bash" :active="trackedValues.skill_bash" />
-    <WotwTrackerViewSkill skill="dash" :tree="trackedValues.tree_dash" :active="trackedValues.skill_dash" />
-    <WotwTrackerViewSkill skill="water_dash" :tree="trackedValues.tree_water_dash" :active="trackedValues.skill_water_dash" />
-    <WotwTrackerViewSkill skill="burrow" :tree="trackedValues.tree_burrow" :active="trackedValues.skill_burrow" />
+    <WotwTrackerViewSkill skill="sword" :tree-acquired="trackedValues.tree_sword > 0" :acquired="trackedValues.skill_sword > 0" />
+    <WotwTrackerViewSkill skill="bow" :tree-acquired="trackedValues.tree_bow > 0" :acquired="trackedValues.skill_bow > 0" />
+    <WotwTrackerViewSkill skill="bash" :tree-acquired="trackedValues.tree_bash > 0" :acquired="trackedValues.skill_bash > 0" />
+    <WotwTrackerViewSkill skill="dash" :tree-acquired="trackedValues.tree_dash > 0" :acquired="trackedValues.skill_dash > 0" />
+    <WotwTrackerViewSkill skill="water_dash" :tree-acquired="trackedValues.tree_water_dash > 0" :acquired="trackedValues.skill_water_dash > 0" />
+    <WotwTrackerViewSkill skill="burrow" :tree-acquired="trackedValues.tree_burrow > 0" :acquired="trackedValues.skill_burrow > 0" />
     <WotwTrackerViewSkill
       skill="ancestral_light_glades"
-      :tree="trackedValues.tree_ancestral_light_glades"
-      :active="trackedValues.skill_ancestral_light_glades"
+      :tree-acquired="trackedValues.tree_ancestral_light_glades > 0"
+      :acquired="trackedValues.skill_ancestral_light_glades > 0"
     />
-    <WotwTrackerViewSkill skill="double_jump" :tree="trackedValues.tree_double_jump" :active="trackedValues.skill_double_jump" />
-    <WotwTrackerViewSkill skill="regenerate" :tree="trackedValues.tree_regenerate" :active="trackedValues.skill_regenerate" />
-    <WotwTrackerViewSkill skill="grapple" :tree="trackedValues.tree_grapple" :active="trackedValues.skill_grapple" />
-    <WotwTrackerViewSkill skill="launch" :tree="trackedValues.tree_launch" :active="trackedValues.skill_launch" />
-    <WotwTrackerViewSkill skill="flash" :tree="trackedValues.tree_flash" :active="trackedValues.skill_flash" />
-    <WotwTrackerViewSkill skill="light_burst" :tree="trackedValues.tree_light_burst" :active="trackedValues.skill_light_burst" />
-    <WotwTrackerViewSkill skill="ancestral_light_marsh" :tree="trackedValues.tree_ancestral_light_marsh" :active="trackedValues.skill_ancestral_light_marsh" />
+    <WotwTrackerViewSkill skill="double_jump" :tree-acquired="trackedValues.tree_double_jump > 0" :acquired="trackedValues.skill_double_jump > 0" />
+    <WotwTrackerViewSkill skill="regenerate" :tree-acquired="trackedValues.tree_regenerate > 0" :acquired="trackedValues.skill_regenerate > 0" />
+    <WotwTrackerViewSkill skill="grapple" :tree-acquired="trackedValues.tree_grapple > 0" :acquired="trackedValues.skill_grapple > 0" />
+    <WotwTrackerViewSkill skill="launch" :tree-acquired="trackedValues.tree_launch > 0" :acquired="trackedValues.skill_launch > 0" />
+    <WotwTrackerViewSkill skill="flash" :tree-acquired="trackedValues.tree_flash > 0" :acquired="trackedValues.skill_flash > 0" />
+    <WotwTrackerViewSkill skill="light_burst" :tree-acquired="trackedValues.tree_light_burst > 0" :acquired="trackedValues.skill_light_burst > 0" />
+    <WotwTrackerViewSkill skill="ancestral_light_marsh" :tree-acquired="trackedValues.tree_ancestral_light_marsh > 0" :acquired="trackedValues.skill_ancestral_light_marsh > 0" />
   </div>
 </template>
 
@@ -69,10 +69,6 @@
         default: false,
       },
       heartCount: {
-        type: Number,
-        default: 0,
-      },
-      gameFinished: {
         type: Number,
         default: 0,
       },

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="teleporter" :class="{ active: Boolean(active) }">
+    <div class="teleporter" :class="{ active }">
       <img class="teleporter-image" src="@/assets/images/tracker/teleporter_alt.png" alt="" />
     </div>
     <div class="teleporter-name">{{ name }}</div>
@@ -12,8 +12,8 @@
     name: 'TeleporterView',
     props: {
       active: {
-        type: Number,
-        default: 0,
+        type: Boolean,
+        default: false,
       },
       name: {
         type: String,

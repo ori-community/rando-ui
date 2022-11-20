@@ -1,8 +1,8 @@
 <template>
-  <div class="skill" :class="{ active: Boolean(active) }">
+  <div class="skill" :class="{ active: acquired }">
     <img class="skill-image" :src="imageSource" alt="" />
 
-    <div class="tree" :class="{ active: Boolean(tree) }">
+    <div class="tree" :class="{ active: treeAcquired }">
       <div class="shadow"></div>
       <img src="@/assets/images/tracker/tree.png" alt="" />
     </div>
@@ -17,13 +17,13 @@
         type: String,
         required: true,
       },
-      active: {
-        type: Number,
-        default: 0,
+      acquired: {
+        type: Boolean,
+        default: false,
       },
-      tree: {
-        type: Number,
-        default: 0,
+      treeAcquired: {
+        type: Boolean,
+        default: false,
       },
     },
     computed: {

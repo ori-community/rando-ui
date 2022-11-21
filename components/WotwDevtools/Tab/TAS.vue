@@ -7,7 +7,7 @@
       <div>Frame: {{ currentFrame === 0 ? '-' : currentFrame }}</div>
       <div>Real Mouse Position (UI Space): {{ realMousePosition.x.toFixed(3) }}, {{ realMousePosition.y.toFixed(3) }}</div>
       <div>Ori Position: {{ oriPosition.x.toFixed(3) }}, {{ oriPosition.y.toFixed(3) }}</div>
-      <div>Game loading: {{ gameLoading }}</div>
+      <div>Loading state: {{ loadingState }}</div>
       <div>RNG State: {{ rngState }}</div>
 
       <div class="playback-controls">
@@ -78,7 +78,7 @@
       },
       framesteppingEnabled: false,
       timelinePlaybackActive: false,
-      gameLoading: false,
+      loadingState: 'NotLoading',
       oriPosition: {
         x: 0,
         y: 0,
@@ -115,7 +115,7 @@
         this.currentFrame = state.timeline_current_frame
         this.rngState = state.timeline_current_rng_state
         this.targetFps = state.timeline_fps
-        this.gameLoading = state.game_loading
+        this.loadingState = state.loading_state
         this.oriPosition = state.ori_position
         this.realMousePosition = state.real_mouse_position
       },

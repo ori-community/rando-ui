@@ -155,7 +155,7 @@
 
   .resource-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: auto auto;
     grid-auto-rows: 17%;
     gap: 0.5vw;
     height: 100%;

@@ -9,7 +9,7 @@ export const isProcessRunning = async (processName) => {
   }
 
   const tasklistOutput = await new Promise((resolve) => {
-    exec('tasklist /FO CSV', (error, stdout) => {
+    exec(`tasklist /FO CSV /NH /FI "IMAGENAME eq ${processName}"`, (error, stdout) => {
       if (error) {
         console.error(error)
         resolve('')
@@ -20,12 +20,10 @@ export const isProcessRunning = async (processName) => {
     })
   })
 
-  const parser = parseCsv(tasklistOutput, {
-    columns: true,
-  })
+  const parser = parseCsv(tasklistOutput)
 
   for await (const record of parser) {
-    if (record['Image Name'].toLowerCase() === processName.toLowerCase()) {
+    if (record[0].toLowerCase() === processName.toLowerCase()) {
       return true
     }
   }

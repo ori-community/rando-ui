@@ -169,6 +169,10 @@ export class RandoIPCService {
 
         break
       }
+      case 'notify_loading_state_changed': {
+        TASService.reportLoadingStateChanged(request.payload)
+        break
+      }
       case 'notify_tas_state_changed': {
         TASService.reportStateChanged(request.payload)
         break

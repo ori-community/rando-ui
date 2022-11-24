@@ -1644,10 +1644,10 @@
   dependencies:
     "@octokit/openapi-types" "^12.11.0"
 
-"@ori-rando/wotw-seedgen-wasm-ui@^0.5.0":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@ori-rando/wotw-seedgen-wasm-ui/-/wotw-seedgen-wasm-ui-0.5.1.tgz#05497dbc2d7ad48cc3f58e7a53b05ae0c3df6acf"
-  integrity sha512-7mVgZE8/+vcSjWGpd0WFeWdkq9CfjEk6sLDFGPFeny16g3Gakf9sM9YYxq40j/1UlOOVOAQVk3Q3n4UOBGQi1w==
+"@ori-rando/wotw-seedgen-wasm-ui@^0.5.2":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@ori-rando/wotw-seedgen-wasm-ui/-/wotw-seedgen-wasm-ui-0.5.2.tgz#80257e8a23b8ce0e1af976e9e8e7e7c01b6dcf69"
+  integrity sha512-eEGnJCBWT+LRzt/YGTew/0S0YjcQKtkwoYOC9CBG30Gw6HOpqcqkdZV6OJY2XY7wQw2SAfODTIuCFeciufFNQQ==
 
 "@pixi/accessibility@6.4.2":
   version "6.4.2"
@@ -4774,10 +4774,23 @@ eslint-plugin-unicorn@^43.0.2:
     semver "^7.3.7"
     strip-indent "^3.0.0"
 
-eslint-plugin-vue@^9.4.0, eslint-plugin-vue@^9.7.0:
+eslint-plugin-vue@^9.4.0:
   version "9.7.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-vue/-/eslint-plugin-vue-9.7.0.tgz#d391b9864f128ea2d1ee4dabeafb5f7c0cea981f"
   integrity sha512-DrOO3WZCZEwcLsnd3ohFwqCoipGRSTKTBTnLwdhqAbYZtzWl0o7D+D8ZhlmiZvABKTEl8AFsqH1GHGdybyoQmw==
+  dependencies:
+    eslint-utils "^3.0.0"
+    natural-compare "^1.4.0"
+    nth-check "^2.0.1"
+    postcss-selector-parser "^6.0.9"
+    semver "^7.3.5"
+    vue-eslint-parser "^9.0.1"
+    xml-name-validator "^4.0.0"
+
+eslint-plugin-vue@^9.7.0:
+  version "9.8.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-vue/-/eslint-plugin-vue-9.8.0.tgz#91de2aabbee8cdbef078ccd4f650a9ecfa445f4f"
+  integrity sha512-E/AXwcTzunyzM83C2QqDHxepMzvI2y6x+mmeYHbVDQlKFqmKYvRrhaVixEeeG27uI44p9oKDFiyCRw4XxgtfHA==
   dependencies:
     eslint-utils "^3.0.0"
     natural-compare "^1.4.0"
@@ -8213,10 +8226,18 @@ postcss-selector-parser@^5.0.0-rc.3, postcss-selector-parser@^5.0.0-rc.4:
     indexes-of "^1.0.1"
     uniq "^1.0.1"
 
-postcss-selector-parser@^6.0.0, postcss-selector-parser@^6.0.2, postcss-selector-parser@^6.0.9:
+postcss-selector-parser@^6.0.0, postcss-selector-parser@^6.0.2:
   version "6.0.10"
   resolved "https://registry.yarnpkg.com/postcss-selector-parser/-/postcss-selector-parser-6.0.10.tgz#79b61e2c0d1bfc2602d549e11d0876256f8df88d"
   integrity sha512-IQ7TZdoaqbT+LCpShg46jnZVlhWD2w6iQYAcYXfHARZ7X1t/UGhhceQDs5X0cGqKvYlHNOuv7Oa1xmb0oQuA3w==
+  dependencies:
+    cssesc "^3.0.0"
+    util-deprecate "^1.0.2"
+
+postcss-selector-parser@^6.0.9:
+  version "6.0.11"
+  resolved "https://registry.yarnpkg.com/postcss-selector-parser/-/postcss-selector-parser-6.0.11.tgz#2e41dc39b7ad74046e1615185185cd0b17d0c8dc"
+  integrity sha512-zbARubNdogI9j7WY4nQJBiNqQf3sLS3wCP4WfOidu+p28LofJqDH1tcXypGrcmMHhDk2t9wGhCsYe/+szLTy1g==
   dependencies:
     cssesc "^3.0.0"
     util-deprecate "^1.0.2"
@@ -8296,10 +8317,15 @@ prepend-http@^1.0.0:
   resolved "https://registry.yarnpkg.com/prepend-http/-/prepend-http-1.0.4.tgz#d4f4562b0ce3696e41ac52d0e002e57a635dc6dc"
   integrity sha512-PhmXi5XmoyKw1Un4E+opM2KcsJInDvKyuOumcjjw3waw86ZNjHwVUOOWLc4bCzLdcKNaWBH9e99sbWzDQsVaYg==
 
-"prettier@^1.18.2 || ^2.0.0", prettier@^2.7.1:
+"prettier@^1.18.2 || ^2.0.0":
   version "2.7.1"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.7.1.tgz#e235806850d057f97bb08368a4f7d899f7760c64"
   integrity sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==
+
+prettier@^2.7.1:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.0.tgz#c7df58393c9ba77d6fba3921ae01faf994fb9dc9"
+  integrity sha512-9Lmg8hTFZKG0Asr/kW9Bp8tJjRVluO8EJQVfY2T7FMw9T5jy4I/Uvx0Rca/XWf50QQ1/SS48+6IJWnrb+2yemA==
 
 pretty-bytes@^5.6.0:
   version "5.6.0"
@@ -9758,9 +9784,9 @@ ts-proto-descriptors@1.7.1:
     protobufjs "^6.8.8"
 
 ts-proto@^1.132.1:
-  version "1.132.1"
-  resolved "https://registry.yarnpkg.com/ts-proto/-/ts-proto-1.132.1.tgz#45fe059789769110dbddb0b80ac38c8d92b820a8"
-  integrity sha512-UgBcctydf1PX5VNioz+PdO+kAT4hW1tceWXQQRFZwkf+NuwsXk1xRDhbIs98gD8dtsijemFHD0hIi1aH0sl4NA==
+  version "1.133.0"
+  resolved "https://registry.yarnpkg.com/ts-proto/-/ts-proto-1.133.0.tgz#7cf9bb98b0dc846d3785eb99911843e489bb6934"
+  integrity sha512-01cbHLUmRZuPCQvkA76hdZQqJQ65x/8NEBvHMaoYzL0lOMdoxWhvt6kubqmhr9dnUcveBb/pwxKH/f9pRSc2zw==
   dependencies:
     "@types/object-hash" "^1.3.0"
     dataloader "^1.4.0"

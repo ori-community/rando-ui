@@ -1,78 +1,78 @@
 <template>
   <throttled-spinner>
-    <div v-if="library !== null">
+    <div v-if='library !== null'>
       <wotw-seedgen-toolbar
-        v-model="currentWorldIndex"
-        :universe-preset="universeSettings"
-        :adding-new-world="addingNewWorld"
-        :disabled="loading"
-        @add-world="addNewWorld()"
-        @start-over="resetEverything()"
-        @restore-last-config="restoreLastConfig()"
-        @delete-world="deleteWorld"
-        @copy-world="createNewWorldFromExistingWorld"
+        v-model='currentWorldIndex'
+        :universe-preset='universeSettings'
+        :adding-new-world='addingNewWorld'
+        :disabled='loading'
+        @add-world='addNewWorld()'
+        @start-over='resetEverything()'
+        @restore-last-config='restoreLastConfig()'
+        @delete-world='deleteWorld'
+        @copy-world='createNewWorldFromExistingWorld'
       />
 
-      <div class="mb-12">
-        <v-slide-y-reverse-transition :duration="{ enter: 200, leave: 0 }" mode="out-in">
-          <v-card :key="currentWorldIndex" class="pa-5 seedgen">
-            <v-scroll-x-reverse-transition :duration="{ enter: 200, leave: 0 }" mode="out-in">
+      <div class='mb-12'>
+        <v-slide-y-reverse-transition :duration='{ enter: 200, leave: 0 }' mode='out-in'>
+          <v-card :key='currentWorldIndex' class='pa-5 seedgen'>
+            <v-scroll-x-reverse-transition :duration='{ enter: 200, leave: 0 }' mode='out-in'>
               <wotw-seedgen-world-preset-setup
-                v-if="addingNewWorld"
-                :universe-settings="universeSettings"
-                class="preset-setup"
-                @create-new-world="createNewWorldWithPresets"
-                @copy-from-world="createNewWorldFromExistingWorld"
+                v-if='addingNewWorld'
+                :universe-settings='universeSettings'
+                class='preset-setup'
+                @create-new-world='createNewWorldWithPresets'
+                @copy-from-world='createNewWorldFromExistingWorld'
               />
               <wotw-seedgen-world-settings
-                v-else-if="universeSettings.worldSettings.length > 0"
-                v-model="universeSettings.worldSettings[currentWorldIndex]"
+                v-else-if='universeSettings.worldSettings.length > 0'
+                v-model='universeSettings.worldSettings[currentWorldIndex]'
               />
             </v-scroll-x-reverse-transition>
           </v-card>
         </v-slide-y-reverse-transition>
       </div>
 
-      <v-scroll-x-reverse-transition :duration="{ enter: 200, leave: 0 }" mode="out-in">
-        <div v-if="availableActions.length > 0" key="buttons" class="buttons">
-          <v-tooltip v-for="action in availableActions" :key="action.id" :disabled="!action.hint" bottom>
-            <template #activator="{ on }">
-              <div v-on="on">
+      <v-scroll-x-reverse-transition :duration='{ enter: 200, leave: 0 }' mode='out-in'>
+        <div v-if='availableActions.length > 0' key='buttons' class='buttons'>
+          <v-tooltip v-for='action in availableActions' :key='action.id' :disabled='!action.hint' bottom>
+            <template #activator='{ on }'>
+              <div v-on='on'>
                 <v-btn
-                  :ref="
+                  :ref='
                     (el) => {
                       if (action.id === runningActionId) {
                         runningActionElement = el
                       }
                     }
-                  "
-                  :disabled="action.disabled || loading"
-                  :loading="loading && action.id === runningActionId"
-                  color="accent"
+                  '
+                  :disabled='action.disabled || loading'
+                  :loading='loading && action.id === runningActionId'
+                  color='accent'
                   x-large
-                  @click="action.handler"
+                  @click='action.handler'
                 >
                   <v-icon left>{{ action.icon }}</v-icon>
                   {{ action.label }}
                 </v-btn>
               </div>
             </template>
-            <span class="text-pre">{{ action.hint }}</span>
+            <span class='text-pre'>{{ action.hint }}</span>
           </v-tooltip>
         </div>
-        <div v-else key="empty"></div>
+        <div v-else key='empty'></div>
       </v-scroll-x-reverse-transition>
     </div>
 
-    <v-dialog v-model="bingoSettingsDialogOpen" :persistent="bingoLoading" max-width="600">
-      <v-card class="pa-5">
-        <h2 class="mb-5">Bingo Settings</h2>
+    <v-dialog v-model='bingoSettingsDialogOpen' :persistent='bingoLoading' max-width='600'>
+      <v-card class='pa-5'>
+        <h2 class='mb-5'>Bingo Settings</h2>
 
-        <wotw-seedgen-bingo-settings v-model="bingoSettings" />
+        <wotw-seedgen-bingo-settings v-model='bingoSettings' />
 
-        <div class="d-flex">
+        <div class='d-flex'>
           <v-spacer />
-          <v-btn color="accent" :loading="bingoLoading" depressed @click="createBingoGame()">Play Bingo</v-btn>
+          <v-btn color='accent' :loading='bingoLoading' depressed @click='createBingoGame()'>Play Bingo</v-btn>
         </div>
       </v-card>
     </v-dialog>
@@ -86,11 +86,12 @@
   import { isElectron } from '~/assets/lib/isElectron'
   import { UISeedGenerator } from '~/assets/lib/api/UISeedGenerator'
   import { confettiFromElement } from '~/assets/lib/confettiFromElement'
-  import { BingoSettings } from "~/assets/lib/BingoSettings";
+  import { BingoSettings } from '~/assets/lib/BingoSettings'
   import { EventBus } from '~/assets/lib/EventBus'
+  import { getSeedgen } from '~/assets/lib/getSeedgen'
 
   const SEEDGEN_LAST_CONFIG_KEY = 'seedgen-last-config'
-  const SeedgenWASM = import('@ori-rando/wotw-seedgen-wasm-ui')
+  const SeedgenWASM = getSeedgen()
 
   const createDefaultUniverseSettings = () => ({
     worldSettings: [],
@@ -99,7 +100,8 @@
     // online: Added when generating the seed
   })
 
-  class SilentError extends Error {}
+  class SilentError extends Error {
+  }
 
   export default {
     name: 'WotwSeedgen',
@@ -449,7 +451,7 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang='scss' scoped>
   .seedgen {
     position: relative;
   }

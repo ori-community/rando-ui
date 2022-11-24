@@ -33,6 +33,7 @@
   import {DashLine} from 'pixi-dashed-line'
   import AreasWotwGraphWorker from '~/assets/lib/workers/areasWotwGraph.worker.js'
   import {flipY} from '~/assets/lib/flipY'
+  import { getSeedgen } from '~/assets/lib/getSeedgen'
 
   export default {
     name: 'AreasWotwMap',
@@ -104,7 +105,7 @@
               endVector.clone().add(offsetVector),
             ])
 
-            const {ConnectionType} = await import('@ori-rando/wotw-seedgen-wasm-ui')
+            const {ConnectionType} = await getSeedgen()
 
             const redrawLine = (width = 1.0) => {
               line.clear()

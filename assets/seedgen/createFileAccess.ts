@@ -1,7 +1,8 @@
 import { SeedgenLibrary } from '@/assets/seedgen/library'
+import { getSeedgen } from '~/assets/lib/getSeedgen'
 
 export const createFileAccessForLibrary = async (library: SeedgenLibrary) => {
-  const Seedgen = await import('@ori-rando/wotw-seedgen-wasm-ui')
+  const Seedgen = await getSeedgen()
   return new Seedgen.JsFileAccess(
     () => '{}',
     (name: string) => JSON.stringify(library.worldPresets[name]),

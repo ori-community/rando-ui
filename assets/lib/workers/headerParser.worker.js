@@ -1,9 +1,10 @@
 import registerWebWorker from 'webworker-promise/lib/register'
 import { resolveGetters } from '~/assets/lib/resolveGetters'
+import { getSeedgen } from '~/assets/lib/getSeedgen'
 
 registerWebWorker(async ({ headers }) => {
   try {
-    const seedgen = await import('@ori-rando/wotw-seedgen-wasm-ui')
+    const seedgen = await getSeedgen()
 
     /** @var {{string: ParsedHeader}} */
     const parsedHeadersByName = {}

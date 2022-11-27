@@ -47,6 +47,7 @@ const getDefaultSettings = () => {
       AlwaysShowKeystoneDoors: false,
       SelectInLogicFilterByDefault: true,
       Insecure: false,
+      DisableCameraShake: false,
     },
     Values: {
       MapIconTransparency: 0.25,

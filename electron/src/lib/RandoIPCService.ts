@@ -5,12 +5,22 @@ import { UberId } from '~/assets/lib/types/UberStates'
 import { LocalTrackerWebSocketService } from '@/lib/LocalTrackerWebSocketService'
 import { BingoBoardOverlayService } from '@/lib/BingoBoardOverlayService'
 import { TASService } from "@/lib/TASService";
+import {getOS, Platform} from '~/assets/lib/os'
 
 const PIPE_NAME = 'wotw_rando'
 const PIPE_PATH = '\\\\.\\pipe\\'
 
 let socket: Socket | null = null
 let lastRequestId = 0
+
+function getPipePath() {
+  switch (getOS()) {
+    case Platform.Windows: return '\\\\.\\pipe\\wotw_rando'
+    case Platform.Linux: return '/tmp/wotw_rando_ipc'
+  }
+
+  throw new Error('Cannot generate pipe path on this OS')
+}
 
 interface Request {
   type: 'request'
@@ -85,21 +95,27 @@ export class RandoIPCService {
       return new Promise<void>((resolve, reject) => {
         try {
           socket = new Socket()
+
           socket.on('error', (error) => {
             console.log('RandoIPC: Could not connect,', error.message)
             uiIpc.queueSend('randoIpc.setConnected', false)
             reject(error)
           })
+
           socket.on('close', () => {
             uiIpc.queueSend('randoIpc.setConnected', false)
             console.log('RandoIPC: Socket closed')
           })
-          socket.connect(PIPE_PATH + PIPE_NAME, async () => {
-            console.log('RandoIPC: Connected')
+
+          const pipePath = getPipePath()
+          console.log(`Connecting to pipe at ${pipePath}`)
+          socket.connect(getPipePath(), async () => {
+            console.log(`RandoIPC: Connected to ${pipePath}`)
             uiIpc.queueSend('randoIpc.setConnected', true)
             await LocalTrackerWebSocketService.forceRefreshAll()
             resolve()
           })
+
           socket.on('data', (data) => {
             const message = JSON.parse(data.toString())
 

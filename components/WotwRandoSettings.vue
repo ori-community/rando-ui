@@ -66,10 +66,16 @@
           label='Disable always showing secret areas'
           messages='By default, the randomizer shows all secrets without having the Sense Shard equipped'
         />
-        <v-checkbox
-          v-model='settings["Flags.DisableCameraShake"]'
-          label='Disable Camera Shake'
-          messages='Disables most camera shakes in the game'
+        <v-slider
+          v-model='settings["Values.CameraShakeIntensity"]'
+          class='mt-3'
+          min='0'
+          max='2'
+          step='0.1'
+          ticks
+          thumb-label
+          label='Camera Shake Intensity'
+          messages='Sets the intensity of camera shakes in the game'
         />
       </div>
       <div class='mb-8'>

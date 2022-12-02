@@ -20,6 +20,7 @@
     "@twurple/auth-electron": "^5.1.6",
     "@twurple/chat": "^5.1.6",
     "@twurple/pubsub": "^5.1.6",
+    "@types/fs-extra": "^9.0.13",
     "@types/jexl": "^2.3.0",
     "@types/lodash.debounce": "^4.0.6",
     "@types/ws": "^8.2.1",
@@ -30,7 +31,9 @@
     "csv": "^6.2.2",
     "csv-parse": "^5.3.2",
     "dataclass": "^2.0.0",
+    "execa": "^6.1.0",
     "ffi-napi": "^4.0.3",
+    "fs-extra": "^11.1.0",
     "ini": "^3.0.0",
     "jexl": "^2.3.0",
     "json-loader": "^0.5.7",
@@ -39,10 +42,12 @@
     "lodash.isequal": "^4.5.0",
     "lodash.merge": "^4.6.2",
     "lodash.throttle": "^4.1.1",
+    "lookpath": "^1.2.2",
     "ref-napi": "^3.0.3",
     "semver": "^7.3.5",
     "vue": "^3.0.0",
-    "ws": "^8.3.0"
+    "ws": "^8.3.0",
+    "xdg-basedir": "^5.1.0"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.2.0",

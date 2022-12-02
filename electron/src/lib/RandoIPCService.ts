@@ -1,22 +1,24 @@
-import { Socket } from "net";
+import { Socket } from 'net'
 import throttle from 'lodash.throttle'
 import { uiIpc } from '@/api'
 import { UberId } from '~/assets/lib/types/UberStates'
 import { LocalTrackerWebSocketService } from '@/lib/LocalTrackerWebSocketService'
 import { BingoBoardOverlayService } from '@/lib/BingoBoardOverlayService'
-import { TASService } from "@/lib/TASService";
-import {getOS, Platform} from '~/assets/lib/os'
+import { TASService } from '@/lib/TASService'
+import { getOS, Platform } from '~/assets/lib/os'
+import net, { Server } from 'net'
+import fs from 'fs'
 
-const PIPE_NAME = 'wotw_rando'
-const PIPE_PATH = '\\\\.\\pipe\\'
-
+let server: Server | null = null
 let socket: Socket | null = null
 let lastRequestId = 0
 
 function getPipePath() {
   switch (getOS()) {
-    case Platform.Windows: return '\\\\.\\pipe\\wotw_rando'
-    case Platform.Linux: return '/tmp/wotw_rando_ipc'
+    case Platform.Windows:
+      return '\\\\.\\pipe\\wotw_rando'
+    case Platform.Linux:
+      return '/tmp/wotw_rando_ipc'
   }
 
   throw new Error('Cannot generate pipe path on this OS')
@@ -66,75 +68,63 @@ export class RandoIPCService {
     return socket !== null && socket.readyState === 'open'
   }
 
-  static startConnectionCheckLoop() {
-    console.log(`RandoIPC: Connection check loop started`)
+  static startIPCServer() {
+    try {
+      server = net.createServer((newSocket) => {
+        console.log('RandoIPC: Client connected')
 
-    const checkRandoIpcAvailability = async () => {
-      try {
-        await this.makeSureSocketIsConnected()
-      } catch (e) {
-        // Ignore
-      }
-    }
+        // We got a new socket, drop any previous one.
+        socket?.destroy()
+        socket = newSocket
 
-    setInterval(checkRandoIpcAvailability, 5000)
-    checkRandoIpcAvailability()
-  }
-
-  /**
-   * @returns {Promise<void>}
-   */
-  static makeSureSocketIsConnected() {
-    if (!this.isConnected()) {
-      console.log(`RandoIPC: Destroying IPC socket, readyState = ${socket?.readyState}`)
-      socket?.destroy()
-      socket = null
-    }
-
-    if (socket === null || socket.destroyed) {
-      return new Promise<void>((resolve, reject) => {
-        try {
-          socket = new Socket()
-
-          socket.on('error', (error) => {
-            console.log('RandoIPC: Could not connect,', error.message)
-            uiIpc.queueSend('randoIpc.setConnected', false)
-            reject(error)
-          })
-
-          socket.on('close', () => {
-            uiIpc.queueSend('randoIpc.setConnected', false)
-            console.log('RandoIPC: Socket closed')
-          })
-
-          const pipePath = getPipePath()
-          console.log(`Connecting to pipe at ${pipePath}`)
-          socket.connect(getPipePath(), async () => {
-            console.log(`RandoIPC: Connected to ${pipePath}`)
-            uiIpc.queueSend('randoIpc.setConnected', true)
-            await LocalTrackerWebSocketService.forceRefreshAll()
-            resolve()
-          })
-
-          socket.on('data', (data) => {
-            const message = JSON.parse(data.toString())
-
-            if (message.type === 'request') {
-              this.handleIncomingRequest(message).catch((error) => console.log('RandoIPC: Could not handle incoming request', error))
-            } else if (message.type === 'response') {
-              if (message.id in outgoingRequestHandlers) {
-                outgoingRequestHandlers[message.id].resolve?.(message.payload)
-              }
-            } else {
-              console.log('RandoIPC: Could not handle message:', data)
-            }
-          })
-        } catch (e) {
+        socket.on('error', (error) => {
+          console.log('RandoIPC: Error on connected socket,', error.message)
           uiIpc.queueSend('randoIpc.setConnected', false)
-          console.log('RandoIPC: Error while connecting to pipe:', e)
-          reject(e)
-        }
+          socket?.destroy()
+          socket = null
+        })
+
+        socket.on('close', () => {
+          uiIpc.queueSend('randoIpc.setConnected', false)
+          console.log('RandoIPC: Socket closed')
+          socket?.destroy()
+          socket = null
+        })
+
+        socket.on('data', (data) => {
+          const message = JSON.parse(data.toString())
+
+          if (message.type === 'request') {
+            this.handleIncomingRequest(message).catch((error) => console.log('RandoIPC: Could not handle incoming request', error))
+          } else if (message.type === 'response') {
+            if (message.id in outgoingRequestHandlers) {
+              outgoingRequestHandlers[message.id].resolve?.(message.payload)
+            }
+          } else {
+            console.log('RandoIPC: Could not handle message:', data)
+          }
+        })
+
+        uiIpc.queueSend('randoIpc.setConnected', true)
       })
+
+      const pipePath = getPipePath()
+
+      if (fs.existsSync(pipePath)) {
+        fs.unlinkSync(pipePath)
+      }
+
+      server
+        .listen(pipePath)
+        .on('listening', () => {
+          console.log(`RandoIPC: Listening on ${pipePath}`)
+        })
+        .on('error', (error) => {
+          console.log(`RandoIPC: Server error:`, error)
+        })
+    } catch (e) {
+      uiIpc.queueSend('randoIpc.setConnected', false)
+      console.log('RandoIPC: Error while starting IPC server:', e)
     }
   }
 
@@ -234,8 +224,6 @@ export class RandoIPCService {
   }
 
   static async request(method: string, payload: any = null, expectsResponse: boolean = true) {
-    await this.makeSureSocketIsConnected()
-
     const request = makeRequest(method, payload)
 
     outgoingRequestHandlers[request.id] = {}

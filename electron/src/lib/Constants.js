@@ -9,3 +9,4 @@ export const SETTINGS_PATH = path.resolve(RANDOMIZER_BASE_PATH, './settings.ini'
 export const CURRENT_SEED_PATH_FILE = path.resolve(RANDOMIZER_BASE_PATH, './.currentseedpath')
 export const LAST_VERSION_FILE = path.resolve(RANDOMIZER_BASE_PATH, './LAST_VERSION')
 export const AUTH_BASE_PATH = path.resolve(RANDOMIZER_BASE_PATH, './auth')
+export const WINESTREAMPROXY_DIR = path.resolve(LAUNCHER_WORKING_DIR, './winestreamproxy')

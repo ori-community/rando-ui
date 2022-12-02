@@ -8,6 +8,7 @@ import { TASService } from '@/lib/TASService'
 import { getOS, Platform } from '~/assets/lib/os'
 import net, { Server } from 'net'
 import fs from 'fs'
+import { Buffer } from 'node:buffer'
 
 let server: Server | null = null
 let socket: Socket | null = null
@@ -91,17 +92,45 @@ export class RandoIPCService {
           socket = null
         })
 
-        socket.on('data', (data) => {
-          const message = JSON.parse(data.toString())
+        const message_buffer = Buffer.alloc(8192)
+        let message_buffer_cursor = 0
+        let discard_current_message = false
 
-          if (message.type === 'request') {
-            this.handleIncomingRequest(message).catch((error) => console.log('RandoIPC: Could not handle incoming request', error))
-          } else if (message.type === 'response') {
-            if (message.id in outgoingRequestHandlers) {
-              outgoingRequestHandlers[message.id].resolve?.(message.payload)
+        socket.on('data', (data: Buffer) => {
+          for (const byte of data) {
+            if (discard_current_message) {
+              if (byte === 0) {
+                message_buffer_cursor = 0;
+                discard_current_message = false;
+              }
+              continue
             }
-          } else {
-            console.log('RandoIPC: Could not handle message:', data)
+
+            if (message_buffer_cursor >= 8192) {
+              console.log('RandoIPC: Message exceeded max size, discarding')
+              discard_current_message = true
+              continue;
+            }
+
+            if (byte === 0) {
+              const messageString = message_buffer.slice(0, message_buffer_cursor).toString();
+
+              message_buffer_cursor = 0
+              const message = JSON.parse(messageString)
+
+              if (message.type === 'request') {
+                this.handleIncomingRequest(message).catch((error) => console.log('RandoIPC: Could not handle incoming request', error))
+              } else if (message.type === 'response') {
+                if (message.id in outgoingRequestHandlers) {
+                  outgoingRequestHandlers[message.id].resolve?.(message.payload)
+                }
+              } else {
+                console.log('RandoIPC: Could not handle message:', data)
+              }
+            } else {
+              message_buffer[message_buffer_cursor] = byte
+              message_buffer_cursor++
+            }
           }
         })
 
@@ -138,7 +167,7 @@ export class RandoIPCService {
         }
 
         socket?.once('error', errorCallback)
-        socket?.write(message + '\r\n', 'utf-8', () => resolve())
+        socket?.write(message + '\0', 'utf-8', () => resolve())
         socket?.off('error', errorCallback)
       } catch (e) {
         reject(e)

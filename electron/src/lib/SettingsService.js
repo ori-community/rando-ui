@@ -10,13 +10,14 @@ import { LocalTrackerService } from '@/lib/LocalTrackerService'
 import { uiIpc } from '@/api.ts'
 import { EventEmitter } from 'events'
 import { get, leafNodes, set } from '@irrelon/path'
+import { isOS, Platform } from '~/assets/lib/os'
 
 const getDefaultSettings = () => {
   const localTrackerInitialWindowRect = LocalTrackerService.getInitialWindowRect()
 
   return {
     Paths: {
-      Steam: 'C:\\Program Files (x86)\\Steam\\steam.exe',
+      Steam: isOS(Platform.Windows) ? 'C:\\Program Files (x86)\\Steam\\steam.exe' : '/usr/bin/steam',
       UdpPort: 31415,
       Host: 'wotw.orirando.com',
     },

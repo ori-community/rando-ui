@@ -10,6 +10,8 @@ import { SeedParser } from '~/assets/lib/SeedParser'
 import { uiIpc } from '~/electron/src/api'
 import { isProcessRunning } from '~/electron/src/lib/isProcessRunning'
 import { LocalTrackerService } from '@/lib/LocalTrackerService'
+import { getOS, isOS, Platform } from '~/assets/lib/os'
+import { WineService } from '@/lib/linux/WineService'
 
 
 const waitForProcess = (processName, maxTries = 20) => new Promise((resolve, reject) => {
@@ -32,6 +34,10 @@ const waitForProcess = (processName, maxTries = 20) => new Promise((resolve, rej
 })
 
 const focusGameWindow = () => {
+  if (!isOS(Platform.Windows)) {
+    throw new Error('focusGameWindow is only implemented for Windows')
+  }
+
   const user32 = new FFILibrary('user32', {
     'FindWindowW': ['long', ['string', UCS2String]],
     'SetForegroundWindow': ['bool', ['long']],
@@ -87,8 +93,7 @@ export class LauncherService {
   static async isRandomizerRunning() {
     if (!RandoIPCService.isConnected()) {
       try {
-        await RandoIPCService.makeSureSocketIsConnected()
-        return true
+        return RandoIPCService.isConnected()
       } catch (e) {
         return false
       }
@@ -108,8 +113,24 @@ export class LauncherService {
     await BindingsService.makeSureControllerBindingsFileExists()
     await BindingsService.makeSureKeyboardBindingsFileExists()
     await SettingsService.makeSureSettingsFileExists()
+
     const settings = await SettingsService.getCurrentSettings()
 
+    switch (getOS()) {
+      case Platform.Windows:
+        await this.launchWindows(settings)
+        break
+      case Platform.Linux:
+        await this.launchLinux()
+        break;
+    }
+
+    if (settings['Flags.LaunchWithTracker']) {
+      await LocalTrackerService.openLocalTracker()
+    }
+  }
+
+  static async launchWindows(settings) {
     if (!settings['Flags.UseWinStore'] && !fs.existsSync(settings['Paths.Steam'])) {
       uiIpc.queueSend('main.goToSettings')
       throw new Error(`Steam was not found at the specified path (${settings['Paths.Steam']}). Please set it in "Launch settings" and launch again.`)
@@ -143,10 +164,6 @@ export class LauncherService {
 
       await waitForProcess('injector.exe', 10)
 
-      if (settings['Flags.LaunchWithTracker']) {
-        await LocalTrackerService.openLocalTracker()
-      }
-
       if (settings['Flags.UseWinStore']) {
         spawn('explorer.exe shell:AppsFolder\\Microsoft.Patagonia_8wekyb3d8bbwe!App', {
           shell: 'powershell.exe',
@@ -163,6 +180,23 @@ export class LauncherService {
         await waitForProcess('oriwotw.exe', 60)
         focusGameWindow()
       }
+    }
+  }
+
+  static async launchLinux() {
+    if (await this.isRandomizerRunning()) {
+      try {
+        await RandoIPCService.emit('reload')
+      } catch (e) {
+        console.error(e)
+        throw new Error('Could not load the seed in running game.\nPlease wait a few seconds if you closed the game just now.')
+      }
+
+    } else {
+      await WineService.checkEnvironment()
+      await WineService.checkAndPreparePrefix()
+      WineService.launchGameAndDetach()
+      await WineService.launchInjector()
     }
   }
 }

@@ -25,6 +25,9 @@ The API host will default to `127.0.0.1:8081` and secure connections are disable
 **In addition to running the web frontend**, to launch the desktop client, run:
 
 ```shell
+# Launch the web frontend (PLATFORM is win32 or linux)
+PLATFORM=win32 API_HOST=dev.wotw.orirando.com API_SECURE=true yarn run dev
+
 cd electron
 
 yarn install # Install Launcher dependencies
@@ -32,3 +35,5 @@ yarn run electron:serve
 ```
 
 On Windows, the base directory when running in development mode is `C:\moon`. The default settings of `ori-rando/wotw-client` should automatically install into `C:\moon\randomizer`. You might need to copy additional files in there. The easiest way is to install an official release of the Randomizer into `C:\moon` and build `ori-rando/wotw-client` afterwards to override the binaries to the newly compiled ones.
+
+For some features it's necessary to copy the contents of `electron/external` to your work directory (`C:\moon` on Windows, `electron/work-dir` on Linux).

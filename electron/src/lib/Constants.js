@@ -10,3 +10,4 @@ export const CURRENT_SEED_PATH_FILE = path.resolve(RANDOMIZER_BASE_PATH, './.cur
 export const LAST_VERSION_FILE = path.resolve(RANDOMIZER_BASE_PATH, './LAST_VERSION')
 export const AUTH_BASE_PATH = path.resolve(RANDOMIZER_BASE_PATH, './auth')
 export const WINESTREAMPROXY_DIR = path.resolve(LAUNCHER_WORKING_DIR, './winestreamproxy')
+export const SCRIPTS_DIR = path.resolve(LAUNCHER_WORKING_DIR, './scripts')

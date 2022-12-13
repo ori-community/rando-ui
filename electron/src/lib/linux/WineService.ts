@@ -4,9 +4,10 @@ import { xdgData } from 'xdg-basedir'
 import { lookpath } from 'lookpath'
 import { execa } from 'execa'
 import { mkdirp, remove, rmdir } from 'fs-extra'
-import { RANDOMIZER_BASE_PATH, WINESTREAMPROXY_DIR } from '@/lib/Constants'
+import { RANDOMIZER_BASE_PATH, SCRIPTS_DIR, WINESTREAMPROXY_DIR } from '@/lib/Constants'
 import { spawn } from 'child_process'
 import { SettingsService } from '@/lib/SettingsService'
+import { FileDownloadService } from '@/lib/FileDownloadService'
 
 const log = (message: string) => console.log(`WineService: ${message}`)
 
@@ -66,12 +67,22 @@ export class WineService {
     await mkdirp(this.prefixPath)
 
     log('Setting up prefix...')
-    // TODO: Install dxvk-async
     await execa('winetricks', ['-q', 'dotnet48', 'vcrun2019'], {
       stdio: 'inherit',
       env: {
         WINEPREFIX: this.prefixPath,
       },
+    })
+
+    log('Downloading dxvk-async...')
+    await FileDownloadService.download('https://github.com/Sporif/dxvk-async/releases/download/2.0/dxvk-async-2.0.tar.gz', '/tmp/dxvk-async.tar.gz')
+
+    log('Installing dxvk-async...')
+    await execa(path.join(SCRIPTS_DIR, 'linux', 'install-dxvk.sh'), {
+      stdio: 'inherit',
+      env: {
+        WINEPREFIX: this.prefixPath,
+      }
     })
 
     log('Installing winestreamproxy service...')

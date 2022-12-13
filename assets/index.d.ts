@@ -6,7 +6,8 @@ declare global {
   }
 
   interface Window {
-    electronApi: ElectronApi
+    electronApi: ElectronApi,
+    __oriRandoUiElectron?: boolean,
   }
 }
 

@@ -3,8 +3,8 @@ import fs from 'fs'
 import { xdgData } from 'xdg-basedir'
 import { lookpath } from 'lookpath'
 import { execa } from 'execa'
-import { mkdirp, remove, rmdir } from 'fs-extra'
-import { RANDOMIZER_BASE_PATH, SCRIPTS_DIR, WINESTREAMPROXY_DIR } from '@/lib/Constants'
+import { mkdirp, remove } from 'fs-extra'
+import { LAUNCHER_WORKING_DIR, RANDOMIZER_BASE_PATH, WINESTREAMPROXY_DIR } from '@/lib/Constants'
 import { spawn } from 'child_process'
 import { SettingsService } from '@/lib/SettingsService'
 import { FileDownloadService } from '@/lib/FileDownloadService'
@@ -78,7 +78,7 @@ export class WineService {
     await FileDownloadService.download('https://github.com/Sporif/dxvk-async/releases/download/2.0/dxvk-async-2.0.tar.gz', '/tmp/dxvk-async.tar.gz')
 
     log('Installing dxvk-async...')
-    await execa(path.join(SCRIPTS_DIR, 'linux', 'install-dxvk.sh'), {
+    await execa(path.join(LAUNCHER_WORKING_DIR, 'linux', 'install-dxvk.sh'), {
       stdio: 'inherit',
       env: {
         WINEPREFIX: this.prefixPath,
@@ -88,6 +88,14 @@ export class WineService {
     log('Installing winestreamproxy service...')
     await execa(path.join(WINESTREAMPROXY_DIR, 'install.sh'), {
       cwd: WINESTREAMPROXY_DIR,
+      stdio: 'inherit',
+      env: {
+        WINEPREFIX: this.prefixPath,
+      }
+    })
+
+    log('Patching registry to fix Alt-Tab issues...')
+    await execa(path.join('wine', 'start', 'regedit', path.join(LAUNCHER_WORKING_DIR, 'linux', 'alt-tab-fix.reg')), {
       stdio: 'inherit',
       env: {
         WINEPREFIX: this.prefixPath,

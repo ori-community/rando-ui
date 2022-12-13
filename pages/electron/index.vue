@@ -156,6 +156,7 @@
   import sanitizeHtml from 'sanitize-html'
   import { parse } from 'date-fns'
   import { formatsDates } from '~/assets/lib/formatsDates'
+  import { getOS, isOS, Platform } from '~/assets/lib/os'
 
   export default {
     name: 'Index',
@@ -225,13 +226,24 @@
     methods: {
       ...mapMutations('electron', ['setCurrentSeedPath']),
       getSetupAssetFromRelease(release) {
-        return release.assets.find((a) => a.name === 'WotwRandoSetup.exe')
+        switch (getOS()) {
+          case Platform.Linux:
+            return release.assets.find((a) => a.name === 'WotwRando.tar.gz')
+          case Platform.Windows:
+            return release.assets.find((a) => a.name === 'WotwRandoSetup.exe')
+        }
+
+        return null
       },
       async downloadAndInstallUpdate(release = null) {
         if (release) {
           const url = this.getSetupAssetFromRelease(release)?.browser_download_url
           if (url) {
-            await this.$store.dispatch('electron/downloadAndInstallUpdate', { url, releaseName: release.name })
+            if (isOS(Platform.Windows)) {
+              await this.$store.dispatch('electron/downloadAndInstallUpdate', { url, releaseName: release.name })
+            } else {
+              window.electronApi.invoke('launcher.openUrl', { url })
+            }
           }
         } else {
           await this.$store.dispatch('electron/downloadAndInstallUpdate')
@@ -244,7 +256,7 @@
         })
       },
       openWiki() {
-        window.electronApi.invoke('launcher.openWiki')
+        window.electronApi.invoke('launcher.openUrl', { url: 'https://wiki.orirando.com' })
       },
       openRandomizerDirectory() {
         window.electronApi.invoke('launcher.openRandomizerDirectory')
@@ -253,10 +265,10 @@
         window.electronApi.invoke('launcher.openSeedsDirectory')
       },
       openGitHub() {
-        window.electronApi.invoke('launcher.openGitHub')
+        window.electronApi.invoke('launcher.openUrl', { url: 'https://github.com/ori-rando' })
       },
       openDiscord() {
-        window.electronApi.invoke('launcher.openDiscord')
+        window.electronApi.invoke('launcher.openUrl', { url: 'https://discord.gg/SUS57PWWnA' })
       },
       async createSupportBundle() {
         this.supportBundleLoading = true

@@ -53,10 +53,6 @@ export default {
     await FileDownloadService.downloadSeedsFromUrl(seeds, showInExplorer)
   },
 
-  openWiki() {
-    shell.openExternal('https://wiki.orirando.com')
-  },
-
   openRandomizerDirectory() {
     shell.openPath(path.resolve(process.cwd(), RANDOMIZER_BASE_PATH))
   },
@@ -65,12 +61,8 @@ export default {
     shell.openPath(path.resolve(process.cwd(), SEEDS_PATH))
   },
 
-  openGitHub() {
-    shell.openExternal('https://github.com/ori-rando')
-  },
-
-  openDiscord() {
-    shell.openExternal('https://discord.gg/SUS57PWWnA')
+  openUrl(event, { url }) {
+    shell.openExternal(url)
   },
 
   focusMainWindow() {

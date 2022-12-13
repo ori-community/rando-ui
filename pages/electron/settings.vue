@@ -19,7 +19,7 @@
           <v-tab-item class='pa-5'>
             <wotw-rebind-settings type='kbm' />
           </v-tab-item>
-          <v-tab-item class='pa-5'>
+          <v-tab-item v-if='isWindows' class='pa-5'>
             <p>
               Sometimes, the Randomizer gets detected by Antivirus software because we inject
               additional code into the game. You can add an exception for Windows Defender here.
@@ -39,6 +39,7 @@
 <script>
   import { mapState } from 'vuex'
   import { EventBus } from '~/assets/lib/EventBus'
+  import { isOS, Platform } from '~/assets/lib/os'
 
   export default {
     name: 'Settings',
@@ -46,6 +47,7 @@
       addExceptionForWindowsDefenderLoading: false,
     }),
     computed: {
+      isWindows: isOS(Platform.Windows),
       ...mapState('electron', ['settingsLoaded']),
     },
     methods: {

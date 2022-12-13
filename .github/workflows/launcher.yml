@@ -75,7 +75,7 @@ jobs:
       run: |
         yarn install
         yarn run electron:build -l
-        cp -vr ./external/* ./dist_electron/linux-unpacked/
+        cp -vrp ./external/* ./dist_electron/linux-unpacked/
 
     - name: Write Git revision
       run: |

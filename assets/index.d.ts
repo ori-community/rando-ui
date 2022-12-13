@@ -7,7 +7,6 @@ declare global {
 
   interface Window {
     electronApi: ElectronApi
-    electronPlatform: string
   }
 }
 

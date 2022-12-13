@@ -6,7 +6,7 @@ export enum Platform {
 }
 
 export function getOS(): Platform {
-  switch (globalThis.window?.electronPlatform ?? process.env.PLATFORM) {
+  switch (process.env.PLATFORM) {
     case 'win32': return Platform.Windows
     case 'linux': return Platform.Linux
     case 'web': return Platform.Web

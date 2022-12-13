@@ -66,7 +66,8 @@ export class WineService {
     await mkdirp(this.prefixPath)
 
     log('Setting up prefix...')
-    await execa('winetricks', ['-q', 'dotnet48', 'vcrun2019', 'dxvk'], {
+    // TODO: Install dxvk-async
+    await execa('winetricks', ['-q', 'dotnet48', 'vcrun2019'], {
       stdio: 'inherit',
       env: {
         WINEPREFIX: this.prefixPath,

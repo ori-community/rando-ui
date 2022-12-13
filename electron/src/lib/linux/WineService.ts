@@ -6,6 +6,7 @@ import { execa } from 'execa'
 import { mkdirp, remove, rmdir } from 'fs-extra'
 import { RANDOMIZER_BASE_PATH, WINESTREAMPROXY_DIR } from '@/lib/Constants'
 import { spawn } from 'child_process'
+import { SettingsService } from '@/lib/SettingsService'
 
 const log = (message: string) => console.log(`WineService: ${message}`)
 
@@ -18,9 +19,8 @@ export class WineService {
     return path.join(xdgData, 'wotw-rando-runtime')
   }
 
-  static get gameBinaryPath() {
-    // TODO
-    return '/home/timo/.steam/steam/steamapps/common/Ori and the Will of the Wisps/oriwotw.exe'
+  static async getGameBinaryPath(): Promise<string> {
+    return (await SettingsService.getCurrentSettings())['Paths.GameBinary']
   }
 
   static getPathInPrefix(p: string) {
@@ -92,8 +92,8 @@ export class WineService {
     })
   }
 
-  static launchGameAndDetach() {
-    execa('wine', [this.gameBinaryPath], {
+  static async launchGameAndDetach() {
+    execa('wine', [await this.getGameBinaryPath()], {
       detached: true,
       stdio: 'inherit',
       env: {

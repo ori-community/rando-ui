@@ -1,8 +1,14 @@
-declare namespace window {
+declare global {
   interface ElectronApi {
-    invoke(handler: string, ...args: any): any,
-    on(handler: string, callback: (event: any, ...args: any) => void): void;
+    invoke(handler: string, ...args: any): any
+
+    on(handler: string, callback: (event: any, ...args: any) => void): void
   }
 
-  const electronApi: ElectronApi
+  interface Window {
+    electronApi: ElectronApi
+    electronPlatform: string
+  }
 }
+
+export {}

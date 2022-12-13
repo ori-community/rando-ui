@@ -1,6 +1,7 @@
 import colors from 'vuetify/es5/util/colors'
 
 const env = {
+  PLATFORM: process.env.PLATFORM || 'web',
   API_HOST: process.env.API_HOST || '127.0.0.1:8081',
   API_SECURE: process.env.API_SECURE === 'true',
   UPDATE_PROXY_URL: process.env.UPDATE_PROXY_URL || 'https://ori-rando-update.schwarzer.dev', // TODO: Move to update.orirando.com

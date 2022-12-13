@@ -23,4 +23,16 @@ export default {
 
     return null
   },
+  async selectGameBinaryPath() {
+    const result = await dialog.showOpenDialog({
+      defaultPath: (await SettingsService.getCurrentSettings())['Paths.GameBinary'],
+      properties: ['openFile'],
+    })
+
+    if (!result.canceled) {
+      return result.filePaths[0]
+    }
+
+    return null
+  },
 }

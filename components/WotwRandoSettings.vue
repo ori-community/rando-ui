@@ -82,11 +82,21 @@
         <h3>Launch settings</h3>
 
         <v-text-field
+          v-if='isWindows'
           v-model='settings["Paths.Steam"]'
           readonly
           label='Steam path'
           append-icon='mdi-folder-search-outline'
           @click:append='selectSteamPath'
+        />
+
+        <v-text-field
+          v-if='isLinux'
+          v-model='settings["Paths.GameBinary"]'
+          readonly
+          label='Game Binary path (oriwotw.exe)'
+          append-icon='mdi-folder-search-outline'
+          @click:append='selectGameBinaryPath'
         />
 
         <v-checkbox
@@ -232,6 +242,7 @@
 
 <script>
   import { hasSettings } from '~/assets/lib/hasSettings'
+  import { isOS, Platform } from '~/assets/lib/os'
 
   export default {
     mixins: [hasSettings],
@@ -243,6 +254,8 @@
       title: 'WotwRandoSettings',
     }),
     computed: {
+      isLinux: () => isOS(Platform.Linux),
+      isWindows: () => isOS(Platform.Windows),
       useRandomCurrencyNames: {
         get() {
           return !this.settings['Flags.BoringMoney']
@@ -295,6 +308,12 @@
         const newPath = await window.electronApi.invoke('settings.selectSteamPath')
         if (newPath) {
           this.settings['Paths.Steam'] = newPath
+        }
+      },
+      async selectGameBinaryPath() {
+        const newPath = await window.electronApi.invoke('settings.selectGameBinaryPath')
+        if (newPath) {
+          this.settings['Paths.GameBinary'] = newPath
         }
       },
       onKeyDown(event) {

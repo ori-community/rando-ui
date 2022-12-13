@@ -12,10 +12,13 @@ import { LocalTrackerService } from '@/lib/LocalTrackerService'
 import { ChatControlService } from '@/lib/ChatControlService'
 import { BingoBoardOverlayService } from '@/lib/BingoBoardOverlayService'
 import { createProtocol } from '@/lib/createProtocol'
+import os from 'os'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 let window: BrowserWindow | null = null
+
+process.env.PLATFORM = os.platform()
 
 /**
  * @returns {BrowserWindow}

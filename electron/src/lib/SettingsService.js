@@ -10,14 +10,13 @@ import { LocalTrackerService } from '@/lib/LocalTrackerService'
 import { uiIpc } from '@/api.ts'
 import { EventEmitter } from 'events'
 import { get, leafNodes, set } from '@irrelon/path'
-import { isOS, Platform } from '~/assets/lib/os'
+import { getOS, Platform } from '~/assets/lib/os'
 
 const getDefaultSettings = () => {
   const localTrackerInitialWindowRect = LocalTrackerService.getInitialWindowRect()
 
-  return {
+  const settings = {
     Paths: {
-      Steam: isOS(Platform.Windows) ? 'C:\\Program Files (x86)\\Steam\\steam.exe' : '/usr/bin/steam',
       UdpPort: 31415,
       Host: 'wotw.orirando.com',
     },
@@ -65,6 +64,17 @@ const getDefaultSettings = () => {
       HideHeartsUntilFirstHeart: false,
     },
   }
+
+  switch (getOS()) {
+    case Platform.Windows:
+      settings.Paths.Steam = 'C:\\Program Files (x86)\\Steam\\steam.exe'
+      break;
+    case Platform.Linux:
+      settings.Paths.GameBinary = `/home/${process.env.USER ?? 'user'}/.steam/steam/steamapps/common/Ori and the Will of the Wisps/oriwotw.exe`
+      break;
+  }
+
+  return settings
 }
 
 const sendSettingsToUI = () => {

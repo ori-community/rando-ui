@@ -121,7 +121,7 @@ export class LauncherService {
         await this.launchWindows(settings)
         break
       case Platform.Linux:
-        await this.launchLinux()
+        await this.launchLinux(settings)
         break;
     }
 
@@ -183,7 +183,12 @@ export class LauncherService {
     }
   }
 
-  static async launchLinux() {
+  static async launchLinux(settings) {
+    if (!fs.existsSync(settings['Paths.GameBinary'])) {
+      uiIpc.queueSend('main.goToSettings')
+      throw new Error(`Game binary (oriwotw.exe) was not found at the specified path (${settings['Paths.GameBinary']}). Please set it in "Launch settings" and launch again.`)
+    }
+
     if (await this.isRandomizerRunning()) {
       try {
         await RandoIPCService.emit('reload')
@@ -195,7 +200,7 @@ export class LauncherService {
     } else {
       await WineService.checkEnvironment()
       await WineService.checkAndPreparePrefix()
-      WineService.launchGameAndDetach()
+      await WineService.launchGameAndDetach()
       await WineService.launchInjector()
     }
   }

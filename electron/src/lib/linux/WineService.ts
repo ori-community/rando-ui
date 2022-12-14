@@ -95,7 +95,7 @@ export class WineService {
     })
 
     log('Patching registry to fix Alt-Tab issues...')
-    await execa(path.join('wine', 'start', 'regedit', path.join(LAUNCHER_WORKING_DIR, 'linux', 'alt-tab-fix.reg')), {
+    await execa('wine', ['start', 'regedit', path.join(LAUNCHER_WORKING_DIR, 'linux', 'alt-tab-fix.reg')], {
       stdio: 'inherit',
       env: {
         WINEPREFIX: this.prefixPath,

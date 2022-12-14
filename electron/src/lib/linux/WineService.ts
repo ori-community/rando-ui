@@ -4,7 +4,7 @@ import { xdgData } from 'xdg-basedir'
 import { lookpath } from 'lookpath'
 import { execa } from 'execa'
 import { mkdirp, remove } from 'fs-extra'
-import { LAUNCHER_WORKING_DIR, RANDOMIZER_BASE_PATH, WINESTREAMPROXY_DIR } from '@/lib/Constants'
+import { DXVK_CACHE_DIR, LAUNCHER_WORKING_DIR, RANDOMIZER_BASE_PATH, WINESTREAMPROXY_DIR } from '@/lib/Constants'
 import { spawn } from 'child_process'
 import { SettingsService } from '@/lib/SettingsService'
 import { FileDownloadService } from '@/lib/FileDownloadService'
@@ -113,11 +113,15 @@ export class WineService {
   }
 
   static async launchGameAndDetach() {
+    await mkdirp(DXVK_CACHE_DIR)
+
     execa('wine', [await this.getGameBinaryPath()], {
       detached: true,
       stdio: 'inherit',
       env: {
         WINEPREFIX: this.prefixPath,
+        DXVK_ASYNC: '1',
+        DXVK_STATE_CACHE_PATH: DXVK_CACHE_DIR,
       }
     }).unref()
   }

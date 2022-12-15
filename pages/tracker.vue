@@ -10,10 +10,10 @@
             :show-willow-hearts='showWillowHearts'
           />
           <wotw-tracker-teleporters v-if="showTeleporters" :tracked-values="trackedValues" />
-          <div class="done-label">
-            <div ref="hype" class="hype">
-              <img src="@/assets/images/ori_hype.png" />
-            </div>
+        </div>
+        <div class="done-label">
+          <div ref="hype" class="hype">
+            <img src="@/assets/images/ori_hype.png" />
           </div>
         </div>
       </div>
@@ -259,8 +259,7 @@
     }
 
     &.done {
-      > .tracker,
-      > .teleporters {
+      > .tracker {
         opacity: 0.4;
       }
 
@@ -276,19 +275,7 @@
       .hype {
         opacity: 1;
         transform: translateY(0) scale(1);
-    }
-    }
-  }
-
-  .teleporters {
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    width: 100%;
-    transition: opacity 200ms;
-
-    > * {
-      min-width: 0;
-      min-height: 0;
+      }
     }
   }
 </style>

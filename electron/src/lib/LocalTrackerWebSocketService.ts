@@ -114,6 +114,8 @@ const TRACKED_UBER_STATES: TrackedUberState[] = [
 
   { uberId: { group: 34543, state: 11226 }, trackingId: 'game_finished' },
 
+  { uberId: { group: 14019, state: 44578 }, trackingId: 'quest_rebuild_glades' },
+
   // Maybe for later...
   { uberId: { group: 945, state: 49747 }, trackingId: 'wisp_pools' },
   { uberId: { group: 28895, state: 25522 }, trackingId: 'wisp_reach' },

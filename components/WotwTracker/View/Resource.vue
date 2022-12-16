@@ -21,8 +21,11 @@
         <div class="image">
           <img src="@/assets/images/tracker/gorlek_ore.png" />
         </div>
-        <div class="value">
-          {{ gorlekOre }}<span class="small">/{{ gorlekOreCollected }}</span>
+        <div class="value" :class="{ completed: questRebuildGladesDone}">
+        {{ gorlekOre }}
+        </div>
+        <div class="pl-0 value" :class="{ completed: gorlekOreCollected >= 29 || questRebuildGladesDone}">
+          <span class="small">/{{ gorlekOreCollected }}</span>
         </div>
       </div>
       <div v-if="flags.includes('All Trees')" class="line">
@@ -124,6 +127,10 @@
       totalQuestCount: {
         type: Number,
         default: 0,
+      },
+      questRebuildGladesDone: {
+        type: Boolean,
+        default: false,
       },
       relicCount: {
         type: Number,

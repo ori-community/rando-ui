@@ -1,8 +1,8 @@
 <template>
   <div class="skills pa-1">
-    <WotwTrackerViewSkill skill="spike" :acquired="trackedValues.skill_spike > 0" />
+    <WotwTrackerViewSkill skill="spike" :bonus-melting-acquired="trackedValues.melting_spike > 0" :acquired="trackedValues.skill_spike > 0" />
     <WotwTrackerViewSkill skill="sentry" :acquired="trackedValues.skill_sentry > 0" />
-    <WotwTrackerViewSkill skill="blaze" :acquired="trackedValues.skill_blaze > 0" />
+    <WotwTrackerViewSkill skill="blaze" :bonus-melting-acquired="trackedValues.melting_blaze > 0" :acquired="trackedValues.skill_blaze > 0" />
     <WotwTrackerViewSkill skill="flap" :acquired="trackedValues.skill_flap > 0" />
     <WotwTrackerViewSkill class="clean-water" skill="clean_water" :acquired="trackedValues.skill_clean_water > 0" />
     <WotwTrackerViewResource
@@ -24,14 +24,15 @@
       :quest-count="trackedValues.quest_count"
       :relic-count="trackedValues.relic_count"
       :heart-count="heartCount"
+      :quest-rebuild-glades-done="trackedValues.quest_rebuild_glades > 1"
     />
-    <WotwTrackerViewSkill skill="hammer" :acquired="trackedValues.skill_hammer > 0" />
-    <WotwTrackerViewSkill skill="shuriken" :acquired="trackedValues.skill_shuriken > 0" />
+    <WotwTrackerViewSkill skill="hammer" :bonus-melting-acquired="trackedValues.melting_hammer > 0" :acquired="trackedValues.skill_hammer > 0" />
+    <WotwTrackerViewSkill skill="shuriken" :bonus-melting-acquired="trackedValues.melting_shuriken > 0" :acquired="trackedValues.skill_shuriken > 0" />
     <WotwTrackerViewSkill skill="water_breath" :acquired="trackedValues.skill_water_breath > 0" />
     <WotwTrackerViewSkill skill="glide" :acquired="trackedValues.skill_glide > 0" />
 
-    <WotwTrackerViewSkill skill="sword" :tree-acquired="trackedValues.tree_sword > 0" :acquired="trackedValues.skill_sword > 0" />
-    <WotwTrackerViewSkill skill="bow" :tree-acquired="trackedValues.tree_bow > 0" :acquired="trackedValues.skill_bow > 0" />
+    <WotwTrackerViewSkill skill="sword" :tree-acquired="trackedValues.tree_sword > 0" :bonus-melting-acquired="trackedValues.melting_sword > 0" :acquired="trackedValues.skill_sword > 0" />
+    <WotwTrackerViewSkill skill="bow" :bonus-melting-acquired="trackedValues.melting_bow > 0" :tree-acquired="trackedValues.tree_bow > 0" :acquired="trackedValues.skill_bow > 0" />
     <WotwTrackerViewSkill skill="bash" :tree-acquired="trackedValues.tree_bash > 0" :acquired="trackedValues.skill_bash > 0" />
     <WotwTrackerViewSkill skill="dash" :tree-acquired="trackedValues.tree_dash > 0" :acquired="trackedValues.skill_dash > 0" />
     <WotwTrackerViewSkill skill="water_dash" :tree-acquired="trackedValues.tree_water_dash > 0" :acquired="trackedValues.skill_water_dash > 0" />

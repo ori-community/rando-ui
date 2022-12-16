@@ -6,6 +6,10 @@
       <div class="shadow"></div>
       <img src="@/assets/images/tracker/tree.png" alt="" />
     </div>
+    <div class="bonus-melting" :class="{ active: bonusMeltingAcquired }">
+      <div class="shadow"></div>
+      <img src="@/assets/images/tracker/melting.png" alt="" />
+    </div>
   </div>
 </template>
 
@@ -22,6 +26,10 @@
         default: false,
       },
       treeAcquired: {
+        type: Boolean,
+        default: false,
+      },
+      bonusMeltingAcquired: {
         type: Boolean,
         default: false,
       },
@@ -69,6 +77,30 @@
       transform-origin: bottom center;
       transform: scale(0);
       transition: transform 300ms;
+
+      &.active {
+        transform: scale(1);
+      }
+
+      .shadow {
+        z-index: -1;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        filter: blur(7px);
+      }
+    }
+    .bonus-melting {
+      z-index: 0;
+      position: absolute;
+      top: 60%;
+      left: 15%;
+      width: 25%;
+      transform-origin: bottom center;
+      transform: scale(0);
+      transition: transform 300ms;
+      filter: brightness(0.9);
 
       &.active {
         transform: scale(1);

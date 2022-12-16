@@ -85,6 +85,13 @@ const TRACKED_UBER_STATES: TrackedUberState[] = [
   { uberId: { group: 6, state: 1121 }, trackingId: 'skill_ancestral_light_marsh' },
   { uberId: { group: 6, state: 2000 }, trackingId: 'skill_clean_water' },
 
+  { uberId: { group: 4, state: 70 }, trackingId: 'melting_bow'},
+  { uberId: { group: 4, state: 71 }, trackingId: 'melting_blaze'},
+  { uberId: { group: 4, state: 72 }, trackingId: 'melting_sword'},
+  { uberId: { group: 4, state: 73 }, trackingId: 'melting_hammer'},
+  { uberId: { group: 4, state: 74 }, trackingId: 'melting_spike'},
+  { uberId: { group: 4, state: 75 }, trackingId: 'melting_shuriken'},
+
   { uberId: { group: 15, state: 0 }, trackingId: 'resource_spirit_light' },
   { uberId: { group: 15, state: 1 }, trackingId: 'resource_gorlek_ore' },
   { uberId: { group: 6, state: 5 }, trackingId: 'resource_gorlek_ore_collected' },

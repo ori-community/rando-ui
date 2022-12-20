@@ -14,8 +14,6 @@ export class LocalTrackerService {
       LocalTrackerService.window &&
       !LocalTrackerService.window.isDestroyed()
     ) {
-      console.log(key)
-
       switch (key) {
 
         case 'LocalTracker.Transparent':

@@ -20,8 +20,6 @@ const waitForProcess = (processName, maxTries = 20) => new Promise((resolve, rej
   const check = async () => {
     tries++
 
-    console.log(processName, await isProcessRunning(processName))
-
     if (await isProcessRunning(processName)) {
       resolve()
     } else if (tries > maxTries) {

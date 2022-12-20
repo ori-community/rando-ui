@@ -59,7 +59,6 @@ export class ChatControlService {
     try {
       const runner = new Jexl()
       runner.addFunction('get', async (...args) => {
-        console.log(args)
         return RandoIPCService.getUberState(Number(args[0]), Number(args[1]))
       })
       runner.addFunction('set', async (...args) => {
@@ -75,7 +74,6 @@ export class ChatControlService {
         await RandoIPCService.emit('action', {action_id: args[0], pressed: Boolean(args[1])})
       })
       runner.addFunction('setVelocity', async (...args) => {
-        console.log(args)
         await RandoIPCService.emit('set_velocity', {
           x: Number(args[0]),
           y: Number(args[1]),

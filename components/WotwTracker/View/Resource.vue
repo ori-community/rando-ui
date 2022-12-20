@@ -21,12 +21,9 @@
         <div class="image">
           <img src="@/assets/images/tracker/gorlek_ore.png" />
         </div>
-        <div class="pr-0 value" :class="{ completed: questRebuildGladesDone }">
-          {{ gorlekOre }}
-        </div>
-        <div class="pl-0 value" :class="{ completed: gorlekOreCollected >= 29 || questRebuildGladesDone }">
-          <span class="small">/{{ gorlekOreCollected }}</span>
-        </div>
+        <span class="value">
+          <span :class="{ completed: questRebuildGladesDone }">{{ gorlekOre }}</span><span class="small" :class="{ completed: gorlekOreCollected >= 29 || questRebuildGladesDone }">/{{ gorlekOreCollected }}</span>
+        </span>
       </div>
       <div v-if="flags.includes('All Trees')" class="line">
         <div class="image">
@@ -178,6 +175,7 @@
 
       .value {
         padding-right: 0.5vw;
+        white-space: nowrap;
       }
 
       &:not(.full-width) {
@@ -218,7 +216,8 @@
         font-size: 3.75vw;
         font-weight: 600;
 
-        &.completed {
+        &.collected,
+        .completed {
           color: var(--v-success-base);
         }
 

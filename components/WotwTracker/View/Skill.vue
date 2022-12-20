@@ -3,11 +3,11 @@
     <img class="skill-image" :src="imageSource" alt="" />
 
     <div class="tree" :class="{ active: treeAcquired }">
-      <div class="shadow"></div>
       <img src="@/assets/images/tracker/tree.png" alt="" />
+      <img class="shadow" src="@/assets/images/tracker/tree.png" alt="" />
     </div>
     <div class="bonus-melting" :class="{ active: bonusMeltingAcquired }">
-      <div class="shadow"></div>
+      <img class="glow" src="@/assets/images/tracker/melting.png" alt="" />
       <img src="@/assets/images/tracker/melting.png" alt="" />
     </div>
   </div>
@@ -85,34 +85,44 @@
       .shadow {
         z-index: -1;
         position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         width: 100%;
         height: 100%;
-        background-color: black;
-        filter: blur(7px);
+        transform: scale(1.2);
+        filter: brightness(0) blur(7px);
       }
     }
+
     .bonus-melting {
       z-index: 0;
       position: absolute;
-      top: 60%;
       left: 15%;
       width: 25%;
+      bottom: 0;
       transform-origin: bottom center;
       transform: scale(0);
       transition: transform 300ms;
-      filter: brightness(0.9);
+      mix-blend-mode: darken;
 
       &.active {
         transform: scale(1);
       }
 
-      .shadow {
+      .glow {
         z-index: -1;
         position: absolute;
         width: 100%;
         height: 100%;
-        background-color: black;
-        filter: blur(7px);
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        transform-origin: bottom center;
+        transform: scale(1.2);
+        filter: blur(6px);
       }
     }
   }

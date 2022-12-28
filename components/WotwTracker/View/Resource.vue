@@ -216,7 +216,7 @@
         font-size: 3.75vw;
         font-weight: 600;
 
-        &.collected,
+        &.completed,
         .completed {
           color: var(--v-success-base);
         }

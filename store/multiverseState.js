@@ -57,20 +57,32 @@ export const mutations = {
 
     state.multiverses[multiverseId].markedBingoGoals.push({ x, y })
   },
-  toggleMultipleBingoGoalMarked(state, { multiverseId, squares }) {
-    const markedStates = []
-    for (let n = 0; n < squares.length; n++){
-      markedStates.push(state.multiverses[multiverseId].markedBingoGoals.some(m => m.x === squares[n].x && m.y === squares[n].y))
-    }
-    const allGoalsAreMarked = !markedStates.includes(false)
-    for (let n = 0; n < squares.length; n++){
-      if (allGoalsAreMarked){
-        state.multiverses[multiverseId].markedBingoGoals = state.multiverses[multiverseId].markedBingoGoals.filter(m => (
-          m.x !== squares[n].x || m.y !== squares[n].y
-        ))
-      } else if (!markedStates[n]){
-        state.multiverses[multiverseId].markedBingoGoals.push({x: squares[n].x,y: squares[n].y })
-      }
+  toggleMultipleBingoGoalMarked(state, { multiverseId, goals }) {
+  const isSameGoal = (goal1, goal2) => goal1.x === goal2.x && goal1.y === goal2.y
+  const multiverse = state.multiverses[multiverseId]
+  
+    // Whether all goals that are about to be marked are already marked
+    const allGoalsAlreadyMarked = goals.every(
+      goal => multiverse.markedBingoGoals.some(
+        markedGoals => isSameGoal(goal, markedGoals)
+      )
+    )
+
+    console.log(allGoalsAlreadyMarked)
+    if (allGoalsAlreadyMarked) {
+      // Unmark all
+      multiverse.markedBingoGoals = multiverse.markedBingoGoals.filter(
+        (markedGoal) => !goals.some(
+          (goal) => isSameGoal(goal, markedGoal)
+        )
+      )
+    } else {
+      // Mark all
+      multiverse.markedBingoGoals.push(...goals.filter(
+        (goal) => !multiverse.markedBingoGoals.some(
+          (markedGoal) => isSameGoal(goal, markedGoal)
+        )
+      ))
     }
   },
 }

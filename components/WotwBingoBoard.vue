@@ -1,14 +1,14 @@
 <template>
   <div class='bingo-grid py-1' :style='gridStyle'>
     <template v-if='edgeLabels'>
-      <wotw-bingo-board-edge-label :key='`x-top`' :label='`X`' @click="selectLine('diagonalX', 0)" />
-      <wotw-bingo-board-edge-label v-for='x in multiverse.bingoBoard.size' :key='`${x}-top`' :label='alphabet[x - 1]' @click="selectLine('column', x)" />
-      <wotw-bingo-board-edge-label :key='`y-top`' :label='`Y`' @click="selectLine('diagonalY', 0)" />
+      <wotw-bingo-board-edge-label label='X' @click="selectLine(1, 1, 1, 1)" />
+      <wotw-bingo-board-edge-label v-for='x in multiverse.bingoBoard.size' :key='`${x}-top`' :label='alphabet[x - 1]' @click="selectLine(x, 1, 0, 1)" />
+      <wotw-bingo-board-edge-label label='Y' @click="selectLine(1, multiverse.bingoBoard.size, 1, -1)" />
     </template>
 
     <template v-for='y in multiverse.bingoBoard.size'>
       <template v-if='edgeLabels'>
-        <wotw-bingo-board-edge-label :key='`${y}-left`' :label='y.toString()' @click="selectLine('row', y)" />
+        <wotw-bingo-board-edge-label :key='`${y}-left`' :label='y.toString()' @click="selectLine(1, y, 1, 0)" />
       </template>
 
       <template v-for='x in multiverse.bingoBoard.size'>
@@ -29,14 +29,14 @@
       </template>
 
       <template v-if='edgeLabels'>
-        <wotw-bingo-board-edge-label :key='`${y}-right`' :label='y.toString()' @click="selectLine('row', y)" />
+        <wotw-bingo-board-edge-label :key='`${y}-right`' :label='y.toString()' @click="selectLine(1, y, 1, 0)" />
       </template>
     </template>
 
     <template v-if='edgeLabels'>
-      <wotw-bingo-board-edge-label :key='`x-bottom`' :label='`Y`' @click="selectLine('diagonalY', 0)" />
-      <wotw-bingo-board-edge-label v-for='x in multiverse.bingoBoard.size' :key='`${x}-bottom`' :label='alphabet[x - 1]' @click="selectLine('column', x)" />
-      <wotw-bingo-board-edge-label :key='`y-bottom`' :label='`X`' @click="selectLine('diagonalX', 0)" />
+      <wotw-bingo-board-edge-label label='Y' @click="selectLine(1, multiverse.bingoBoard.size, 1, -1)" />
+      <wotw-bingo-board-edge-label v-for='x in multiverse.bingoBoard.size' :key='`${x}-bottom`' :label='alphabet[x - 1]' @click="selectLine(x, 1, 0, 1)" />
+      <wotw-bingo-board-edge-label label='X' @click="selectLine(1, 1, 1, 1)" />
     </template>
   </div>
 </template>
@@ -137,25 +137,12 @@
         mask += this.isSquareMarked(x, y + 1) ? 0b0001 : 0
         return mask
       },
-      selectLine(type, index){
+      selectLine(x, y, dX, dY){
         const squares = []
-        for (let n = 1; n <= this.multiverse.bingoBoard.size; n++){
-          switch (type){
-            case 'row':
-              squares.push({x: n, y: index})
-              break
-            case 'column':
-              squares.push({x: index, y: n})
-              break
-            case 'diagonalX':
-              squares.push({x: n, y: n})
-              break
-            case 'diagonalY':
-              squares.push({x: n, y: this.multiverse.bingoBoard.size + 1 - n})
-              break
-          }
+        for (let a = x, b = y; a <= this.multiverse.bingoBoard.size && b <= this.multiverse.bingoBoard.size ; a += dX, b += dY){
+          squares.push({x: a,y: b})
         }
-        this.$store.commit("multiverseState/toggleMultipleBingoGoalMarked", {multiverseId: this.multiverse.id, squares})
+        this.$store.commit("multiverseState/toggleMultipleBingoGoalMarked", {multiverseId: this.multiverse.id, goals: squares})
       },
     }
   }

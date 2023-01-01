@@ -57,6 +57,34 @@ export const mutations = {
 
     state.multiverses[multiverseId].markedBingoGoals.push({ x, y })
   },
+  toggleMultipleBingoGoalMarked(state, { multiverseId, goals }) {
+  const isSameGoal = (goal1, goal2) => goal1.x === goal2.x && goal1.y === goal2.y
+  const multiverse = state.multiverses[multiverseId]
+  
+    // Whether all goals that are about to be marked are already marked
+    const allGoalsAlreadyMarked = goals.every(
+      goal => multiverse.markedBingoGoals.some(
+        markedGoals => isSameGoal(goal, markedGoals)
+      )
+    )
+
+    console.log(allGoalsAlreadyMarked)
+    if (allGoalsAlreadyMarked) {
+      // Unmark all
+      multiverse.markedBingoGoals = multiverse.markedBingoGoals.filter(
+        (markedGoal) => !goals.some(
+          (goal) => isSameGoal(goal, markedGoal)
+        )
+      )
+    } else {
+      // Mark all
+      multiverse.markedBingoGoals.push(...goals.filter(
+        (goal) => !multiverse.markedBingoGoals.some(
+          (markedGoal) => isSameGoal(goal, markedGoal)
+        )
+      ))
+    }
+  },
 }
 
 export const actions = {
@@ -102,7 +130,7 @@ export const actions = {
     commit('setBingoBoard', { multiverseId, board })
     commit('setBingoUniverses', { multiverseId, bingoUniverses })
   },
-  async connectMultiverse({ commit, dispatch, getters }, { multiverseId, reconnect = false, retries = 0 }) {
+  async connectMultiverse({ commit, dispatch }, { multiverseId, reconnect = false, retries = 0 }) {
     let ws = webSockets[multiverseId] ?? null
 
     if (retries >= 20) {
@@ -153,7 +181,7 @@ export const actions = {
       })
     }
   },
-  async spectateMultiverse({ commit, dispatch }, multiverseId) {
+  async spectateMultiverse(dispatch, multiverseId) {
     await this.$axios.post(`/multiverses/${multiverseId}/spectators`)
     await dispatch('fetchMultiverse', multiverseId)
     await dispatch('connectMultiverse', { multiverseId, reconnect: true })

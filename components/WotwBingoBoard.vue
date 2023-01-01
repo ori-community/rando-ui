@@ -1,17 +1,15 @@
 <template>
   <div class='bingo-grid py-1' :style='gridStyle'>
     <template v-if='edgeLabels'>
-      <div class='edge-label'>X</div>
-      <div v-for='x in multiverse.bingoBoard.size' :key='`${x}-top`' class='edge-label'>
-        {{ alphabet[x - 1] }}
-      </div>
-      <div class='edge-label'>Y</div>
+      <wotw-bingo-board-edge-label label='X' @click="selectLine(1, 1, 1, 1)" />
+      <wotw-bingo-board-edge-label v-for='x in multiverse.bingoBoard.size' :key='`${x}-top`' :label='alphabet[x - 1]' @click="selectLine(x, 1, 0, 1)" />
+      <wotw-bingo-board-edge-label label='Y' @click="selectLine(1, multiverse.bingoBoard.size, 1, -1)" />
     </template>
 
     <template v-for='y in multiverse.bingoBoard.size'>
-      <div v-if='edgeLabels' :key='`${y}-left`' class='edge-label'>
-        {{ y }}
-      </div>
+      <template v-if='edgeLabels'>
+        <wotw-bingo-board-edge-label :key='`${y}-left`' :label='y.toString()' @click="selectLine(1, y, 1, 0)" />
+      </template>
 
       <template v-for='x in multiverse.bingoBoard.size'>
         <wotw-bingo-card
@@ -30,17 +28,15 @@
         />
       </template>
 
-      <div v-if='edgeLabels' :key='`${y}-right`' class='edge-label'>
-        {{ y }}
-      </div>
+      <template v-if='edgeLabels'>
+        <wotw-bingo-board-edge-label :key='`${y}-right`' :label='y.toString()' @click="selectLine(1, y, 1, 0)" />
+      </template>
     </template>
 
     <template v-if='edgeLabels'>
-      <div class='edge-label'>Y</div>
-      <div v-for='x in multiverse.bingoBoard.size' :key='`${x}-bottom`' class='edge-label'>
-        {{ alphabet[x - 1] }}
-      </div>
-      <div class='edge-label'>X</div>
+      <wotw-bingo-board-edge-label label='Y' @click="selectLine(1, multiverse.bingoBoard.size, 1, -1)" />
+      <wotw-bingo-board-edge-label v-for='x in multiverse.bingoBoard.size' :key='`${x}-bottom`' :label='alphabet[x - 1]' @click="selectLine(x, 1, 0, 1)" />
+      <wotw-bingo-board-edge-label label='X' @click="selectLine(1, 1, 1, 1)" />
     </template>
   </div>
 </template>
@@ -140,6 +136,13 @@
         mask += this.isSquareMarked(x + 1, y) ? 0b0010 : 0
         mask += this.isSquareMarked(x, y + 1) ? 0b0001 : 0
         return mask
+      },
+      selectLine(x, y, dX, dY){
+        const squares = []
+        for (let a = x, b = y; a <= this.multiverse.bingoBoard.size && b <= this.multiverse.bingoBoard.size ; a += dX, b += dY){
+          squares.push({x: a,y: b})
+        }
+        this.$store.commit("multiverseState/toggleMultipleBingoGoalMarked", {multiverseId: this.multiverse.id, goals: squares})
       },
     }
   }

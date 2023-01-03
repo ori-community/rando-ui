@@ -125,7 +125,7 @@ export class RandoIPCService {
                   outgoingRequestHandlers[message.id].resolve?.(message.payload)
                 }
               } else {
-                console.log('RandoIPC: Could not handle message:', data)
+                console.log('RandoIPC: Could not handle message:', messageString)
               }
             } else {
               message_buffer[message_buffer_cursor] = byte
@@ -220,35 +220,30 @@ export class RandoIPCService {
   }
 
   static async handleOutgoingRequestQueue() {
-    if (outgoingRequestsRunning > 0) {
-      return
-    }
-
     const queuedRequest = outgoingRequestQueue.shift()
     if (queuedRequest) {
-      outgoingRequestsRunning++
-
-      if (queuedRequest.expectsResponse) {
-        let tries = 0
-        do {
-          try {
+      let tries = 0
+      do {
+        try {
+          if (queuedRequest.expectsResponse) {
             await this.send(queuedRequest.request)
             await outgoingRequestHandlers[queuedRequest.request.id].promise
-            break
-          } catch (e) {
-            console.error(e)
-            tries++
-            console.log(`Trying again... (try ${tries})`)
+          } else {
+            await this.send(queuedRequest.request)
+            outgoingRequestHandlers[queuedRequest.request.id].resolve?.()
           }
-        } while (tries < 3)
-      } else {
-        await this.send(queuedRequest.request)
-        outgoingRequestHandlers[queuedRequest.request.id].resolve?.()
+
+          break
+        } catch (e) {
+          console.error(e)
+          tries++
+          console.log(`Trying again... (try ${tries})`)
+        }
+      } while (tries < 3)
+
+      if (outgoingRequestQueue.length > 0) {
+        await this.handleOutgoingRequestQueue()
       }
-
-      outgoingRequestsRunning--
-
-      await this.handleOutgoingRequestQueue()
     }
   }
 

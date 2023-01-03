@@ -1,143 +1,179 @@
 <template>
-  <v-card max-width='1000'>
-    <template v-if='statsReady'>
-      <div class='global-stats pa-5 py-8'>
-        <img class='background' :src='require(`@/assets/images/ori_running.png`)' alt=''>
-        <div class='gradient-overlay gradient-x-overlay'></div>
-        <div class='stats-content'>
-          <h1 class='stat-heading'>Global Stats</h1>
-          <div class=' d-flex flex-wrap stats-container'>
-            <wotw-stats-singlestat-view label='Time' :text='formatTime(uberValue(14, 100))' />
-            <wotw-stats-singlestat-view label='Deaths' :text='uberValue(14, 101)' />
-            <wotw-stats-singlestat-view label='Time lost' :text='formatTime(uberValue(14, 105))' />
-            <wotw-stats-singlestat-view label='Warps' :text='uberValue(14, 106)' />
-            <wotw-stats-singlestat-view label='PPM' :text='getPPM(uberValue(6, 2), uberValue(14, 100))' />
-            <wotw-stats-singlestat-view label='Peak PPM'>
-              {{ getPPM(uberValue(14, 108), uberValue(14, 107)) }} <small>at {{ formatTime(uberValue(14, 107)) }}</small>
-            </wotw-stats-singlestat-view>
-            <wotw-stats-singlestat-view
-              :progress='(uberValue(6, 2) || 0) / (uberValue(14, 109) || 1)'
-              :text='`${uberValue(6, 2)} / ${uberValue(14, 109)}`'
-              label='Pickups'
-            />
-          </div>
-        </div>
-      </div>
+  <div class="single-game-stats">
+    <div class="d-flex pb-1">
+      <v-spacer />
+      <v-btn small :disabled="!statsLoadedOnce || screenshotCopied" :loading="screenshotLoading" @click="screenshotAndCopy($refs.statsContainer)" text>
+        <v-icon left>{{ screenshotCopied ? 'mdi-check' : 'mdi-content-copy' }}</v-icon>
+        {{ screenshotCopied ? 'Copied' : 'Copy screenshot' }}
+      </v-btn>
+    </div>
 
-      <div>
-        <transition-group name='list'>
-          <div v-for='zone in sortedZones' :key='zone.id' class='area-stats pa-5'>
-            <div class='gradient-overlay gradient-x-overlay'></div>
-            <div class='gradient-overlay gradient-y-overlay'></div>
-            <img class='background' :src='require(`@/assets/images/areas/${zone.id}.jpg`)' alt=''>
-            <div class='stats-content'>
-              <h3 class='stat-heading'>{{ zone.name }}</h3>
-              <div class='d-flex flex-wrap stats-container mb-1'>
-                <wotw-stats-singlestat-view label='Time' :text='formatTime(uberValue(14, zone.id))' />
-                <wotw-stats-singlestat-view label='Deaths' :text='uberValue(14, 20 + zone.id)' />
-                <wotw-stats-singlestat-view label='PPM' :text='getPPM(uberValue(14, 40 + zone.id), uberValue(14, zone.id))' />
-                <wotw-stats-singlestat-view
-                  :progress='(uberValue(14, 40 + zone.id) || 0) / (uberValue(14, 60 + zone.id) || 1)'
-                  :text='`${uberValue(14, 40 + zone.id)} / ${uberValue(14, 60 + zone.id)}`'
-                  label='Pickups'
-                  :progress-size='20'
-                />
-              </div>
-              <v-progress-linear class='mt-3' :value='getZoneTimePercentage(zone.id)' />
-            </div>
-          </div>
-        </transition-group>
-      </div>
-    </template>
-    <template v-else>
-      <div class='pa-4 text-center'>
-        Stats can currently only be displayed if the game is running and loaded.<br>
+    <v-card color="black">
+      <div v-if="!statsLoadedOnce" class="pa-4 text-center">
+        Stats can currently only be displayed if the game is running and loaded.<br />
         Please make sure the game is running.
       </div>
-    </template>
-  </v-card>
+
+      <div ref="statsContainer" v-else>
+        <div class="global-stats pa-5 py-8">
+          <img class="background" :src="require(`@/assets/images/ori_running_top_right.png`)" alt="" />
+          <div class="gradient-overlay gradient-x-overlay"></div>
+          <div class="stats-content">
+            <h1 class="stat-heading">Global Stats</h1>
+            <div class="d-flex flex-wrap stats-container">
+              <wotw-stats-singlestat-view label="Time" :text="formatTime(stats.save.total_time)" />
+              <wotw-stats-singlestat-view label="Deaths" :text="stats.save.total_deaths" />
+              <wotw-stats-singlestat-view label="Time lost" :text="formatTime(stats.save.time_lost_to_deaths)" />
+              <wotw-stats-singlestat-view label="TPs" :text="stats.save.teleport_count" />
+              <wotw-stats-singlestat-view
+                label="PPM"
+                :text="calculatePPM(stats.checkpoint.total_pickups, stats.save.total_time)"
+              />
+              <wotw-stats-singlestat-view label="Peak PPM">
+                {{ stats.save.max_ppm_over_timespan.toFixed(1) }}
+                <small>at {{ formatTime(stats.save.max_ppm_over_timespan_at) }}</small>
+              </wotw-stats-singlestat-view>
+              <wotw-stats-singlestat-view
+                :progress="(stats.checkpoint.total_pickups || 0) / (pickupCounts.total || 1)"
+                :text="`${stats.checkpoint.total_pickups} / ${pickupCounts.total}`"
+                label="Pickups"
+              />
+            </div>
+          </div>
+
+          <div class="pt-8 ability-timeline">
+            <wotw-stats-ability-timeline :total-time="stats.save.total_time" :ability-timestamps="stats.save.ability_timestamps" />
+          </div>
+        </div>
+
+        <div>
+          <transition-group name="list">
+            <div v-for="zone in sortedZones" :key="zone.id" class="area-stats pa-5">
+              <div class="gradient-overlay gradient-x-overlay both-sides"></div>
+              <div class="gradient-overlay gradient-y-overlay"></div>
+              <img class="background" :src="require(`@/assets/images/areas/${zone.id}.jpg`)" alt="" />
+              <div class="stats-content">
+                <div class="d-flex flex-wrap stats-container mb-1">
+                  <wotw-stats-singlestat-view
+                    label="Time"
+                    :text="formatTime(stats.save.area_stats[zone.id]?.time_spent ?? 0)"
+                  />
+                  <wotw-stats-singlestat-view label="Deaths" :text="stats.save.area_stats[zone.id]?.deaths ?? 0" />
+                  <wotw-stats-singlestat-view
+                    label="PPM"
+                    :text="
+                    calculatePPM(
+                      stats.checkpoint.pickups_per_area[zone.id] ?? 0,
+                      stats.save.area_stats[zone.id]?.time_spent ?? 0,
+                    )
+                  "
+                  />
+                  <wotw-stats-singlestat-view
+                    :progress="(stats.checkpoint.pickups_per_area[zone.id] ?? 0) / (pickupCounts.areas[zone.id] || 1)"
+                    :text="`${stats.checkpoint.pickups_per_area[zone.id] ?? 0} / ${pickupCounts.areas[zone.id]}`"
+                    label="Pickups"
+                    :progress-size="20"
+                  />
+                  <v-spacer />
+                  <h3 class="stat-heading">{{ zone.name }}</h3>
+                </div>
+                <v-progress-linear class="mt-3" :value="getZoneTimePercentage(zone.id)" />
+              </div>
+            </div>
+          </transition-group>
+        </div>
+      </div>
+    </v-card>
+  </div>
 </template>
 
 <script>
-  import { mapGetters } from 'vuex'
-  import zones from '@/assets/db/zones.yaml'
+  import { toBlob } from 'html-to-image'
+  import zones from '@/assets/data/zones.yaml'
+  import { formatTime } from '@/assets/lib/formatTime'
 
   export default {
     name: 'WotwStatsSingleGameStatView',
-    props: {
-      stat: {
-        type: Object,
-        required: true,
-      },
-    },
     data: () => ({
-      refreshIntervalId: null,
-      statsReady: false,
+      refreshTimeoutId: null,
+      stats: null,
+      pickupCounts: null,
+      statsLive: false,
+      statsLoadedOnce: false,
+      screenshotLoading: false,
+      screenshotCopied: false,
     }),
     computed: {
-      ...mapGetters('uberStates', {uberValue: 'value'}),
       sortedZones() {
         return [...zones].sort((a, b) => this.getZoneTimePercentage(b.id) - this.getZoneTimePercentage(a.id))
       },
     },
     mounted() {
-      const statsUberStates = []
-
-      statsUberStates.push({group: 6, state: 2}) // Pickups Collected
-      statsUberStates.push({group: 14, state: 100}) // Time
-      statsUberStates.push({group: 14, state: 101}) // Deaths
-      statsUberStates.push({group: 14, state: 102}) // Current Drought
-      statsUberStates.push({group: 14, state: 103}) // Longest Drought
-      statsUberStates.push({group: 14, state: 104}) // Time since last checkpoint
-      statsUberStates.push({group: 14, state: 105}) // Time lost to deaths
-      statsUberStates.push({group: 14, state: 106}) // Warps used
-      statsUberStates.push({group: 14, state: 107}) // Peak PPM time
-      statsUberStates.push({group: 14, state: 108}) // Peak PPM count
-      statsUberStates.push({group: 14, state: 109}) // Total Pickup count
-      for (const zone of zones) {
-        statsUberStates.push({group: 14, state: zone.id}) // Time spent
-        statsUberStates.push({group: 14, state: 20 + zone.id}) // Deaths
-        statsUberStates.push({group: 14, state: 40 + zone.id}) // Pickups
-        statsUberStates.push({group: 14, state: 60 + zone.id}) // Total Pickup Count
-      }
-
-      this.refreshIntervalId = setInterval(async () => {
+      const refreshStats = async () => {
         try {
-          await this.$store.dispatch('uberStates/updateUberStates', statsUberStates)
-          this.statsReady = true
+          this.stats = await window.electronApi.invoke('stats.get_timer_stats')
+          this.pickupCounts = await window.electronApi.invoke('stats.get_pickup_counts')
+
+          this.statsLive = true
+          this.statsLoadedOnce = true
         } catch (e) {
           console.error(e)
-          this.statsReady = false
+          this.statsLive = false
         }
-      }, 500)
+
+        this.refreshTimeoutId = setTimeout(refreshStats, 500)
+      }
+
+      refreshStats()
     },
     beforeDestroy() {
-      if (this.refreshIntervalId) {
-        clearInterval(this.refreshIntervalId)
+      if (this.refreshTimeoutId) {
+        clearTimeout(this.refreshTimeoutId)
       }
     },
     methods: {
-      getZoneTimePercentage(zoneId) {
-        return (this.uberValue(14, zoneId) / this.uberValue(14, 100)) * 100
+      async screenshotAndCopy(node) {
+        this.screenshotLoading = true
+
+        try {
+          await navigator.clipboard?.write([
+            new ClipboardItem({
+              'image/png': await toBlob(node, {
+                backgroundColor: '#000000',
+              })
+            })
+          ])
+
+          this.screenshotCopied = true
+          setTimeout(() => {
+            this.screenshotCopied = false
+          }, 3000)
+        } catch(e) {
+          console.error(e)
+        }
+
+        this.screenshotLoading = false
       },
-      getPPM(pickups, totalSeconds) {
+      getZoneTimePercentage(zoneId) {
+        return ((this.stats.save.area_stats[zoneId]?.time_spent ?? 0) / this.stats.save.total_time) * 100
+      },
+      calculatePPM(pickups, totalSeconds) {
         const minutes = totalSeconds / 60
         if (totalSeconds <= 10 || pickups <= 0) {
           return '-'
         }
         return (pickups / minutes).toFixed(1)
       },
-      formatTime(totalSeconds) {
-        const hours = Math.floor(totalSeconds / 3600)
-        const minutes = Math.floor(totalSeconds % 3600 / 60)
-        const seconds = totalSeconds % 60
-        return (hours > 0 ? `${hours.toFixed(0)}:` : '') + `${minutes.toFixed(0).padStart(2, '0')}:${seconds.toFixed(1).padStart(4, '0')}`
-      },
-    }
+      formatTime,
+    },
   }
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
+  .single-game-stats {
+    max-width: 1000px;
+  }
+
   .stats-container {
     row-gap: 1em;
     column-gap: 2em;
@@ -148,14 +184,17 @@
   }
 
   .stat-heading {
-    color: var(--v-primary-base);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    align-self: end;
   }
 
   .area-stats,
   .global-stats {
     position: relative;
     width: 100%;
-
 
     .background {
       position: absolute;
@@ -182,10 +221,20 @@
 
       &.gradient-x-overlay {
         background: linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+
+        &.both-sides {
+          background: linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 75%, rgba(0, 0, 0, 0.8) 100%);
+        }
       }
 
       &.gradient-y-overlay {
-        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.7) 100%);
+        background: linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.7) 0%,
+          rgba(0, 0, 0, 0) 40%,
+          rgba(0, 0, 0, 0) 60%,
+          rgba(0, 0, 0, 0.7) 100%
+        );
       }
     }
 
@@ -202,5 +251,9 @@
       object-fit: scale-down;
       object-position: bottom right;
     }
+  }
+
+  .ability-timeline > * {
+    z-index: 2;
   }
 </style>

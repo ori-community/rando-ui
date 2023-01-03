@@ -1,0 +1,66 @@
+0:
+  name: Bash
+  icon_name: bash
+5:
+  name: Double Jump
+  icon_name: double_jump
+8:
+  name: Launch
+  icon_name: launch
+14:
+  name: Glide
+  icon_name: glide
+23:
+  name: Water Breath
+  icon_name: water_breath
+51:
+  name: Light Burst
+  icon_name: light_burst
+57:
+  name: Grapple
+  icon_name: grapple
+62:
+  name: Flash
+  icon_name: blash
+74:
+  name: Spear
+  icon_name: spike
+77:
+  name: Regenerate
+  icon_name: regenerate
+97:
+  name: Bow
+  icon_name: bow
+98:
+  name: Hammer
+  icon_name: hammer
+100:
+  name: Sword
+  icon_name: sword
+101:
+  name: Burrow
+  icon_name: burrow
+102:
+  name: Dash
+  icon_name: dash
+104:
+  name: Water Dash
+  icon_name: water_dash
+106:
+  name: Shuriken
+  icon_name: shuriken
+115:
+  name: Blaze # Important skill
+  icon_name: blaze
+116:
+  name: Sentry
+  icon_name: sentry
+118:
+  name: Flap
+  icon_name: flap
+120:
+  name: Ancestral Light
+  icon_name: ancestral_light_glades
+121:
+  name: Ancestral Light
+  icon_name: ancestral_light_marsh

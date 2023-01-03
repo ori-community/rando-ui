@@ -12,6 +12,7 @@ import devtools from './devtools'
 import randoIpc from './randoIpc'
 import seedgen from './seedgen'
 import tas from './tas'
+import stats from './stats'
 
 export default {
   settings,
@@ -28,4 +29,5 @@ export default {
   randoIpc,
   seedgen,
   tas,
+  stats,
 }

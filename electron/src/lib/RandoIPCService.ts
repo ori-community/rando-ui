@@ -45,7 +45,6 @@ interface QueuedRequest {
 
 const outgoingRequestHandlers: { [requestId: number]: { resolve?: (arg?: any) => any; promise?: Promise<any> } } = {}
 const outgoingRequestQueue: QueuedRequest[] = []
-let outgoingRequestsRunning = 0
 
 const notifyUberStateChangedThrottled: (state: number, group: number, value: number) => void = throttle((state: number, group: number, value: number) => {
   uiIpc.queueSend('game.uberStateChanged', { state, group, value })
@@ -92,30 +91,31 @@ export class RandoIPCService {
           socket = null
         })
 
-        const message_buffer = Buffer.alloc(8192)
-        let message_buffer_cursor = 0
-        let discard_current_message = false
+        const MAX_MESSAGE_SIZE = 1024 * 1024
+        const messageBuffer = Buffer.alloc(MAX_MESSAGE_SIZE)
+        let messageBufferCursor = 0
+        let discardCurrentMessage = false
 
         socket.on('data', (data: Buffer) => {
           for (const byte of data) {
-            if (discard_current_message) {
+            if (discardCurrentMessage) {
               if (byte === 0) {
-                message_buffer_cursor = 0;
-                discard_current_message = false;
+                messageBufferCursor = 0;
+                discardCurrentMessage = false;
               }
               continue
             }
 
-            if (message_buffer_cursor >= 8192) {
+            if (messageBufferCursor >= MAX_MESSAGE_SIZE) {
               console.log('RandoIPC: Message exceeded max size, discarding')
-              discard_current_message = true
+              discardCurrentMessage = true
               continue;
             }
 
             if (byte === 0) {
-              const messageString = message_buffer.slice(0, message_buffer_cursor).toString();
+              const messageString = messageBuffer.slice(0, messageBufferCursor).toString();
 
-              message_buffer_cursor = 0
+              messageBufferCursor = 0
               const message = JSON.parse(messageString)
 
               if (message.type === 'request') {
@@ -128,8 +128,8 @@ export class RandoIPCService {
                 console.log('RandoIPC: Could not handle message:', messageString)
               }
             } else {
-              message_buffer[message_buffer_cursor] = byte
-              message_buffer_cursor++
+              messageBuffer[messageBufferCursor] = byte
+              messageBufferCursor++
             }
           }
         })

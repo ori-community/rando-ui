@@ -43,9 +43,7 @@
               </v-btn>
             </div>
           </template>
-          <span v-if="!multiverseReady || multiverse.universes.length > 0"
-            >Create or join a world to launch the game</span
-          >
+          <span v-if="!multiverseReady || multiverse.universes.length > 0">Create or join a world to launch the game</span>
           <span v-else>Create a universe to launch the game</span>
         </v-tooltip>
       </div>

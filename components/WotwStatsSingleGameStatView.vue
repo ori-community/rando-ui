@@ -2,7 +2,13 @@
   <div class="single-game-stats">
     <div class="d-flex pb-1">
       <v-spacer />
-      <v-btn small :disabled="!statsLoadedOnce || screenshotCopied" :loading="screenshotLoading" @click="screenshotAndCopy($refs.statsContainer)" text>
+      <v-btn
+        small
+        :disabled="!statsLoadedOnce || screenshotCopied"
+        :loading="screenshotLoading"
+        @click="screenshotAndCopy($refs.statsContainer)"
+        text
+      >
         <v-icon left>{{ screenshotCopied ? 'mdi-check' : 'mdi-content-copy' }}</v-icon>
         {{ screenshotCopied ? 'Copied' : 'Copy screenshot' }}
       </v-btn>
@@ -42,7 +48,11 @@
           </div>
 
           <div class="pt-8 ability-timeline">
-            <wotw-stats-ability-timeline :total-time="stats.save.total_time" :ability-timestamps="stats.save.ability_timestamps" />
+            <wotw-stats-key-events-timeline
+              :total-time="stats.save.total_time"
+              :ability-timestamps="stats.save.ability_timestamps"
+              :world-event-timestamps="stats.save.world_event_timestamps"
+            />
           </div>
         </div>
 
@@ -62,11 +72,11 @@
                   <wotw-stats-singlestat-view
                     label="PPM"
                     :text="
-                    calculatePPM(
-                      stats.checkpoint.pickups_per_area[zone.id] ?? 0,
-                      stats.save.area_stats[zone.id]?.time_spent ?? 0,
-                    )
-                  "
+                      calculatePPM(
+                        stats.checkpoint.pickups_per_area[zone.id] ?? 0,
+                        stats.save.area_stats[zone.id]?.time_spent ?? 0,
+                      )
+                    "
                   />
                   <wotw-stats-singlestat-view
                     :progress="(stats.checkpoint.pickups_per_area[zone.id] ?? 0) / (pickupCounts.areas[zone.id] || 1)"
@@ -140,15 +150,15 @@
             new ClipboardItem({
               'image/png': await toBlob(node, {
                 backgroundColor: '#000000',
-              })
-            })
+              }),
+            }),
           ])
 
           this.screenshotCopied = true
           setTimeout(() => {
             this.screenshotCopied = false
           }, 3000)
-        } catch(e) {
+        } catch (e) {
           console.error(e)
         }
 

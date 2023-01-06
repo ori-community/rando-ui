@@ -36,8 +36,16 @@
                 :text="calculatePPM(stats.checkpoint.total_pickups, stats.save.total_time)"
               />
               <wotw-stats-singlestat-view label="Peak PPM">
-                {{ stats.save.max_ppm_over_timespan.toFixed(1) }}
-                <small>at {{ formatTime(stats.save.max_ppm_over_timespan_at) }}</small>
+                <template v-if="stats.save.max_ppm_over_timespan > 0">
+                  {{ stats.save.max_ppm_over_timespan.toFixed(1) }}
+                  <div class="d-inline-block text-right max-ppm-time">
+                    from {{ formatTime(Math.max(stats.save.max_ppm_over_timespan_at - 600, 0)) }}<br>
+                    to {{ formatTime(stats.save.max_ppm_over_timespan_at) }}
+                  </div>
+                </template>
+                <template v-else>
+                  -
+                </template>
               </wotw-stats-singlestat-view>
               <wotw-stats-singlestat-view
                 :progress="(stats.checkpoint.total_pickups || 0) / (pickupCounts.total || 1)"
@@ -256,6 +264,11 @@
 
   .global-stats {
     background-color: black;
+
+    .max-ppm-time {
+      line-height: 1;
+      font-size: 0.4em;
+    }
 
     .background {
       object-fit: scale-down;

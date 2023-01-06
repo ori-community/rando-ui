@@ -27,9 +27,11 @@ export const mutations = {
     if (jwt) {
       this.$axios.setToken(jwt, 'Bearer')
       WebSocketFactory.jwt = jwt
+      state.jwt = jwt
     } else {
       this.$axios.setToken(false)
       WebSocketFactory.jwt = null
+      state.jwt = null
     }
   },
 }

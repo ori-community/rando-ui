@@ -44,6 +44,7 @@
 
       .text {
         font-size: 1.3em;
+        letter-spacing: 0.05em;
       }
 
       .label {

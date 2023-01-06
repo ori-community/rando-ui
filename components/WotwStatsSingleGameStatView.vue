@@ -39,8 +39,8 @@
                 <template v-if="stats.save.max_ppm_over_timespan > 0">
                   {{ stats.save.max_ppm_over_timespan.toFixed(1) }}
                   <div class="d-inline-block text-right max-ppm-time">
-                    from {{ formatTime(Math.max(stats.save.max_ppm_over_timespan_at - 600, 0)) }}<br>
-                    to {{ formatTime(stats.save.max_ppm_over_timespan_at) }}
+                    <span class="semitransparent">at</span> {{ formatTime(Math.max(stats.save.max_ppm_over_timespan_at - 300, 0), 0) }}
+                    <span class="semitransparent">±5</span>
                   </div>
                 </template>
                 <template v-else>
@@ -65,7 +65,7 @@
         </div>
 
         <div>
-          <transition-group name="list">
+          <transition-group name="list" tag="div" class="area-stats-container" :style="{gridTemplateRows: `repeat(${Math.ceil(sortedZones.length / 2)}, 1fr)`}">
             <div v-for="zone in sortedZones" :key="zone.id" class="area-stats pa-5">
               <div class="gradient-overlay gradient-x-overlay both-sides"></div>
               <div class="gradient-overlay gradient-y-overlay"></div>
@@ -92,8 +92,7 @@
                     label="Pickups"
                     :progress-size="20"
                   />
-                  <v-spacer />
-                  <h3 class="stat-heading">{{ zone.name }}</h3>
+                  <h3 class="stat-heading area-name">{{ zone.name }}</h3>
                 </div>
                 <v-progress-linear class="mt-3" :value="getZoneTimePercentage(zone.id)" />
               </div>
@@ -189,7 +188,7 @@
 
 <style lang="scss" scoped>
   .single-game-stats {
-    max-width: 1000px;
+    max-width: 1100px;
   }
 
   .stats-container {
@@ -266,8 +265,8 @@
     background-color: black;
 
     .max-ppm-time {
-      line-height: 1;
-      font-size: 0.4em;
+      font-size: 0.7em;
+      letter-spacing: 0;
     }
 
     .background {
@@ -278,5 +277,24 @@
 
   .ability-timeline > * {
     z-index: 2;
+  }
+
+  .area-stats-container {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-auto-flow: column;
+
+    @media (max-width: 1264px) {
+      grid-template-columns: 100%;
+      grid-auto-flow: row;
+    }
+
+    .area-name {
+      margin-left: auto;
+    }
+  }
+
+  .semitransparent {
+    opacity: 0.6;
   }
 </style>

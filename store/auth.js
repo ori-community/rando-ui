@@ -36,7 +36,20 @@ export const mutations = {
   },
 }
 
+
+const LAST_USED_STORAGE_KEY_KEY = 'auth.lastUsedJwtStorageKey'
+
 export const actions = {
+  async restoreJwtWhenHostChanged({ dispatch }) {
+    if (isElectron()) {
+      const jwtStorageKey = await getJwtStorageKey()
+      const lastJwtStorageKey = window.localStorage.getItem(LAST_USED_STORAGE_KEY_KEY)
+
+      if (jwtStorageKey !== lastJwtStorageKey) {
+        await dispatch('setJwt', window.localStorage.getItem(jwtStorageKey))
+      }
+    }
+  },
   async setJwt({ commit }, jwt) {
     commit('setJwtState', jwt)
 
@@ -61,5 +74,7 @@ export const actions = {
         await window.electronApi.invoke('auth.deleteClientJwt')
       }
     }
+
+    window.localStorage.setItem(LAST_USED_STORAGE_KEY_KEY, jwtStorageKey)
   },
 }

@@ -68,20 +68,20 @@
         const registerInteractiveHandlers = this.$route.query.registerInteractiveHandlers !== 'false'
 
         if (registerInteractiveHandlers) {
-          window.electronApi.on('main.error', (event, e) => {
+          window.electronApi.on('main.error', (_event, e) => {
             EventBus.$emit('notification', {
               message: String(e),
               color: 'error',
             })
           })
 
-          window.electronApi.on('main.openSeed', (event, seedFile) => {
+          window.electronApi.on('main.openSeed', (_event, seedFile) => {
             this.$store.dispatch('electron/launch', {
               seedFile,
             })
           })
 
-          window.electronApi.on('main.crashDetected', (event, supportBundleName) => {
+          window.electronApi.on('main.crashDetected', (_event, supportBundleName) => {
             this.$store.commit('electron/setCurrentSupportBundleName', supportBundleName)
             window.electronApi.invoke('launcher.focusMainWindow')
           })
@@ -98,7 +98,7 @@
             }
           })
 
-          window.electronApi.on('main.openUrl', async (event, url) => {
+          window.electronApi.on('main.openUrl', async (_event, url) => {
             url = new URL(url)
 
             if (url.protocol === 'ori-rando:') {
@@ -127,19 +127,19 @@
           })
         }
 
-        window.electronApi.on('main.settingsChanged', (event, settings) => {
+        window.electronApi.on('main.settingsChanged', (_event, settings) => {
           this.$store.commit('electron/setSettings', settings)
         })
 
-        window.electronApi.on('main.currentSeedChanged', (event, { currentSeedInfo, currentSeedPath }) => {
+        window.electronApi.on('main.currentSeedChanged', (_event, { currentSeedPath }) => {
           this.$store.commit('electron/setCurrentSeedPath', currentSeedPath)
         })
 
-        window.electronApi.on('localTracker.setIsRunning', (event, isRunning) => {
+        window.electronApi.on('localTracker.setIsRunning', (_event, isRunning) => {
           this.$store.commit('electron/setLocalTrackerRunning', isRunning)
         })
 
-        window.electronApi.on('randoIpc.setConnected', (event, connected) => {
+        window.electronApi.on('randoIpc.setConnected', (_event, connected) => {
           this.$store.commit('electron/setRandoIpcConnected', connected)
         })
 
@@ -155,6 +155,7 @@
 
       if (isElectron()) {
         await this.$store.dispatch('electron/checkForUpdatesOnce')
+        await this.$store.dispatch('auth/restoreJwtWhenHostChanged')
       }
     },
   }

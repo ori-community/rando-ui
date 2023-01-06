@@ -12,11 +12,11 @@
   export default {
     async mounted() {
       if (isElectron()) {
-        window.electronApi.on('main.settingsChanged', (event, settings) => {
+        window.electronApi.on('main.settingsChanged', (_event, settings) => {
           this.$store.commit('electron/setSettings', settings)
         })
 
-        window.electronApi.on('randoIpc.setConnected', (event, connected) => {
+        window.electronApi.on('randoIpc.setConnected', (_event, connected) => {
           this.$store.commit('electron/setRandoIpcConnected', connected)
         })
 
@@ -25,6 +25,7 @@
       }
 
       await this.$store.dispatch('user/updateUser')
+      await this.$store.dispatch('auth/restoreJwtWhenHostChanged')
     },
   }
 </script>

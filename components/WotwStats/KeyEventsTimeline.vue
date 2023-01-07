@@ -1,9 +1,11 @@
 <template>
   <div ref="container" class="key-events-container" :style="{ height: `${keyEventRenderInformation.totalHeight}px` }">
-    <template v-for="label in keyEventRenderInformation.labels">
-      <div :key="label.seconds" class="label" :style="{ left: `${label.leftMargin}px` }">
-        {{ label.text }}
-      </div>
+    <template v-if="anyKeyEventHappened">
+      <template v-for="label in keyEventRenderInformation.labels">
+        <div :key="label.seconds" class="label" :style="{ left: `${label.leftMargin}px` }">
+          {{ label.text }}
+        </div>
+      </template>
     </template>
 
     <template v-for="keyEvent in keyEventRenderInformation.keyEvents">

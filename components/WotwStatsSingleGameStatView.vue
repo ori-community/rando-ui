@@ -39,8 +39,8 @@
                 <template v-if="stats.save.max_ppm_over_timespan > 0">
                   {{ stats.save.max_ppm_over_timespan.toFixed(1) }}
                   <div class="d-inline-block text-right max-ppm-time">
-                    <span class="semitransparent">at</span> {{ formatTime(Math.max(stats.save.max_ppm_over_timespan_at - 300, 0), 0) }}
-                    <span class="semitransparent">±5</span>
+                    {{ formatTime(Math.max(stats.save.max_ppm_over_timespan_at - 600, 0), 0) }} -
+                    {{ formatTime(Math.max(stats.save.max_ppm_over_timespan_at, 0), 0) }}
                   </div>
                 </template>
                 <template v-else>

@@ -318,3 +318,7 @@ export class LocalTrackerWebSocketService {
     })
   }
 }
+
+RandoIPCService.events.onConnect.on(async () => {
+  await LocalTrackerWebSocketService.forceRefreshAll()
+})

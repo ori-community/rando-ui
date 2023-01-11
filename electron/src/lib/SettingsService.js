@@ -90,7 +90,7 @@ const writeSettingsDebouncedImpl = debounce(async () => {
 }, 1000)
 
 let flatSettings = null
-let events = new EventEmitter()
+const events = new EventEmitter()
 
 export class SettingsService {
   static get events() {

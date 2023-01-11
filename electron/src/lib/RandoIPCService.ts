@@ -9,6 +9,7 @@ import { getOS, Platform } from '~/assets/lib/os'
 import net, { Server } from 'net'
 import fs from 'fs'
 import { Buffer } from 'node:buffer'
+import { Event } from "~/assets/lib/Event";
 
 let server: Server | null = null
 let socket: Socket | null = null
@@ -63,7 +64,15 @@ const makeResponse = (requestId: number, payload: any): Response => ({
   payload,
 })
 
+const events = {
+  onConnect: new Event<void>(),
+}
+
 export class RandoIPCService {
+  static get events() {
+    return events
+  }
+
   static isConnected() {
     return socket !== null && socket.readyState === 'open'
   }
@@ -135,6 +144,7 @@ export class RandoIPCService {
         })
 
         uiIpc.queueSend('randoIpc.setConnected', true)
+        this.events.onConnect.emit()
       })
 
       const pipePath = getPipePath()

@@ -142,7 +142,16 @@ export class LocalTrackerWebSocketService {
 
   private static webSocketListening = false
 
+  private static _hookedIntoRandoIPCEvents = false
+
   static start() {
+    if (!this._hookedIntoRandoIPCEvents) {
+      RandoIPCService.events.onConnect.on(async () => {
+        await LocalTrackerWebSocketService.forceRefreshAll()
+      })
+      this._hookedIntoRandoIPCEvents = true
+    }
+
     this.trackedUberStatesLookupTable = {}
     for (const trackedUberState of TRACKED_UBER_STATES) {
       this.trackedUberStatesLookupTable[this.uberIdHash(trackedUberState.uberId)] = trackedUberState
@@ -168,7 +177,7 @@ export class LocalTrackerWebSocketService {
       setTimeout(this.start, 5000)
     })
 
-    this.wss.on('connection', async socket => {
+    this.wss.on('connection', async (socket) => {
       // Send a reset and all tracked uber states on initial connection
       socket.send(makePacket(ResetTracker))
       await this.forceRefresh(socket)
@@ -182,12 +191,12 @@ export class LocalTrackerWebSocketService {
   static reportUberState(state: UberState) {
     const trackedUberState = this.trackedUberStatesLookupTable[this.uberIdHash(state)]
     if (trackedUberState) {
-      this.sendUpdate(TrackerUpdate.fromJSON({
-        id: trackedUberState.trackingId,
-        value: trackedUberState.valueConverter
-          ? trackedUberState.valueConverter(state.value)
-          : state.value,
-      }))
+      this.sendUpdate(
+        TrackerUpdate.fromJSON({
+          id: trackedUberState.trackingId,
+          value: trackedUberState.valueConverter ? trackedUberState.valueConverter(state.value) : state.value,
+        }),
+      )
     }
   }
 
@@ -216,21 +225,23 @@ export class LocalTrackerWebSocketService {
       return
     }
 
-    const trackedValues = await RandoIPCService.getUberStates(TRACKED_UBER_STATES.map(s => s.uberId))
-    const trackerUpdates: TrackerUpdate[] = trackedValues.map((value, index) => TrackerUpdate.fromJSON({
-      id: TRACKED_UBER_STATES[index].trackingId,
-      value: TRACKED_UBER_STATES[index].valueConverter
-        ? (TRACKED_UBER_STATES[index].valueConverter?.(value) ?? value)
-        : value,
-    }))
+    const trackedValues = await RandoIPCService.getUberStates(TRACKED_UBER_STATES.map((s) => s.uberId))
+    const trackerUpdates: TrackerUpdate[] = trackedValues.map((value, index) =>
+      TrackerUpdate.fromJSON({
+        id: TRACKED_UBER_STATES[index].trackingId,
+        value: TRACKED_UBER_STATES[index].valueConverter ? TRACKED_UBER_STATES[index].valueConverter?.(value) ?? value : value,
+      }),
+    )
 
     for (const update of trackerUpdates) {
       client.send(makePacket(TrackerUpdate, update))
     }
 
-    client.send(makePacket(TrackerFlagsUpdate, {
-      flags: await RandoIPCService.getSeedFlags(),
-    }))
+    client.send(
+      makePacket(TrackerFlagsUpdate, {
+        flags: await RandoIPCService.getSeedFlags(),
+      }),
+    )
   }
 
   static stop() {
@@ -246,7 +257,7 @@ export class LocalTrackerWebSocketService {
   }
 
   static debugSetUberState(trackingId: string, value: number) {
-    const trackedUberState = TRACKED_UBER_STATES.find(t => t.trackingId === trackingId)
+    const trackedUberState = TRACKED_UBER_STATES.find((t) => t.trackingId === trackingId)
     if (trackedUberState) {
       RandoIPCService.setUberState(trackedUberState.uberId.group, trackedUberState.uberId.state, value)
     }
@@ -265,12 +276,14 @@ export class LocalTrackerWebSocketService {
         const ws = new WebSocket(url)
 
         ws.on('open', () => {
-          ws?.send(makePacket(AuthenticateMessage, {
-            jwt,
-          }))
+          ws?.send(
+            makePacket(AuthenticateMessage, {
+              jwt,
+            }),
+          )
         })
 
-        ws.on('message', async data => {
+        ws.on('message', async (data) => {
           const packet = await decodePacket(data)
 
           if (!packet) {
@@ -318,7 +331,3 @@ export class LocalTrackerWebSocketService {
     })
   }
 }
-
-RandoIPCService.events.onConnect.on(async () => {
-  await LocalTrackerWebSocketService.forceRefreshAll()
-})

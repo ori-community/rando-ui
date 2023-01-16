@@ -50,7 +50,7 @@
         </v-tooltip>
 
         <div class="mt-2">
-          <v-btn v-if="canStartRace" text @click="dispatchEvent('start')">
+          <v-btn v-if="canStartRace" text @click="startRaceTimerDialogOpen = true">
             <v-icon left>mdi-timer-play-outline</v-icon>
             Start Race timer
           </v-btn>
@@ -263,6 +263,23 @@
         </v-card>
       </v-dialog>
     </template>
+
+    <v-dialog v-model="startRaceTimerDialogOpen" :persistent="startRaceTimerLoading" max-width="500">
+      <v-card class="pa-5 relative">
+        <h2>Start race timer</h2>
+
+        The game will be locked and a <b>20 second countdown</b> will start immediately.
+
+        <div class="d-flex justify-end">
+          <v-btn :disabled="startRaceTimerLoading" class="mr-1" text @click="startRaceTimerDialogOpen = false">
+            Cancel</v-btn
+          >
+          <v-btn :loading="startRaceTimerLoading" color="accent" depressed @click="startRaceTimer"
+          >Start countdown</v-btn
+          >
+        </div>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -296,6 +313,8 @@
       },
       spectateDialogOpen: false,
       spectateLoading: false,
+      startRaceTimerDialogOpen: false,
+      startRaceTimerLoading: false,
       seedgenResultVisible: false,
       hideSeedgenResultCompletely: false,
       bingoOverlayEnabled: false,
@@ -658,6 +677,12 @@
         })
 
         await this.$store.dispatch('electron/launch')
+      },
+      async startRaceTimer() {
+        this.startRaceTimerLoading = true
+        await this.dispatchEvent('startTimer')
+        this.startRaceTimerLoading = false
+        this.startRaceTimerDialogOpen = false
       },
     },
   }

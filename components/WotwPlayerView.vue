@@ -1,8 +1,13 @@
 <template>
   <div class='player-view'>
     <discord-avatar :user='user' class='mr-1' :multiverse-id='multiverseId' v-bind='$attrs' />
-    {{ user.name }}
-    <copyable-info v-if="devtoolsEnabled" :value="user.id" />
+    <div>
+      <div>
+        {{ user.name }}
+        <copyable-info v-if="devtoolsEnabled" :value="user.id" />
+      </div>
+      <slot />
+    </div>
   </div>
 </template>
 
@@ -30,6 +35,9 @@
 
 <style lang='scss' scoped>
   .player-view {
-
+    display: flex;
+    align-items: center;
+    line-height: 1;
+    gap: 0.1em;
   }
 </style>

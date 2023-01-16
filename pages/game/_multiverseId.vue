@@ -38,17 +38,19 @@
           <template #activator="{ on }">
             <div v-on="on">
               <v-btn x-large color="accent" :loading="launching" :disabled="!ownWorld" @click="launch()">
-                <img class="launch-icon" :class="{disabled: !ownWorld}" src="../../assets/images/launch.png" alt="" />
+                <img class="launch-icon" :class="{ disabled: !ownWorld }" src="../../assets/images/launch.png" alt="" />
                 Launch
               </v-btn>
             </div>
           </template>
-          <span v-if="!multiverseReady || multiverse.universes.length > 0">Create or join a world to launch the game</span>
+          <span v-if="!multiverseReady || multiverse.universes.length > 0"
+            >Create or join a world to launch the game</span
+          >
           <span v-else>Create a universe to launch the game</span>
         </v-tooltip>
 
         <div class="mt-2">
-          <v-btn text @click="dispatchEvent('start')">
+          <v-btn v-if="canStartRace" text @click="dispatchEvent('start')">
             <v-icon left>mdi-timer-play-outline</v-icon>
             Start Race timer
           </v-btn>
@@ -57,7 +59,17 @@
 
       <throttled-spinner>
         <div v-if="isLoggedIn && multiverseReady">
-          <wotw-multiverse-view :multiverse="multiverse" />
+          <div class="text-center">
+            <wotw-race-timer v-if="isRace" :starting-at="normalGameHandlerState.startingAt" />
+          </div>
+
+          <wotw-multiverse-view
+            :multiverse="multiverse"
+            :player-loading-times="normalGameHandlerState?.playerLoadingTimes"
+            :player-finished-times="normalGameHandlerState?.playerFinishedTimes"
+            :world-finished-times="normalGameHandlerState?.worldFinishedTimes"
+            :universe-finished-times="normalGameHandlerState?.universeFinishedTimes"
+          />
 
           <div v-if="devtoolsEnabled" class="mt-5">
             <v-card class="pa-4">
@@ -258,6 +270,10 @@
   import { mapGetters, mapState } from 'vuex'
   import { isElectron } from '~/assets/lib/isElectron'
   import { applyTransparentWindowStyles, isOBS } from '~/assets/lib/obs'
+  import {
+    MultiverseInfoMessage_GameHandlerType as GameHandlerType,
+    NormalGameHandlerState,
+  } from '~/assets/proto/messages'
 
   export default {
     name: 'GamePage',
@@ -384,6 +400,27 @@
       },
       canLock() {
         return this.isPlayer
+      },
+      normalGameHandlerState() {
+        if (!this.multiverseReady || this.multiverse.gameHandlerType !== GameHandlerType.Normal) {
+          return null
+        }
+
+        return NormalGameHandlerState.decode(this.multiverse.gameHandlerClientInfo)
+      },
+      isRace() {
+        if (!this.normalGameHandlerState) {
+          return false
+        }
+
+        return !!this.normalGameHandlerState.startingAt
+      },
+      canStartRace() {
+        if (!this.normalGameHandlerState) {
+          return false
+        }
+
+        return !this.normalGameHandlerState.startingAt && this.isPlayer
       },
     },
     watch: {

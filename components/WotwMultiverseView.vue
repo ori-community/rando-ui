@@ -1,41 +1,43 @@
 <template>
   <div>
-    <v-scroll-y-reverse-transition leave-absolute group tag='div' class='universes'>
+    <v-scroll-y-reverse-transition leave-absolute group tag="div" class="universes">
       <wotw-universe-view
-        v-for='universe in multiverse.universes'
-        :key='universe.id'
-        :can-join='!isSpectating && !multiverse.locked'
-        :can-create-world='multiverse.seedId === null && !multiverse.locked'
-        :disabled='loading'
-        :hide-color='multiverse.universes.length < 2'
-        :universe='universe'
-        :multiverse-id='multiverseId'
-        class='universe-view'
-        @join-world='worldId => join(worldId)'
-        @new-world='createWorld(universe.id)'
+        v-for="universe in multiverse.universes"
+        :key="universe.id"
+        :can-join="!isSpectating && !multiverse.locked"
+        :can-create-world="multiverse.seedId === null && !multiverse.locked"
+        :disabled="loading"
+        :hide-color="multiverse.universes.length < 2"
+        :universe="universe"
+        :multiverse-id="multiverseId"
+        :player-loading-times="playerLoadingTimes"
+        :player-finished-times="playerFinishedTimes"
+        :world-finished-times="worldFinishedTimes"
+        :finished-at="universeFinishedTimes[universe.id] ?? null"
+        class="universe-view"
+        @join-world="(worldId) => join(worldId)"
+        @new-world="createWorld(universe.id)"
       />
     </v-scroll-y-reverse-transition>
 
-    <div v-if='isSpectating' class='text-center mt-4'>
-      <v-alert class='d-inline-block' color='info darken'>
+    <div v-if="isSpectating" class="text-center mt-4">
+      <v-alert class="d-inline-block" color="info darken">
         <v-icon left>mdi-monitor-eye</v-icon>
         You are spectating this game.
       </v-alert>
     </div>
-    <div v-else-if='multiverse.locked' class='text-center mt-4'>
-      <v-alert class='d-inline-block' color='info darken'>
+    <div v-else-if="multiverse.locked" class="text-center mt-4">
+      <v-alert class="d-inline-block" color="info darken">
         <v-icon left>mdi-lock</v-icon>
         This multiverse is locked.
       </v-alert>
     </div>
-    <div v-else class='action-buttons mt-4'>
-      <v-tooltip :disabled='canCreateUniverse' bottom>
-      <span>
-        You ran out of space in your multiverse.
-      </span>
-        <template #activator='{on}'>
-          <div class='d-inline-block' v-on='on'>
-            <v-btn :disabled='loading || !canCreateUniverse' large text @click='createWorld()'>
+    <div v-else class="action-buttons mt-4">
+      <v-tooltip :disabled="canCreateUniverse" bottom>
+        <span> You ran out of space in your multiverse. </span>
+        <template #activator="{ on }">
+          <div class="d-inline-block" v-on="on">
+            <v-btn :disabled="loading || !canCreateUniverse" large text @click="createWorld()">
               <v-icon left>mdi-plus</v-icon>
               New Universe
             </v-btn>
@@ -43,13 +45,14 @@
         </template>
       </v-tooltip>
 
-      <slot name='additional-buttons' />
+      <slot name="additional-buttons" />
     </div>
   </div>
 </template>
 
 <script>
   import { mapGetters, mapState } from 'vuex'
+  import { hasOwnProperty } from '~/assets/lib/hasOwnProperty'
 
   const isOBS = () => !!window?.obsstudio?.pluginVersion
 
@@ -59,6 +62,26 @@
       multiverse: {
         type: Object,
         required: true,
+      },
+      playerLoadingTimes: {
+        type: Object,
+        required: false,
+        default: () => ({}),
+      },
+      playerFinishedTimes: {
+        type: Object,
+        required: false,
+        default: () => ({}),
+      },
+      worldFinishedTimes: {
+        type: Object,
+        required: false,
+        default: () => ({}),
+      },
+      universeFinishedTimes: {
+        type: Object,
+        required: false,
+        default: () => ({}),
       },
     },
     data: () => ({
@@ -80,12 +103,8 @@
         return this.multiverse.universes.length < 8
       },
       ownUniverse() {
-        return this.multiverse.universes.find(
-          universe => universe.worlds.find(
-            world => world.members.find(
-              player => player.id === this.user?.id,
-            ),
-          ),
+        return this.multiverse.universes.find((universe) =>
+          universe.worlds.find((world) => world.members.find((player) => player.id === this.user?.id)),
         )
       },
       ownUniverseId() {
@@ -103,7 +122,7 @@
           return false
         }
 
-        return this.multiverse.spectators.some(s => s.id === this.user.id)
+        return this.multiverse.spectators.some((s) => s.id === this.user.id)
       },
     },
     watch: {
@@ -118,7 +137,8 @@
           }
         },
       },
-      'multiverse.universes'() { // TODO: Temporary workaround for orirando/wotw-server#5
+      'multiverse.universes'() {
+        // TODO: Temporary workaround for orirando/wotw-server#5
         if (this.multiverse.bingoBoard) {
           this.$store.dispatch('multiverseState/fetchBingoBoard', this.multiverseId)
         }
@@ -128,6 +148,7 @@
       console.log(this.multiverse)
     },
     methods: {
+      hasOwnProperty,
       async join(worldId) {
         await this.$axios.post(`/multiverses/${this.multiverseId}/worlds/${worldId}`)
         await this.$store.dispatch('multiverseState/connectMultiverse', {
@@ -144,7 +165,7 @@
   }
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
   .universes {
     align-items: flex-start;
     display: flex;

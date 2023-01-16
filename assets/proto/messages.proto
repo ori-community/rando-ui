@@ -47,8 +47,8 @@ message MultiverseInfoMessage {
   bool hasBingoBoard = 3;
   repeated UserInfo spectators = 4;
   optional int64 seedId = 5;
-  GameHandlerType handlerType = 6;
-  bytes handlerInfo = 7;
+  GameHandlerType gameHandlerType = 6;
+  bytes gameHandlerClientInfo = 7;
   optional VisibilityMessage visibility = 8;
   bool locked = 9;
 }
@@ -148,4 +148,12 @@ message RequestFullUpdate { // 103
 
 message SetTrackerEndpointId { // 104
   string endpointId = 1;
+}
+
+message NormalGameHandlerState {
+  optional int64 startingAt = 1;
+  map<string, float> playerLoadingTimes = 2;
+  map<string, float> playerFinishedTimes = 3;
+  map<int64, float> worldFinishedTimes = 4;
+  map<int64, float> universeFinishedTimes = 5;
 }

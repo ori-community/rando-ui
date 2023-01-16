@@ -19,6 +19,8 @@ const ensureMultiverseExists = (state, multiverseId) => {
       bingoBoard: null,
       bingoUniverses: [],
       markedBingoGoals: [],
+      gameHandlerType: null,
+      gameHandlerClientInfo: null,
       seedId: null,
       locked: false,
     })
@@ -38,6 +40,18 @@ export const mutations = {
     state.multiverses[multiverseId].spectators = multiverseInfo.spectators
     state.multiverses[multiverseId].seedId = multiverseInfo.seedId || null
     state.multiverses[multiverseId].gameHandlerType = multiverseInfo.gameHandlerType
+
+    if (typeof multiverseInfo.gameHandlerClientInfo === 'string') {
+      const decodedBinaryString = atob(multiverseInfo.gameHandlerClientInfo)
+      const byteArray = new Array(decodedBinaryString.length)
+      for (let i = 0; i < decodedBinaryString.length; i++) {
+        byteArray[i] = decodedBinaryString.charCodeAt(i)
+      }
+      state.multiverses[multiverseId].gameHandlerClientInfo = Uint8Array.from(byteArray)
+    } else {
+      state.multiverses[multiverseId].gameHandlerClientInfo = multiverseInfo.gameHandlerClientInfo
+    }
+
     state.multiverses[multiverseId].locked = multiverseInfo.locked
   },
   setBingoUniverses(state, { multiverseId, bingoUniverses }) {
@@ -60,7 +74,7 @@ export const mutations = {
   toggleMultipleBingoGoalMarked(state, { multiverseId, goals }) {
   const isSameGoal = (goal1, goal2) => goal1.x === goal2.x && goal1.y === goal2.y
   const multiverse = state.multiverses[multiverseId]
-  
+
     // Whether all goals that are about to be marked are already marked
     const allGoalsAlreadyMarked = goals.every(
       goal => multiverse.markedBingoGoals.some(

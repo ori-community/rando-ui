@@ -51,8 +51,8 @@ export interface MultiverseInfoMessage {
   hasBingoBoard: boolean;
   spectators: UserInfo[];
   seedId?: number | undefined;
-  handlerType: MultiverseInfoMessage_GameHandlerType;
-  handlerInfo: Uint8Array;
+  gameHandlerType: MultiverseInfoMessage_GameHandlerType;
+  gameHandlerClientInfo: Uint8Array;
   visibility?: VisibilityMessage | undefined;
   locked: boolean;
 }
@@ -206,6 +206,39 @@ export interface RequestFullUpdate {
 export interface SetTrackerEndpointId {
   $type: "RandoProto.SetTrackerEndpointId";
   endpointId: string;
+}
+
+export interface NormalGameHandlerState {
+  $type: "RandoProto.NormalGameHandlerState";
+  startingAt?: number | undefined;
+  playerLoadingTimes: { [key: string]: number };
+  playerFinishedTimes: { [key: string]: number };
+  worldFinishedTimes: { [key: number]: number };
+  universeFinishedTimes: { [key: number]: number };
+}
+
+export interface NormalGameHandlerState_PlayerLoadingTimesEntry {
+  $type: "RandoProto.NormalGameHandlerState.PlayerLoadingTimesEntry";
+  key: string;
+  value: number;
+}
+
+export interface NormalGameHandlerState_PlayerFinishedTimesEntry {
+  $type: "RandoProto.NormalGameHandlerState.PlayerFinishedTimesEntry";
+  key: string;
+  value: number;
+}
+
+export interface NormalGameHandlerState_WorldFinishedTimesEntry {
+  $type: "RandoProto.NormalGameHandlerState.WorldFinishedTimesEntry";
+  key: number;
+  value: number;
+}
+
+export interface NormalGameHandlerState_UniverseFinishedTimesEntry {
+  $type: "RandoProto.NormalGameHandlerState.UniverseFinishedTimesEntry";
+  key: number;
+  value: number;
 }
 
 function createBasePacket(): Packet {
@@ -630,8 +663,8 @@ function createBaseMultiverseInfoMessage(): MultiverseInfoMessage {
     hasBingoBoard: false,
     spectators: [],
     seedId: undefined,
-    handlerType: 0,
-    handlerInfo: new Uint8Array(),
+    gameHandlerType: 0,
+    gameHandlerClientInfo: new Uint8Array(),
     visibility: undefined,
     locked: false,
   };
@@ -656,11 +689,11 @@ export const MultiverseInfoMessage = {
     if (message.seedId !== undefined) {
       writer.uint32(40).int64(message.seedId);
     }
-    if (message.handlerType !== 0) {
-      writer.uint32(48).int32(message.handlerType);
+    if (message.gameHandlerType !== 0) {
+      writer.uint32(48).int32(message.gameHandlerType);
     }
-    if (message.handlerInfo.length !== 0) {
-      writer.uint32(58).bytes(message.handlerInfo);
+    if (message.gameHandlerClientInfo.length !== 0) {
+      writer.uint32(58).bytes(message.gameHandlerClientInfo);
     }
     if (message.visibility !== undefined) {
       VisibilityMessage.encode(message.visibility, writer.uint32(66).fork()).ldelim();
@@ -694,10 +727,10 @@ export const MultiverseInfoMessage = {
           message.seedId = longToNumber(reader.int64() as Long);
           break;
         case 6:
-          message.handlerType = reader.int32() as any;
+          message.gameHandlerType = reader.int32() as any;
           break;
         case 7:
-          message.handlerInfo = reader.bytes();
+          message.gameHandlerClientInfo = reader.bytes();
           break;
         case 8:
           message.visibility = VisibilityMessage.decode(reader, reader.uint32());
@@ -721,8 +754,12 @@ export const MultiverseInfoMessage = {
       hasBingoBoard: isSet(object.hasBingoBoard) ? Boolean(object.hasBingoBoard) : false,
       spectators: Array.isArray(object?.spectators) ? object.spectators.map((e: any) => UserInfo.fromJSON(e)) : [],
       seedId: isSet(object.seedId) ? Number(object.seedId) : undefined,
-      handlerType: isSet(object.handlerType) ? multiverseInfoMessage_GameHandlerTypeFromJSON(object.handlerType) : 0,
-      handlerInfo: isSet(object.handlerInfo) ? bytesFromBase64(object.handlerInfo) : new Uint8Array(),
+      gameHandlerType: isSet(object.gameHandlerType)
+        ? multiverseInfoMessage_GameHandlerTypeFromJSON(object.gameHandlerType)
+        : 0,
+      gameHandlerClientInfo: isSet(object.gameHandlerClientInfo)
+        ? bytesFromBase64(object.gameHandlerClientInfo)
+        : new Uint8Array(),
       visibility: isSet(object.visibility) ? VisibilityMessage.fromJSON(object.visibility) : undefined,
       locked: isSet(object.locked) ? Boolean(object.locked) : false,
     };
@@ -743,10 +780,12 @@ export const MultiverseInfoMessage = {
       obj.spectators = [];
     }
     message.seedId !== undefined && (obj.seedId = Math.round(message.seedId));
-    message.handlerType !== undefined &&
-      (obj.handlerType = multiverseInfoMessage_GameHandlerTypeToJSON(message.handlerType));
-    message.handlerInfo !== undefined &&
-      (obj.handlerInfo = base64FromBytes(message.handlerInfo !== undefined ? message.handlerInfo : new Uint8Array()));
+    message.gameHandlerType !== undefined &&
+      (obj.gameHandlerType = multiverseInfoMessage_GameHandlerTypeToJSON(message.gameHandlerType));
+    message.gameHandlerClientInfo !== undefined &&
+      (obj.gameHandlerClientInfo = base64FromBytes(
+        message.gameHandlerClientInfo !== undefined ? message.gameHandlerClientInfo : new Uint8Array(),
+      ));
     message.visibility !== undefined &&
       (obj.visibility = message.visibility ? VisibilityMessage.toJSON(message.visibility) : undefined);
     message.locked !== undefined && (obj.locked = message.locked);
@@ -760,8 +799,8 @@ export const MultiverseInfoMessage = {
     message.hasBingoBoard = object.hasBingoBoard ?? false;
     message.spectators = object.spectators?.map((e) => UserInfo.fromPartial(e)) || [];
     message.seedId = object.seedId ?? undefined;
-    message.handlerType = object.handlerType ?? 0;
-    message.handlerInfo = object.handlerInfo ?? new Uint8Array();
+    message.gameHandlerType = object.gameHandlerType ?? 0;
+    message.gameHandlerClientInfo = object.gameHandlerClientInfo ?? new Uint8Array();
     message.visibility = (object.visibility !== undefined && object.visibility !== null)
       ? VisibilityMessage.fromPartial(object.visibility)
       : undefined;
@@ -1987,6 +2026,486 @@ export const SetTrackerEndpointId = {
 
 messageTypeRegistry.set(SetTrackerEndpointId.$type, SetTrackerEndpointId);
 
+function createBaseNormalGameHandlerState(): NormalGameHandlerState {
+  return {
+    $type: "RandoProto.NormalGameHandlerState",
+    startingAt: undefined,
+    playerLoadingTimes: {},
+    playerFinishedTimes: {},
+    worldFinishedTimes: {},
+    universeFinishedTimes: {},
+  };
+}
+
+export const NormalGameHandlerState = {
+  $type: "RandoProto.NormalGameHandlerState" as const,
+
+  encode(message: NormalGameHandlerState, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.startingAt !== undefined) {
+      writer.uint32(8).int64(message.startingAt);
+    }
+    Object.entries(message.playerLoadingTimes).forEach(([key, value]) => {
+      NormalGameHandlerState_PlayerLoadingTimesEntry.encode({
+        $type: "RandoProto.NormalGameHandlerState.PlayerLoadingTimesEntry",
+        key: key as any,
+        value,
+      }, writer.uint32(18).fork()).ldelim();
+    });
+    Object.entries(message.playerFinishedTimes).forEach(([key, value]) => {
+      NormalGameHandlerState_PlayerFinishedTimesEntry.encode({
+        $type: "RandoProto.NormalGameHandlerState.PlayerFinishedTimesEntry",
+        key: key as any,
+        value,
+      }, writer.uint32(26).fork()).ldelim();
+    });
+    Object.entries(message.worldFinishedTimes).forEach(([key, value]) => {
+      NormalGameHandlerState_WorldFinishedTimesEntry.encode({
+        $type: "RandoProto.NormalGameHandlerState.WorldFinishedTimesEntry",
+        key: key as any,
+        value,
+      }, writer.uint32(34).fork()).ldelim();
+    });
+    Object.entries(message.universeFinishedTimes).forEach(([key, value]) => {
+      NormalGameHandlerState_UniverseFinishedTimesEntry.encode({
+        $type: "RandoProto.NormalGameHandlerState.UniverseFinishedTimesEntry",
+        key: key as any,
+        value,
+      }, writer.uint32(42).fork()).ldelim();
+    });
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): NormalGameHandlerState {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseNormalGameHandlerState();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.startingAt = longToNumber(reader.int64() as Long);
+          break;
+        case 2:
+          const entry2 = NormalGameHandlerState_PlayerLoadingTimesEntry.decode(reader, reader.uint32());
+          if (entry2.value !== undefined) {
+            message.playerLoadingTimes[entry2.key] = entry2.value;
+          }
+          break;
+        case 3:
+          const entry3 = NormalGameHandlerState_PlayerFinishedTimesEntry.decode(reader, reader.uint32());
+          if (entry3.value !== undefined) {
+            message.playerFinishedTimes[entry3.key] = entry3.value;
+          }
+          break;
+        case 4:
+          const entry4 = NormalGameHandlerState_WorldFinishedTimesEntry.decode(reader, reader.uint32());
+          if (entry4.value !== undefined) {
+            message.worldFinishedTimes[entry4.key] = entry4.value;
+          }
+          break;
+        case 5:
+          const entry5 = NormalGameHandlerState_UniverseFinishedTimesEntry.decode(reader, reader.uint32());
+          if (entry5.value !== undefined) {
+            message.universeFinishedTimes[entry5.key] = entry5.value;
+          }
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): NormalGameHandlerState {
+    return {
+      $type: NormalGameHandlerState.$type,
+      startingAt: isSet(object.startingAt) ? Number(object.startingAt) : undefined,
+      playerLoadingTimes: isObject(object.playerLoadingTimes)
+        ? Object.entries(object.playerLoadingTimes).reduce<{ [key: string]: number }>((acc, [key, value]) => {
+          acc[key] = Number(value);
+          return acc;
+        }, {})
+        : {},
+      playerFinishedTimes: isObject(object.playerFinishedTimes)
+        ? Object.entries(object.playerFinishedTimes).reduce<{ [key: string]: number }>((acc, [key, value]) => {
+          acc[key] = Number(value);
+          return acc;
+        }, {})
+        : {},
+      worldFinishedTimes: isObject(object.worldFinishedTimes)
+        ? Object.entries(object.worldFinishedTimes).reduce<{ [key: number]: number }>((acc, [key, value]) => {
+          acc[Number(key)] = Number(value);
+          return acc;
+        }, {})
+        : {},
+      universeFinishedTimes: isObject(object.universeFinishedTimes)
+        ? Object.entries(object.universeFinishedTimes).reduce<{ [key: number]: number }>((acc, [key, value]) => {
+          acc[Number(key)] = Number(value);
+          return acc;
+        }, {})
+        : {},
+    };
+  },
+
+  toJSON(message: NormalGameHandlerState): unknown {
+    const obj: any = {};
+    message.startingAt !== undefined && (obj.startingAt = Math.round(message.startingAt));
+    obj.playerLoadingTimes = {};
+    if (message.playerLoadingTimes) {
+      Object.entries(message.playerLoadingTimes).forEach(([k, v]) => {
+        obj.playerLoadingTimes[k] = v;
+      });
+    }
+    obj.playerFinishedTimes = {};
+    if (message.playerFinishedTimes) {
+      Object.entries(message.playerFinishedTimes).forEach(([k, v]) => {
+        obj.playerFinishedTimes[k] = v;
+      });
+    }
+    obj.worldFinishedTimes = {};
+    if (message.worldFinishedTimes) {
+      Object.entries(message.worldFinishedTimes).forEach(([k, v]) => {
+        obj.worldFinishedTimes[k] = v;
+      });
+    }
+    obj.universeFinishedTimes = {};
+    if (message.universeFinishedTimes) {
+      Object.entries(message.universeFinishedTimes).forEach(([k, v]) => {
+        obj.universeFinishedTimes[k] = v;
+      });
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<NormalGameHandlerState>, I>>(object: I): NormalGameHandlerState {
+    const message = createBaseNormalGameHandlerState();
+    message.startingAt = object.startingAt ?? undefined;
+    message.playerLoadingTimes = Object.entries(object.playerLoadingTimes ?? {}).reduce<{ [key: string]: number }>(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[key] = Number(value);
+        }
+        return acc;
+      },
+      {},
+    );
+    message.playerFinishedTimes = Object.entries(object.playerFinishedTimes ?? {}).reduce<{ [key: string]: number }>(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[key] = Number(value);
+        }
+        return acc;
+      },
+      {},
+    );
+    message.worldFinishedTimes = Object.entries(object.worldFinishedTimes ?? {}).reduce<{ [key: number]: number }>(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[Number(key)] = Number(value);
+        }
+        return acc;
+      },
+      {},
+    );
+    message.universeFinishedTimes = Object.entries(object.universeFinishedTimes ?? {}).reduce<
+      { [key: number]: number }
+    >((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[Number(key)] = Number(value);
+      }
+      return acc;
+    }, {});
+    return message;
+  },
+};
+
+messageTypeRegistry.set(NormalGameHandlerState.$type, NormalGameHandlerState);
+
+function createBaseNormalGameHandlerState_PlayerLoadingTimesEntry(): NormalGameHandlerState_PlayerLoadingTimesEntry {
+  return { $type: "RandoProto.NormalGameHandlerState.PlayerLoadingTimesEntry", key: "", value: 0 };
+}
+
+export const NormalGameHandlerState_PlayerLoadingTimesEntry = {
+  $type: "RandoProto.NormalGameHandlerState.PlayerLoadingTimesEntry" as const,
+
+  encode(
+    message: NormalGameHandlerState_PlayerLoadingTimesEntry,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== 0) {
+      writer.uint32(21).float(message.value);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): NormalGameHandlerState_PlayerLoadingTimesEntry {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseNormalGameHandlerState_PlayerLoadingTimesEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.key = reader.string();
+          break;
+        case 2:
+          message.value = reader.float();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): NormalGameHandlerState_PlayerLoadingTimesEntry {
+    return {
+      $type: NormalGameHandlerState_PlayerLoadingTimesEntry.$type,
+      key: isSet(object.key) ? String(object.key) : "",
+      value: isSet(object.value) ? Number(object.value) : 0,
+    };
+  },
+
+  toJSON(message: NormalGameHandlerState_PlayerLoadingTimesEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<NormalGameHandlerState_PlayerLoadingTimesEntry>, I>>(
+    object: I,
+  ): NormalGameHandlerState_PlayerLoadingTimesEntry {
+    const message = createBaseNormalGameHandlerState_PlayerLoadingTimesEntry();
+    message.key = object.key ?? "";
+    message.value = object.value ?? 0;
+    return message;
+  },
+};
+
+messageTypeRegistry.set(
+  NormalGameHandlerState_PlayerLoadingTimesEntry.$type,
+  NormalGameHandlerState_PlayerLoadingTimesEntry,
+);
+
+function createBaseNormalGameHandlerState_PlayerFinishedTimesEntry(): NormalGameHandlerState_PlayerFinishedTimesEntry {
+  return { $type: "RandoProto.NormalGameHandlerState.PlayerFinishedTimesEntry", key: "", value: 0 };
+}
+
+export const NormalGameHandlerState_PlayerFinishedTimesEntry = {
+  $type: "RandoProto.NormalGameHandlerState.PlayerFinishedTimesEntry" as const,
+
+  encode(
+    message: NormalGameHandlerState_PlayerFinishedTimesEntry,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== 0) {
+      writer.uint32(21).float(message.value);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): NormalGameHandlerState_PlayerFinishedTimesEntry {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseNormalGameHandlerState_PlayerFinishedTimesEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.key = reader.string();
+          break;
+        case 2:
+          message.value = reader.float();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): NormalGameHandlerState_PlayerFinishedTimesEntry {
+    return {
+      $type: NormalGameHandlerState_PlayerFinishedTimesEntry.$type,
+      key: isSet(object.key) ? String(object.key) : "",
+      value: isSet(object.value) ? Number(object.value) : 0,
+    };
+  },
+
+  toJSON(message: NormalGameHandlerState_PlayerFinishedTimesEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = message.key);
+    message.value !== undefined && (obj.value = message.value);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<NormalGameHandlerState_PlayerFinishedTimesEntry>, I>>(
+    object: I,
+  ): NormalGameHandlerState_PlayerFinishedTimesEntry {
+    const message = createBaseNormalGameHandlerState_PlayerFinishedTimesEntry();
+    message.key = object.key ?? "";
+    message.value = object.value ?? 0;
+    return message;
+  },
+};
+
+messageTypeRegistry.set(
+  NormalGameHandlerState_PlayerFinishedTimesEntry.$type,
+  NormalGameHandlerState_PlayerFinishedTimesEntry,
+);
+
+function createBaseNormalGameHandlerState_WorldFinishedTimesEntry(): NormalGameHandlerState_WorldFinishedTimesEntry {
+  return { $type: "RandoProto.NormalGameHandlerState.WorldFinishedTimesEntry", key: 0, value: 0 };
+}
+
+export const NormalGameHandlerState_WorldFinishedTimesEntry = {
+  $type: "RandoProto.NormalGameHandlerState.WorldFinishedTimesEntry" as const,
+
+  encode(
+    message: NormalGameHandlerState_WorldFinishedTimesEntry,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.key !== 0) {
+      writer.uint32(8).int64(message.key);
+    }
+    if (message.value !== 0) {
+      writer.uint32(21).float(message.value);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): NormalGameHandlerState_WorldFinishedTimesEntry {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseNormalGameHandlerState_WorldFinishedTimesEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.key = longToNumber(reader.int64() as Long);
+          break;
+        case 2:
+          message.value = reader.float();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): NormalGameHandlerState_WorldFinishedTimesEntry {
+    return {
+      $type: NormalGameHandlerState_WorldFinishedTimesEntry.$type,
+      key: isSet(object.key) ? Number(object.key) : 0,
+      value: isSet(object.value) ? Number(object.value) : 0,
+    };
+  },
+
+  toJSON(message: NormalGameHandlerState_WorldFinishedTimesEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = Math.round(message.key));
+    message.value !== undefined && (obj.value = message.value);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<NormalGameHandlerState_WorldFinishedTimesEntry>, I>>(
+    object: I,
+  ): NormalGameHandlerState_WorldFinishedTimesEntry {
+    const message = createBaseNormalGameHandlerState_WorldFinishedTimesEntry();
+    message.key = object.key ?? 0;
+    message.value = object.value ?? 0;
+    return message;
+  },
+};
+
+messageTypeRegistry.set(
+  NormalGameHandlerState_WorldFinishedTimesEntry.$type,
+  NormalGameHandlerState_WorldFinishedTimesEntry,
+);
+
+function createBaseNormalGameHandlerState_UniverseFinishedTimesEntry(): NormalGameHandlerState_UniverseFinishedTimesEntry {
+  return { $type: "RandoProto.NormalGameHandlerState.UniverseFinishedTimesEntry", key: 0, value: 0 };
+}
+
+export const NormalGameHandlerState_UniverseFinishedTimesEntry = {
+  $type: "RandoProto.NormalGameHandlerState.UniverseFinishedTimesEntry" as const,
+
+  encode(
+    message: NormalGameHandlerState_UniverseFinishedTimesEntry,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.key !== 0) {
+      writer.uint32(8).int64(message.key);
+    }
+    if (message.value !== 0) {
+      writer.uint32(21).float(message.value);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): NormalGameHandlerState_UniverseFinishedTimesEntry {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseNormalGameHandlerState_UniverseFinishedTimesEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.key = longToNumber(reader.int64() as Long);
+          break;
+        case 2:
+          message.value = reader.float();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): NormalGameHandlerState_UniverseFinishedTimesEntry {
+    return {
+      $type: NormalGameHandlerState_UniverseFinishedTimesEntry.$type,
+      key: isSet(object.key) ? Number(object.key) : 0,
+      value: isSet(object.value) ? Number(object.value) : 0,
+    };
+  },
+
+  toJSON(message: NormalGameHandlerState_UniverseFinishedTimesEntry): unknown {
+    const obj: any = {};
+    message.key !== undefined && (obj.key = Math.round(message.key));
+    message.value !== undefined && (obj.value = message.value);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<NormalGameHandlerState_UniverseFinishedTimesEntry>, I>>(
+    object: I,
+  ): NormalGameHandlerState_UniverseFinishedTimesEntry {
+    const message = createBaseNormalGameHandlerState_UniverseFinishedTimesEntry();
+    message.key = object.key ?? 0;
+    message.value = object.value ?? 0;
+    return message;
+  },
+};
+
+messageTypeRegistry.set(
+  NormalGameHandlerState_UniverseFinishedTimesEntry.$type,
+  NormalGameHandlerState_UniverseFinishedTimesEntry,
+);
+
 declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
@@ -2052,6 +2571,10 @@ function longToNumber(long: Long): number {
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isObject(value: any): boolean {
+  return typeof value === "object" && value !== null;
 }
 
 function isSet(value: any): boolean {

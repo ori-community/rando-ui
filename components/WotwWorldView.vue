@@ -1,11 +1,12 @@
 <template>
-  <v-card class="world-view" outlined color="background lighten-2">
+  <v-card ref="worldView" class="world-view" outlined color="background lighten-2">
     <v-sheet :color="world.color" class="flex-shrink-0" height="0.5em" />
     <v-card-title class="d-flex">
       <div class="world-title">
         <div>
           {{ world.name }}
           <copyable-info v-if="devtoolsEnabled" :value="world.id" />
+          <span v-if="!!finishedAt" class="finished-time">{{ formatTime(finishedAt) }}</span>
         </div>
         <wotw-seed-button v-if="!!world.seedId && !isElectron" :world-seed-id="world.seedId" />
       </div>
@@ -18,7 +19,16 @@
           class="mb-1"
           :user="player"
           :multiverse-id="multiverseId"
-        />
+        >
+          <div class="player-info" title="Loading time">
+            <span v-if="hasOwnProperty(playerFinishedTimes, player.id)" class="finished-time" title="Finished time">{{
+              formatTime(playerFinishedTimes[player.id])
+            }}</span>
+            <span v-else-if="hasOwnProperty(playerLoadingTimes, player.id)" class="loading-time" title="Loading time">{{
+              formatTime(-1 * playerLoadingTimes[player.id])
+            }}</span>
+          </div>
+        </wotw-player-view>
       </v-scroll-x-transition>
     </v-card-text>
     <div class="spacer"></div>
@@ -28,7 +38,10 @@
 
 <script>
   import { mapState } from 'vuex'
+  import { formatTime } from '../assets/lib/formatTime'
   import { isElectron } from '~/assets/lib/isElectron'
+  import { hasOwnProperty } from '~/assets/lib/hasOwnProperty'
+  import { confettiFromElement } from '~/assets/lib/confettiFromElement'
 
   export default {
     name: 'WotwWorldView',
@@ -50,6 +63,20 @@
         required: false,
         default: null,
       },
+      playerLoadingTimes: {
+        type: Object,
+        required: false,
+        default: () => ({})
+      },
+      playerFinishedTimes: {
+        type: Object,
+        required: false,
+        default: () => ({}),
+      },
+      finishedAt: {
+        type: Number,
+        default: null,
+      },
     },
     computed: {
       ...mapState('user', ['user']),
@@ -59,6 +86,20 @@
         return this.canJoin && !this.world.members.some((u) => u.id === this.user?.id)
       },
     },
+    watch: {
+      finishedAt(value) {
+        if (value) {
+          confettiFromElement(this.$refs.worldView.$el, {
+            disableForReducedMotion: true,
+            zIndex: 100000,
+          })
+        }
+      },
+    },
+    methods: {
+      formatTime,
+      hasOwnProperty,
+    }
   }
 </script>
 
@@ -78,6 +119,22 @@
       display: flex;
       gap: 0.5em;
       justify-content: space-between;
+
+      .finished-time {
+        font-size: 0.7em;
+      }
     }
+  }
+
+  .player-info {
+    font-size: 0.7em;
+  }
+
+  .loading-time {
+    opacity: 0.6;
+  }
+
+  .finished-time {
+    color: var(--v-success-base);
   }
 </style>

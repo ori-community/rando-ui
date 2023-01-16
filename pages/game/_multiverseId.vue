@@ -46,6 +46,13 @@
           <span v-if="!multiverseReady || multiverse.universes.length > 0">Create or join a world to launch the game</span>
           <span v-else>Create a universe to launch the game</span>
         </v-tooltip>
+
+        <div class="mt-2">
+          <v-btn text @click="dispatchEvent('start')">
+            <v-icon left>mdi-timer-play-outline</v-icon>
+            Start Race timer
+          </v-btn>
+        </div>
       </div>
 
       <throttled-spinner>
@@ -55,11 +62,11 @@
           <div v-if="devtoolsEnabled" class="mt-5">
             <v-card class="pa-4">
               <h3>Dispatch custom event</h3>
-              <v-text-field v-model="dev.customEventName" label="Event" />
+              <v-text-field v-model="dev.debugEventName" label="Event" />
 
               <div class="d-flex">
                 <v-spacer />
-                <v-btn depressed color="accent" @click="dispatchCustomEvent"> Dispatch</v-btn>
+                <v-btn depressed color="accent" @click="dispatchDebugEvent"> Dispatch</v-btn>
               </div>
             </v-card>
           </div>
@@ -278,7 +285,7 @@
       bingoOverlayEnabled: false,
       lockGameLoading: false,
       dev: {
-        customEventName: '',
+        debugEventName: '',
       },
     }),
     computed: {
@@ -569,9 +576,16 @@
           }, 500)
         }
       },
-      async dispatchCustomEvent() {
+      async dispatchDebugEvent() {
         try {
-          await this.$axios.post(`/multiverses/${this.multiverseId}/event/${this.dev.customEventName}`)
+          await this.$axios.post(`/multiverses/${this.multiverseId}/debug-event/${this.dev.debugEventName}`)
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      async dispatchEvent(event) {
+        try {
+          await this.$axios.post(`/multiverses/${this.multiverseId}/event/${event}`)
         } catch (e) {
           console.error(e)
         }

@@ -45,11 +45,13 @@ message RaceTeamMemberInfo {
 message RaceTeamInfo {
   int64 id = 1;
   repeated RaceTeamMemberInfo members = 2;
+  optional float finishedTime = 3;
 }
 
 message RaceInfo {
   int64 id = 1;
   repeated RaceTeamInfo teams = 2;
+  optional float finishedTime = 3;
 }
 
 message MultiverseInfoMessage {

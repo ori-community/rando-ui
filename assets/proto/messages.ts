@@ -55,12 +55,14 @@ export interface RaceTeamInfo {
   $type: "RandoProto.RaceTeamInfo";
   id: number;
   members: RaceTeamMemberInfo[];
+  finishedTime?: number | undefined;
 }
 
 export interface RaceInfo {
   $type: "RandoProto.RaceInfo";
   id: number;
   teams: RaceTeamInfo[];
+  finishedTime?: number | undefined;
 }
 
 export interface MultiverseInfoMessage {
@@ -750,7 +752,7 @@ export const RaceTeamMemberInfo = {
 messageTypeRegistry.set(RaceTeamMemberInfo.$type, RaceTeamMemberInfo);
 
 function createBaseRaceTeamInfo(): RaceTeamInfo {
-  return { $type: "RandoProto.RaceTeamInfo", id: 0, members: [] };
+  return { $type: "RandoProto.RaceTeamInfo", id: 0, members: [], finishedTime: undefined };
 }
 
 export const RaceTeamInfo = {
@@ -762,6 +764,9 @@ export const RaceTeamInfo = {
     }
     for (const v of message.members) {
       RaceTeamMemberInfo.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.finishedTime !== undefined) {
+      writer.uint32(29).float(message.finishedTime);
     }
     return writer;
   },
@@ -779,6 +784,9 @@ export const RaceTeamInfo = {
         case 2:
           message.members.push(RaceTeamMemberInfo.decode(reader, reader.uint32()));
           break;
+        case 3:
+          message.finishedTime = reader.float();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -792,6 +800,7 @@ export const RaceTeamInfo = {
       $type: RaceTeamInfo.$type,
       id: isSet(object.id) ? Number(object.id) : 0,
       members: Array.isArray(object?.members) ? object.members.map((e: any) => RaceTeamMemberInfo.fromJSON(e)) : [],
+      finishedTime: isSet(object.finishedTime) ? Number(object.finishedTime) : undefined,
     };
   },
 
@@ -803,6 +812,7 @@ export const RaceTeamInfo = {
     } else {
       obj.members = [];
     }
+    message.finishedTime !== undefined && (obj.finishedTime = message.finishedTime);
     return obj;
   },
 
@@ -810,6 +820,7 @@ export const RaceTeamInfo = {
     const message = createBaseRaceTeamInfo();
     message.id = object.id ?? 0;
     message.members = object.members?.map((e) => RaceTeamMemberInfo.fromPartial(e)) || [];
+    message.finishedTime = object.finishedTime ?? undefined;
     return message;
   },
 };
@@ -817,7 +828,7 @@ export const RaceTeamInfo = {
 messageTypeRegistry.set(RaceTeamInfo.$type, RaceTeamInfo);
 
 function createBaseRaceInfo(): RaceInfo {
-  return { $type: "RandoProto.RaceInfo", id: 0, teams: [] };
+  return { $type: "RandoProto.RaceInfo", id: 0, teams: [], finishedTime: undefined };
 }
 
 export const RaceInfo = {
@@ -829,6 +840,9 @@ export const RaceInfo = {
     }
     for (const v of message.teams) {
       RaceTeamInfo.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.finishedTime !== undefined) {
+      writer.uint32(29).float(message.finishedTime);
     }
     return writer;
   },
@@ -846,6 +860,9 @@ export const RaceInfo = {
         case 2:
           message.teams.push(RaceTeamInfo.decode(reader, reader.uint32()));
           break;
+        case 3:
+          message.finishedTime = reader.float();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -859,6 +876,7 @@ export const RaceInfo = {
       $type: RaceInfo.$type,
       id: isSet(object.id) ? Number(object.id) : 0,
       teams: Array.isArray(object?.teams) ? object.teams.map((e: any) => RaceTeamInfo.fromJSON(e)) : [],
+      finishedTime: isSet(object.finishedTime) ? Number(object.finishedTime) : undefined,
     };
   },
 
@@ -870,6 +888,7 @@ export const RaceInfo = {
     } else {
       obj.teams = [];
     }
+    message.finishedTime !== undefined && (obj.finishedTime = message.finishedTime);
     return obj;
   },
 
@@ -877,6 +896,7 @@ export const RaceInfo = {
     const message = createBaseRaceInfo();
     message.id = object.id ?? 0;
     message.teams = object.teams?.map((e) => RaceTeamInfo.fromPartial(e)) || [];
+    message.finishedTime = object.finishedTime ?? undefined;
     return message;
   },
 };

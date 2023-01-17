@@ -59,7 +59,7 @@
 
       <throttled-spinner>
         <div v-if="isLoggedIn && multiverseReady">
-          <div class="text-center">
+          <div class="text-center mb-3">
             <wotw-race-timer v-if="isRace" :starting-at="normalGameHandlerState.startingAt" />
           </div>
 

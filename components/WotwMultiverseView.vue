@@ -14,6 +14,7 @@
         :player-finished-times="playerFinishedTimes"
         :world-finished-times="worldFinishedTimes"
         :finished-at="universeFinishedTimes[universe.id] ?? null"
+        :place="universePlaces[universe.id] ?? null"
         class="universe-view"
         @join-world="(worldId) => join(worldId)"
         @new-world="createWorld(universe.id)"
@@ -124,6 +125,13 @@
 
         return this.multiverse.spectators.some((s) => s.id === this.user.id)
       },
+      universePlaces() {
+        return Object.fromEntries(
+          Object.entries(this.universeFinishedTimes)
+            .sort(([, aTime], [, bTime]) => aTime - bTime)
+            .map((entry, index) => [/** universe id → */ entry[0], index + 1])
+        )
+      }
     },
     watch: {
       userLoaded: {

@@ -40,7 +40,7 @@
 <style lang="scss" scoped>
   .timer {
     font-size: 3em;
-    font-weight: 900;
+    font-weight: 700;
 
     .fraction {
       font-size: 0.75em;

@@ -6,7 +6,7 @@
         <div>
           {{ world.name }}
           <copyable-info v-if="devtoolsEnabled" :value="world.id" />
-          <span v-if="!!finishedAt" class="finished-time">{{ formatTime(finishedAt) }}</span>
+          <span v-if="!!finishedAt && showWorldFinishedTime" class="finished-time">{{ formatTime(finishedAt) }}</span>
         </div>
         <wotw-seed-button v-if="!!world.seedId && !isElectron" :world-seed-id="world.seedId" />
       </div>
@@ -21,7 +21,7 @@
           :multiverse-id="multiverseId"
         >
           <div class="player-info" title="Loading time">
-            <span v-if="hasOwnProperty(playerFinishedTimes, player.id)" class="finished-time" title="Finished time">{{
+            <span v-if="hasMultiplePlayers && hasOwnProperty(playerFinishedTimes, player.id)" class="finished-time" title="Finished time">{{
               formatTime(playerFinishedTimes[player.id])
             }}</span>
             <span v-else-if="hasOwnProperty(playerLoadingTimes, player.id)" class="loading-time" title="Loading time">{{
@@ -66,7 +66,7 @@
       playerLoadingTimes: {
         type: Object,
         required: false,
-        default: () => ({})
+        default: () => ({}),
       },
       playerFinishedTimes: {
         type: Object,
@@ -77,6 +77,10 @@
         type: Number,
         default: null,
       },
+      showWorldFinishedTime: {
+        type: Boolean,
+        default: true,
+      },
     },
     computed: {
       ...mapState('user', ['user']),
@@ -84,6 +88,9 @@
       isElectron,
       canJoinInternal() {
         return this.canJoin && !this.world.members.some((u) => u.id === this.user?.id)
+      },
+      hasMultiplePlayers() {
+        return this.world.members.length > 1
       },
     },
     watch: {
@@ -99,7 +106,7 @@
     methods: {
       formatTime,
       hasOwnProperty,
-    }
+    },
   }
 </script>
 

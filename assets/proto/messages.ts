@@ -44,6 +44,25 @@ export interface UniverseInfo {
   worlds: WorldInfo[];
 }
 
+export interface RaceTeamMemberInfo {
+  $type: "RandoProto.RaceTeamMemberInfo";
+  id: number;
+  user: UserInfo | undefined;
+  finishedTime?: number | undefined;
+}
+
+export interface RaceTeamInfo {
+  $type: "RandoProto.RaceTeamInfo";
+  id: number;
+  members: RaceTeamMemberInfo[];
+}
+
+export interface RaceInfo {
+  $type: "RandoProto.RaceInfo";
+  id: number;
+  teams: RaceTeamInfo[];
+}
+
 export interface MultiverseInfoMessage {
   $type: "RandoProto.MultiverseInfoMessage";
   id: number;
@@ -55,6 +74,8 @@ export interface MultiverseInfoMessage {
   gameHandlerClientInfo: Uint8Array;
   visibility?: VisibilityMessage | undefined;
   locked: boolean;
+  isLockable: boolean;
+  race?: RaceInfo | undefined;
 }
 
 export enum MultiverseInfoMessage_GameHandlerType {
@@ -211,6 +232,7 @@ export interface SetTrackerEndpointId {
 export interface NormalGameHandlerState {
   $type: "RandoProto.NormalGameHandlerState";
   startingAt?: number | undefined;
+  finishedTime?: number | undefined;
   playerLoadingTimes: { [key: string]: number };
   playerFinishedTimes: { [key: string]: number };
   worldFinishedTimes: { [key: number]: number };
@@ -655,6 +677,212 @@ export const UniverseInfo = {
 
 messageTypeRegistry.set(UniverseInfo.$type, UniverseInfo);
 
+function createBaseRaceTeamMemberInfo(): RaceTeamMemberInfo {
+  return { $type: "RandoProto.RaceTeamMemberInfo", id: 0, user: undefined, finishedTime: undefined };
+}
+
+export const RaceTeamMemberInfo = {
+  $type: "RandoProto.RaceTeamMemberInfo" as const,
+
+  encode(message: RaceTeamMemberInfo, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== 0) {
+      writer.uint32(8).int64(message.id);
+    }
+    if (message.user !== undefined) {
+      UserInfo.encode(message.user, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.finishedTime !== undefined) {
+      writer.uint32(29).float(message.finishedTime);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): RaceTeamMemberInfo {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRaceTeamMemberInfo();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.id = longToNumber(reader.int64() as Long);
+          break;
+        case 2:
+          message.user = UserInfo.decode(reader, reader.uint32());
+          break;
+        case 3:
+          message.finishedTime = reader.float();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RaceTeamMemberInfo {
+    return {
+      $type: RaceTeamMemberInfo.$type,
+      id: isSet(object.id) ? Number(object.id) : 0,
+      user: isSet(object.user) ? UserInfo.fromJSON(object.user) : undefined,
+      finishedTime: isSet(object.finishedTime) ? Number(object.finishedTime) : undefined,
+    };
+  },
+
+  toJSON(message: RaceTeamMemberInfo): unknown {
+    const obj: any = {};
+    message.id !== undefined && (obj.id = Math.round(message.id));
+    message.user !== undefined && (obj.user = message.user ? UserInfo.toJSON(message.user) : undefined);
+    message.finishedTime !== undefined && (obj.finishedTime = message.finishedTime);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<RaceTeamMemberInfo>, I>>(object: I): RaceTeamMemberInfo {
+    const message = createBaseRaceTeamMemberInfo();
+    message.id = object.id ?? 0;
+    message.user = (object.user !== undefined && object.user !== null) ? UserInfo.fromPartial(object.user) : undefined;
+    message.finishedTime = object.finishedTime ?? undefined;
+    return message;
+  },
+};
+
+messageTypeRegistry.set(RaceTeamMemberInfo.$type, RaceTeamMemberInfo);
+
+function createBaseRaceTeamInfo(): RaceTeamInfo {
+  return { $type: "RandoProto.RaceTeamInfo", id: 0, members: [] };
+}
+
+export const RaceTeamInfo = {
+  $type: "RandoProto.RaceTeamInfo" as const,
+
+  encode(message: RaceTeamInfo, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== 0) {
+      writer.uint32(8).int64(message.id);
+    }
+    for (const v of message.members) {
+      RaceTeamMemberInfo.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): RaceTeamInfo {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRaceTeamInfo();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.id = longToNumber(reader.int64() as Long);
+          break;
+        case 2:
+          message.members.push(RaceTeamMemberInfo.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RaceTeamInfo {
+    return {
+      $type: RaceTeamInfo.$type,
+      id: isSet(object.id) ? Number(object.id) : 0,
+      members: Array.isArray(object?.members) ? object.members.map((e: any) => RaceTeamMemberInfo.fromJSON(e)) : [],
+    };
+  },
+
+  toJSON(message: RaceTeamInfo): unknown {
+    const obj: any = {};
+    message.id !== undefined && (obj.id = Math.round(message.id));
+    if (message.members) {
+      obj.members = message.members.map((e) => e ? RaceTeamMemberInfo.toJSON(e) : undefined);
+    } else {
+      obj.members = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<RaceTeamInfo>, I>>(object: I): RaceTeamInfo {
+    const message = createBaseRaceTeamInfo();
+    message.id = object.id ?? 0;
+    message.members = object.members?.map((e) => RaceTeamMemberInfo.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+messageTypeRegistry.set(RaceTeamInfo.$type, RaceTeamInfo);
+
+function createBaseRaceInfo(): RaceInfo {
+  return { $type: "RandoProto.RaceInfo", id: 0, teams: [] };
+}
+
+export const RaceInfo = {
+  $type: "RandoProto.RaceInfo" as const,
+
+  encode(message: RaceInfo, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== 0) {
+      writer.uint32(8).int64(message.id);
+    }
+    for (const v of message.teams) {
+      RaceTeamInfo.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): RaceInfo {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseRaceInfo();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.id = longToNumber(reader.int64() as Long);
+          break;
+        case 2:
+          message.teams.push(RaceTeamInfo.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): RaceInfo {
+    return {
+      $type: RaceInfo.$type,
+      id: isSet(object.id) ? Number(object.id) : 0,
+      teams: Array.isArray(object?.teams) ? object.teams.map((e: any) => RaceTeamInfo.fromJSON(e)) : [],
+    };
+  },
+
+  toJSON(message: RaceInfo): unknown {
+    const obj: any = {};
+    message.id !== undefined && (obj.id = Math.round(message.id));
+    if (message.teams) {
+      obj.teams = message.teams.map((e) => e ? RaceTeamInfo.toJSON(e) : undefined);
+    } else {
+      obj.teams = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<RaceInfo>, I>>(object: I): RaceInfo {
+    const message = createBaseRaceInfo();
+    message.id = object.id ?? 0;
+    message.teams = object.teams?.map((e) => RaceTeamInfo.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+messageTypeRegistry.set(RaceInfo.$type, RaceInfo);
+
 function createBaseMultiverseInfoMessage(): MultiverseInfoMessage {
   return {
     $type: "RandoProto.MultiverseInfoMessage",
@@ -667,6 +895,8 @@ function createBaseMultiverseInfoMessage(): MultiverseInfoMessage {
     gameHandlerClientInfo: new Uint8Array(),
     visibility: undefined,
     locked: false,
+    isLockable: false,
+    race: undefined,
   };
 }
 
@@ -700,6 +930,12 @@ export const MultiverseInfoMessage = {
     }
     if (message.locked === true) {
       writer.uint32(72).bool(message.locked);
+    }
+    if (message.isLockable === true) {
+      writer.uint32(80).bool(message.isLockable);
+    }
+    if (message.race !== undefined) {
+      RaceInfo.encode(message.race, writer.uint32(90).fork()).ldelim();
     }
     return writer;
   },
@@ -738,6 +974,12 @@ export const MultiverseInfoMessage = {
         case 9:
           message.locked = reader.bool();
           break;
+        case 10:
+          message.isLockable = reader.bool();
+          break;
+        case 11:
+          message.race = RaceInfo.decode(reader, reader.uint32());
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -762,6 +1004,8 @@ export const MultiverseInfoMessage = {
         : new Uint8Array(),
       visibility: isSet(object.visibility) ? VisibilityMessage.fromJSON(object.visibility) : undefined,
       locked: isSet(object.locked) ? Boolean(object.locked) : false,
+      isLockable: isSet(object.isLockable) ? Boolean(object.isLockable) : false,
+      race: isSet(object.race) ? RaceInfo.fromJSON(object.race) : undefined,
     };
   },
 
@@ -789,6 +1033,8 @@ export const MultiverseInfoMessage = {
     message.visibility !== undefined &&
       (obj.visibility = message.visibility ? VisibilityMessage.toJSON(message.visibility) : undefined);
     message.locked !== undefined && (obj.locked = message.locked);
+    message.isLockable !== undefined && (obj.isLockable = message.isLockable);
+    message.race !== undefined && (obj.race = message.race ? RaceInfo.toJSON(message.race) : undefined);
     return obj;
   },
 
@@ -805,6 +1051,8 @@ export const MultiverseInfoMessage = {
       ? VisibilityMessage.fromPartial(object.visibility)
       : undefined;
     message.locked = object.locked ?? false;
+    message.isLockable = object.isLockable ?? false;
+    message.race = (object.race !== undefined && object.race !== null) ? RaceInfo.fromPartial(object.race) : undefined;
     return message;
   },
 };
@@ -2030,6 +2278,7 @@ function createBaseNormalGameHandlerState(): NormalGameHandlerState {
   return {
     $type: "RandoProto.NormalGameHandlerState",
     startingAt: undefined,
+    finishedTime: undefined,
     playerLoadingTimes: {},
     playerFinishedTimes: {},
     worldFinishedTimes: {},
@@ -2044,33 +2293,36 @@ export const NormalGameHandlerState = {
     if (message.startingAt !== undefined) {
       writer.uint32(8).int64(message.startingAt);
     }
+    if (message.finishedTime !== undefined) {
+      writer.uint32(21).float(message.finishedTime);
+    }
     Object.entries(message.playerLoadingTimes).forEach(([key, value]) => {
       NormalGameHandlerState_PlayerLoadingTimesEntry.encode({
         $type: "RandoProto.NormalGameHandlerState.PlayerLoadingTimesEntry",
         key: key as any,
         value,
-      }, writer.uint32(18).fork()).ldelim();
+      }, writer.uint32(26).fork()).ldelim();
     });
     Object.entries(message.playerFinishedTimes).forEach(([key, value]) => {
       NormalGameHandlerState_PlayerFinishedTimesEntry.encode({
         $type: "RandoProto.NormalGameHandlerState.PlayerFinishedTimesEntry",
         key: key as any,
         value,
-      }, writer.uint32(26).fork()).ldelim();
+      }, writer.uint32(34).fork()).ldelim();
     });
     Object.entries(message.worldFinishedTimes).forEach(([key, value]) => {
       NormalGameHandlerState_WorldFinishedTimesEntry.encode({
         $type: "RandoProto.NormalGameHandlerState.WorldFinishedTimesEntry",
         key: key as any,
         value,
-      }, writer.uint32(34).fork()).ldelim();
+      }, writer.uint32(42).fork()).ldelim();
     });
     Object.entries(message.universeFinishedTimes).forEach(([key, value]) => {
       NormalGameHandlerState_UniverseFinishedTimesEntry.encode({
         $type: "RandoProto.NormalGameHandlerState.UniverseFinishedTimesEntry",
         key: key as any,
         value,
-      }, writer.uint32(42).fork()).ldelim();
+      }, writer.uint32(50).fork()).ldelim();
     });
     return writer;
   },
@@ -2086,27 +2338,30 @@ export const NormalGameHandlerState = {
           message.startingAt = longToNumber(reader.int64() as Long);
           break;
         case 2:
-          const entry2 = NormalGameHandlerState_PlayerLoadingTimesEntry.decode(reader, reader.uint32());
-          if (entry2.value !== undefined) {
-            message.playerLoadingTimes[entry2.key] = entry2.value;
-          }
+          message.finishedTime = reader.float();
           break;
         case 3:
-          const entry3 = NormalGameHandlerState_PlayerFinishedTimesEntry.decode(reader, reader.uint32());
+          const entry3 = NormalGameHandlerState_PlayerLoadingTimesEntry.decode(reader, reader.uint32());
           if (entry3.value !== undefined) {
-            message.playerFinishedTimes[entry3.key] = entry3.value;
+            message.playerLoadingTimes[entry3.key] = entry3.value;
           }
           break;
         case 4:
-          const entry4 = NormalGameHandlerState_WorldFinishedTimesEntry.decode(reader, reader.uint32());
+          const entry4 = NormalGameHandlerState_PlayerFinishedTimesEntry.decode(reader, reader.uint32());
           if (entry4.value !== undefined) {
-            message.worldFinishedTimes[entry4.key] = entry4.value;
+            message.playerFinishedTimes[entry4.key] = entry4.value;
           }
           break;
         case 5:
-          const entry5 = NormalGameHandlerState_UniverseFinishedTimesEntry.decode(reader, reader.uint32());
+          const entry5 = NormalGameHandlerState_WorldFinishedTimesEntry.decode(reader, reader.uint32());
           if (entry5.value !== undefined) {
-            message.universeFinishedTimes[entry5.key] = entry5.value;
+            message.worldFinishedTimes[entry5.key] = entry5.value;
+          }
+          break;
+        case 6:
+          const entry6 = NormalGameHandlerState_UniverseFinishedTimesEntry.decode(reader, reader.uint32());
+          if (entry6.value !== undefined) {
+            message.universeFinishedTimes[entry6.key] = entry6.value;
           }
           break;
         default:
@@ -2121,6 +2376,7 @@ export const NormalGameHandlerState = {
     return {
       $type: NormalGameHandlerState.$type,
       startingAt: isSet(object.startingAt) ? Number(object.startingAt) : undefined,
+      finishedTime: isSet(object.finishedTime) ? Number(object.finishedTime) : undefined,
       playerLoadingTimes: isObject(object.playerLoadingTimes)
         ? Object.entries(object.playerLoadingTimes).reduce<{ [key: string]: number }>((acc, [key, value]) => {
           acc[key] = Number(value);
@@ -2151,6 +2407,7 @@ export const NormalGameHandlerState = {
   toJSON(message: NormalGameHandlerState): unknown {
     const obj: any = {};
     message.startingAt !== undefined && (obj.startingAt = Math.round(message.startingAt));
+    message.finishedTime !== undefined && (obj.finishedTime = message.finishedTime);
     obj.playerLoadingTimes = {};
     if (message.playerLoadingTimes) {
       Object.entries(message.playerLoadingTimes).forEach(([k, v]) => {
@@ -2181,6 +2438,7 @@ export const NormalGameHandlerState = {
   fromPartial<I extends Exact<DeepPartial<NormalGameHandlerState>, I>>(object: I): NormalGameHandlerState {
     const message = createBaseNormalGameHandlerState();
     message.startingAt = object.startingAt ?? undefined;
+    message.finishedTime = object.finishedTime ?? undefined;
     message.playerLoadingTimes = Object.entries(object.playerLoadingTimes ?? {}).reduce<{ [key: string]: number }>(
       (acc, [key, value]) => {
         if (value !== undefined) {

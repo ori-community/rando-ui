@@ -38,8 +38,11 @@ export const mutations = {
     ensureMultiverseExists(state, multiverseId)
     state.multiverses[multiverseId].universes = multiverseInfo.universes
     state.multiverses[multiverseId].spectators = multiverseInfo.spectators
-    state.multiverses[multiverseId].seedId = multiverseInfo.seedId || null
+    state.multiverses[multiverseId].seedId = multiverseInfo.seedId ?? null
     state.multiverses[multiverseId].gameHandlerType = multiverseInfo.gameHandlerType
+    state.multiverses[multiverseId].locked = multiverseInfo.locked
+    state.multiverses[multiverseId].isLockable = multiverseInfo.isLockable
+    state.multiverses[multiverseId].race = multiverseInfo.race ?? null
 
     if (typeof multiverseInfo.gameHandlerClientInfo === 'string') {
       const decodedBinaryString = atob(multiverseInfo.gameHandlerClientInfo)
@@ -51,8 +54,6 @@ export const mutations = {
     } else {
       state.multiverses[multiverseId].gameHandlerClientInfo = multiverseInfo.gameHandlerClientInfo
     }
-
-    state.multiverses[multiverseId].locked = multiverseInfo.locked
   },
   setBingoUniverses(state, { multiverseId, bingoUniverses }) {
     ensureMultiverseExists(state, multiverseId)

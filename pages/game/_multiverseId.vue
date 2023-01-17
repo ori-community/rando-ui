@@ -1,97 +1,107 @@
 <template>
   <div>
     <v-container>
-      <div class="d-flex justify-center align-center mt-12 mb-6">
-        <v-tooltip top open-delay="500">
-          <template #activator="{ on }">
-            <v-btn class="ml-2" :disabled="!canLock || lockGameLoading" icon v-on="on" @click="toggleGameLock">
-              <v-icon :class="multiverse?.locked ? 'lock-animation' : 'unlock-animation'"
-                >{{ multiverse?.locked ? 'mdi-lock' : 'mdi-lock-open-outline' }}
-              </v-icon>
-            </v-btn>
-          </template>
-          <span v-if="canLock">{{ multiverse?.locked ? 'Unlock' : 'Lock' }} this game</span>
-          <span v-else>This game is {{ multiverse?.locked ? 'locked' : 'unlocked' }}</span>
-        </v-tooltip>
-        <h1 class="text-center mx-4">Game <small>#</small>{{ multiverseId }}</h1>
-        <v-tooltip top open-delay="500">
-          <template #activator="{ on }">
-            <v-btn icon :disabled="gameLinkCopied" v-on="on" @click="copyGameLink">
-              <v-icon>{{ gameLinkCopied ? 'mdi-clipboard-check-outline' : 'mdi-link' }}</v-icon>
-            </v-btn>
-          </template>
-          <span>Copy game link</span>
-        </v-tooltip>
-      </div>
+      <div :class="{'two-columns': hasRace}">
+        <div>
+          <div class="d-flex justify-center align-center mt-12 mb-6">
+            <v-tooltip top open-delay="500">
+              <template #activator="{ on }">
+                <v-btn class="ml-2" :disabled="!canLock || lockGameLoading" icon v-on="on" @click="toggleGameLock">
+                  <v-icon :class="multiverse?.locked ? 'lock-animation' : 'unlock-animation'"
+                  >{{ multiverse?.locked ? 'mdi-lock' : 'mdi-lock-open-outline' }}
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span v-if="canLock">{{ multiverse?.locked ? 'Unlock' : 'Lock' }} this game</span>
+              <span v-else>This game is {{ multiverse?.locked ? 'locked' : 'unlocked' }}</span>
+            </v-tooltip>
+            <h1 class="text-center mx-4">Game <small>#</small>{{ multiverseId }}</h1>
+            <v-tooltip top open-delay="500">
+              <template #activator="{ on }">
+                <v-btn icon :disabled="gameLinkCopied" v-on="on" @click="copyGameLink">
+                  <v-icon>{{ gameLinkCopied ? 'mdi-clipboard-check-outline' : 'mdi-link' }}</v-icon>
+                </v-btn>
+              </template>
+              <span>Copy game link</span>
+            </v-tooltip>
+          </div>
 
-      <div class="text-center my-6">
-        <v-tooltip v-if="!isElectron" bottom>
-          <template #activator="{ on }">
-            <v-btn color="accent" x-large v-on="on" @click="openInLauncher">
-              <v-icon left>mdi-launch</v-icon>
-              Open in Launcher
-            </v-btn>
-          </template>
-          <span><kbd>Ctrl</kbd> + Click to close this window</span>
-        </v-tooltip>
-        <v-tooltip v-else-if="!isSpectating" :disabled="!!ownWorld" bottom>
-          <template #activator="{ on }">
-            <div v-on="on">
-              <v-btn x-large color="accent" :loading="launching" :disabled="!ownWorld" @click="launch()">
-                <img class="launch-icon" :class="{ disabled: !ownWorld }" src="../../assets/images/launch.png" alt="" />
-                Launch
+          <div class="text-center my-6">
+            <v-tooltip v-if="!isElectron" bottom>
+              <template #activator="{ on }">
+                <v-btn color="accent" x-large v-on="on" @click="openInLauncher">
+                  <v-icon left>mdi-launch</v-icon>
+                  Open in Launcher
+                </v-btn>
+              </template>
+              <span><kbd>Ctrl</kbd> + Click to close this window</span>
+            </v-tooltip>
+            <v-tooltip v-else-if="!isSpectating" :disabled="!!ownWorld" bottom>
+              <template #activator="{ on }">
+                <div v-on="on">
+                  <v-btn x-large color="accent" :loading="launching" :disabled="!ownWorld" @click="launch()">
+                    <img class="launch-icon" :class="{ disabled: !ownWorld }" src="../../assets/images/launch.png" alt="" />
+                    Launch
+                  </v-btn>
+                </div>
+              </template>
+              <span v-if="!multiverseReady || multiverse.universes.length > 0"
+              >Create or join a world to launch the game</span
+              >
+              <span v-else>Create a universe to launch the game</span>
+            </v-tooltip>
+
+            <div class="mt-2">
+              <v-btn v-if="canStartRace" text @click="startRaceTimerDialogOpen = true">
+                <v-icon left>mdi-timer-play-outline</v-icon>
+                Start Race timer
               </v-btn>
             </div>
-          </template>
-          <span v-if="!multiverseReady || multiverse.universes.length > 0"
-            >Create or join a world to launch the game</span
-          >
-          <span v-else>Create a universe to launch the game</span>
-        </v-tooltip>
+          </div>
 
-        <div class="mt-2">
-          <v-btn v-if="canStartRace" text @click="startRaceTimerDialogOpen = true">
-            <v-icon left>mdi-timer-play-outline</v-icon>
-            Start Race timer
-          </v-btn>
+          <throttled-spinner>
+            <div v-if="isLoggedIn && multiverseReady">
+              <div class="text-center mb-3">
+                <wotw-race-timer v-if="isRaceRunning" :starting-at="normalGameHandlerState.startingAt" :finished-time="normalGameHandlerState.finishedTime ?? null" />
+              </div>
+
+              <wotw-multiverse-view
+                :multiverse="multiverse"
+                :player-loading-times="normalGameHandlerState?.playerLoadingTimes"
+                :player-finished-times="normalGameHandlerState?.playerFinishedTimes"
+                :world-finished-times="normalGameHandlerState?.worldFinishedTimes"
+                :universe-finished-times="normalGameHandlerState?.universeFinishedTimes"
+              />
+
+              <div v-if="devtoolsEnabled" class="mt-5">
+                <v-card class="pa-4">
+                  <h3>Dispatch custom event</h3>
+                  <v-text-field v-model="dev.debugEventName" label="Event" />
+
+                  <div class="d-flex">
+                    <v-spacer />
+                    <v-btn depressed color="accent" @click="dispatchDebugEvent"> Dispatch</v-btn>
+                  </div>
+                </v-card>
+              </div>
+            </div>
+            <div v-if="!isLoggedIn && userLoaded" class="text-center">
+              <v-alert class="d-inline-block" color="error darken-3">
+                <template v-if="isOBS">
+                  <b>DO NOT</b> add this page to OBS directly. Please use the "Embed" feature above the board.
+                </template>
+                <template v-else> You need to be logged in to view this game.</template>
+              </v-alert>
+            </div>
+          </throttled-spinner>
+        </div>
+        <div v-if="hasRace">
+          <div class="d-flex justify-center align-center mt-12 mb-6">
+            <h1 class="text-center mx-4">Race result</h1>
+          </div>
+          <wotw-race-result-view :race="multiverse.race" />
         </div>
       </div>
-
-      <throttled-spinner>
-        <div v-if="isLoggedIn && multiverseReady">
-          <div class="text-center mb-3">
-            <wotw-race-timer v-if="isRace" :starting-at="normalGameHandlerState.startingAt" />
-          </div>
-
-          <wotw-multiverse-view
-            :multiverse="multiverse"
-            :player-loading-times="normalGameHandlerState?.playerLoadingTimes"
-            :player-finished-times="normalGameHandlerState?.playerFinishedTimes"
-            :world-finished-times="normalGameHandlerState?.worldFinishedTimes"
-            :universe-finished-times="normalGameHandlerState?.universeFinishedTimes"
-          />
-
-          <div v-if="devtoolsEnabled" class="mt-5">
-            <v-card class="pa-4">
-              <h3>Dispatch custom event</h3>
-              <v-text-field v-model="dev.debugEventName" label="Event" />
-
-              <div class="d-flex">
-                <v-spacer />
-                <v-btn depressed color="accent" @click="dispatchDebugEvent"> Dispatch</v-btn>
-              </div>
-            </v-card>
-          </div>
-        </div>
-        <div v-if="!isLoggedIn && userLoaded" class="text-center">
-          <v-alert class="d-inline-block" color="error darken-3">
-            <template v-if="isOBS">
-              <b>DO NOT</b> add this page to OBS directly. Please use the "Embed" feature above the board.
-            </template>
-            <template v-else> You need to be logged in to view this game.</template>
-          </v-alert>
-        </div>
-      </throttled-spinner>
     </v-container>
 
     <template v-if="isLoggedIn && multiverseReady && !!multiverse.bingoBoard">
@@ -418,7 +428,7 @@
         )
       },
       canLock() {
-        return this.isPlayer
+        return this.isPlayer && this.multiverse.isLockable
       },
       normalGameHandlerState() {
         if (!this.multiverseReady || this.multiverse.gameHandlerType !== GameHandlerType.Normal) {
@@ -427,12 +437,15 @@
 
         return NormalGameHandlerState.decode(this.multiverse.gameHandlerClientInfo)
       },
-      isRace() {
+      isRaceRunning() {
         if (!this.normalGameHandlerState) {
           return false
         }
 
         return !!this.normalGameHandlerState.startingAt
+      },
+      hasRace() {
+        return !!this.multiverse?.race
       },
       canStartRace() {
         if (!this.normalGameHandlerState) {
@@ -689,6 +702,16 @@
 </script>
 
 <style lang="scss" scoped>
+  .two-columns {
+    display: grid;
+    grid-template-columns: 70% 30%;
+
+    @media (max-width: 1264px) {
+      grid-template-columns: 100%;
+      grid-auto-flow: row;
+    }
+  }
+
   .universes {
     align-items: flex-start;
     display: flex;

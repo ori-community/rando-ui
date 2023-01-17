@@ -36,6 +36,22 @@ message UniverseInfo {
   repeated WorldInfo worlds = 4;
 }
 
+message RaceTeamMemberInfo {
+  int64 id = 1;
+  UserInfo user = 2;
+  optional float finishedTime = 3;
+}
+
+message RaceTeamInfo {
+  int64 id = 1;
+  repeated RaceTeamMemberInfo members = 2;
+}
+
+message RaceInfo {
+  int64 id = 1;
+  repeated RaceTeamInfo teams = 2;
+}
+
 message MultiverseInfoMessage {
   enum GameHandlerType {
     Normal = 0;
@@ -51,6 +67,8 @@ message MultiverseInfoMessage {
   bytes gameHandlerClientInfo = 7;
   optional VisibilityMessage visibility = 8;
   bool locked = 9;
+  bool isLockable = 10;
+  optional RaceInfo race = 11;
 }
 
 message VisibilityMessage {
@@ -152,8 +170,9 @@ message SetTrackerEndpointId { // 104
 
 message NormalGameHandlerState {
   optional int64 startingAt = 1;
-  map<string, float> playerLoadingTimes = 2;
-  map<string, float> playerFinishedTimes = 3;
-  map<int64, float> worldFinishedTimes = 4;
-  map<int64, float> universeFinishedTimes = 5;
+  optional float finishedTime = 2;
+  map<string, float> playerLoadingTimes = 3;
+  map<string, float> playerFinishedTimes = 4;
+  map<int64, float> worldFinishedTimes = 5;
+  map<int64, float> universeFinishedTimes = 6;
 }

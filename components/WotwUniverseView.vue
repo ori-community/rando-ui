@@ -141,5 +141,6 @@
     color: var(--v-success-base);
     font-size: 0.7em;
     line-height: 1;
+    padding-right: 2em;
   }
 </style>

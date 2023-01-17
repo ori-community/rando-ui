@@ -1,5 +1,7 @@
 <template>
-  <v-card class="pa-4">
+  <div>
+    <h2 class="text-right mb-4">Race result</h2>
+
     <transition-group class="teams" name="list">
       <div
         v-for="(team, index) in sortedRaceTeams"
@@ -8,22 +10,22 @@
       >
         <place-badge :place="index + 1" />
         <v-card
-          color="background lighten-2"
+          color="background lighten-1"
           elevation="0"
           class="pa-4"
         >
-          <div v-if="team.members.length > 1" class="team-time">{{ formatTime(team.finishedTime) }}</div>
-
           <div class="team-members">
             <div v-for="member in team.members" :key="member.user.id" class="team-member">
               <wotw-player-view :user="member.user" />
-              <div>{{ formatTime(member.finishedTime) }}</div>
+              <div class="member-time">{{ formatTime(member.finishedTime) }}</div>
             </div>
           </div>
+
+          <div v-if="team.members.length > 1" class="team-time">{{ formatTime(team.finishedTime) }}</div>
         </v-card>
       </div>
     </transition-group>
-  </v-card>
+  </div>
 </template>
 
 <script>
@@ -68,7 +70,7 @@
       align-items: flex-start;
 
       .team-time {
-        text-align: center;
+        text-align: right;
         font-size: 1.5em;
       }
 
@@ -81,6 +83,11 @@
           display: flex;
           justify-content: space-between;
           align-items: center;
+          gap: 3em;
+
+          .member-time {
+            opacity: 0.5;
+          }
         }
       }
     }

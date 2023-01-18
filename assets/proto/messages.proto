@@ -19,6 +19,7 @@ message UserInfo {
   optional int64 connectedMultiverseId = 4;
   optional int64 currentMultiverseId = 5;
   bool isDeveloper = 6;
+  int32 points = 7;
 }
 
 message WorldInfo {
@@ -45,7 +46,8 @@ message RaceTeamMemberInfo {
 message RaceTeamInfo {
   int64 id = 1;
   repeated RaceTeamMemberInfo members = 2;
-  optional float finishedTime = 3;
+  int32 points = 3;
+  optional float finishedTime = 4;
 }
 
 message RaceInfo {

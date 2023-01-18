@@ -25,6 +25,7 @@ export interface UserInfo {
   connectedMultiverseId?: number | undefined;
   currentMultiverseId?: number | undefined;
   isDeveloper: boolean;
+  points: number;
 }
 
 export interface WorldInfo {
@@ -55,6 +56,7 @@ export interface RaceTeamInfo {
   $type: "RandoProto.RaceTeamInfo";
   id: number;
   members: RaceTeamMemberInfo[];
+  points: number;
   finishedTime?: number | undefined;
 }
 
@@ -401,6 +403,7 @@ function createBaseUserInfo(): UserInfo {
     connectedMultiverseId: undefined,
     currentMultiverseId: undefined,
     isDeveloper: false,
+    points: 0,
   };
 }
 
@@ -425,6 +428,9 @@ export const UserInfo = {
     }
     if (message.isDeveloper === true) {
       writer.uint32(48).bool(message.isDeveloper);
+    }
+    if (message.points !== 0) {
+      writer.uint32(56).int32(message.points);
     }
     return writer;
   },
@@ -454,6 +460,9 @@ export const UserInfo = {
         case 6:
           message.isDeveloper = reader.bool();
           break;
+        case 7:
+          message.points = reader.int32();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -471,6 +480,7 @@ export const UserInfo = {
       connectedMultiverseId: isSet(object.connectedMultiverseId) ? Number(object.connectedMultiverseId) : undefined,
       currentMultiverseId: isSet(object.currentMultiverseId) ? Number(object.currentMultiverseId) : undefined,
       isDeveloper: isSet(object.isDeveloper) ? Boolean(object.isDeveloper) : false,
+      points: isSet(object.points) ? Number(object.points) : 0,
     };
   },
 
@@ -483,6 +493,7 @@ export const UserInfo = {
       (obj.connectedMultiverseId = Math.round(message.connectedMultiverseId));
     message.currentMultiverseId !== undefined && (obj.currentMultiverseId = Math.round(message.currentMultiverseId));
     message.isDeveloper !== undefined && (obj.isDeveloper = message.isDeveloper);
+    message.points !== undefined && (obj.points = Math.round(message.points));
     return obj;
   },
 
@@ -494,6 +505,7 @@ export const UserInfo = {
     message.connectedMultiverseId = object.connectedMultiverseId ?? undefined;
     message.currentMultiverseId = object.currentMultiverseId ?? undefined;
     message.isDeveloper = object.isDeveloper ?? false;
+    message.points = object.points ?? 0;
     return message;
   },
 };
@@ -752,7 +764,7 @@ export const RaceTeamMemberInfo = {
 messageTypeRegistry.set(RaceTeamMemberInfo.$type, RaceTeamMemberInfo);
 
 function createBaseRaceTeamInfo(): RaceTeamInfo {
-  return { $type: "RandoProto.RaceTeamInfo", id: 0, members: [], finishedTime: undefined };
+  return { $type: "RandoProto.RaceTeamInfo", id: 0, members: [], points: 0, finishedTime: undefined };
 }
 
 export const RaceTeamInfo = {
@@ -765,8 +777,11 @@ export const RaceTeamInfo = {
     for (const v of message.members) {
       RaceTeamMemberInfo.encode(v!, writer.uint32(18).fork()).ldelim();
     }
+    if (message.points !== 0) {
+      writer.uint32(24).int32(message.points);
+    }
     if (message.finishedTime !== undefined) {
-      writer.uint32(29).float(message.finishedTime);
+      writer.uint32(37).float(message.finishedTime);
     }
     return writer;
   },
@@ -785,6 +800,9 @@ export const RaceTeamInfo = {
           message.members.push(RaceTeamMemberInfo.decode(reader, reader.uint32()));
           break;
         case 3:
+          message.points = reader.int32();
+          break;
+        case 4:
           message.finishedTime = reader.float();
           break;
         default:
@@ -800,6 +818,7 @@ export const RaceTeamInfo = {
       $type: RaceTeamInfo.$type,
       id: isSet(object.id) ? Number(object.id) : 0,
       members: Array.isArray(object?.members) ? object.members.map((e: any) => RaceTeamMemberInfo.fromJSON(e)) : [],
+      points: isSet(object.points) ? Number(object.points) : 0,
       finishedTime: isSet(object.finishedTime) ? Number(object.finishedTime) : undefined,
     };
   },
@@ -812,6 +831,7 @@ export const RaceTeamInfo = {
     } else {
       obj.members = [];
     }
+    message.points !== undefined && (obj.points = Math.round(message.points));
     message.finishedTime !== undefined && (obj.finishedTime = message.finishedTime);
     return obj;
   },
@@ -820,6 +840,7 @@ export const RaceTeamInfo = {
     const message = createBaseRaceTeamInfo();
     message.id = object.id ?? 0;
     message.members = object.members?.map((e) => RaceTeamMemberInfo.fromPartial(e)) || [];
+    message.points = object.points ?? 0;
     message.finishedTime = object.finishedTime ?? undefined;
     return message;
   },

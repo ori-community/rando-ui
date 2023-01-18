@@ -16,12 +16,17 @@
         >
           <div class="team-members">
             <div v-for="member in team.members" :key="member.user.id" class="team-member">
-              <wotw-player-view :user="member.user" />
+              <wotw-player-view :user="member.user" with-points />
               <div class="member-time">{{ formatTime(member.finishedTime) }}</div>
             </div>
           </div>
 
-          <div v-if="team.members.length > 1" class="team-time">{{ formatTime(team.finishedTime) }}</div>
+          <div class="team-info mt-5">
+            <div>
+              <wotw-experience-points class="points">+{{ team.points }}</wotw-experience-points>
+            </div>
+            <div v-if="team.members.length > 1" class="team-time">{{ formatTime(team.finishedTime) }}</div>
+          </div>
         </v-card>
       </div>
     </transition-group>
@@ -69,11 +74,6 @@
       gap: 0.4em;
       align-items: flex-start;
 
-      .team-time {
-        text-align: right;
-        font-size: 1.5em;
-      }
-
       .team-members {
         display: flex;
         flex-direction: column;
@@ -88,6 +88,22 @@
           .member-time {
             opacity: 0.5;
           }
+        }
+      }
+
+      .team-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+
+        .points {
+          font-size: 1.2em;
+        }
+
+        .team-time {
+          text-align: right;
+          font-size: 1.5em;
+          line-height: 1.0;
         }
       }
     }

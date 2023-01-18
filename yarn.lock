@@ -966,7 +966,7 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@fontsource/nunito-sans@^4.5.0":
+"@fontsource/nunito-sans@^4.5.10":
   version "4.5.10"
   resolved "https://registry.yarnpkg.com/@fontsource/nunito-sans/-/nunito-sans-4.5.10.tgz#109c1e680a56e8c196dc834379c32d03b0614c53"
   integrity sha512-GVKc3mEfnk3fLEuiQXNYhlP/Z9SrCgD831xZJ7J+6OgFzEf6LNnyHPiqWfjW671sAmOBQTLgm/21z78K/beWEw==

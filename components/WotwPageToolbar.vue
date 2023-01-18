@@ -1,60 +1,74 @@
 <template>
-  <div class='page-toolbar d-flex align-center my-4'>
-    <v-scale-transition group tag='div' class='flex-gap align-center'>
-      <v-btn key='home' depressed exact text :to='`${isElectron ? `/electron` : `/`}`'  x-large>
+  <div class="page-toolbar d-flex align-center my-4">
+    <v-scale-transition group tag="div" class="flex-gap align-center">
+      <v-btn key="home" depressed exact text :to="`${isElectron ? `/electron` : `/`}`" x-large>
         <v-icon>mdi-home-outline</v-icon>
       </v-btn>
-      <v-btn v-if='isElectron && currentMultiverseId !== null' key='game' exact x-large depressed text :to='{name: "game-multiverseId", params: {multiverseId: currentMultiverseId}}'>
+      <v-btn
+        v-if="isElectron && currentMultiverseId !== null"
+        key="game"
+        exact
+        x-large
+        depressed
+        text
+        :to="{ name: 'game-multiverseId', params: { multiverseId: currentMultiverseId } }"
+      >
         <v-icon left>mdi-gamepad-variant-outline</v-icon>
         {{ currentMultiverseId }}
       </v-btn>
-      <v-btn key='seedgen' x-large depressed text to='/seedgen'>
+      <v-btn key="seedgen" x-large depressed text to="/seedgen">
         <v-icon left>mdi-dice-multiple</v-icon>
         Seed Generator
       </v-btn>
-      <v-menu v-if='isElectron' key='electron-menu' offset-y :close-on-content-click='!remoteTrackerUrlCopying'>
-        <template #activator='{on, attrs}'>
-          <v-btn icon v-bind='attrs' v-on='on'>
+      <v-menu v-if="isElectron" key="electron-menu" offset-y :close-on-content-click="!remoteTrackerUrlCopying">
+        <template #activator="{ on, attrs }">
+          <v-btn icon v-bind="attrs" v-on="on">
             <v-icon>mdi-dots-vertical</v-icon>
           </v-btn>
         </template>
         <v-list>
-          <v-list-item :disabled='!localTrackerRunning' x-large depressed text @click='openLocalTrackerWindow'>
-            <v-icon left :disabled='!localTrackerRunning'>mdi-radar</v-icon>
+          <v-list-item :disabled="!localTrackerRunning" x-large depressed text @click="openLocalTrackerWindow">
+            <v-icon left :disabled="!localTrackerRunning">mdi-radar</v-icon>
             Tracker
           </v-list-item>
-          <v-list-item :disabled='!localTrackerRunning || !isLoggedIn || remoteTrackerUrlCopying || remoteTrackerUrlCopied' x-large depressed text @click='exposeTracker'>
-            <v-icon left :disabled='!localTrackerRunning || !isLoggedIn || remoteTrackerUrlCopying || remoteTrackerUrlCopied'>
-              <template v-if='remoteTrackerUrlCopied'>
-                mdi-check
-              </template>
-              <template v-else>
-                mdi-leak
-              </template>
+          <v-list-item
+            :disabled="!localTrackerRunning || !isLoggedIn || remoteTrackerUrlCopying || remoteTrackerUrlCopied"
+            x-large
+            depressed
+            text
+            @click="exposeTracker"
+          >
+            <v-icon
+              left
+              :disabled="!localTrackerRunning || !isLoggedIn || remoteTrackerUrlCopying || remoteTrackerUrlCopied"
+            >
+              <template v-if="remoteTrackerUrlCopied"> mdi-check </template>
+              <template v-else> mdi-leak </template>
             </v-icon>
-            <template v-if='remoteTrackerUrlCopying'>
-              Generating URL...
-            </template>
-            <template v-else-if='remoteTrackerUrlCopied'>
-              URL copied
-            </template>
-            <template v-else>
-              Create Remote Tracker
-            </template>
+            <template v-if="remoteTrackerUrlCopying"> Generating URL... </template>
+            <template v-else-if="remoteTrackerUrlCopied"> URL copied </template>
+            <template v-else> Create Remote Tracker </template>
           </v-list-item>
-          <v-list-item x-large depressed text @click='openChatControl'>
+          <v-list-item x-large depressed text @click="openChatControl">
             <v-icon left>mdi-message-flash-outline</v-icon>
             Chat Control
           </v-list-item>
-          <v-list-item x-large depressed text to='/electron/stats'>
+          <v-list-item x-large depressed text to="/electron/stats">
             <v-icon left>mdi-chart-box-outline</v-icon>
             Stats
           </v-list-item>
-          <v-list-item exact x-large depressed text to='/electron/settings'>
+          <v-list-item exact x-large depressed text to="/electron/settings">
             <v-icon left>mdi-application-cog-outline</v-icon>
             Settings
           </v-list-item>
-          <v-list-item v-if='settingsLoaded && settings["Flags.Dev"]' exact x-large depressed text @click='openRandoDevtools'>
+          <v-list-item
+            v-if="settingsLoaded && settings['Flags.Dev']"
+            exact
+            x-large
+            depressed
+            text
+            @click="openRandoDevtools"
+          >
             <v-icon left>mdi-application-braces-outline</v-icon>
             Rando Devtools
           </v-list-item>
@@ -63,27 +77,33 @@
     </v-scale-transition>
     <v-spacer />
     <throttled-spinner>
-      <div v-if='userLoaded' class='d-flex align-center'>
-        <template v-if='isLoggedIn'>
-          <div class='mr-4'>
-            Hi, {{ user.name }}!
+      <div v-if="userLoaded" class="d-flex align-center">
+        <template v-if="isLoggedIn">
+          <div class="mr-4 user-info">
+            <div>Hi, {{ user.name }}!</div>
+            <v-tooltip bottom>
+              <template #activator="{on}">
+                <wotw-experience-points v-on="on">{{ user.points }}</wotw-experience-points>
+              </template>
+              Experience points earned by playing races
+            </v-tooltip>
           </div>
-          <v-menu offset-y left nudge-bottom='6'>
-            <template #activator='{on}'>
-              <v-btn x-large class='ma-0 mr-1' icon v-on='on'>
-                <discord-avatar :user='user' size='48' />
+          <v-menu offset-y left nudge-bottom="6">
+            <template #activator="{ on }">
+              <v-btn x-large class="ma-0 mr-1" icon v-on="on">
+                <discord-avatar :user="user" size="48" />
               </v-btn>
             </template>
-            <v-list v-if='isLoggedIn'>
-              <v-list-item @click='openChangeNicknameDialog'>
+            <v-list v-if="isLoggedIn">
+              <v-list-item @click="openChangeNicknameDialog">
                 <v-icon left>mdi-account-edit-outline</v-icon>
                 Change Nickname
               </v-list-item>
-              <v-list-item v-if="isDeveloper" @click='toggleDevtools'>
+              <v-list-item v-if="isDeveloper" @click="toggleDevtools">
                 <v-icon left>mdi-code-braces</v-icon>
                 {{ devtoolsEnabled ? 'Disable' : 'Enable' }} Server Devtools
               </v-list-item>
-              <v-list-item @click='logout'>
+              <v-list-item @click="logout">
                 <v-icon left>mdi-logout-variant</v-icon>
                 Log out
               </v-list-item>
@@ -91,7 +111,7 @@
           </v-menu>
         </template>
         <template v-else>
-          <v-btn x-large depressed text @click='login'>
+          <v-btn x-large depressed text @click="login">
             <v-icon left>mdi-login-variant</v-icon>
             Log in
           </v-btn>
@@ -99,23 +119,29 @@
       </div>
     </throttled-spinner>
 
-    <v-dialog v-model='changeNicknameDialogIsOpen' :persistent='nicknameDialogLoading' max-width='500'>
+    <v-dialog v-model="changeNicknameDialogIsOpen" :persistent="nicknameDialogLoading" max-width="500">
       <v-card>
         <v-card-title>Change Nickname</v-card-title>
         <v-card-text>
-          <v-text-field v-model='currentNickname' autofocus label='Nickname' counter='32' @keydown.enter='saveNickname' />
+          <v-text-field
+            v-model="currentNickname"
+            autofocus
+            label="Nickname"
+            counter="32"
+            @keydown.enter="saveNickname"
+          />
 
-          <div class='d-flex'>
+          <div class="d-flex">
             <v-spacer />
-            <v-btn class='mr-1' text :disabled='nicknameDialogLoading' @click='changeNicknameDialogIsOpen = false'>
+            <v-btn class="mr-1" text :disabled="nicknameDialogLoading" @click="changeNicknameDialogIsOpen = false">
               Cancel
             </v-btn>
             <v-btn
               depressed
-              color='accent'
-              :disabled='!nicknameIsValid'
-              :loading='nicknameDialogLoading'
-              @click='saveNickname'
+              color="accent"
+              :disabled="!nicknameIsValid"
+              :loading="nicknameDialogLoading"
+              @click="saveNickname"
             >
               Save
             </v-btn>
@@ -152,7 +178,7 @@
       },
       currentMultiverseId() {
         return this.user?.currentMultiverseId ?? null
-      }
+      },
     },
     methods: {
       buildAbsoluteUrl(relativeUrl) {
@@ -161,7 +187,11 @@
       async login(event) {
         if (isElectron()) {
           try {
-            const jwt = await window.electronApi.invoke('auth.startOAuthFlow', this.$axios.defaults.baseURL, event.ctrlKey)
+            const jwt = await window.electronApi.invoke(
+              'auth.startOAuthFlow',
+              this.$axios.defaults.baseURL,
+              event.ctrlKey,
+            )
             await this.$router.push({ name: 'auth-callback', query: { jwt } })
           } catch (e) {
             console.error(e)
@@ -172,7 +202,9 @@
           }
         } else {
           this.$store.commit('auth/setRedirectPath', window.location.pathname + window.location.search)
-          window.location.href = `${this.$axios.defaults.baseURL}/login?redirect=${this.buildAbsoluteUrl('/auth/callback')}`
+          window.location.href = `${this.$axios.defaults.baseURL}/login?redirect=${this.buildAbsoluteUrl(
+            '/auth/callback',
+          )}`
         }
       },
       async logout() {
@@ -192,8 +224,8 @@
 
         const user = await this.$axios.$put('/users/me/nickname', this.currentNickname, {
           headers: {
-            'Content-Type': 'text/plain; charset=utf-8'
-          }
+            'Content-Type': 'text/plain; charset=utf-8',
+          },
         })
         this.$store.commit('user/setUser', user)
 
@@ -236,14 +268,23 @@
       },
       openRandoDevtools() {
         window.electronApi.invoke('devtools.open')
-      }
+      },
     },
   }
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
+  .user-info {
+    line-height: 1.2;
+    text-align: right;
+
+    .points {
+      font-size: 0.8em;
+    }
+  }
+
   .page-toolbar {
-    gap: 0.2em
+    gap: 0.2em;
   }
 
   .flex-gap {

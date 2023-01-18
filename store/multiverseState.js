@@ -63,41 +63,27 @@ export const mutations = {
     state.multiverses[multiverseId].seed = seed
   },
   toggleBingoGoalMarked(state, { multiverseId, x, y }) {
-    if (state.multiverses[multiverseId].markedBingoGoals.some(m => m.x === x && m.y === y)) {
-      state.multiverses[multiverseId].markedBingoGoals = state.multiverses[multiverseId].markedBingoGoals.filter(m => (
-        m.x !== x || m.y !== y
-      ))
+    if (state.multiverses[multiverseId].markedBingoGoals.some((m) => m.x === x && m.y === y)) {
+      state.multiverses[multiverseId].markedBingoGoals = state.multiverses[multiverseId].markedBingoGoals.filter((m) => m.x !== x || m.y !== y)
       return
     }
 
     state.multiverses[multiverseId].markedBingoGoals.push({ x, y })
   },
   toggleMultipleBingoGoalMarked(state, { multiverseId, goals }) {
-  const isSameGoal = (goal1, goal2) => goal1.x === goal2.x && goal1.y === goal2.y
-  const multiverse = state.multiverses[multiverseId]
+    const isSameGoal = (goal1, goal2) => goal1.x === goal2.x && goal1.y === goal2.y
+    const multiverse = state.multiverses[multiverseId]
 
     // Whether all goals that are about to be marked are already marked
-    const allGoalsAlreadyMarked = goals.every(
-      goal => multiverse.markedBingoGoals.some(
-        markedGoals => isSameGoal(goal, markedGoals)
-      )
-    )
+    const allGoalsAlreadyMarked = goals.every((goal) => multiverse.markedBingoGoals.some((markedGoals) => isSameGoal(goal, markedGoals)))
 
     console.log(allGoalsAlreadyMarked)
     if (allGoalsAlreadyMarked) {
       // Unmark all
-      multiverse.markedBingoGoals = multiverse.markedBingoGoals.filter(
-        (markedGoal) => !goals.some(
-          (goal) => isSameGoal(goal, markedGoal)
-        )
-      )
+      multiverse.markedBingoGoals = multiverse.markedBingoGoals.filter((markedGoal) => !goals.some((goal) => isSameGoal(goal, markedGoal)))
     } else {
       // Mark all
-      multiverse.markedBingoGoals.push(...goals.filter(
-        (goal) => !multiverse.markedBingoGoals.some(
-          (markedGoal) => isSameGoal(goal, markedGoal)
-        )
-      ))
+      multiverse.markedBingoGoals.push(...goals.filter((goal) => !multiverse.markedBingoGoals.some((markedGoal) => isSameGoal(goal, markedGoal))))
     }
   },
 }
@@ -145,19 +131,19 @@ export const actions = {
     commit('setBingoBoard', { multiverseId, board })
     commit('setBingoUniverses', { multiverseId, bingoUniverses })
   },
-  async connectMultiverse({ commit, dispatch }, { multiverseId, reconnect = false, retries = 0 }) {
+  async connectMultiverse({ commit, dispatch, rootState }, { multiverseId, reconnect = false, retries = 0 }) {
     let ws = webSockets[multiverseId] ?? null
 
     if (retries >= 20) {
       throw new Error('Max number of retries exceeded')
     }
 
-    const retryConnection = () => setTimeout(() => {
-      dispatch('connectMultiverse', { multiverseId, retries: retries + 1 })
-        .catch(error => {
+    const retryConnection = () =>
+      setTimeout(() => {
+        dispatch('connectMultiverse', { multiverseId, retries: retries + 1 }).catch((error) => {
           throw error
         })
-    }, 1000 * (retries + 1))
+      }, 1000 * (retries + 1))
 
     if (reconnect || (ws?.readyState !== WebSocket.OPEN && ws?.readyState !== WebSocket.CONNECTING)) {
       ws?.close()
@@ -175,7 +161,7 @@ export const actions = {
       ws.addEventListener('close', () => {
         retryConnection()
       })
-      ws.addEventListener('message', async event => {
+      ws.addEventListener('message', async (event) => {
         const packet = await decodePacket(event.data)
 
         if (!packet) {
@@ -188,6 +174,16 @@ export const actions = {
             break
           case 'RandoProto.MultiverseInfoMessage':
             commit('setMultiverseInfo', { multiverseId, multiverseInfo: packet })
+
+            for (const universe of packet.universes) {
+              for (const world of universe.worlds) {
+                for (const member of world.members) {
+                  if (member.id === rootState.user.user?.id) {
+                    commit('user/setUser', member, { root: true })
+                  }
+                }
+              }
+            }
             break
           case 'RandoProto.SyncBingoUniversesMessage':
             commit('setBingoUniverses', { multiverseId, bingoUniverses: packet.bingoUniverses })

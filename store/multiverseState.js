@@ -21,6 +21,7 @@ const ensureMultiverseExists = (state, multiverseId) => {
       markedBingoGoals: [],
       gameHandlerType: null,
       gameHandlerClientInfo: null,
+      race: null,
       seedId: null,
       locked: false,
     })

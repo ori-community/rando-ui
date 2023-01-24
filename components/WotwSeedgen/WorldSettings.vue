@@ -79,6 +79,28 @@
       <v-col cols="12">
         <wotw-seedgen-headers-select v-model="model.headers" :header-config.sync="model.headerConfig" />
       </v-col>
+
+      <v-col cols="12" class="d-flex justify-end">
+        <v-btn small text @click="inlineHeaderDialogOpen = true">
+          <v-icon left>mdi-code-tags</v-icon>
+          {{ inlineHeader.length > 0 ? 'Edit' : 'Add' }} custom header
+        </v-btn>
+      </v-col>
+
+      <v-dialog v-model="inlineHeaderDialogOpen" fullscreen>
+        <v-card class="d-flex flex-column">
+          <div class="pt-5 px-5 pb-2">
+            <h3>Custom header</h3>
+          </div>
+
+          <textarea v-model="inlineHeader" autofocus class="inline-header pa-5 flex-grow-1" placeholder="Write your custom header here..."></textarea>
+
+          <div class="d-flex pa-5">
+            <v-spacer />
+            <v-btn color="accent" depressed @click="inlineHeaderDialogOpen = false"> Done</v-btn>
+          </div>
+        </v-card>
+      </v-dialog>
     </v-row>
   </div>
 </template>
@@ -97,6 +119,8 @@
     mixins: [hasModelObject],
     data: () => ({
       presetSelectDone: false,
+      inlineHeader: '',
+      inlineHeaderDialogOpen: false,
     }),
     computed: {
       ...mapState('seedgen', ['library', 'parsedHeadersByName']),
@@ -126,6 +150,30 @@
       },
       allTricksSelected() {
         return this.model.tricks.length >= this.availableTricks.length
+      },
+    },
+    watch: {
+      'model.inlineHeaders': {
+        deep: true,
+        handler(inlineHeaders) {
+          if (inlineHeaders.length === 0 && this.inlineHeader.length > 0) {
+            this.inlineHeader = ''
+          } else if (this.inlineHeader !== inlineHeaders[0]?.content) {
+            this.inlineHeader = inlineHeaders[0]?.content ?? ''
+          }
+        },
+      },
+      inlineHeader(value) {
+        if (this.model.inlineHeaders.length === 0 && value.length > 0) {
+          this.model.inlineHeaders.push({
+            content: value,
+            name: 'custom_header',
+          })
+        } else if (this.model.inlineHeaders.length > 0 && value.length === 0) {
+          this.model.inlineHeaders = []
+        } else if (this.model.inlineHeaders[0].content !== value) {
+          this.model.inlineHeaders[0].content = value
+        }
       },
     },
     methods: {
@@ -179,4 +227,15 @@
   }
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+  .inline-header {
+    background-color: rgba(255, 255, 255, 0.1);
+    width: 100%;
+    min-height: 100%;
+    border: none;
+    outline: none;
+    resize: vertical;
+    color: white;
+    font-family: "Fira Code", "Consolas", monospace;
+  }
+</style>

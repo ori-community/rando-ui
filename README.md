@@ -17,7 +17,7 @@ You can also specify the API host that the frontend should use as well as if sec
 API_HOST=dev.wotw.orirando.com API_SECURE=true yarn run dev
 ```
 
-The API host will default to `127.0.0.1:8081` and secure connections are disabled by default, which matches the default configuration for `ori-rando/wotw-server`.
+The API host will default to `127.0.0.1:8081` and secure connections are disabled by default, which matches the default configuration for `ori-community/wotw-rando-server`.
 
 
 ## Running the desktop client
@@ -31,4 +31,4 @@ yarn install # Install Launcher dependencies
 yarn run electron:serve
 ```
 
-On Windows, the base directory when running in development mode is `C:\moon`. The default settings of `ori-rando/wotw-client` should automatically install into `C:\moon\randomizer`. You might need to copy additional files in there. The easiest way is to install an official release of the Randomizer into `C:\moon` and build `ori-rando/wotw-client` afterwards to override the binaries to the newly compiled ones.
+On Windows, the base directory when running in development mode is `C:\moon`. The default settings of `ori-community/wotw-rando-client` should automatically install into `C:\moon\randomizer`. You might need to copy additional files in there. The easiest way is to install an official release of the Randomizer into `C:\moon` and build `ori-community/wotw-rando-client` afterwards to override the binaries to the newly compiled ones.

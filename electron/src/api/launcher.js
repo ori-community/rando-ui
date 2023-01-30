@@ -66,7 +66,7 @@ export default {
   },
 
   openGitHub() {
-    shell.openExternal('https://github.com/ori-rando')
+    shell.openExternal('https://github.com/ori-community')
   },
 
   openDiscord() {

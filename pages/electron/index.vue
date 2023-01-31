@@ -265,7 +265,7 @@
         window.electronApi.invoke('launcher.openSeedsDirectory')
       },
       openGitHub() {
-        window.electronApi.invoke('launcher.openUrl', { url: 'https://github.com/ori-rando' })
+        window.electronApi.invoke('launcher.openUrl', { url: 'https://github.com/ori-community' })
       },
       openDiscord() {
         window.electronApi.invoke('launcher.openUrl', { url: 'https://discord.gg/SUS57PWWnA' })

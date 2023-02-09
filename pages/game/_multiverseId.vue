@@ -528,6 +528,8 @@
       // }
 
       window.addEventListener('scroll', this.onScroll)
+
+      this.$store.dispatch('time/syncTime')
     },
     beforeDestroy() {
       window.removeEventListener('scroll', this.onScroll)

@@ -1,10 +1,11 @@
 <template>
-  <span class="timer"
-    >{{ mainTimerText }}<span class="fraction">{{ fractionTimerText }}</span></span
-  >
+  <span class="timer">
+    {{ mainTimerText }}<span class="fraction">{{ fractionTimerText }}</span>
+  </span>
 </template>
 
 <script>
+  import { mapState } from 'vuex'
   import { formatTime } from '~/assets/lib/formatTime'
 
   export default {
@@ -24,6 +25,9 @@
       fractionTimerText: '.0',
       updateIntervalId: null,
     }),
+    computed: {
+      ...mapState('time', ['offset']),
+    },
     mounted() {
       this.updateIntervalId = setInterval(() => this.updateTimerText(), 100)
       this.updateTimerText()
@@ -35,7 +39,7 @@
     },
     methods: {
       updateTimerText() {
-        const parts = formatTime(this.finishedTime ? this.finishedTime : (Date.now() - this.startingAt) / 1000).split(
+        const parts = formatTime(this.finishedTime ? this.finishedTime : (Date.now() + this.offset - this.startingAt) / 1000).split(
           '.',
           2,
         )

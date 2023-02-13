@@ -26,7 +26,7 @@ const getDefaultSettings = () => {
       MuteInjectLogs: false,
       HideQuestFilter: false,
       HideWarpFilter: false,
-      HideCollectableFilter: false,
+      HideCollectableFilter: true,
       AlwaysShowWarps: true,
       AlwaysShowKeystones: true,
       WorldMapEnabled: true,

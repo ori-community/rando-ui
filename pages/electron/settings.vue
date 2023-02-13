@@ -47,7 +47,7 @@
       addExceptionForWindowsDefenderLoading: false,
     }),
     computed: {
-      isWindows: isOS(Platform.Windows),
+      isWindows: () => isOS(Platform.Windows),
       ...mapState('electron', ['settingsLoaded']),
     },
     methods: {

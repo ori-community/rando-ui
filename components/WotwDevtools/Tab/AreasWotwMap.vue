@@ -1,7 +1,16 @@
 <template>
   <div class="d-flex flex-grow-1 relative">
     <v-slide-y-transition>
-      <v-card v-if="selection !== null" class="selection-info pa-3">
+      <v-card v-if="selectedRectangle !== null" class="selection-info-left pa-3">
+        <h3>Selection</h3>
+        <div>X: <copyable-info :value="selectedRectangle.left.toFixed(2)" /></div>
+        <div>Y: <copyable-info :value="selectedRectangle.top.toFixed(2)" /></div>
+        <div>Width: <copyable-info :value="(selectedRectangle.right - selectedRectangle.left).toFixed(2)" /></div>
+        <div>Height: <copyable-info :value="(selectedRectangle.bottom - selectedRectangle.top).toFixed(2)" /></div>
+      </v-card>
+    </v-slide-y-transition>
+    <v-slide-y-transition>
+      <v-card v-if="selection !== null" class="selection-info-right pa-3">
         <template v-if="selectionType === 'connection'">
           <h3>Connection</h3>
           <div>{{ selection.start }}</div>
@@ -29,10 +38,11 @@
 <script>
   import * as PIXI from 'pixi.js'
   import WebworkerPromise from 'webworker-promise/lib'
-  import {Matrix3, Vector2} from '@math.gl/core'
-  import {DashLine} from 'pixi-dashed-line'
+  import { Matrix3, Vector2 } from '@math.gl/core'
+  import { DashLine } from 'pixi-dashed-line'
+  // eslint-disable-next-line import/default
   import AreasWotwGraphWorker from '~/assets/lib/workers/areasWotwGraph.worker.js'
-  import {flipY} from '~/assets/lib/flipY'
+  import { flipY } from '~/assets/lib/flipY'
   import { getSeedgen } from '~/assets/lib/getSeedgen'
 
   export default {
@@ -40,6 +50,7 @@
     data: () => ({
       selection: null,
       selectionType: null,
+      selectedRectangle: null,
       renderingOverlay: false,
       shouldRenderOverlayAgainAfterRenderingCompleted: false,
     }),
@@ -60,11 +71,71 @@
     },
     methods: {
       /**
-       * @param app {PIXI.Application}
+       * @param _app {PIXI.Application}
        * @param container {PIXI.Container}
+       * @param viewport {Viewport}
        */
-      async renderFn(app, container) {
+      async renderFn(_app, container, viewport) {
         this.renderingOverlay = true
+
+        /** @var {PIXI.Graphics} */
+        let selectionRectangle = null
+        let selectionRectangleStartX = 0
+        let selectionRectangleStartY = 0
+        let selectionActive = false
+
+        viewport.on('rightdown', event => {
+          if (!selectionActive) {
+            if (selectionRectangle) {
+              container.removeChild(selectionRectangle)
+            }
+
+            this.selectedRectangle = null
+            selectionRectangle = new PIXI.Graphics()
+
+            const { x, y } = viewport.worldTransform.applyInverse(event.data.global)
+            selectionRectangleStartX = x
+            selectionRectangleStartY = y
+
+            container.addChild(selectionRectangle)
+
+            selectionActive = true
+          }
+        })
+
+        viewport.on('mousemove', event => {
+          if (selectionRectangle && selectionActive) {
+            const { x, y } = viewport.worldTransform.applyInverse(event.data.global)
+
+            selectionRectangle.clear()
+            selectionRectangle.beginFill(0x00AAFF, 0.5)
+
+            const top = y < selectionRectangleStartY ? y : selectionRectangleStartY
+            const left = x < selectionRectangleStartX ? x : selectionRectangleStartX
+            const right = x > selectionRectangleStartX ? x : selectionRectangleStartX
+            const bottom = y > selectionRectangleStartY ? y : selectionRectangleStartY
+
+            selectionRectangle.drawRect(
+              left,
+              top,
+              right - left,
+              bottom - top,
+            )
+
+            this.selectedRectangle = {
+              top,
+              left,
+              right,
+              bottom,
+            }
+          }
+        })
+
+        viewport.on('rightup', () => {
+          if (selectionRectangle) {
+            selectionActive = false
+          }
+        })
 
         try {
           const areasWotwContents = await window.electronApi.invoke('seedgen.getAreasFileContents')
@@ -73,7 +144,7 @@
           const worker = new WebworkerPromise(new AreasWotwGraphWorker())
           const graph = await worker.postMessage({
             areasWotwContents,
-            locDataFileContents
+            locDataFileContents,
           })
 
           container.removeChildren()
@@ -92,7 +163,7 @@
               .normalize()
               .transformByMatrix3(
                 new Matrix3()
-                  .rotate(Math.PI * 0.5)
+                  .rotate(Math.PI * 0.5),
               )
               .multiplyScalar(2)
 
@@ -105,7 +176,7 @@
               endVector.clone().add(offsetVector),
             ])
 
-            const {ConnectionType} = await getSeedgen()
+            const { ConnectionType } = await getSeedgen()
 
             const redrawLine = (width = 1.0) => {
               line.clear()
@@ -132,16 +203,16 @@
                   .add(
                     new Vector2(5 * Math.sqrt(width), 0)
                       .transformByMatrix3(
-                        new Matrix3().rotate(-deltaVector.verticalAngle() + Math.PI * 1.7)
-                      )
+                        new Matrix3().rotate(-deltaVector.verticalAngle() + Math.PI * 1.7),
+                      ),
                   )
                 const arrowEndVector2 = arrowStartVector
                   .clone()
                   .add(
                     new Vector2(5 * Math.sqrt(width), 0)
                       .transformByMatrix3(
-                        new Matrix3().rotate(-deltaVector.verticalAngle() + Math.PI * 1.3)
-                      )
+                        new Matrix3().rotate(-deltaVector.verticalAngle() + Math.PI * 1.3),
+                      ),
                   )
 
                 line
@@ -235,7 +306,15 @@
     position: relative;
   }
 
-  .selection-info {
+  .selection-info-left {
+    position: absolute;
+    top: 1em;
+    left: 1em;
+    z-index: 10;
+    max-width: calc(100% - 2em);
+  }
+
+  .selection-info-right {
     position: absolute;
     top: 1em;
     right: 1em;

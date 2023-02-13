@@ -45,6 +45,8 @@
       })
       const viewport = this.viewport
 
+      viewport.interactive = true
+
       new ResizeObserver(() => {
         if (!this.isDestroyed) {
           viewport.resize()
@@ -69,7 +71,9 @@
           minScale: 0.6,
           maxScale: 8.0,
         })
-        .drag()
+        .drag({
+          mouseButtons: 'left',
+        })
         .pinch()
         .wheel()
         .decelerate({
@@ -132,12 +136,13 @@
 
         if (!this.renderContainer) {
           this.renderContainer = new PIXI.Container()
+          this.renderContainer.interactive = true
           this.viewport.addChild(this.renderContainer)
         }
 
         if (this.renderFn) {
           this.customLoadingText = 'Loading overlays...'
-          await this.renderFn(this.app, this.renderContainer)
+          await this.renderFn(this.app, this.renderContainer, this.viewport)
         }
 
         this.loading = false

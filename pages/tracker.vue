@@ -1,13 +1,22 @@
 <template>
-  <div class='fill-height' :class='{"electron-draggable": isElectron }'>
-    <v-fade-transition mode='out-in'>
-      <div v-if='connected && receivedPacket' ref='tracker' key='tracker' class='tracker-container' :class='{ done: showDone }'>
-        <div class='tracker'>
-          <wotw-tracker-skills-resources
-            :seed-flags='seedFlags'
-            :tracked-values='trackedValues'
-            :heart-count='heartCount'
-            :show-willow-hearts='showWillowHearts'
+  <div class="fill-height" :class="{ 'electron-draggable': isElectron }">
+    <v-fade-transition mode="out-in">
+      <div
+        v-if="connected && receivedPacket"
+        ref="tracker"
+        key="tracker"
+        class="tracker-container"
+        :class="{ done: showDone }"
+      >
+        <div class="tracker">
+          <wotw-tracker-skills-resources-timer
+            :seed-flags="seedFlags"
+            :tracked-values="trackedValues"
+            :heart-count="heartCount"
+            :show-willow-hearts="showWillowHearts"
+            :time="displayedTime"
+            :loading-time="loadingTime"
+            :show-timer="showTimer"
           />
           <wotw-tracker-teleporters v-if="showTeleporters" :tracked-values="trackedValues" />
         </div>
@@ -17,17 +26,15 @@
           </div>
         </div>
       </div>
-      <div v-else-if='!hideConnectingScreen' key='connecting' class='fill-height d-flex flex-column align-center justify-center'>
-        <div class='pb-4'>
-          <template v-if='!receivedPacket'>
-            Waiting for game...
-          </template>
-          <template v-else-if='connectedOnce'>
-            Connection lost. Trying to reconnect...
-          </template>
-          <template v-else>
-            Waiting for connection...
-          </template>
+      <div
+        v-else-if="!hideConnectingScreen"
+        key="connecting"
+        class="fill-height d-flex flex-column align-center justify-center"
+      >
+        <div class="pb-4">
+          <template v-if="!receivedPacket"> Waiting for game... </template>
+          <template v-else-if="connectedOnce"> Connection lost. Trying to reconnect... </template>
+          <template v-else> Waiting for connection... </template>
         </div>
         <v-progress-circular indeterminate />
       </div>
@@ -37,7 +44,7 @@
 
 <script>
   import { decodePacket } from '~/assets/proto/ProtoUtil'
-  import { ResetTracker, TrackerFlagsUpdate, TrackerUpdate } from '~/assets/proto/messages'
+  import { ResetTracker, TrackerFlagsUpdate, TrackerTimerStateUpdate, TrackerUpdate } from '~/assets/proto/messages'
   import { applyTransparentWindowStyles, isOBS } from '~/assets/lib/obs'
   import { isElectron } from '~/assets/lib/isElectron'
   import { confettiFromElement } from '~/assets/lib/confettiFromElement'
@@ -55,6 +62,14 @@
       trackedValues: {},
       seedFlags: [],
       showDone: false,
+      timerUpdateIntervalId: null,
+      timerStartTimestamp: 0,
+      displayedTime: 0,
+      totalTime: 0,
+      loadingTime: 0,
+      timerShouldRun: false,
+      appliedDelay: 0,
+      delayQueued: false,
     }),
     head: {
       title: 'Item Tracker',
@@ -77,9 +92,13 @@
       isElectron,
       showWillowHearts() {
         const showWillowHearts = this.$route.query.hearts === 'true' || this.settings['LocalTracker.ShowWillowHearts']
-        const hideHeartsUntilFirstOne = this.$route.query.hideHeartsUntilFirst === 'true' || this.settings['LocalTracker.HideHeartsUntilFirstHeart']
+        const hideHeartsUntilFirstOne =
+          this.$route.query.hideHeartsUntilFirst === 'true' || this.settings['LocalTracker.HideHeartsUntilFirstHeart']
 
         return showWillowHearts && (!hideHeartsUntilFirstOne || this.heartCount > 0)
+      },
+      showTimer() {
+        return this.$route.query.timer === 'true' || this.settings['LocalTracker.ShowTimer']
       },
       showTeleporters() {
         return this.$route.query.teleporters === 'true'
@@ -108,6 +127,9 @@
 
         return count
       },
+      requestedDelay() {
+        return Number(this.$route.query.delay ?? 0)
+      },
     },
     watch: {
       connected: {
@@ -119,14 +141,14 @@
             }, 5000)
           } else if (newValue) {
             this.hideConnectingScreen = false
-        }
-      },
+          }
+        },
       },
       'trackedValues.game_finished'(value) {
         if (value) {
           setTimeout(() => {
             confettiFromElement(this.$refs.hype, {
-              startVelocity: 30
+              startVelocity: 30,
             })
           }, 75)
 
@@ -136,6 +158,18 @@
           }, 4000)
         }
       },
+      totalTime(value) {
+        this.timerStartTimestamp = (Date.now() / 1000.0) - value - this.loadingTime
+        this.updateTimer()
+      },
+      loadingTime(value) {
+        this.timerStartTimestamp = (Date.now() / 1000.0) - value - this.totalTime
+        this.updateTimer()
+      },
+      timerShouldRun() {
+        this.timerStartTimestamp = (Date.now() / 1000.0) - this.loadingTime - this.totalTime
+        this.updateTimer()
+      }
     },
     mounted() {
       if (isOBS() || isElectron()) {
@@ -145,10 +179,17 @@
         document.documentElement.style.overflow = 'hidden'
       }
 
+      this.timerStartTimestamp = (Date.now() / 1000.0)
       this.connect()
+
+      this.timerUpdateIntervalId = setInterval(this.updateTimer, 50)
     },
     beforeDestroy() {
       this.tryDisconnect()
+
+      if (this.timerUpdateIntervalId !== null) {
+        clearInterval(this.timerUpdateIntervalId)
+      }
     },
     methods: {
       connect() {
@@ -191,17 +232,34 @@
                 this.seedFlags = packet.flags
                 this.receivedPacket = true
                 break
+              case TrackerTimerStateUpdate.$type:
+                this.totalTime = packet.totalTime
+                this.loadingTime = packet.loadingTime
+                this.timerShouldRun = packet.timerShouldRun
+                break
               case ResetTracker.$type:
                 this.trackedValues = {}
                 this.seedFlags = []
+                this.displayedTime = 0
+                this.totalTime = 0
+                this.loadingTime = 0
                 break
             }
           }
 
-          if (this.$route.query.delay) {
-            setTimeout(handlePacket, Number(this.$route.query.delay) * 1000)
+          if (this.appliedDelay > 0) {
+            setTimeout(handlePacket, this.appliedDelay * 1000)
           } else {
             handlePacket()
+
+            if (!this.delayQueued && this.requestedDelay > 0) {
+              this.delayQueued = true
+
+              // Let all packets process immediately for one second from the first packet received
+              setTimeout(() => {
+                this.appliedDelay = this.requestedDelay
+              }, 1000)
+            }
           }
         })
       },
@@ -212,11 +270,22 @@
           console.error(e)
         }
       },
+      updateTimer() {
+        if (!this.connected) {
+          return
+        }
+
+        if (this.trackedValues.game_finished) {
+          this.displayedTime = Math.max(this.totalTime, 0)
+        } else if (this.timerShouldRun) {
+          this.displayedTime = Math.max((Date.now() / 1000.0) - this.timerStartTimestamp - this.requestedDelay, 0)
+        }
+      },
     },
   }
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
   .electron-draggable {
     -webkit-user-select: none;
     -webkit-app-region: drag;
@@ -248,7 +317,7 @@
         margin-top: -5vw;
         transform: translateY(5vw) scale(1.1);
         opacity: 0;
-        transition: opacity 100ms, transform 400ms cubic-bezier(.05, 1.62, .32, 1.01);
+        transition: opacity 100ms, transform 400ms cubic-bezier(0.05, 1.62, 0.32, 1.01);
 
         img {
           width: 100%;
@@ -264,7 +333,7 @@
       }
 
       .label {
-        animation: label-move both 400ms 400ms cubic-bezier(.05, 1.62, .32, 1.01);
+        animation: label-move both 400ms 400ms cubic-bezier(0.05, 1.62, 0.32, 1.01);
       }
 
       .done-label {

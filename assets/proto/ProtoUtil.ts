@@ -5,7 +5,7 @@ import {
   RequestUpdatesMessage,
   ResetTracker, SetTrackerEndpointId,
   SyncBingoUniversesMessage,
-  SyncBoardMessage, TrackerFlagsUpdate,
+  SyncBoardMessage, TrackerFlagsUpdate, TrackerTimerStateUpdate,
   TrackerUpdate,
 } from './messages'
 import { MessageType } from './typeRegistry'
@@ -26,6 +26,7 @@ const packetTypes: PacketTypes = {
   102: TrackerFlagsUpdate,
   103: RequestFullUpdate,
   104: SetTrackerEndpointId,
+  105: TrackerTimerStateUpdate,
 }
 
 export const blobToArray = async (blob: any) => {

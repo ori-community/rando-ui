@@ -233,6 +233,14 @@ export interface SetTrackerEndpointId {
   endpointId: string;
 }
 
+/** 105 */
+export interface TrackerTimerStateUpdate {
+  $type: "RandoProto.TrackerTimerStateUpdate";
+  totalTime: number;
+  loadingTime: number;
+  timerShouldRun: boolean;
+}
+
 export interface NormalGameHandlerState {
   $type: "RandoProto.NormalGameHandlerState";
   startingAt?: number | undefined;
@@ -2314,6 +2322,78 @@ export const SetTrackerEndpointId = {
 };
 
 messageTypeRegistry.set(SetTrackerEndpointId.$type, SetTrackerEndpointId);
+
+function createBaseTrackerTimerStateUpdate(): TrackerTimerStateUpdate {
+  return { $type: "RandoProto.TrackerTimerStateUpdate", totalTime: 0, loadingTime: 0, timerShouldRun: false };
+}
+
+export const TrackerTimerStateUpdate = {
+  $type: "RandoProto.TrackerTimerStateUpdate" as const,
+
+  encode(message: TrackerTimerStateUpdate, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.totalTime !== 0) {
+      writer.uint32(13).float(message.totalTime);
+    }
+    if (message.loadingTime !== 0) {
+      writer.uint32(21).float(message.loadingTime);
+    }
+    if (message.timerShouldRun === true) {
+      writer.uint32(24).bool(message.timerShouldRun);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): TrackerTimerStateUpdate {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTrackerTimerStateUpdate();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.totalTime = reader.float();
+          break;
+        case 2:
+          message.loadingTime = reader.float();
+          break;
+        case 3:
+          message.timerShouldRun = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): TrackerTimerStateUpdate {
+    return {
+      $type: TrackerTimerStateUpdate.$type,
+      totalTime: isSet(object.totalTime) ? Number(object.totalTime) : 0,
+      loadingTime: isSet(object.loadingTime) ? Number(object.loadingTime) : 0,
+      timerShouldRun: isSet(object.timerShouldRun) ? Boolean(object.timerShouldRun) : false,
+    };
+  },
+
+  toJSON(message: TrackerTimerStateUpdate): unknown {
+    const obj: any = {};
+    message.totalTime !== undefined && (obj.totalTime = message.totalTime);
+    message.loadingTime !== undefined && (obj.loadingTime = message.loadingTime);
+    message.timerShouldRun !== undefined && (obj.timerShouldRun = message.timerShouldRun);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<TrackerTimerStateUpdate>, I>>(object: I): TrackerTimerStateUpdate {
+    const message = createBaseTrackerTimerStateUpdate();
+    message.totalTime = object.totalTime ?? 0;
+    message.loadingTime = object.loadingTime ?? 0;
+    message.timerShouldRun = object.timerShouldRun ?? false;
+    return message;
+  },
+};
+
+messageTypeRegistry.set(TrackerTimerStateUpdate.$type, TrackerTimerStateUpdate);
 
 function createBaseNormalGameHandlerState(): NormalGameHandlerState {
   return {

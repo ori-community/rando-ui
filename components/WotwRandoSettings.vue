@@ -155,6 +155,12 @@
         />
 
         <v-checkbox
+          v-model='settings["LocalTracker.ShowTimer"]'
+          label='Show Timer'
+          messages='Shows the timer for the current game'
+        />
+
+        <v-checkbox
           v-model='settings["LocalTracker.AlwaysOnTop"]'
           label='Always on top'
           messages='Show the Item Tracker on top of other windows'

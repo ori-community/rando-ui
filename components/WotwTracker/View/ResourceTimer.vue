@@ -1,6 +1,6 @@
 <template>
-  <div class="resource-view">
-    <div class="resource-grid">
+  <div class="resource-timer-view">
+    <div class="resource-timer-grid" :style="{'--scaling-factor': resourcesScalingFactor}">
       <div class="line full-width">
         <div class="image">
           <img src="@/assets/images/tracker/spirit_light.png" />
@@ -25,7 +25,7 @@
           <span :class="{ completed: questRebuildGladesDone }">{{ gorlekOre }}</span><span class="small" :class="{ completed: gorlekOreCollected >= 29 || questRebuildGladesDone }">/{{ gorlekOreCollected }}</span>
         </span>
       </div>
-      <div v-if="flags.includes('All Trees')" class="line">
+      <div v-if="showTrees" class="line">
         <div class="image">
           <img src="@/assets/images/tracker/tree.png" />
         </div>
@@ -33,7 +33,7 @@
           {{ treeCount }}<span class="small">/{{ totalTreeCount }}</span>
         </div>
       </div>
-      <div v-if="flags.includes('All Wisps')" class="line">
+      <div v-if="showWisps" class="line">
         <div class="image">
           <img src="@/assets/images/tracker/wisp.png" />
         </div>
@@ -41,7 +41,7 @@
           {{ wispCount }}<span class="small">/{{ totalWispCount }}</span>
         </div>
       </div>
-      <div v-if="flags.includes('Relics')" class="line">
+      <div v-if="showRelics" class="line">
         <div class="image">
           <img src="@/assets/images/tracker/map_stone.png" />
         </div>
@@ -49,7 +49,7 @@
           {{ relicCount }}<span class="small">/{{ totalRelicCount }}</span>
         </div>
       </div>
-      <div v-if="flags.includes('All Quests')" class="line">
+      <div v-if="showQuests" class="line">
         <div class="image">
           <img src="@/assets/images/tracker/quest.png" />
         </div>
@@ -65,11 +65,20 @@
           {{ heartCount }}<span class="small">/{{ totalHeartCount }}</span>
         </div>
       </div>
+
+      <div class="line timer-line full-width">
+        <div class="timer-container">
+          <div class="timer" :class="{completed: gameFinished}">{{ mainTimerText }}<span class="fraction">{{ fractionTimerText }}</span></div>
+          <div class="loading-time">{{ loadingTimeText }}</div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+  import { formatTime } from '~/assets/lib/formatTime'
+
   export default {
     name: 'ResourceView',
     props: {
@@ -145,25 +154,126 @@
         type: Boolean,
         default: false,
       },
+      showTimer: {
+        type: Boolean,
+        default: true,
+      },
+      time: {
+        type: Number,
+        default: 0,
+      },
+      loadingTime: {
+        type: Number,
+        default: 0,
+      },
+    },
+    data: () => ({
+      mainTimerText: '0:00',
+      fractionTimerText: '.0',
+    }),
+    computed: {
+      showTrees() {
+        return this.flags.includes('All Trees')
+      },
+      showWisps() {
+        return this.flags.includes('All Wisps')
+      },
+      showRelics() {
+        return this.flags.includes('Relics')
+      },
+      showQuests() {
+        return this.flags.includes('All Quests')
+      },
+      rows() {
+        return 2 /* SL, KS, Ore */ + Math.ceil([
+          this.showTrees,
+          this.showWisps,
+          this.showQuests,
+          this.showRelics,
+          this.showWillowHearts
+        ].filter(v => v).length / 2)
+      },
+      resourcesScalingFactor() {
+        return (this.rows >= 5 && this.showTimer)
+          ? 0.8
+          : 1.0
+      },
+      loadingTimeText() {
+        let text = this.gameFinished
+          ? 'LT: '
+          : '-'
+
+        text += formatTime(this.loadingTime, 1, true)
+
+        return text
+      }
+    },
+    watch: {
+      time: {
+        immediate: true,
+        handler(value) {
+          const parts = formatTime(value).split(
+            '.',
+            2,
+          )
+          this.mainTimerText = parts[0]
+          this.fractionTimerText = '.' + parts[1]
+        }
+      },
     },
   }
 </script>
 
 <style lang="scss" scoped>
-  .resource-view {
+  .resource-timer-view {
     position: relative;
-    padding-top: 1vw;
-    padding-bottom: 1vw;
     padding-left: 1vw;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
   }
 
-  .resource-grid {
+  .resource-timer-grid {
     display: grid;
     grid-template-columns: auto auto;
-    grid-auto-rows: 17%;
-    gap: 0.5vw;
-    height: 100%;
-    align-content: center;
+    grid-auto-rows: auto;
+    align-items: center;
+    gap: 0.2vw;
+    min-height: 0;
+    flex-shrink: 1;
+
+    .timer-line {
+      padding-top: 1.3vw;
+
+      .timer-container {
+        text-align: right;
+        line-height: 1;
+
+        .timer {
+          font-weight: 700;
+          font-size: 5vw;
+
+          &.completed {
+            color: var(--v-success-base);
+          }
+
+          .fraction {
+            font-weight: 200;
+            font-size: 2.5vw;
+          }
+        }
+
+        .loading-time {
+          opacity: 0.75;
+          font-size: 1.75vw;
+          font-weight: 500;
+          transform: scaleY(0.8);
+          margin-top: -0.4vw;
+        }
+      }
+    }
 
     .line {
       display: flex;
@@ -172,6 +282,7 @@
       align-items: center;
       flex-direction: row-reverse;
       flex-shrink: 1;
+      line-height: 1.1;
 
       .value {
         padding-right: 0.5vw;
@@ -199,7 +310,7 @@
       }
 
       .image {
-        height: 100%;
+        height: calc(3.8vw * var(--scaling-factor));
         aspect-ratio: 1;
         flex-shrink: 0;
         min-width: 0;
@@ -213,7 +324,7 @@
       }
 
       .value {
-        font-size: 3.75vw;
+        font-size: calc(3.6vw * var(--scaling-factor));
         font-weight: 600;
 
         &.completed,
@@ -222,7 +333,7 @@
         }
 
         .small {
-          font-size: 2.5vw;
+          font-size: calc(2.5vw * var(--scaling-factor));
           font-weight: 400;
           opacity: 0.6;
         }

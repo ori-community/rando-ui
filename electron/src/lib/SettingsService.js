@@ -57,6 +57,7 @@ const getDefaultSettings = () => {
       Y: localTrackerInitialWindowRect.y,
       Width: localTrackerInitialWindowRect.width,
       Height: localTrackerInitialWindowRect.height,
+      ShowTimer: false,
       Transparent: false,
       AlwaysOnTop: false,
       IgnoreMouse: false,

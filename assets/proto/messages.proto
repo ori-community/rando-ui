@@ -172,6 +172,12 @@ message SetTrackerEndpointId { // 104
   string endpointId = 1;
 }
 
+message TrackerTimerStateUpdate { // 105
+  float totalTime = 1;
+  float loadingTime = 2;
+  bool timerShouldRun = 3;
+}
+
 message NormalGameHandlerState {
   optional int64 startingAt = 1;
   optional float finishedTime = 2;

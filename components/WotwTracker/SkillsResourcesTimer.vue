@@ -5,8 +5,8 @@
     <WotwTrackerViewSkill skill="blaze" :bonus-melting-acquired="trackedValues.melting_blaze > 0" :acquired="trackedValues.skill_blaze > 0" />
     <WotwTrackerViewSkill skill="flap" :acquired="trackedValues.skill_flap > 0" />
     <WotwTrackerViewSkill class="clean-water" skill="clean_water" :acquired="trackedValues.skill_clean_water > 0" />
-    <WotwTrackerViewResource
-      class="resource-view"
+    <WotwTrackerViewResourceTimer
+      class="resource-timer-view"
       :game-finished="trackedValues.game_finished > 0"
       :flags="seedFlags"
       :spirit-light="trackedValues.resource_spirit_light"
@@ -25,6 +25,9 @@
       :relic-count="trackedValues.relic_count"
       :heart-count="heartCount"
       :quest-rebuild-glades-done="trackedValues.quest_rebuild_glades > 1"
+      :show-timer="showTimer"
+      :time="time"
+      :loading-time="loadingTime"
     />
     <WotwTrackerViewSkill skill="hammer" :bonus-melting-acquired="trackedValues.melting_hammer > 0" :acquired="trackedValues.skill_hammer > 0" />
     <WotwTrackerViewSkill skill="shuriken" :bonus-melting-acquired="trackedValues.melting_shuriken > 0" :acquired="trackedValues.skill_shuriken > 0" />
@@ -73,6 +76,18 @@
         type: Number,
         default: 0,
       },
+      showTimer: {
+        type: Boolean,
+        default: true,
+      },
+      time: {
+        type: Number,
+        default: 0,
+      },
+      loadingTime: {
+        type: Number,
+        default: 0,
+      },
     },
   }
 </script>
@@ -94,8 +109,7 @@
       grid-row: 1 / span 2;
     }
 
-    .resource-view {
-      padding-top: 2vm;
+    .resource-timer-view {
       grid-column: 6 / span 2;
       grid-row: 1 / span 2;
       position: relative;

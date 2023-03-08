@@ -187,6 +187,11 @@ export class RandoIPCService {
 
   static async handleIncomingRequest(request: Request) {
     switch (request.method) {
+      case 'notify_timer_state_changed': {
+        const { total_time: totalTime, loading_time: loadingTime, timer_should_run: timerShouldRun } = request.payload
+        LocalTrackerWebSocketService.reportTimerState(totalTime, loadingTime, timerShouldRun)
+        break
+      }
       case 'notify_on_uber_state_changed': {
         const { group, state, value } = request.payload
         if (group === 34543 && state === 11226 && value) {

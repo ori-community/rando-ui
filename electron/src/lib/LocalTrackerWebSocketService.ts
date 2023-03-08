@@ -5,7 +5,7 @@ import {
   AuthenticateMessage,
   RequestFullUpdate,
   ResetTracker, SetTrackerEndpointId,
-  TrackerFlagsUpdate,
+  TrackerFlagsUpdate, TrackerTimerStateUpdate,
   TrackerUpdate,
 } from '~/assets/proto/messages'
 import { decodePacket, makePacket } from '~/assets/proto/ProtoUtil'
@@ -124,6 +124,9 @@ const TRACKED_UBER_STATES: TrackedUberState[] = [
   { uberId: { group: 10289, state: 22102 }, trackingId: 'wisp_ruins' },
 ]
 
+const LOADING_TIME_TRACKING_ID = 'loading_time'
+const TOTAL_TIME_TRACKING_ID = 'total_time'
+
 export class LocalTrackerWebSocketService {
   private static wss: WebSocketServer | null = null
   private static ws: WebSocket | null = null
@@ -131,6 +134,8 @@ export class LocalTrackerWebSocketService {
   private static trackedUberStatesLookupTable: TrackedUberStatesLookupTable = {}
 
   private static _remoteTrackerEndpointId: string | null = null
+
+  private static updateTimerStateIntervalId: NodeJS.Timer | null = null
 
   public static get remoteTrackerEndpointId() {
     return this._remoteTrackerEndpointId
@@ -155,6 +160,10 @@ export class LocalTrackerWebSocketService {
     this.trackedUberStatesLookupTable = {}
     for (const trackedUberState of TRACKED_UBER_STATES) {
       this.trackedUberStatesLookupTable[this.uberIdHash(trackedUberState.uberId)] = trackedUberState
+    }
+
+    if (this.updateTimerStateIntervalId !== null) {
+      clearInterval(this.updateTimerStateIntervalId)
     }
 
     this.wss?.close()
@@ -182,6 +191,10 @@ export class LocalTrackerWebSocketService {
       socket.send(makePacket(ResetTracker))
       await this.forceRefresh(socket)
     })
+
+    this.updateTimerStateIntervalId = setInterval(async () => {
+      await this.reportCurrentTimerState()
+    }, 60000)
   }
 
   static get port(): number {
@@ -200,6 +213,36 @@ export class LocalTrackerWebSocketService {
     }
   }
 
+  static async reportCurrentTimerState() {
+    const { total_time: totalTime, loading_time: loadingTime, timer_should_run: timerShouldRun } = await RandoIPCService.request('timer.get_timer_state')
+    this.reportTimerState(totalTime, loadingTime, timerShouldRun)
+  }
+
+  static async reportCurrentTimerStateToClient(client: WebSocket) {
+    const { total_time: totalTime, loading_time: loadingTime, timer_should_run: timerShouldRun } = await RandoIPCService.request('timer.get_timer_state')
+    this.reportTimerStateToClient(client, totalTime, loadingTime, timerShouldRun)
+  }
+
+  static reportTimerState(totalTime: number, loadingTime: number, timerShouldRun: boolean) {
+    for (const client of this.wss?.clients || []) {
+      this.reportTimerStateToClient(client, totalTime, loadingTime, timerShouldRun)
+    }
+
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.reportTimerStateToClient(this.ws, totalTime, loadingTime, timerShouldRun)
+    }
+  }
+
+  static reportTimerStateToClient(client: WebSocket, totalTime: number, loadingTime: number, timerShouldRun: boolean) {
+    client.send(
+      makePacket(TrackerTimerStateUpdate, {
+        totalTime,
+        loadingTime,
+        timerShouldRun,
+      }),
+    )
+  }
+
   static sendUpdate(update: TrackerUpdate) {
     for (const client of this.wss?.clients || []) {
       client.send(makePacket(TrackerUpdate, update))
@@ -207,6 +250,16 @@ export class LocalTrackerWebSocketService {
 
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(makePacket(TrackerUpdate, update))
+    }
+  }
+
+  static sendTimerStateUpdate(update: TrackerTimerStateUpdate) {
+    for (const client of this.wss?.clients || []) {
+      client.send(makePacket(TrackerTimerStateUpdate, update))
+    }
+
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(makePacket(TrackerTimerStateUpdate, update))
     }
   }
 
@@ -242,6 +295,8 @@ export class LocalTrackerWebSocketService {
         flags: await RandoIPCService.getSeedFlags(),
       }),
     )
+
+    await this.reportCurrentTimerStateToClient(client)
   }
 
   static stop() {

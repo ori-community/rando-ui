@@ -158,18 +158,18 @@
           }, 4000)
         }
       },
-      totalTime(value) {
-        this.timerStartTimestamp = (Date.now() / 1000.0) - value - this.loadingTime
-        this.updateTimer()
+      totalTime() {
+        this.updateTimerStartTimestamp()
       },
-      loadingTime(value) {
-        this.timerStartTimestamp = (Date.now() / 1000.0) - value - this.totalTime
-        this.updateTimer()
+      loadingTime() {
+        this.updateTimerStartTimestamp()
       },
       timerShouldRun() {
-        this.timerStartTimestamp = (Date.now() / 1000.0) - this.loadingTime - this.totalTime
-        this.updateTimer()
-      }
+        this.updateTimerStartTimestamp()
+      },
+      requestedDelay() {
+        this.updateTimerStartTimestamp()
+      },
     },
     mounted() {
       if (isOBS() || isElectron()) {
@@ -270,6 +270,10 @@
           console.error(e)
         }
       },
+      updateTimerStartTimestamp() {
+        this.timerStartTimestamp = (Date.now() / 1000.0) - this.loadingTime - this.totalTime - this.requestedDelay
+        this.updateTimer()
+      },
       updateTimer() {
         if (!this.connected) {
           return
@@ -278,7 +282,7 @@
         if (this.trackedValues.game_finished) {
           this.displayedTime = Math.max(this.totalTime, 0)
         } else if (this.timerShouldRun) {
-          this.displayedTime = Math.max((Date.now() / 1000.0) - this.timerStartTimestamp - this.requestedDelay, 0)
+          this.displayedTime = Math.max((Date.now() / 1000.0) - this.timerStartTimestamp, 0)
         }
       },
     },

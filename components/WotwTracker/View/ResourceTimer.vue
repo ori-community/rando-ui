@@ -66,7 +66,7 @@
         </div>
       </div>
 
-      <div class="line timer-line full-width">
+      <div v-if="showTimer" class="line timer-line full-width">
         <div class="timer-container">
           <div class="timer" :class="{completed: gameFinished}">{{ mainTimerText }}<span class="fraction">{{ fractionTimerText }}</span></div>
           <div class="loading-time">{{ loadingTimeText }}</div>

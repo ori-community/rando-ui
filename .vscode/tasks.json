@@ -9,11 +9,12 @@
 		},
 		{
 			"type": "shell",
-			"label": "Run UI",
+			"label": "Run UI (web, wotw.orirando.com)",
 			"options": {
 				"env": {
 					"API_HOST": "wotw.orirando.com",
-					"API_SECURE": "true"
+					"API_SECURE": "true",
+					"PLATFORM": "web"
 				}
 			},
 			"command": "yarn dev",
@@ -21,7 +22,53 @@
 		},
 		{
 			"type": "shell",
-			"label": "Run Electron",
+			"label": "Run UI (web, dev.wotw.orirando.com)",
+			"options": {
+				"env": {
+					"API_HOST": "dev.wotw.orirando.com",
+					"API_SECURE": "true",
+					"PLATFORM": "web"
+				}
+			},
+			"command": "yarn dev",
+			"problemMatcher": []
+		},
+		{
+			"type": "shell",
+			"label": "Run UI (web, localhost)",
+			"options": {
+				"env": {
+					"PLATFORM": "web"
+				}
+			},
+			"command": "yarn dev",
+			"problemMatcher": []
+		},
+		{
+			"type": "shell",
+			"label": "Run UI (Launcher/Windows)",
+			"options": {
+				"env": {
+					"PLATFORM": "win32"
+				}
+			},
+			"command": "yarn dev",
+			"problemMatcher": []
+		},
+		{
+			"type": "shell",
+			"label": "Run UI (Launcher/Linux)",
+			"options": {
+				"env": {
+					"PLATFORM": "linux"
+				}
+			},
+			"command": "yarn dev",
+			"problemMatcher": []
+		},
+		{
+			"type": "shell",
+			"label": "Run Launcher",
 			"command": "yarn electron:serve",
 			"options": {
 				"cwd": "${workspaceFolder}/electron"

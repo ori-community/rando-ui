@@ -124,9 +124,6 @@ const TRACKED_UBER_STATES: TrackedUberState[] = [
   { uberId: { group: 10289, state: 22102 }, trackingId: 'wisp_ruins' },
 ]
 
-const LOADING_TIME_TRACKING_ID = 'loading_time'
-const TOTAL_TIME_TRACKING_ID = 'total_time'
-
 export class LocalTrackerWebSocketService {
   private static wss: WebSocketServer | null = null
   private static ws: WebSocket | null = null

@@ -98,7 +98,7 @@
         return showWillowHearts && (!hideHeartsUntilFirstOne || this.heartCount > 0)
       },
       showTimer() {
-        return this.$route.query.timer === 'true' || this.settings['LocalTracker.ShowTimer']
+        return this.$route.query.timer === 'true' || !!this.settings['LocalTracker.ShowTimer']
       },
       showTeleporters() {
         return this.$route.query.teleporters === 'true'

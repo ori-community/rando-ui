@@ -282,7 +282,7 @@
       },
     },
     watch: {
-      currentWorldIndex(value, oldValue) {
+      currentWorldIndex(_value, oldValue) {
         if (this.addingNewWorld && oldValue === this.universeSettings.worldSettings.length) {
           this.addingNewWorld = false
         }
@@ -426,6 +426,7 @@
               discovery: this.bingoSettings.discovery,
               lockout: this.bingoSettings.lockout,
               size: this.bingoSettings.size,
+              revealFirstNCompletedGoals: this.bingoSettings.revealFirstNCompletedGoals,
             },
           })
 

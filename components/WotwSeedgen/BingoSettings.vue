@@ -15,11 +15,31 @@
         v-model="discoveryCount"
         :disabled="model.size < 2"
         prepend-icon="mdi-table-headers-eye"
-        :min="1"
+        :min="0"
         :max="totalCardCount"
         hide-details
       />
     </v-col>
+    <v-col cols="12">
+      <span>
+        Reveal first <strong>{{ revealFirstNCompletedGoals }}</strong> completed goals
+      </span>
+      <v-slider
+        v-model="revealFirstNCompletedGoals"
+        :disabled="totalCardCount - discoveryCount <= 0"
+        prepend-icon="mdi-table-headers-eye"
+        :min="0"
+        :max="totalCardCount - discoveryCount"
+        hide-details
+      />
+    </v-col>
+    <v-expand-transition>
+      <v-col v-if="discoveryCount === 0 && revealFirstNCompletedGoals === 0" cols="12" class="py-0">
+        <v-alert type="warning" class="my-3">
+          You are about to create a bingo game that will not reveal any cards ever.
+        </v-alert>
+      </v-col>
+    </v-expand-transition>
     <v-col cols="12">
       <v-checkbox
         v-model="model.lockout"
@@ -96,6 +116,7 @@
     mixins: [hasModelObject],
     data: () => ({
       discoveryCount: 25,
+      revealFirstNCompletedGoals: 0,
       selectedGoalType: 'lines',
       cardsCount: 10,
       linesCount: 3,
@@ -134,6 +155,7 @@
           }
 
           this.selectedGoalType = model.goalType
+          this.revealFirstNCompletedGoals = model.revealFirstNCompletedGoals
         },
       },
       totalCardCount(totalCardCount, oldTotalCardCount) {
@@ -150,6 +172,9 @@
         }
 
         this.model.discovery = discoveryCount
+      },
+      revealFirstNCompletedGoals(revealFirstNCompletedGoals) {
+        this.model.revealFirstNCompletedGoals = revealFirstNCompletedGoals
       },
       cardsCount(cardsCount) {
         if (this.model.goalType === 'cards') {

@@ -1,30 +1,16 @@
-import { Socket } from 'net'
 import throttle from 'lodash.throttle'
 import { uiIpc } from '@/api'
 import { UberId } from '~/assets/lib/types/UberStates'
 import { LocalTrackerWebSocketService } from '@/lib/LocalTrackerWebSocketService'
 import { BingoBoardOverlayService } from '@/lib/BingoBoardOverlayService'
 import { TASService } from '@/lib/TASService'
-import { getOS, Platform } from '~/assets/lib/os'
-import net, { Server } from 'net'
-import fs from 'fs'
-import { Buffer } from 'node:buffer'
-import { Event } from "~/assets/lib/Event";
+import { Event } from '~/assets/lib/Event'
+import * as zmq from 'zeromq'
 
-let server: Server | null = null
-let socket: Socket | null = null
+let socket: zmq.Dealer | null = null
+let receiveLoopActive = false
 let lastRequestId = 0
-
-function getPipePath() {
-  switch (getOS()) {
-    case Platform.Windows:
-      return '\\\\.\\pipe\\wotw_rando'
-    case Platform.Linux:
-      return '/tmp/wotw_rando_ipc'
-  }
-
-  throw new Error('Cannot generate pipe path on this OS')
-}
+let peerConnected = false
 
 interface Request {
   type: 'request'
@@ -74,115 +60,76 @@ export class RandoIPCService {
   }
 
   static isConnected() {
-    return socket !== null && socket.readyState === 'open'
+    return socket !== null && peerConnected
   }
 
-  static startIPCServer() {
+  static async startIPCServer() {
     try {
-      server = net.createServer((newSocket) => {
-        console.log('RandoIPC: Client connected')
+      if (socket !== null) {
+        socket.close()
+      }
 
-        // We got a new socket, drop any previous one.
-        socket?.destroy()
-        socket = newSocket
+      peerConnected = false
+      socket = new zmq.Dealer({
+        sendTimeout: 100,
+      })
 
-        socket.on('error', (error) => {
-          console.log('RandoIPC: Error on connected socket,', error.message)
-          uiIpc.queueSend('randoIpc.setConnected', false)
-          socket?.destroy()
-          socket = null
-        })
-
-        socket.on('close', () => {
-          uiIpc.queueSend('randoIpc.setConnected', false)
-          console.log('RandoIPC: Socket closed')
-          socket?.destroy()
-          socket = null
-        })
-
-        const MAX_MESSAGE_SIZE = 1024 * 1024
-        const messageBuffer = Buffer.alloc(MAX_MESSAGE_SIZE)
-        let messageBufferCursor = 0
-        let discardCurrentMessage = false
-
-        socket.on('data', (data: Buffer) => {
-          for (const byte of data) {
-            if (discardCurrentMessage) {
-              if (byte === 0) {
-                messageBufferCursor = 0;
-                discardCurrentMessage = false;
-              }
-              continue
-            }
-
-            if (messageBufferCursor >= MAX_MESSAGE_SIZE) {
-              console.log('RandoIPC: Message exceeded max size, discarding')
-              discardCurrentMessage = true
-              continue;
-            }
-
-            if (byte === 0) {
-              const messageString = messageBuffer.slice(0, messageBufferCursor).toString();
-
-              messageBufferCursor = 0
-              const message = JSON.parse(messageString)
-
-              if (message.type === 'request') {
-                this.handleIncomingRequest(message).catch((error) => console.log('RandoIPC: Could not handle incoming request', error))
-              } else if (message.type === 'response') {
-                if (message.id in outgoingRequestHandlers) {
-                  outgoingRequestHandlers[message.id].resolve?.(message.payload)
-                }
-              } else {
-                console.log('RandoIPC: Could not handle message:', messageString)
-              }
-            } else {
-              messageBuffer[messageBufferCursor] = byte
-              messageBufferCursor++
-            }
-          }
-        })
-
+      socket.events.on('accept', () => {
+        peerConnected = true
         uiIpc.queueSend('randoIpc.setConnected', true)
         this.events.onConnect.emit()
       })
 
-      const pipePath = getPipePath()
+      await socket.bind('tcp://127.0.0.1:31414')
 
-      if (fs.existsSync(pipePath)) {
-        fs.unlinkSync(pipePath)
+      if (!receiveLoopActive) {
+        receiveLoopActive = true
+        this._receiveLoop()
       }
 
-      server
-        .listen(pipePath)
-        .on('listening', () => {
-          console.log(`RandoIPC: Listening on ${pipePath}`)
-        })
-        .on('error', (error) => {
-          console.log(`RandoIPC: Server error:`, error)
-        })
+      console.log('RandoIPC: ZMQ Server started')
     } catch (e) {
       uiIpc.queueSend('randoIpc.setConnected', false)
       console.log('RandoIPC: Error while starting IPC server:', e)
     }
   }
 
-  static async send(message: any) {
-    message = JSON.stringify(message)
+  static _receiveLoop() {
+    const retryLater = () => {
+      setTimeout(() => this._receiveLoop(), 1000)
+    }
 
-    await new Promise<void>((resolve, reject) => {
-      try {
-        const errorCallback = (error: Error) => {
-          throw error
+    if (socket === null) {
+      retryLater()
+      return
+    }
+
+    socket
+      .receive()
+      .then(([messageString]) => {
+        const message = JSON.parse(messageString.toString())
+
+        if (message.type === 'request') {
+          this.handleIncomingRequest(message).catch((error) => console.log('RandoIPC: Could not handle incoming request', error))
+        } else if (message.type === 'response') {
+          if (message.id in outgoingRequestHandlers) {
+            outgoingRequestHandlers[message.id].resolve?.(message.payload)
+          }
+        } else {
+          console.log('RandoIPC: Could not handle message:', messageString)
         }
 
-        socket?.once('error', errorCallback)
-        socket?.write(message + '\0', 'utf-8', () => resolve())
-        socket?.off('error', errorCallback)
-      } catch (e) {
-        reject(e)
-      }
-    })
+        this._receiveLoop()
+      })
+      .catch((e) => {
+        console.error(e)
+        retryLater()
+      })
+  }
+
+  static async send(message: any) {
+    message = JSON.stringify(message)
+    await socket?.send(message)
   }
 
   static async handleIncomingRequest(request: Request) {

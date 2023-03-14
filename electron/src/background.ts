@@ -101,7 +101,7 @@ async function createWindow() {
     uiIpc.queueSend('main.crashDetected', supportBundleName)
   })
   await CrashDetectService.start()
-  RandoIPCService.startIPCServer()
+  await RandoIPCService.startIPCServer()
   LocalTrackerWebSocketService.start()
 }
 

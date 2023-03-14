@@ -4,7 +4,7 @@ import { xdgData } from 'xdg-basedir'
 import { lookpath } from 'lookpath'
 import { execa } from 'execa'
 import { mkdirp, remove } from 'fs-extra'
-import { DXVK_CACHE_DIR, LAUNCHER_WORKING_DIR, RANDOMIZER_BASE_PATH, WINESTREAMPROXY_DIR } from '@/lib/Constants'
+import { DXVK_CACHE_DIR, LAUNCHER_WORKING_DIR, RANDOMIZER_BASE_PATH } from '@/lib/Constants'
 import { spawn } from 'child_process'
 import { SettingsService } from '@/lib/SettingsService'
 import { FileDownloadService } from '@/lib/FileDownloadService'
@@ -79,15 +79,6 @@ export class WineService {
 
     log('Installing dxvk-async...')
     await execa(path.join(LAUNCHER_WORKING_DIR, 'linux', 'install-dxvk.sh'), {
-      stdio: 'inherit',
-      env: {
-        WINEPREFIX: this.prefixPath,
-      }
-    })
-
-    log('Installing winestreamproxy service...')
-    await execa(path.join(WINESTREAMPROXY_DIR, 'install.sh'), {
-      cwd: WINESTREAMPROXY_DIR,
       stdio: 'inherit',
       env: {
         WINEPREFIX: this.prefixPath,

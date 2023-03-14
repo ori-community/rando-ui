@@ -140,7 +140,7 @@ export const actions = {
       if (!resolvedUrl) {
         const release = rootGetters['version/latestAvailableReleaseExe']
         resolvedUrl = release.browser_download_url
-        commit('setUpdateReleaseName', rootGetters['version/latestAvailableVersion'])
+        commit('setUpdateReleaseName', rootGetters['version/latestVisibleVersion'])
       } else {
         commit('setUpdateReleaseName', releaseName)
       }

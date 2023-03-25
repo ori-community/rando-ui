@@ -193,7 +193,7 @@ export const actions = {
       })
     }
   },
-  async spectateMultiverse(dispatch, multiverseId) {
+  async spectateMultiverse({ dispatch }, multiverseId) {
     await this.$axios.post(`/multiverses/${multiverseId}/spectators`)
     await dispatch('fetchMultiverse', multiverseId)
     await dispatch('connectMultiverse', { multiverseId, reconnect: true })

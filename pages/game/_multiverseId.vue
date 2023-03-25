@@ -133,7 +133,7 @@
               Enable Overlay
             </template>
           </v-btn>
-          <v-btn :disabled="isSpectating" text @click="spectateDialogOpen = true">
+          <v-btn text :disabled="isSpectating" @click="spectateDialogOpen = true">
             <v-icon left>mdi-monitor-eye</v-icon>
             Spectate
           </v-btn>
@@ -203,7 +203,15 @@
                   @click.native.ctrl.capture.stop="toggleUniverseVisibility(bingoUniverse.universeId, true)"
                 />
               </div>
-
+              <v-btn :key="`spectatorMode`" text @click="setSpectatorMode">
+                <v-icon left>mdi-eye</v-icon>
+                <template v-if="!!boardSettings.SpectatorSeeAll">
+                  Teams
+                </template>
+                <template v-else>
+                  All
+                </template>
+              </v-btn>
               <div
                 v-if="!boardSettings.hideSpectators && multiverse.spectators.length > 0"
                 key="spectators"
@@ -266,8 +274,7 @@
       <v-dialog v-model="spectateDialogOpen" :persistent="spectateLoading" max-width="500">
         <v-card class="pa-5 relative">
           <h2>Spectate this game</h2>
-
-          Spectating the game lets you see all squares that have been discovered by at least one team.<br />
+          Spectating the game lets you see all squares or the those visible by the teams<br />
           Please note that you <b>cannot join this game anymore</b> after you chose to spectate.
 
           <div class="d-flex justify-end">
@@ -324,6 +331,7 @@
         highlightOwnUniverse: true,
         hideSpectators: false,
         cardAttentionEffect: true,
+        spectatorSeeAll: false,
       },
       spectateDialogOpen: false,
       spectateLoading: false,
@@ -619,12 +627,17 @@
           this.gameLinkCopied = false
         }, 3000)
       },
+      setSpectatorMode(){
+        this.boardSettings.spectatorSeeAll = !this.boardSettings.spectatorSeeAll
+        console.log(this.boardSettings.spectatorSeeAll)
+      },
       async spectate() {
         this.spectateLoading = true
 
         try {
           await this.$store.dispatch('multiverseState/spectateMultiverse', this.multiverseId)
           this.spectateDialogOpen = false
+          this.centerBoard()
         } catch (e) {
           console.error(e)
         }

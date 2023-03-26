@@ -98,15 +98,27 @@
           return {}
         }
 
-        const highlightSplitPercentage = 33
+        const highlightSplitPercentage = this.isLockout
+          ? 20
+          : 33
 
-        const nonHighlightedColors = this.square.completedBy
-          .filter((universeId) => (!this.hiddenUniverses.includes(universeId) && universeId !== this.highlightUniverse) || this.isLockout)
-          .sort((a, b) => b - a)
-          .map((universeId) => this.universeColors[universeId])
+        let nonHighlightedColors = []
+
+        if (this.isLockout) {
+          if (this.square.completedBy.length >= 2) {
+            nonHighlightedColors = this.square.completedBy.slice(1)
+          }
+        } else {
+          nonHighlightedColors = this.square.completedBy
+            .filter((universeId) => (!this.hiddenUniverses.includes(universeId) && universeId !== this.highlightUniverse))
+            .sort((a, b) => b - a)
+            .map((universeId) => this.universeColors[universeId])
+        }
+
         const stops = []
 
-        const shouldHighlight = !!this.highlightUniverse && !this.hiddenUniverses.includes(this.highlightUniverse) && !this.isLockout
+        const shouldHighlight = (!!this.highlightUniverse && !this.hiddenUniverses.includes(this.highlightUniverse)) ||
+          (this.isLockout && this.square.completedBy.length >= 2)
 
         for (let i = 0; i < nonHighlightedColors.length; i++) {
           const stopStart = (i / nonHighlightedColors.length) * (shouldHighlight ? highlightSplitPercentage : 100)
@@ -118,7 +130,13 @@
           stops.push(`transparent 0% ${highlightSplitPercentage}%`)
         }
 
-        if (this.highlightUniverse && !this.isLockout) {
+        if (this.isLockout) {
+          if (this.square.completedBy.length >= 1) {
+            stops.push(`${this.universeColors[this.square.completedBy[0]]} ${highlightSplitPercentage}% 100%`)
+          } else {
+            stops.push(`transparent ${highlightSplitPercentage}% 100%`)
+          }
+        } else if (this.highlightUniverse) {
           if (shouldHighlight && this.square.completedBy.includes(this.highlightUniverse)) {
             stops.push(`${this.universeColors[this.highlightUniverse]} ${highlightSplitPercentage}% 100%`)
           } else {

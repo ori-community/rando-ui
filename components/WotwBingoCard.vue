@@ -14,7 +14,7 @@
       <v-card elevation="0" class="front" :style="cardStyle" color="background lighten-1">
         <div class="content d-flex flex-column">
           <template v-if="!!square">
-            <div class="square-text pa-2" :class="{ expand: !hasGoals }">{{ square.text }}</div>
+            <div class="square-text pa-2" :class="{ expand: !hasGoals }">{{ square.completedBy }}</div>
             <template v-if="hasGoals">
               <v-spacer />
               <div class="px-2 pt-1 pb-2 square-goals" :class="{ 'bigger-text': goalsShouldBeLarge }">
@@ -107,6 +107,7 @@
         if (this.isLockout) {
           if (this.square.completedBy.length >= 2) {
             nonHighlightedColors = this.square.completedBy.slice(1)
+              .map((universeId) => this.universeColors[universeId])
           }
         } else {
           nonHighlightedColors = this.square.completedBy

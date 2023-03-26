@@ -157,7 +157,7 @@
       },
     },
     watch: {
-      async stateHash(value, oldValue) {
+      async stateHash() {
         // Don't show the attention effect for completed goals
         if (this.ownUniverseId !== null && this.square.completedBy.includes(this.ownUniverseId)) {
           return

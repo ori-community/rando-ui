@@ -72,6 +72,10 @@
         required: false,
         default: false,
       },
+      isSpectating: {
+        type: Boolean,
+        default: false
+      },
       playerLoadingTimes: {
         type: Object,
         required: false,

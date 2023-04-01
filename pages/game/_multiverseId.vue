@@ -75,6 +75,7 @@
 
             <div :class="{ 'two-columns': hasRace }">
               <wotw-multiverse-view
+                :is-spectating="isSpectating"
                 :multiverse="multiverse"
                 :player-loading-times="normalGameHandlerState?.playerLoadingTimes"
                 :player-finished-times="normalGameHandlerState?.playerFinishedTimes"
@@ -180,11 +181,13 @@
         <template v-if="showBoard">
           <wotw-bingo-board
             :edge-labels="boardSettings.edgeLabels"
+            :is-spectating="isSpectating"
             :multiverse="multiverse"
             :hidden-universes="hiddenUniverses"
             :highlight-universe="highlightedUniverseId"
             :own-universe-id="ownUniverseId"
             :card-attention-effect="boardSettings.cardAttentionEffect"
+            :spectator-see-all="boardSettings.spectatorSeeAll"
             class="board"
           />
           <div class="sidebar px-5">
@@ -197,19 +200,20 @@
               >
                 <wotw-bingo-universe-view
                   :bingo-universe="bingoUniverse"
+                  :is-spectating="isSpectating"
                   :universe="multiverse.universes.find((u) => u.id === bingoUniverse.universeId)"
                   :universe-hidden="hiddenUniverses.includes(bingoUniverse.universeId)"
                   @click="toggleUniverseVisibility(bingoUniverse.universeId)"
                   @click.native.ctrl.capture.stop="toggleUniverseVisibility(bingoUniverse.universeId, true)"
                 />
               </div>
-              <v-btn :key="`spectatorMode`" text @click="setSpectatorMode">
+              <v-btn v-if="isSpectating" :key="`spectatorMode`" text @click="setSpectatorMode">
                 <v-icon left>mdi-eye</v-icon>
-                <template v-if="!!boardSettings.SpectatorSeeAll">
-                  Teams
+                <template v-if="!!boardSettings.spectatorSeeAll">
+                  All
                 </template>
                 <template v-else>
-                  All
+                  Teams
                 </template>
               </v-btn>
               <div
@@ -370,8 +374,8 @@
         const universes = this.multiverse.universes
         return [...this.multiverse.bingoUniverses.filter((b) => universes.some((u) => u.id === b.universeId))].sort(
           (a, b) => {
-            const aRank = this.hiddenUniverses.includes(a.universeId) ? 0 : a.rank
-            const bRank = this.hiddenUniverses.includes(b.universeId) ? 0 : b.rank
+            const aRank = this.hiddenUniverses.includes(a.universeId) || this.isSpectating ? 0 : a.rank
+            const bRank = this.hiddenUniverses.includes(b.universeId) || this.isSpectating ? 0 : b.rank
 
             const rankDifference = bRank - aRank
 
@@ -629,7 +633,6 @@
       },
       setSpectatorMode(){
         this.boardSettings.spectatorSeeAll = !this.boardSettings.spectatorSeeAll
-        console.log(this.boardSettings.spectatorSeeAll)
       },
       async spectate() {
         this.spectateLoading = true
@@ -637,11 +640,10 @@
         try {
           await this.$store.dispatch('multiverseState/spectateMultiverse', this.multiverseId)
           this.spectateDialogOpen = false
-          this.centerBoard()
+          if(!this.showBoard) {this.centerBoard()}
         } catch (e) {
           console.error(e)
         }
-
         this.spectateLoading = false
       },
       onScroll() {

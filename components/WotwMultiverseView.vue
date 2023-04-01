@@ -60,6 +60,10 @@
   export default {
     name: 'WotwMultiverseView',
     props: {
+      isSpectating: {
+        type: Boolean,
+        default: false,
+      },
       multiverse: {
         type: Object,
         required: true,
@@ -117,13 +121,6 @@
         }
 
         return this.ownUniverseId
-      },
-      isSpectating() {
-        if (!this.multiverse || !this.user) {
-          return false
-        }
-
-        return this.multiverse.spectators.some((s) => s.id === this.user.id)
       },
       universePlaces() {
         return Object.fromEntries(

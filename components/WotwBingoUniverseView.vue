@@ -6,7 +6,7 @@
   >
     <v-sheet :color="universeHidden ? '' : universe.color" class="color-stripe">
       <div v-if="!!bingoUniverse" class="squares px-2">
-        {{ universeHidden ? '?' : bingoUniverse.squares }}
+        {{ universeHidden && !isSpectating ? '?' : bingoUniverse.squares }}
       </div>
     </v-sheet>
     <div v-if="!!universe" class="pa-2 players">
@@ -23,7 +23,7 @@
     <v-spacer />
     <div v-if="!!bingoUniverse" class="lines px-3">
       <v-icon size="16">mdi-vector-line</v-icon>
-      {{ universeHidden ? '?' : bingoUniverse.lines }}
+      {{ universeHidden && !isSpectating ? '?' : bingoUniverse.lines }}
     </div>
   </v-card>
 </template>
@@ -36,6 +36,11 @@
     props: {
       universe: {
         type: Object,
+        required: true,
+      },
+      isSpectating: {
+        type: Boolean,
+        default: true,
         required: true,
       },
       bingoUniverse: {

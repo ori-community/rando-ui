@@ -15,7 +15,7 @@
         <wotw-bingo-card
           :key='`${x}${y}`'
           :force-flip='x + y > unveilProgress'
-          :square='hasSquare(x, y) ? squaresByPosition[x][y].square : null'
+          :square='hasSquare(x, y) ? squaresByPosition?.[x]?.[y]?.square : null'
           :universe-colors='universeColors'
           :hidden-universes='hiddenUniverses'
           :highlight-universe='highlightUniverse'
@@ -47,6 +47,10 @@
   export default {
     name: 'WotwBingoBoard',
     props: {
+      isSpectating: {
+        type: Boolean,
+        default: false,
+      },
       multiverse: {
         type: Object,
         required: true,
@@ -66,6 +70,10 @@
       highlightUniverse: {
         type: Number,
         default: null,
+      },
+      spectatorSeeAll: {
+        type: Boolean,
+        default: false,
       },
       ownUniverseId: {
         type: Number,
@@ -97,6 +105,8 @@
 
         for (const square of this.multiverse.bingoBoard.squares) {
           if (!hasOwnProperty(squares, square.position.x)) {
+
+
             squares[square.position.x] = {}
           }
 
@@ -124,7 +134,15 @@
     },
     methods: {
       hasSquare(x, y) {
-        return hasOwnProperty(this.squaresByPosition, x) && hasOwnProperty(this.squaresByPosition[x], y)
+        if(!this.isSpectating){
+          return hasOwnProperty(this.squaresByPosition, x) && hasOwnProperty(this.squaresByPosition?.[x], y)
+        }
+
+        if(this.spectatorSeeAll){ return true }
+
+        const square = this.squaresByPosition?.[x]?.[y]?.square
+        return square?.visibleFor?.some(universeId => (!this.hiddenUniverses.includes(universeId)))
+
       },
       isSquareMarked(x, y) {
         return this.multiverse.markedBingoGoals.some(m => m.x === x && m.y === y)

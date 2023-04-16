@@ -71,7 +71,7 @@
         type: Number,
         default: null,
       },
-      spectatorSeeAll: {
+      spectatorDisplayAll: {
         type: Boolean,
         default: false,
       },
@@ -138,7 +138,7 @@
           return hasOwnProperty(this.squaresByPosition, x) && hasOwnProperty(this.squaresByPosition?.[x], y)
         }
 
-        if(this.spectatorSeeAll){ return true }
+        if(this.spectatorDisplayAll){ return true }
 
         const square = this.squaresByPosition?.[x]?.[y]?.square
         return square?.visibleFor?.some(universeId => (!this.hiddenUniverses.includes(universeId)))

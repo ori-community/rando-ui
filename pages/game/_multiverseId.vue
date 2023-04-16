@@ -6,7 +6,8 @@
           <v-tooltip top open-delay="500">
             <template #activator="{ on }">
               <v-btn class="ml-2" :disabled="!canLock || lockGameLoading" icon v-on="on" @click="toggleGameLock">
-                <v-icon :class="multiverse?.locked ? 'lock-animation' : 'unlock-animation'"
+                <v-icon
+                  :class="multiverse?.locked ? 'lock-animation' : 'unlock-animation'"
                 >{{ multiverse?.locked ? 'mdi-lock' : 'mdi-lock-open-outline' }}
                 </v-icon>
               </v-btn>
@@ -49,7 +50,8 @@
                 </v-btn>
               </div>
             </template>
-            <span v-if="!multiverseReady || multiverse.universes.length > 0"
+            <span
+              v-if="!multiverseReady || multiverse.universes.length > 0"
             >Create or join a world to launch the game</span
             >
             <span v-else>Create a universe to launch the game</span>
@@ -187,7 +189,7 @@
             :highlight-universe="highlightedUniverseId"
             :own-universe-id="ownUniverseId"
             :card-attention-effect="boardSettings.cardAttentionEffect"
-            :spectator-see-all="boardSettings.spectatorSeeAll"
+            :spectator-display-all="boardSettings.spectatorDisplayAll"
             class="board"
           />
           <div class="sidebar px-5">
@@ -207,15 +209,7 @@
                   @click.native.ctrl.capture.stop="toggleUniverseVisibility(bingoUniverse.universeId, true)"
                 />
               </div>
-              <v-btn v-if="isSpectating" :key="`spectatorMode`" text @click="setSpectatorMode">
-                <v-icon left>mdi-eye</v-icon>
-                <template v-if="!!boardSettings.spectatorSeeAll">
-                  All
-                </template>
-                <template v-else>
-                  Teams
-                </template>
-              </v-btn>
+              <v-switch key="spectatorMode" v-model="boardSettings.spectatorDisplayAll" label="Show all cards" inset />
               <div
                 v-if="!boardSettings.hideSpectators && multiverse.spectators.length > 0"
                 key="spectators"
@@ -297,10 +291,13 @@
 
         <div class="d-flex justify-end">
           <v-btn :disabled="startRaceTimerLoading" class="mr-1" text @click="startRaceTimerDialogOpen = false">
-            Cancel</v-btn
+            Cancel
+          </v-btn
           >
-          <v-btn :loading="startRaceTimerLoading" color="accent" depressed @click="startRaceTimer"
-            >Start countdown</v-btn
+          <v-btn
+            :loading="startRaceTimerLoading" color="accent" depressed @click="startRaceTimer"
+          >Start countdown
+          </v-btn
           >
         </div>
       </v-card>
@@ -335,7 +332,7 @@
         highlightOwnUniverse: true,
         hideSpectators: false,
         cardAttentionEffect: true,
-        spectatorSeeAll: false,
+        spectatorDisplayAll: false,
       },
       spectateDialogOpen: false,
       spectateLoading: false,
@@ -631,16 +628,15 @@
           this.gameLinkCopied = false
         }, 3000)
       },
-      setSpectatorMode(){
-        this.boardSettings.spectatorSeeAll = !this.boardSettings.spectatorSeeAll
-      },
       async spectate() {
         this.spectateLoading = true
 
         try {
           await this.$store.dispatch('multiverseState/spectateMultiverse', this.multiverseId)
           this.spectateDialogOpen = false
-          if(!this.showBoard) {this.centerBoard()}
+          if (!this.showBoard) {
+            this.centerBoard()
+          }
         } catch (e) {
           console.error(e)
         }

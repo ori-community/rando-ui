@@ -40,8 +40,7 @@
       },
       isSpectating: {
         type: Boolean,
-        default: true,
-        required: true,
+        default: false,
       },
       bingoUniverse: {
         type: Object,

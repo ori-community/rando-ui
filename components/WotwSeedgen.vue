@@ -90,7 +90,7 @@
   import { EventBus } from '~/assets/lib/EventBus'
   import { getSeedgen } from '~/assets/lib/getSeedgen'
 
-  const SEEDGEN_LAST_CONFIG_KEY = 'seedgen-last-config'
+  const SEEDGEN_LAST_CONFIG_KEY = 'seedgen-last-config-v2'
   const SeedgenWASM = getSeedgen()
 
   const createDefaultUniverseSettings = () => ({
@@ -371,13 +371,19 @@
           return
         }
 
-        window.localStorage.setItem(SEEDGEN_LAST_CONFIG_KEY, JSON.stringify(this.universeSettings))
+        window.localStorage.setItem(SEEDGEN_LAST_CONFIG_KEY, JSON.stringify({
+          universeSettings: this.universeSettings,
+          bingoSettings: this.bingoSettings,
+        }))
       },
       restoreLastConfig() {
         const lastConfigJson = window.localStorage.getItem(SEEDGEN_LAST_CONFIG_KEY)
 
         if (lastConfigJson) {
-          this.universeSettings = JSON.parse(lastConfigJson)
+          const lastConfig = JSON.parse(lastConfigJson)
+
+          this.universeSettings = lastConfig.universeSettings ?? createDefaultUniverseSettings()
+          this.bingoSettings = lastConfig.bingoSettings ?? new BingoSettings()
           this.currentWorldIndex = 0
           this.addingNewWorld = false
         }

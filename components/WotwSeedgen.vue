@@ -269,8 +269,15 @@
             } catch (e) {
               if (!(e instanceof SilentError)) {
                 console.error(e)
+
+                let errorMessage = String(e)
+
+                if (e.response) {
+                  errorMessage += `\n<pre>${e.response.data}</pre>`
+                }
+
                 EventBus.$emit('notification', {
-                  message: String(e),
+                  message: errorMessage,
                   color: 'error',
                 })
               }

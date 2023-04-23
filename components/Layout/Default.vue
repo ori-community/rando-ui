@@ -8,7 +8,8 @@
 
         <v-snackbars :objects.sync='notifications'>
           <template #default='{message}'>
-            <span class='notification-text'>{{ message }}</span>
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <span class='notification-text' v-html="message"></span>
           </template>
         </v-snackbars>
 

@@ -209,7 +209,7 @@
                   @click.native.ctrl.capture.stop="toggleUniverseVisibility(bingoUniverse.universeId, true)"
                 />
               </div>
-              <v-switch key="spectatorMode" v-model="boardSettings.spectatorDisplayAll" label="Show all cards" inset />
+              <v-switch v-if="isSpectating" key="spectatorMode" v-model="boardSettings.spectatorDisplayAll" label="Show all cards" inset />
               <div
                 v-if="!boardSettings.hideSpectators && multiverse.spectators.length > 0"
                 key="spectators"

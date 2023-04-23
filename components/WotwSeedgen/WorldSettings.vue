@@ -155,6 +155,7 @@
     watch: {
       'model.inlineHeaders': {
         deep: true,
+        immediate: true,
         handler(inlineHeaders) {
           if (inlineHeaders.length === 0 && this.inlineHeader.length > 0) {
             this.inlineHeader = ''

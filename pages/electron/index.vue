@@ -153,7 +153,6 @@
 
 <script>
   import { mapGetters, mapMutations, mapState } from 'vuex'
-  import sanitizeHtml from 'sanitize-html'
   import { parse } from 'date-fns'
   import { formatsDates } from '~/assets/lib/formatsDates'
   import { getOS, isOS, Platform } from '~/assets/lib/os'
@@ -191,25 +190,21 @@
     watch: {
       currentVersion: {
         immediate: true,
+        // eslint-disable-next-line
         async handler(version) {
           if (version) {
-            this.motd = sanitizeHtml(
-              (
-                await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/motd/wotw`, {
-                  params: {
-                    version,
-                  },
-                })
-              ).motd,
-              {
-                allowedClasses: {
-                  '*': ['mb-*'],
+            this.motd = (
+              await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/motd/wotw`, {
+                params: {
+                  version,
                 },
-              },
-            ).replaceAll(/#(\d+:\d+)#/g, (substring, utcTime) => {
-              const time = parse(`${utcTime}+00`, 'HH:mmx', new Date())
-              return this.formatDateObject(time, 'p')
-            })
+              })
+            )
+              .motd
+              .replaceAll(/#(\d+:\d+)#/g, (_substring, utcTime) => {
+                const time = parse(`${utcTime}+00`, 'HH:mmx', new Date())
+                return this.formatDateObject(time, 'p')
+              })
           }
         },
       },

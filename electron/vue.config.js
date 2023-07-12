@@ -18,7 +18,7 @@ module.exports = {
           .loader('js-yaml-loader')
           .end()
       },
-      externals: ['ffi-napi', 'ref-napi'],
+      externals: ['@lwahonen/ffi-napi', '@lwahonen/ref-napi'],
       preload: 'src/preload.js',
       rendererProcessFile: 'src/renderer.js',
       mainProcessWatch: [

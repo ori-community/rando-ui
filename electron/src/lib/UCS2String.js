@@ -1,5 +1,5 @@
-import ffi from 'ffi-napi'
-import ref from 'ref-napi'
+import ffi from '@lwahonen/ffi-napi'
+import ref from '@lwahonen/ref-napi'
 
 export const UCS2String = {
   name: 'lpctstr',

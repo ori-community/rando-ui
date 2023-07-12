@@ -1,13 +1,12 @@
 import * as commonmark from 'commonmark'
-import semver from 'semver'
-import sanitizeHtml from 'sanitize-html'
+import * as semver from 'semver'
 
 export const state = () => ({
   availableReleases: null,
 })
 
 export const getters = {
-  shouldShowVersion(state, getter, rootState) {
+  shouldShowVersion(_state, _getter, rootState) {
     return version => {
       const updateToPrereleaseVersions = rootState.electron.settingsLoaded && (rootState.electron.settings['Flags.UpdateToPrereleaseVersions'] ?? false)
       const prerelease = semver.prerelease(version)
@@ -19,21 +18,21 @@ export const getters = {
       ? state.availableReleases[0]
       : null
   },
-  latestAvailableReleaseExe(state, getters){
+  latestAvailableReleaseExe(_state, getters){
     return getters.latestVisibleRelease?.assets.find((a) => a.name === 'WotwRandoSetup.exe')
   },
-  latestAvailableVersion(state, getters) {
+  latestAvailableVersion(_state, getters) {
     return getters.latestAvailableRelease?.name
   },
   visibleReleases(state, getters) {
     return state.availableReleases?.filter(r => getters.shouldShowVersion(r.name))
   },
-  latestVisibleRelease(state, getters) {
+  latestVisibleRelease(_state, getters) {
     return getters.visibleReleases?.length > 0
       ? getters.visibleReleases[0]
       : null
   },
-  latestVisibleVersion(state, getters) {
+  latestVisibleVersion(_state, getters) {
     return getters.latestVisibleRelease?.name
   },
 }
@@ -58,7 +57,7 @@ export const actions = {
 
             return {
               ...release,
-              bodyHtml: sanitizeHtml(writer.render(parser.parse(release.body))),
+              bodyHtml: writer.render(parser.parse(release.body)),
             }
           }),
       )

@@ -72,12 +72,12 @@
         }
       }
 
-      window.electronApi.on('chatControl.setConnected', (event, connected) => {
+      window.electronApi.on('chatControl.setConnected', (_event, connected) => {
         this.connecting = false
         this.connected = connected
       })
 
-      window.electronApi.on('chatControl.onRedemption', async (event, message) => {
+      window.electronApi.on('chatControl.onRedemption', async (_event, message) => {
         const chatMessage = {
           ...message,
           type: 'reward',
@@ -93,7 +93,7 @@
         }
       })
 
-      window.electronApi.on('chatControl.onMessage', async (event, { user, message }) => {
+      window.electronApi.on('chatControl.onMessage', async (_event, { user, message }) => {
         const chatMessage = {
           type: 'message',
           user,

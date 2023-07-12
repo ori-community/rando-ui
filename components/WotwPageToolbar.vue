@@ -49,9 +49,9 @@
             <template v-else-if="remoteTrackerUrlCopied"> URL copied </template>
             <template v-else> Create Remote Tracker </template>
           </v-list-item>
-          <v-list-item x-large depressed text @click="openChatControl">
+          <v-list-item disabled x-large depressed text @click="openChatControl">
             <v-icon left>mdi-message-flash-outline</v-icon>
-            Chat Control
+            Chat Control (currently unavailable)
           </v-list-item>
           <v-list-item x-large depressed text to="/electron/stats">
             <v-icon left>mdi-chart-box-outline</v-icon>

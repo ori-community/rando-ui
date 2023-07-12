@@ -60,7 +60,7 @@ export class RandoIPCService {
   }
 
   static isConnected() {
-    return socket !== null && peerConnected
+    return socket !== null && !socket.closed && peerConnected
   }
 
   static async startIPCServer() {
@@ -78,6 +78,11 @@ export class RandoIPCService {
         peerConnected = true
         uiIpc.queueSend('randoIpc.setConnected', true)
         this.events.onConnect.emit()
+      })
+
+      socket.events.on('disconnect', () => {
+        peerConnected = false
+        uiIpc.queueSend('randoIpc.setConnected', false)
       })
 
       await socket.bind('tcp://127.0.0.1:31414')

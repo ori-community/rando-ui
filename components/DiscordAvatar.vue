@@ -1,7 +1,8 @@
 <template>
   <v-badge :value='!!user.connectedMultiverseId && user.connectedMultiverseId === multiverseId' color='green' bottom bordered dot offset-x='8' offset-y='8'>
-    <v-avatar color='accent' :size='$attrs.size || "32"' v-bind='$attrs'>
-      <v-img v-if='discordAvatarUrl !== null' :src='discordAvatarUrl'>
+    <v-avatar :color='user.raceReady ? "success" : "accent"' :size='$attrs.size || "32"' v-bind='$attrs'>
+      <v-icon v-if="user.raceReady">mdi-check</v-icon>
+      <v-img v-else-if='discordAvatarUrl !== null' :src='discordAvatarUrl'>
         <template #placeholder>
           <div class='d-flex align-center justify-center fill-height'>
             <v-icon :size='$attrs.size * 0.6 || "19"'>mdi-account</v-icon>

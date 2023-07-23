@@ -20,6 +20,7 @@ message UserInfo {
   optional int64 currentMultiverseId = 5;
   bool isDeveloper = 6;
   int32 points = 7;
+  bool raceReady = 8;
 }
 
 message WorldInfo {
@@ -179,10 +180,11 @@ message TrackerTimerStateUpdate { // 105
 }
 
 message NormalGameHandlerState {
-  optional int64 startingAt = 1;
+  optional int64 raceStartingAt = 1;
   optional float finishedTime = 2;
   map<string, float> playerLoadingTimes = 3;
   map<string, float> playerFinishedTimes = 4;
   map<int64, float> worldFinishedTimes = 5;
   map<int64, float> universeFinishedTimes = 6;
+  bool raceModeEnabled = 7;
 }

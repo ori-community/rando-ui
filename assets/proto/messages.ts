@@ -26,6 +26,7 @@ export interface UserInfo {
   currentMultiverseId?: number | undefined;
   isDeveloper: boolean;
   points: number;
+  raceReady: boolean;
 }
 
 export interface WorldInfo {
@@ -243,12 +244,13 @@ export interface TrackerTimerStateUpdate {
 
 export interface NormalGameHandlerState {
   $type: "RandoProto.NormalGameHandlerState";
-  startingAt?: number | undefined;
+  raceStartingAt?: number | undefined;
   finishedTime?: number | undefined;
   playerLoadingTimes: { [key: string]: number };
   playerFinishedTimes: { [key: string]: number };
   worldFinishedTimes: { [key: number]: number };
   universeFinishedTimes: { [key: number]: number };
+  raceModeEnabled: boolean;
 }
 
 export interface NormalGameHandlerState_PlayerLoadingTimesEntry {
@@ -438,6 +440,7 @@ function createBaseUserInfo(): UserInfo {
     currentMultiverseId: undefined,
     isDeveloper: false,
     points: 0,
+    raceReady: false,
   };
 }
 
@@ -465,6 +468,9 @@ export const UserInfo = {
     }
     if (message.points !== 0) {
       writer.uint32(56).int32(message.points);
+    }
+    if (message.raceReady === true) {
+      writer.uint32(64).bool(message.raceReady);
     }
     return writer;
   },
@@ -525,6 +531,13 @@ export const UserInfo = {
 
           message.points = reader.int32();
           continue;
+        case 8:
+          if (tag !== 64) {
+            break;
+          }
+
+          message.raceReady = reader.bool();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -544,6 +557,7 @@ export const UserInfo = {
       currentMultiverseId: isSet(object.currentMultiverseId) ? Number(object.currentMultiverseId) : undefined,
       isDeveloper: isSet(object.isDeveloper) ? Boolean(object.isDeveloper) : false,
       points: isSet(object.points) ? Number(object.points) : 0,
+      raceReady: isSet(object.raceReady) ? Boolean(object.raceReady) : false,
     };
   },
 
@@ -557,6 +571,7 @@ export const UserInfo = {
     message.currentMultiverseId !== undefined && (obj.currentMultiverseId = Math.round(message.currentMultiverseId));
     message.isDeveloper !== undefined && (obj.isDeveloper = message.isDeveloper);
     message.points !== undefined && (obj.points = Math.round(message.points));
+    message.raceReady !== undefined && (obj.raceReady = message.raceReady);
     return obj;
   },
 
@@ -573,6 +588,7 @@ export const UserInfo = {
     message.currentMultiverseId = object.currentMultiverseId ?? undefined;
     message.isDeveloper = object.isDeveloper ?? false;
     message.points = object.points ?? 0;
+    message.raceReady = object.raceReady ?? false;
     return message;
   },
 };
@@ -2866,12 +2882,13 @@ messageTypeRegistry.set(TrackerTimerStateUpdate.$type, TrackerTimerStateUpdate);
 function createBaseNormalGameHandlerState(): NormalGameHandlerState {
   return {
     $type: "RandoProto.NormalGameHandlerState",
-    startingAt: undefined,
+    raceStartingAt: undefined,
     finishedTime: undefined,
     playerLoadingTimes: {},
     playerFinishedTimes: {},
     worldFinishedTimes: {},
     universeFinishedTimes: {},
+    raceModeEnabled: false,
   };
 }
 
@@ -2879,8 +2896,8 @@ export const NormalGameHandlerState = {
   $type: "RandoProto.NormalGameHandlerState" as const,
 
   encode(message: NormalGameHandlerState, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.startingAt !== undefined) {
-      writer.uint32(8).int64(message.startingAt);
+    if (message.raceStartingAt !== undefined) {
+      writer.uint32(8).int64(message.raceStartingAt);
     }
     if (message.finishedTime !== undefined) {
       writer.uint32(21).float(message.finishedTime);
@@ -2913,6 +2930,9 @@ export const NormalGameHandlerState = {
         value,
       }, writer.uint32(50).fork()).ldelim();
     });
+    if (message.raceModeEnabled === true) {
+      writer.uint32(56).bool(message.raceModeEnabled);
+    }
     return writer;
   },
 
@@ -2928,7 +2948,7 @@ export const NormalGameHandlerState = {
             break;
           }
 
-          message.startingAt = longToNumber(reader.int64() as Long);
+          message.raceStartingAt = longToNumber(reader.int64() as Long);
           continue;
         case 2:
           if (tag !== 21) {
@@ -2977,6 +2997,13 @@ export const NormalGameHandlerState = {
             message.universeFinishedTimes[entry6.key] = entry6.value;
           }
           continue;
+        case 7:
+          if (tag !== 56) {
+            break;
+          }
+
+          message.raceModeEnabled = reader.bool();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -2989,7 +3016,7 @@ export const NormalGameHandlerState = {
   fromJSON(object: any): NormalGameHandlerState {
     return {
       $type: NormalGameHandlerState.$type,
-      startingAt: isSet(object.startingAt) ? Number(object.startingAt) : undefined,
+      raceStartingAt: isSet(object.raceStartingAt) ? Number(object.raceStartingAt) : undefined,
       finishedTime: isSet(object.finishedTime) ? Number(object.finishedTime) : undefined,
       playerLoadingTimes: isObject(object.playerLoadingTimes)
         ? Object.entries(object.playerLoadingTimes).reduce<{ [key: string]: number }>((acc, [key, value]) => {
@@ -3015,12 +3042,13 @@ export const NormalGameHandlerState = {
           return acc;
         }, {})
         : {},
+      raceModeEnabled: isSet(object.raceModeEnabled) ? Boolean(object.raceModeEnabled) : false,
     };
   },
 
   toJSON(message: NormalGameHandlerState): unknown {
     const obj: any = {};
-    message.startingAt !== undefined && (obj.startingAt = Math.round(message.startingAt));
+    message.raceStartingAt !== undefined && (obj.raceStartingAt = Math.round(message.raceStartingAt));
     message.finishedTime !== undefined && (obj.finishedTime = message.finishedTime);
     obj.playerLoadingTimes = {};
     if (message.playerLoadingTimes) {
@@ -3046,6 +3074,7 @@ export const NormalGameHandlerState = {
         obj.universeFinishedTimes[k] = v;
       });
     }
+    message.raceModeEnabled !== undefined && (obj.raceModeEnabled = message.raceModeEnabled);
     return obj;
   },
 
@@ -3055,7 +3084,7 @@ export const NormalGameHandlerState = {
 
   fromPartial<I extends Exact<DeepPartial<NormalGameHandlerState>, I>>(object: I): NormalGameHandlerState {
     const message = createBaseNormalGameHandlerState();
-    message.startingAt = object.startingAt ?? undefined;
+    message.raceStartingAt = object.raceStartingAt ?? undefined;
     message.finishedTime = object.finishedTime ?? undefined;
     message.playerLoadingTimes = Object.entries(object.playerLoadingTimes ?? {}).reduce<{ [key: string]: number }>(
       (acc, [key, value]) => {
@@ -3092,6 +3121,7 @@ export const NormalGameHandlerState = {
       }
       return acc;
     }, {});
+    message.raceModeEnabled = object.raceModeEnabled ?? false;
     return message;
   },
 };

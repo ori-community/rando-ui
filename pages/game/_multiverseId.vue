@@ -58,9 +58,9 @@
           </v-tooltip>
 
           <div class="mt-2">
-            <v-btn v-if="canStartRace" text @click="startRaceTimerDialogOpen = true">
+            <v-btn v-if="canEnableRaceMode" text @click="enableRaceModeDialogOpen = true">
               <v-icon left>mdi-timer-play-outline</v-icon>
-              Start Race timer
+              Enable race mode
             </v-btn>
           </div>
         </div>
@@ -70,9 +70,13 @@
             <div class="text-center mb-3">
               <wotw-race-timer
                 v-if="isRaceRunning"
-                :starting-at="normalGameHandlerState.startingAt"
+                :starting-at="normalGameHandlerState.raceStartingAt"
                 :finished-time="normalGameHandlerState.finishedTime ?? null"
               />
+              <template v-else-if="isRaceModeEnabled">
+                <h3>Waiting for all players to be ready...</h3>
+                <div>Start a new save file to signal yourself ready.</div>
+              </template>
             </div>
 
             <div :class="{ 'two-columns': hasRace }">
@@ -283,22 +287,22 @@
       </v-dialog>
     </template>
 
-    <v-dialog v-model="startRaceTimerDialogOpen" :persistent="startRaceTimerLoading" max-width="500">
+    <v-dialog v-model="enableRaceModeDialogOpen" :persistent="enableRaceModeLoading" max-width="500">
       <v-card class="pa-5 relative">
-        <h2>Start race timer</h2>
+        <h2>Enable race mode</h2>
 
-        The game will be locked and a <b>20 second countdown</b> will start immediately.
+        Players will be blocked from starting new games until everyone is ready. To signal yourself ready, select an
+        empty save file and choose the difficulty.<br>
+        Once the race starts, the game will be locked.
 
         <div class="d-flex justify-end">
-          <v-btn :disabled="startRaceTimerLoading" class="mr-1" text @click="startRaceTimerDialogOpen = false">
+          <v-btn :disabled="enableRaceModeLoading" class="mr-1" text @click="enableRaceModeDialogOpen = false">
             Cancel
-          </v-btn
-          >
+          </v-btn>
           <v-btn
-            :loading="startRaceTimerLoading" color="accent" depressed @click="startRaceTimer"
-          >Start countdown
-          </v-btn
-          >
+            :loading="enableRaceModeLoading" color="accent" depressed @click="enableRaceMode"
+          >Enable race mode
+          </v-btn>
         </div>
       </v-card>
     </v-dialog>
@@ -336,8 +340,8 @@
       },
       spectateDialogOpen: false,
       spectateLoading: false,
-      startRaceTimerDialogOpen: false,
-      startRaceTimerLoading: false,
+      enableRaceModeDialogOpen: false,
+      enableRaceModeLoading: false,
       seedgenResultVisible: false,
       hideSeedgenResultCompletely: false,
       bingoOverlayEnabled: false,
@@ -455,17 +459,24 @@
           return false
         }
 
-        return !!this.normalGameHandlerState.startingAt
+        return !!this.normalGameHandlerState.raceStartingAt
       },
-      hasRace() {
-        return !!this.multiverse?.race
-      },
-      canStartRace() {
+      isRaceModeEnabled() {
         if (!this.normalGameHandlerState) {
           return false
         }
 
-        return !this.normalGameHandlerState.startingAt && this.isPlayer
+        return !!this.normalGameHandlerState.raceModeEnabled
+      },
+      hasRace() {
+        return !!this.multiverse?.race
+      },
+      canEnableRaceMode() {
+        if (!this.normalGameHandlerState) {
+          return false
+        }
+
+        return !this.normalGameHandlerState.raceModeEnabled && this.isPlayer
       },
     },
     watch: {
@@ -708,11 +719,11 @@
 
         await this.$store.dispatch('electron/launch')
       },
-      async startRaceTimer() {
-        this.startRaceTimerLoading = true
-        await this.dispatchEvent('startTimer')
-        this.startRaceTimerLoading = false
-        this.startRaceTimerDialogOpen = false
+      async enableRaceMode() {
+        this.enableRaceModeLoading = true
+        await this.dispatchEvent('enableRaceMode')
+        this.enableRaceModeLoading = false
+        this.enableRaceModeDialogOpen = false
       },
     },
   }

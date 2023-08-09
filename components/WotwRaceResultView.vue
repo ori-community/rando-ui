@@ -17,7 +17,7 @@
           <div class="team-members">
             <div v-for="member in team.members" :key="member.user.id" class="team-member">
               <wotw-player-view :user="member.user" with-points />
-              <div class="member-time">{{ formatTime(member.finishedTime) }}</div>
+              <div class="member-time">{{ member.finishedTime !== 0.0 ? formatTime(member.finishedTime) : 'DNF' }}</div>
             </div>
           </div>
 
@@ -25,7 +25,7 @@
             <div>
               <wotw-experience-points class="points">+{{ team.points }}</wotw-experience-points>
             </div>
-            <div v-if="team.members.length > 1" class="team-time">{{ formatTime(team.finishedTime) }}</div>
+            <div v-if="team.members.length > 1" class="team-time">{{ team.finishedTime !== 0.0 ? formatTime(team.finishedTime) : 'DNF' }}</div>
           </div>
         </v-card>
       </div>
@@ -49,10 +49,22 @@
       sortedRaceTeams() {
         const teams = cloneDeep(this.race.teams)
 
-        teams.sort((a, b) => a.finishedTime - b.finishedTime)
+        const compareFinishedTime = (a, b) => {
+          if (a === 0.0) {
+            return 1
+          }
+
+          if (b === 0.0) {
+            return -1
+          }
+
+          return a - b
+        }
+
+        teams.sort((a, b) => compareFinishedTime(a.finishedTime, b.finishedTime))
 
         for (const team of teams) {
-          team.members.sort((a, b) => a.finishedTime - b.finishedTime)
+          team.members.sort((a, b) => compareFinishedTime(a.finishedTime, b.finishedTime))
         }
 
         return teams

@@ -11,7 +11,7 @@
         <div>
           {{ universe.name }}
           <copyable-info v-if="devtoolsEnabled" :value="universe.id" />
-          <span v-if="!!finishedAt" class="finished-time">{{ formatTime(finishedAt) }}</span>
+          <span v-if="!!finishedAt" class="finished-time" :class="{forfeited: finishedAt === 0.0}">{{ finishedAt !== 0.0 ? formatTime(finishedAt) : 'DNF' }}</span>
         </div>
       </v-card-title>
       <v-card-text>
@@ -146,5 +146,9 @@
     font-size: 0.7em;
     line-height: 1;
     padding-right: 2em;
+
+    &.forfeited {
+      color: var(--v-error-base);
+    }
   }
 </style>

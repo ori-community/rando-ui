@@ -21,8 +21,8 @@
           :multiverse-id="multiverseId"
         >
           <div class="player-info" title="Loading time">
-            <span v-if="hasMultiplePlayers && hasOwnProperty(playerFinishedTimes, player.id)" class="finished-time" title="Finished time">{{
-              formatTime(playerFinishedTimes[player.id])
+            <span v-if="hasMultiplePlayers && hasOwnProperty(playerFinishedTimes, player.id)" class="finished-time" :class="{forfeited: playerFinishedTimes[player.id] === 0.0}" title="Finished time">{{
+              playerFinishedTimes[player.id] !== 0.0 ? formatTime(playerFinishedTimes[player.id]) : 'DNF'
             }}</span>
             <span v-else-if="hasOwnProperty(playerLoadingTimes, player.id)" class="loading-time" title="Loading time">{{
               formatTime(-1 * playerLoadingTimes[player.id])
@@ -143,5 +143,9 @@
 
   .finished-time {
     color: var(--v-success-base);
+
+    &.forfeited {
+      color: var(--v-error-base);
+    }
   }
 </style>

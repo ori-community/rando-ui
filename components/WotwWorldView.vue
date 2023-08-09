@@ -6,7 +6,7 @@
         <div>
           {{ world.name }}
           <copyable-info v-if="devtoolsEnabled" :value="world.id" />
-          <span v-if="!!finishedAt && showWorldFinishedTime" class="finished-time">{{ formatTime(finishedAt) }}</span>
+          <span v-if="finishedAt !== null && showWorldFinishedTime" class="finished-time">{{ formatTime(finishedAt) }}</span>
         </div>
         <wotw-seed-button v-if="!!world.seedId && !isElectron" :world-seed-id="world.seedId" />
       </div>

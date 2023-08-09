@@ -39,7 +39,7 @@
     },
     methods: {
       updateTimerText() {
-        const parts = formatTime(this.finishedTime ? this.finishedTime : (Date.now() + this.offset - this.startingAt) / 1000).split(
+        const parts = formatTime(this.finishedTime !== null ? this.finishedTime : (Date.now() + this.offset - this.startingAt) / 1000).split(
           '.',
           2,
         )

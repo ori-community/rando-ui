@@ -251,6 +251,7 @@ export interface NormalGameHandlerState {
   worldFinishedTimes: { [key: number]: number };
   universeFinishedTimes: { [key: number]: number };
   raceModeEnabled: boolean;
+  raceStarted: boolean;
 }
 
 export interface NormalGameHandlerState_PlayerLoadingTimesEntry {
@@ -2889,6 +2890,7 @@ function createBaseNormalGameHandlerState(): NormalGameHandlerState {
     worldFinishedTimes: {},
     universeFinishedTimes: {},
     raceModeEnabled: false,
+    raceStarted: false,
   };
 }
 
@@ -2932,6 +2934,9 @@ export const NormalGameHandlerState = {
     });
     if (message.raceModeEnabled === true) {
       writer.uint32(56).bool(message.raceModeEnabled);
+    }
+    if (message.raceStarted === true) {
+      writer.uint32(64).bool(message.raceStarted);
     }
     return writer;
   },
@@ -3004,6 +3009,13 @@ export const NormalGameHandlerState = {
 
           message.raceModeEnabled = reader.bool();
           continue;
+        case 8:
+          if (tag !== 64) {
+            break;
+          }
+
+          message.raceStarted = reader.bool();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -3043,6 +3055,7 @@ export const NormalGameHandlerState = {
         }, {})
         : {},
       raceModeEnabled: isSet(object.raceModeEnabled) ? Boolean(object.raceModeEnabled) : false,
+      raceStarted: isSet(object.raceStarted) ? Boolean(object.raceStarted) : false,
     };
   },
 
@@ -3075,6 +3088,7 @@ export const NormalGameHandlerState = {
       });
     }
     message.raceModeEnabled !== undefined && (obj.raceModeEnabled = message.raceModeEnabled);
+    message.raceStarted !== undefined && (obj.raceStarted = message.raceStarted);
     return obj;
   },
 
@@ -3122,6 +3136,7 @@ export const NormalGameHandlerState = {
       return acc;
     }, {});
     message.raceModeEnabled = object.raceModeEnabled ?? false;
+    message.raceStarted = object.raceStarted ?? false;
     return message;
   },
 };

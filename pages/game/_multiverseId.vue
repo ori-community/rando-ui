@@ -509,7 +509,7 @@
           return false
         }
 
-        return this.normalGameHandlerState.raceModeEnabled && this.isPlayer && !hasOwnProperty(this.normalGameHandlerState.playerFinishedTimes, this.user.id)
+        return this.normalGameHandlerState.raceStarted && this.isPlayer && !hasOwnProperty(this.normalGameHandlerState.playerFinishedTimes, this.user.id)
       },
     },
     watch: {

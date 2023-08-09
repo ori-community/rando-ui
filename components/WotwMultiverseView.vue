@@ -123,10 +123,17 @@
         return this.ownUniverseId
       },
       universePlaces() {
+        const universePlaces = Object.fromEntries(
+          Object.entries(this.universeFinishedTimes)
+            .filter(([, time]) => time !== 0.0)
+            .sort(([, aTime], [, bTime]) => aTime - bTime)
+            .map((entry, index) => [entry[0], index + 1])
+        )
+
         return Object.fromEntries(
           Object.entries(this.universeFinishedTimes)
             .sort(([, aTime], [, bTime]) => aTime - bTime)
-            .map((entry, index) => [/** universe id → */ entry[0], index + 1])
+            .map((entry) => [/** universe id → */ entry[0], entry[1] !== 0.0 ? universePlaces[entry[0]] : 'F'])
         )
       }
     },

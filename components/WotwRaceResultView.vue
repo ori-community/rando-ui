@@ -8,7 +8,7 @@
         :key="team.id"
         class="team"
       >
-        <place-badge :place="index + 1" />
+        <place-badge :place="team.finishedTime === 0.0 ? 'F' : index + 1" />
         <v-card
           color="background lighten-1"
           elevation="0"

@@ -187,4 +187,5 @@ message NormalGameHandlerState {
   map<int64, float> worldFinishedTimes = 5;
   map<int64, float> universeFinishedTimes = 6;
   bool raceModeEnabled = 7;
+  bool raceStarted = 8;
 }

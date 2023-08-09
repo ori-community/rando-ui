@@ -62,6 +62,11 @@
               <v-icon left>mdi-timer-play-outline</v-icon>
               Enable race mode
             </v-btn>
+
+            <v-btn v-if="canForfeit" text @click="forfeitDialogOpen = true">
+              <v-icon left>mdi-cancel</v-icon>
+              Forfeit
+            </v-btn>
           </div>
         </div>
 
@@ -306,6 +311,24 @@
         </div>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="forfeitDialogOpen" :persistent="forfeitLoading" max-width="400">
+      <v-card class="pa-5 relative">
+        <h2>Forfeit</h2>
+
+        Forfeiting from the game makes all players in your universe forfeit from this race.
+
+        <div class="d-flex justify-end">
+          <v-btn :disabled="forfeitLoading" class="mr-1" text @click="forfeitDialogOpen = false">
+            Cancel
+          </v-btn>
+          <v-btn
+            :loading="forfeitLoading" color="error" depressed @click="forfeit"
+          >Forfeit
+          </v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -317,6 +340,7 @@
     MultiverseInfoMessage_GameHandlerType as GameHandlerType,
     NormalGameHandlerState,
   } from '~/assets/proto/messages'
+  import { hasOwnProperty } from '~/assets/lib/hasOwnProperty'
 
   export default {
     name: 'GamePage',
@@ -342,6 +366,8 @@
       spectateLoading: false,
       enableRaceModeDialogOpen: false,
       enableRaceModeLoading: false,
+      forfeitDialogOpen: false,
+      forfeitLoading: false,
       seedgenResultVisible: false,
       hideSeedgenResultCompletely: false,
       bingoOverlayEnabled: false,
@@ -477,6 +503,13 @@
         }
 
         return !this.normalGameHandlerState.raceModeEnabled && this.isPlayer
+      },
+      canForfeit() {
+        if (!this.normalGameHandlerState) {
+          return false
+        }
+
+        return !this.normalGameHandlerState.raceModeEnabled && this.isPlayer && !hasOwnProperty(this.normalGameHandlerState.playerFinishedTimes, this.user.id)
       },
     },
     watch: {
@@ -724,6 +757,12 @@
         await this.dispatchEvent('enableRaceMode')
         this.enableRaceModeLoading = false
         this.enableRaceModeDialogOpen = false
+      },
+      async forfeit() {
+        this.forfeitLoading = true
+        await this.dispatchEvent('forfeit')
+        this.forfeitLoading = false
+        this.forfeitDialogOpen = false
       },
     },
   }

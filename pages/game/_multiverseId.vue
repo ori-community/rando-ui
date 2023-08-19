@@ -737,18 +737,16 @@
       },
       async launch() {
         if (!this.ownWorld?.seedId) {
-          return
+          const url = `${this.$axios.defaults.baseURL}/world-seeds/${this.ownWorld.seedId}/file`
+          const fileName = `${this.ownWorld.seedId}.wotwr`
+
+          await window.electronApi.invoke('launcher.downloadSeedFromUrl', {
+            url,
+            fileName,
+            setToCurrent: true,
+            showInExplorer: false,
+          })
         }
-
-        const url = `${this.$axios.defaults.baseURL}/world-seeds/${this.ownWorld.seedId}/file`
-        const fileName = `${this.ownWorld.seedId}.wotwr`
-
-        await window.electronApi.invoke('launcher.downloadSeedFromUrl', {
-          url,
-          fileName,
-          setToCurrent: true,
-          showInExplorer: false,
-        })
 
         await this.$store.dispatch('electron/launch')
       },

@@ -28,6 +28,7 @@
             :player-finished-times="playerFinishedTimes"
             :finished-at="worldFinishedTimes[world.id] ?? null"
             :show-world-finished-time="hasMultipleWorlds"
+            :seed-spoiler-downloaded-by-ids="seedSpoilerDownloadedByIds"
             @join="$emit('join-world', world.id)"
           />
         </v-scroll-y-reverse-transition>
@@ -99,6 +100,10 @@
         type: Number,
         default: null,
       },
+      seedSpoilerDownloadedByIds: {
+        type: Array,
+        default: () => ([]),
+      }
     },
     computed: {
       ...mapState('user', ['user']),

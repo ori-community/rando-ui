@@ -6,9 +6,8 @@
           <v-tooltip top open-delay="500">
             <template #activator="{ on }">
               <v-btn class="ml-2" :disabled="!canLock || lockGameLoading" icon v-on="on" @click="toggleGameLock">
-                <v-icon
-                  :class="multiverse?.locked ? 'lock-animation' : 'unlock-animation'"
-                >{{ multiverse?.locked ? 'mdi-lock' : 'mdi-lock-open-outline' }}
+                <v-icon :class="multiverse?.locked ? 'lock-animation' : 'unlock-animation'"
+                  >{{ multiverse?.locked ? 'mdi-lock' : 'mdi-lock-open-outline' }}
                 </v-icon>
               </v-btn>
             </template>
@@ -50,9 +49,8 @@
                 </v-btn>
               </div>
             </template>
-            <span
-              v-if="!multiverseReady || multiverse.universes.length > 0"
-            >Create or join a world to launch the game</span
+            <span v-if="!multiverseReady || multiverse.universes.length > 0"
+              >Create or join a world to launch the game</span
             >
             <span v-else>Create a universe to launch the game</span>
           </v-tooltip>
@@ -66,6 +64,11 @@
             <v-btn v-if="canForfeit" text @click="forfeitDialogOpen = true">
               <v-icon left>mdi-cancel</v-icon>
               Forfeit
+            </v-btn>
+
+            <v-btn v-if="canDownloadSpoiler" text @click="downloadSpoilerDialogOpen = true">
+              <v-icon left>mdi-eye-outline</v-icon>
+              View Spoiler
             </v-btn>
           </div>
         </div>
@@ -218,7 +221,13 @@
                   @click.native.ctrl.capture.stop="toggleUniverseVisibility(bingoUniverse.universeId, true)"
                 />
               </div>
-              <v-switch v-if="isSpectating" key="spectatorMode" v-model="boardSettings.spectatorDisplayAll" label="Show all cards" inset />
+              <v-switch
+                v-if="isSpectating"
+                key="spectatorMode"
+                v-model="boardSettings.spectatorDisplayAll"
+                label="Show all cards"
+                inset
+              />
               <div
                 v-if="!boardSettings.hideSpectators && multiverse.spectators.length > 0"
                 key="spectators"
@@ -297,16 +306,15 @@
         <h2>Enable race mode</h2>
 
         Players will be blocked from starting new games until everyone is ready. To signal yourself ready, select an
-        empty save file and choose the difficulty.<br>
+        empty save file and choose the difficulty.<br />
         Once the race starts, the game will be locked.
 
         <div class="d-flex justify-end">
           <v-btn :disabled="enableRaceModeLoading" class="mr-1" text @click="enableRaceModeDialogOpen = false">
             Cancel
           </v-btn>
-          <v-btn
-            :loading="enableRaceModeLoading" color="accent" depressed @click="enableRaceMode"
-          >Enable race mode
+          <v-btn :loading="enableRaceModeLoading" color="accent" depressed @click="enableRaceMode"
+            >Enable race mode
           </v-btn>
         </div>
       </v-card>
@@ -319,15 +327,50 @@
         Forfeiting from the game makes all players in your universe forfeit from this race.
 
         <div class="d-flex justify-end">
-          <v-btn :disabled="forfeitLoading" class="mr-1" text @click="forfeitDialogOpen = false">
+          <v-btn :disabled="forfeitLoading" class="mr-1" text @click="forfeitDialogOpen = false"> Cancel </v-btn>
+          <v-btn :loading="forfeitLoading" color="error" depressed @click="forfeit">Forfeit </v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="downloadSpoilerDialogOpen" :persistent="downloadSpoilerLoading" max-width="400">
+      <v-card class="pa-5 relative">
+        <h2>View Spoiler</h2>
+
+        You can view the spoiler for this seed. Note that <b>all players can see that you viewed the spoiler.</b>
+
+        <div class="d-flex justify-end mt-4">
+          <v-btn :disabled="downloadSpoilerLoading" class="mr-1" text @click="downloadSpoilerDialogOpen = false">
             Cancel
           </v-btn>
-          <v-btn
-            :loading="forfeitLoading" color="error" depressed @click="forfeit"
-          >Forfeit
+          <v-btn :loading="downloadSpoilerLoading" color="error" depressed @click="downloadSpoiler"
+            >Show Spoiler
           </v-btn>
         </div>
       </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="viewSpoilerDialogOpen" transition="dialog-bottom-transition" fullscreen>
+      <v-sheet v-if="hasSeed">
+        <v-toolbar color="secondary">
+          <v-toolbar-title>Spoiler</v-toolbar-title>
+          <div class="ml-3">
+            <v-tooltip v-for="user in multiverse.seedSpoilerDownloadedBy ?? []" :key="user.id" bottom>
+              <span>{{ user.name }}</span>
+              <template #activator="{ on }">
+                <span v-on="on">
+                  <discord-avatar :user="user" />
+                </span>
+              </template>
+            </v-tooltip>
+          </div>
+          <v-spacer />
+          <v-btn icon @click="viewSpoilerDialogOpen = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <div class="spoiler-text pa-3">{{ spoilerText }}</div>
+      </v-sheet>
     </v-dialog>
   </div>
 </template>
@@ -364,6 +407,10 @@
       },
       spectateDialogOpen: false,
       spectateLoading: false,
+      downloadSpoilerDialogOpen: false,
+      downloadSpoilerLoading: false,
+      viewSpoilerDialogOpen: false,
+      spoilerText: '',
       enableRaceModeDialogOpen: false,
       enableRaceModeLoading: false,
       forfeitDialogOpen: false,
@@ -504,12 +551,33 @@
 
         return !this.normalGameHandlerState.raceModeEnabled && this.isPlayer
       },
+      ownWorldFinished() {
+        if (!this.normalGameHandlerState) {
+          return false
+        }
+
+        return (
+          this.normalGameHandlerState.raceStarted &&
+          this.isPlayer &&
+          !hasOwnProperty(this.normalGameHandlerState.worldFinishedTimes, this.ownWorld.id)
+        )
+      },
       canForfeit() {
         if (!this.normalGameHandlerState) {
           return false
         }
 
-        return this.normalGameHandlerState.raceStarted && this.isPlayer && !hasOwnProperty(this.normalGameHandlerState.playerFinishedTimes, this.user.id)
+        return (
+          this.normalGameHandlerState.raceStarted &&
+          this.isPlayer &&
+          !hasOwnProperty(this.normalGameHandlerState.playerFinishedTimes, this.user.id)
+        )
+      },
+      hasSeed() {
+        return !!this.multiverse?.seed
+      },
+      canDownloadSpoiler() {
+        return this.hasSeed && (!this.isRaceRunning || this.ownWorldFinished)
       },
     },
     watch: {
@@ -762,6 +830,17 @@
         this.forfeitLoading = false
         this.forfeitDialogOpen = false
       },
+      async downloadSpoiler() {
+        this.downloadSpoilerLoading = true
+        this.spoilerText = await this.$axios.$get(`/seeds/${this.multiverse.seedId}/spoiler`, {
+          headers: {
+            Accept: 'text/plain',
+          },
+        })
+        this.downloadSpoilerLoading = false
+        this.downloadSpoilerDialogOpen = false
+        this.viewSpoilerDialogOpen = true
+      },
     },
   }
 </script>
@@ -872,5 +951,11 @@
       opacity: 0.4;
       filter: grayscale(1);
     }
+  }
+
+  .spoiler-text {
+    font-family: Consolas, 'Fira Code', monospace;
+    overflow-x: scroll;
+    white-space: pre;
   }
 </style>

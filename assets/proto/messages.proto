@@ -74,6 +74,7 @@ message MultiverseInfoMessage {
   bool locked = 9;
   bool isLockable = 10;
   optional RaceInfo race = 11;
+  repeated UserInfo seedSpoilerDownloadedBy = 12;
 }
 
 message VisibilityMessage {

@@ -81,6 +81,7 @@ export interface MultiverseInfoMessage {
   locked: boolean;
   isLockable: boolean;
   race?: RaceInfo | undefined;
+  seedSpoilerDownloadedBy: UserInfo[];
 }
 
 export enum MultiverseInfoMessage_GameHandlerType {
@@ -1123,6 +1124,7 @@ function createBaseMultiverseInfoMessage(): MultiverseInfoMessage {
     locked: false,
     isLockable: false,
     race: undefined,
+    seedSpoilerDownloadedBy: [],
   };
 }
 
@@ -1162,6 +1164,9 @@ export const MultiverseInfoMessage = {
     }
     if (message.race !== undefined) {
       RaceInfo.encode(message.race, writer.uint32(90).fork()).ldelim();
+    }
+    for (const v of message.seedSpoilerDownloadedBy) {
+      UserInfo.encode(v!, writer.uint32(98).fork()).ldelim();
     }
     return writer;
   },
@@ -1250,6 +1255,13 @@ export const MultiverseInfoMessage = {
 
           message.race = RaceInfo.decode(reader, reader.uint32());
           continue;
+        case 12:
+          if (tag !== 98) {
+            break;
+          }
+
+          message.seedSpoilerDownloadedBy.push(UserInfo.decode(reader, reader.uint32()));
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1277,6 +1289,9 @@ export const MultiverseInfoMessage = {
       locked: isSet(object.locked) ? Boolean(object.locked) : false,
       isLockable: isSet(object.isLockable) ? Boolean(object.isLockable) : false,
       race: isSet(object.race) ? RaceInfo.fromJSON(object.race) : undefined,
+      seedSpoilerDownloadedBy: Array.isArray(object?.seedSpoilerDownloadedBy)
+        ? object.seedSpoilerDownloadedBy.map((e: any) => UserInfo.fromJSON(e))
+        : [],
     };
   },
 
@@ -1306,6 +1321,11 @@ export const MultiverseInfoMessage = {
     message.locked !== undefined && (obj.locked = message.locked);
     message.isLockable !== undefined && (obj.isLockable = message.isLockable);
     message.race !== undefined && (obj.race = message.race ? RaceInfo.toJSON(message.race) : undefined);
+    if (message.seedSpoilerDownloadedBy) {
+      obj.seedSpoilerDownloadedBy = message.seedSpoilerDownloadedBy.map((e) => e ? UserInfo.toJSON(e) : undefined);
+    } else {
+      obj.seedSpoilerDownloadedBy = [];
+    }
     return obj;
   },
 
@@ -1328,6 +1348,7 @@ export const MultiverseInfoMessage = {
     message.locked = object.locked ?? false;
     message.isLockable = object.isLockable ?? false;
     message.race = (object.race !== undefined && object.race !== null) ? RaceInfo.fromPartial(object.race) : undefined;
+    message.seedSpoilerDownloadedBy = object.seedSpoilerDownloadedBy?.map((e) => UserInfo.fromPartial(e)) || [];
     return message;
   },
 };

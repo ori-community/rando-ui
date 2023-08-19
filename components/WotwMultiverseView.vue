@@ -15,6 +15,7 @@
         :world-finished-times="worldFinishedTimes"
         :finished-at="universeFinishedTimes[universe.id] ?? null"
         :place="universePlaces[universe.id] ?? null"
+        :seed-spoiler-downloaded-by-ids="multiverse.seedSpoilerDownloadedBy.map(u => u.id)"
         class="universe-view"
         @join-world="(worldId) => join(worldId)"
         @new-world="createWorld(universe.id)"

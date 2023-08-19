@@ -21,6 +21,12 @@
           :multiverse-id="multiverseId"
         >
           <div class="player-info" title="Loading time">
+            <v-tooltip v-if="seedSpoilerDownloadedByIds.includes(player.id)" bottom>
+              <template #activator="{on}">
+                <v-icon x-small v-on="on">mdi-eye-outline</v-icon>
+              </template>
+              <span>Has seen spoiler</span>
+            </v-tooltip>
             <span v-if="hasMultiplePlayers && hasOwnProperty(playerFinishedTimes, player.id)" class="finished-time" :class="{forfeited: playerFinishedTimes[player.id] === 0.0}" title="Finished time">{{
               playerFinishedTimes[player.id] !== 0.0 ? formatTime(playerFinishedTimes[player.id]) : 'DNF'
             }}</span>
@@ -81,6 +87,10 @@
         type: Boolean,
         default: true,
       },
+      seedSpoilerDownloadedByIds: {
+        type: Array,
+        default: () => ([]),
+      }
     },
     computed: {
       ...mapState('user', ['user']),

@@ -88,8 +88,10 @@
           label='Steam path'
           append-icon='mdi-folder-search-outline'
           @click:append='selectSteamPath'
+          hide-details
         />
-
+        <div v-if="steamPathWarning" class="mb-2 mt-2 steam-warning-label"> {{ steamPathWarning }} </div>
+        
         <v-text-field
           v-if='isLinux'
           v-model='settings["Paths.GameBinary"]'
@@ -247,6 +249,7 @@
 </template>
 
 <script>
+
   import { hasSettings } from '~/assets/lib/hasSettings'
   import { isOS, Platform } from '~/assets/lib/os'
 
@@ -262,6 +265,18 @@
     computed: {
       isLinux: () => isOS(Platform.Linux),
       isWindows: () => isOS(Platform.Windows),
+      steamPathWarning() {
+        const steamPath = this.settings['Paths.Steam']
+        const filename = steamPath.match(/[\\/]([^\\/]*)$/)[1]
+        switch (filename.toLowerCase()){
+          case 'steam.exe':
+            return ''
+          case 'oriwotw.exe':
+            return 'Warning! Depending on your Steam settings, your controller might not work. Please select steam.exe.'
+          default:
+            return 'Warning! Make sure to select the Steam executable, usually this is steam.exe'
+        }
+      },
       useRandomCurrencyNames: {
         get() {
           return !this.settings['Flags.BoringMoney']
@@ -344,7 +359,7 @@
         setTimeout(() => {
           this.localTrackerPositionReset = false
         }, 2000)
-      }
+      },
     }
   }
 </script>

@@ -559,7 +559,7 @@
         return (
           this.normalGameHandlerState.raceStarted &&
           this.isPlayer &&
-          !hasOwnProperty(this.normalGameHandlerState.worldFinishedTimes, this.ownWorld.id)
+          hasOwnProperty(this.normalGameHandlerState.worldFinishedTimes, this.ownWorld.id)
         )
       },
       canForfeit() {

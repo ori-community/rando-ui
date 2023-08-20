@@ -804,7 +804,7 @@
         this.lockGameLoading = false
       },
       async launch() {
-        if (!this.ownWorld?.seedId) {
+        if (this.ownWorld?.seedId) {
           const url = `${this.$axios.defaults.baseURL}/world-seeds/${this.ownWorld.seedId}/file`
           const fileName = `${this.ownWorld.seedId}.wotwr`
 

@@ -32,7 +32,7 @@
         <v-menu key="electron-menu" offset-y :close-on-content-click="!remoteTrackerUrlCopying">
           <template #activator="{ on, attrs }">
             <v-btn icon v-bind="attrs" v-on="on">
-              <v-icon>mdi-menu</v-icon>
+              <v-icon>mdi-dots-vertical</v-icon>
             </v-btn>
           </template>
           <v-list>

@@ -195,7 +195,7 @@
           />
         </v-expand-transition>
 
-        <v-btn depressed color="accent" class="mt-3" :disabled="localTrackerPositionReset" @click="resetLocalTrackerPosition">
+        <v-btn depressed color="accent" class="mt-5" :disabled="localTrackerPositionReset" @click="resetLocalTrackerPosition">
           <template v-if="localTrackerPositionReset">
             <v-icon left>mdi-check</v-icon>
             Tracker position reset
@@ -206,43 +206,47 @@
           </template>
         </v-btn>
       </div>
-      <div v-if='settings["Flags.Dev"]' class='mb-8'>
-        <h3>Developer Tools</h3>
-        <v-checkbox
-          v-model='settings["Flags.Dev"]'
-          label='Enable Developer Tools'
-          messages='Welcome to the world of fun'
-        />
-        <v-checkbox
-          v-model='settings["Flags.UpdateToPrereleaseVersions"]'
-          label='Update to prerelease versions'
-          messages='Search for and ask to update to unreleased unstable versions'
-        />
-        <v-checkbox
-          v-model='settings["Flags.WaitForDebugger"]'
-          label='Wait for Debugger'
-          messages='The Randomizer will wait for a debugger to attach before initialization'
-        />
-        <v-checkbox
-          v-model='enableDebugControls'
-          label='Enable Debug Controls'
-          messages='Enable Debug Controls by default'
-        />
-        <v-text-field
-          v-model='settings["Paths.Host"]'
-          label='Server Host'
-          class='mt-4'
-          messages='Press Ctrl+R after changing this setting for it to apply in the launcher'
-        />
-        <v-text-field
-          v-model='settings["Paths.UdpPort"]'
-          label='UDP Port'
-        />
-        <v-checkbox
-          v-model='useSecureConnection'
-          label='Use Secure connection'
-          messages='Connect to the Server using HTTPS and WSS instead of HTTP and WS'
-        />
+      <div ref='developerSettings' class='mb-8'>
+        <template v-if='settings["Flags.Dev"]'>
+          <h3>Developer Tools</h3>
+          <v-checkbox
+            v-model='settings["Flags.UpdateToPrereleaseVersions"]'
+            label='Update to prerelease versions'
+            messages='Search for and ask to update to unreleased unstable versions'
+          />
+          <v-checkbox
+            v-model='settings["Flags.WaitForDebugger"]'
+            label='Wait for Debugger'
+            messages='The Randomizer will wait for a debugger to attach before initialization'
+          />
+          <v-checkbox
+            v-model='enableDebugControls'
+            label='Enable Debug Controls'
+            messages='Enable Debug Controls by default'
+          />
+          <v-combobox
+            class="mt-5"
+            @change="hostChanged"
+            label='Server Host'
+            v-model='settings["Paths.Host"]'
+            :items="['wotw.orirando.com', 'dev.wotw.orirando.com']"
+            messages='Press Ctrl+R after changing this setting for it to apply in the launcher'
+          ></v-combobox>
+          <v-combobox
+            label='UDP Port'
+            v-model='settings["Paths.UdpPort"]'
+            :items="['31415', '31416']"
+            hide-details
+          ></v-combobox>
+          <v-checkbox
+            v-model='useSecureConnection'
+            label='Use Secure connection'
+            messages='Connect to the Server using HTTPS and WSS instead of HTTP and WS'
+          />
+          <v-btn depressed color="accent" class="mt-5" @click="disableDevTools">
+              Disable Developer Tools
+          </v-btn>
+        </template>
       </div>
     </v-col>
   </v-row>
@@ -325,6 +329,31 @@
       document.removeEventListener('keydown', this.onKeyDown)
     },
     methods: {
+      enableDevTools(){
+        this.settings['Flags.Dev'] = true
+        this.debugStreak = 0
+
+        setTimeout(() => {
+          this.$refs.developerSettings.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+        })
+        }, 10)
+        
+      },
+      disableDevTools(){
+        this.settings['Flags.Dev'] = false
+      },
+      hostChanged(){
+        switch(this.settings["Paths.Host"]){
+          case "wotw.orirando.com":
+            this.settings["Paths.UdpPort"] = "31415"
+            break
+          case "dev.wotw.orirando.com":
+            this.settings["Paths.UdpPort"] = "31416"
+            break
+        }
+      },
       async selectSteamPath() {
         const newPath = await window.electronApi.invoke('settings.selectSteamPath')
         if (newPath) {
@@ -338,11 +367,10 @@
         }
       },
       onKeyDown(event) {
-        if (this.settings !== null && !this.settings['Flags.Dev']) {
+        if (this.settings !== null) {
           event.key === 'Control' ? this.debugStreak++ : this.debugStreak = 0;
           if (this.debugStreak === 5) {
-            this.settings['Flags.Dev'] = true
-            this.debugStreak = 0
+            this.enableDevTools()
           }
         }
       },

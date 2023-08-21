@@ -244,7 +244,7 @@
             messages='Connect to the Server using HTTPS and WSS instead of HTTP and WS'
           />
           <v-btn depressed color="accent" class="mt-5" @click="disableDevTools">
-              Disable Developer Tools
+              Hide Developer Tools
           </v-btn>
         </template>
       </div>
@@ -337,22 +337,24 @@
           this.$refs.developerSettings.scrollIntoView({
           behavior: 'smooth',
           block: 'nearest',
+          })
         })
-        }, 10)
         
       },
       disableDevTools(){
         this.settings['Flags.Dev'] = false
       },
       hostChanged(){
-        switch(this.settings["Paths.Host"]){
-          case "wotw.orirando.com":
-            this.settings["Paths.UdpPort"] = "31415"
-            break
-          case "dev.wotw.orirando.com":
-            this.settings["Paths.UdpPort"] = "31416"
-            break
-        }
+        setTimeout(() => {
+          switch(this.settings["Paths.Host"]){
+            case "wotw.orirando.com":
+              this.settings["Paths.UdpPort"] = "31415"
+              break
+            case "dev.wotw.orirando.com":
+              this.settings["Paths.UdpPort"] = "31416"
+              break
+          }
+        })
       },
       async selectSteamPath() {
         const newPath = await window.electronApi.invoke('settings.selectSteamPath')
@@ -367,7 +369,7 @@
         }
       },
       onKeyDown(event) {
-        if (this.settings !== null) {
+        if (this.settings !== null && !this.settings['Flags.Dev']) {
           event.key === 'Control' ? this.debugStreak++ : this.debugStreak = 0;
           if (this.debugStreak === 5) {
             this.enableDevTools()

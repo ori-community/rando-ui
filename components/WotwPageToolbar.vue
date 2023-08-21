@@ -4,83 +4,85 @@
       <v-btn key="home" depressed exact text :to="`${isElectron ? `/electron` : `/`}`" x-large>
         <v-icon>mdi-home-outline</v-icon>
       </v-btn>
-      <v-btn
-        v-if="isElectron && currentMultiverseId !== null"
-        key="game"
-        exact
-        x-large
-        depressed
-        text
-        :to="{ name: 'game-multiverseId', params: { multiverseId: currentMultiverseId } }"
-      >
-        <v-icon left>mdi-gamepad-variant-outline</v-icon>
-        {{ currentMultiverseId }}
-      </v-btn>
       <v-btn key="seedgen" x-large depressed text to="/seedgen">
         <v-icon left>mdi-dice-multiple</v-icon>
         Seed Generator
       </v-btn>
-      <v-menu v-if="isElectron" key="electron-menu" offset-y :close-on-content-click="!remoteTrackerUrlCopying">
-        <template #activator="{ on, attrs }">
-          <v-btn icon v-bind="attrs" v-on="on">
-            <v-icon>mdi-dots-vertical</v-icon>
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-item :disabled="!localTrackerRunning" x-large depressed text @click="openLocalTrackerWindow">
-            <v-icon left :disabled="!localTrackerRunning">mdi-radar</v-icon>
-            Tracker
-          </v-list-item>
-          <v-list-item
-            :disabled="!localTrackerRunning || !isLoggedIn || remoteTrackerUrlCopying || remoteTrackerUrlCopied"
-            x-large
-            depressed
-            text
-            @click="exposeTracker"
-          >
-            <v-icon
-              left
-              :disabled="!localTrackerRunning || !isLoggedIn || remoteTrackerUrlCopying || remoteTrackerUrlCopied"
-            >
-              <template v-if="remoteTrackerUrlCopied"> mdi-check </template>
-              <template v-else> mdi-leak </template>
-            </v-icon>
-            <template v-if="remoteTrackerUrlCopying"> Generating URL... </template>
-            <template v-else-if="remoteTrackerUrlCopied"> URL copied </template>
-            <template v-else> Create Remote Tracker </template>
-          </v-list-item>
-          <v-list-item disabled x-large depressed text @click="openChatControl">
-            <v-icon left>mdi-message-flash-outline</v-icon>
-            Chat Control (currently unavailable)
-          </v-list-item>
-          <v-list-item x-large depressed text to="/electron/stats">
-            <v-icon left>mdi-chart-box-outline</v-icon>
-            Stats
-          </v-list-item>
-          <v-list-item exact x-large depressed text to="/electron/settings">
-            <v-icon left>mdi-application-cog-outline</v-icon>
-            Settings
-          </v-list-item>
-          <v-list-item
-            v-if="settingsLoaded && settings['Flags.Dev']"
+      <template v-if="isElectron">
+        <v-btn
+            :disabled="currentMultiverseId == null"
+            key="game"
             exact
             x-large
             depressed
             text
-            @click="openRandoDevtools"
-          >
-            <v-icon left>mdi-application-braces-outline</v-icon>
-            Rando Devtools
-          </v-list-item>
-        </v-list>
-      </v-menu>
+            :to="{ name: 'game-multiverseId', params: { multiverseId: currentMultiverseId } }"
+        >
+          <v-icon left>mdi-gamepad-variant-outline</v-icon>
+          Game
+        </v-btn>
+        <v-btn key="stats" x-large depressed text to="/electron/stats">
+          <v-icon left>mdi-chart-box-outline</v-icon>
+            Stats
+        </v-btn>
+        <v-btn key="settings" x-large depressed text to="/electron/settings">
+          <v-icon left>mdi-cog-outline</v-icon>
+          Settings
+        </v-btn>
+        <v-menu key="electron-menu" offset-y :close-on-content-click="!remoteTrackerUrlCopying">
+          <template #activator="{ on, attrs }">
+            <v-btn icon v-bind="attrs" v-on="on">
+              <v-icon>mdi-menu</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item :disabled="!localTrackerRunning" x-large depressed text @click="openLocalTrackerWindow">
+              <v-icon left :disabled="!localTrackerRunning">mdi-radar</v-icon>
+              Tracker
+            </v-list-item>
+            <v-list-item
+              :disabled="!localTrackerRunning || !isLoggedIn || remoteTrackerUrlCopying || remoteTrackerUrlCopied"
+              x-large
+              depressed
+              text
+              @click="exposeTracker"
+            >
+              <v-icon
+                left
+                :disabled="!localTrackerRunning || !isLoggedIn || remoteTrackerUrlCopying || remoteTrackerUrlCopied"
+              >
+                <template v-if="remoteTrackerUrlCopied"> mdi-check </template>
+                <template v-else> mdi-leak </template>
+              </v-icon>
+              <template v-if="remoteTrackerUrlCopying"> Generating URL... </template>
+              <template v-else-if="remoteTrackerUrlCopied"> URL copied </template>
+              <template v-else> Create Remote Tracker </template>
+            </v-list-item>
+            <v-list-item x-large depressed text @click="openChatControl">
+              <v-icon left>mdi-message-flash-outline</v-icon>
+              Chat Control
+            </v-list-item>
+            <v-list-item
+              v-if="settingsLoaded && settings['Flags.Dev']"
+              exact
+              x-large
+              depressed
+              text
+              @click="openRandoDevtools"
+            >
+              <v-icon left>mdi-application-braces-outline</v-icon>
+              Rando Devtools
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </template>
     </v-scale-transition>
     <v-spacer />
     <throttled-spinner>
       <div v-if="userLoaded" class="d-flex align-center">
         <template v-if="isLoggedIn">
           <div class="mr-4 user-info">
-            <div>Hi, {{ user.name }}!</div>
+            <div>{{ randomGreeting() }}, {{ user.name }}!</div>
             <v-tooltip bottom>
               <template #activator="{on}">
                 <wotw-experience-points v-on="on">{{ user.points }}</wotw-experience-points>
@@ -268,6 +270,10 @@
       },
       openRandoDevtools() {
         window.electronApi.invoke('devtools.open')
+      },
+      randomGreeting(){
+        const greetings = ["Hi", "Hello", "Hey", "Hiya", "Yo", "Ahoy", "Howdy", "oriHi"]
+        return greetings[(Math.floor(Math.random() * greetings.length))]
       },
     },
   }

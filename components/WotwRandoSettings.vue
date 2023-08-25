@@ -333,10 +333,10 @@
         this.settings['Flags.Dev'] = true
         this.debugStreak = 0
 
-        setTimeout(() => {
+        this.$nextTick(() => {
           this.$refs.developerSettings.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest',
+            behavior: 'smooth',
+            block: 'nearest',
           })
         })
         
@@ -345,7 +345,7 @@
         this.settings['Flags.Dev'] = false
       },
       hostChanged(){
-        setTimeout(() => {
+        this.$nextTick(() => {
           switch(this.settings["Paths.Host"]){
             case "wotw.orirando.com":
               this.settings["Paths.UdpPort"] = "31415"

@@ -80,36 +80,49 @@
       </div>
       <div class='mb-8'>
         <h3>Launch settings</h3>
+        <template v-if="isWindows">
 
-        <v-text-field
-          v-if='isWindows'
-          v-model='settings["Paths.Steam"]'
-          readonly
-          label='Steam path'
-          append-icon='mdi-folder-search-outline'
-          @click:append='selectSteamPath'
-          hide-details
-        />
-        <div v-if="steamPathWarning" class="mb-2 mt-2 steam-warning-label"> {{ steamPathWarning }} </div>
-        
-        <v-text-field
-          v-if='isLinux'
-          v-model='settings["Paths.GameBinary"]'
-          readonly
-          label='Game Binary path (oriwotw.exe)'
-          append-icon='mdi-folder-search-outline'
-          @click:append='selectGameBinaryPath'
-        />
+          <div class="mt-3">
+            <v-label>Game Distribution Service</v-label>
+          </div>
+          <v-radio-group row
+            class="mt-0"
+            v-model='settings["Flags.UseWinStore"]'
+            messages='Select the game distribution service depending on which version of the game you have'>
+            <v-radio label='Steam' v-bind:value="false" />
+            <v-radio label='Windows Store' v-bind:value="true" />
+          </v-radio-group>
+
+          <v-text-field
+            v-model='settings["Paths.Steam"]'
+            readonly
+            class='mt-5'
+            label='Steam path (steam.exe)'
+            append-icon='mdi-folder-search-outline'
+            @click:append='selectSteamPath'
+            :disabled='settings["Flags.UseWinStore"]'
+            hide-details
+          />
+          <div v-if="steamPathWarning" class="mb-2 mt-2 filepath-warning">{{ steamPathWarning }}</div>
+        </template>
+
+        <template v-if="isLinux">
+          <v-text-field
+            v-model='settings["Paths.GameBinary"]'
+            readonly
+            class='mt-5'
+            label='Game Binary path (oriwotw.exe)'
+            append-icon='mdi-folder-search-outline'
+            @click:append='selectGameBinaryPath'
+            hide-details
+          />
+          <div v-if="gameBinaryWarning" class="mb-2 mt-2 filepath-warning">{{ gameBinaryWarning }}</div>
+        </template>
 
         <v-checkbox
           v-model='settings["Flags.DisableNetcode"]'
           label='Disable Netcode'
           messages='Checking this option prevents the randomizer from communicating with the rando server. With netcode disabled, bingo autotracking and other networked features will be unavailable.'
-        />
-        <v-checkbox
-          v-model='settings["Flags.UseWinStore"]'
-          label='Use Windows Store'
-          messages='Launch the rando using the windows store version of the game.'
         />
       </div>
     </v-col>
@@ -270,16 +283,24 @@
       isLinux: () => isOS(Platform.Linux),
       isWindows: () => isOS(Platform.Windows),
       steamPathWarning() {
-        const steamPath = this.settings['Paths.Steam']
-        const filename = steamPath.match(/[\\/]([^\\/]*)$/)[1]
-        switch (filename.toLowerCase()){
+        const filename = this.getFilename(this.settings['Paths.Steam'])
+
+        switch (filename?.toLowerCase()){
           case 'steam.exe':
-            return ''
+            return null
           case 'oriwotw.exe':
             return 'Warning! Depending on your Steam settings, your controller might not work. Please select steam.exe.'
           default:
             return 'Warning! Make sure to select the Steam executable, usually this is steam.exe'
         }
+      },
+      gameBinaryWarning() {
+        const filename = this.getFilename(this.settings['Paths.GameBinary'])
+
+        if (filename?.toLowerCase() !== 'oriwotw.exe' ){ 
+          return 'Warning! Make sure to select the game executable (oriwotw.exe)'
+        }
+        return null
       },
       useRandomCurrencyNames: {
         get() {
@@ -356,6 +377,9 @@
           }
         })
       },
+      getFilename(filepath){
+        return filepath?.match(/[\\/]([^\\/]*)$/)[1]
+      },
       async selectSteamPath() {
         const newPath = await window.electronApi.invoke('settings.selectSteamPath')
         if (newPath) {
@@ -393,3 +417,9 @@
     }
   }
 </script>
+
+<style lang='scss' scoped>
+  .filepath-warning {
+    font-style: italic;
+  }
+</style>

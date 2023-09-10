@@ -22,8 +22,7 @@
           <img src="@/assets/images/tracker/gorlek_ore.png" />
         </div>
         <span class="value">
-          <span :class="{ completed: gladesRebuildProjectsDone }">{{ gorlekOre }}</span>
-          <span class="small" :class="{ completed: gorlekOreCollected >= 29 || gladesRebuildProjectsDone }">/{{ gorlekOreCollected }}</span>
+          <span :class="{ completed: gladesRebuildProjectsDone }">{{ gorlekOre }}</span><span class="small" :class="{ completed: gorlekOreCollected >= 29 || gladesRebuildProjectsDone }">/{{ gorlekOreCollected }}</span>
         </span>
       </div>
       <div v-if="showTrees" class="line">

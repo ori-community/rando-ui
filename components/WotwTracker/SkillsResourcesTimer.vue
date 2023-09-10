@@ -24,7 +24,7 @@
       :quest-count="trackedValues.quest_count"
       :relic-count="trackedValues.relic_count"
       :heart-count="heartCount"
-      :quest-rebuild-glades-done="trackedValues.quest_rebuild_glades > 1"
+      :glades-rebuild-projects-done="gladesRebuildProjectsDone"
       :show-timer="showTimer"
       :time="time"
       :loading-time="loadingTime"
@@ -88,6 +88,27 @@
         type: Number,
         default: 0,
       },
+    },
+    computed: {
+      gladesRebuildProjectsDone(){
+        const projects = [
+          'builder_project_spirit_well',
+          'builder_project_houses',
+          'builder_project_remove_thorns',
+          'builder_project_houses_b',
+          'builder_project_open_cave',
+          'builder_project_houses_c',
+          'builder_project_beautify',
+        ]
+
+        for (const project of projects) {
+          if (!(this.trackedValues[project] >= 3)) {
+            return false
+          }
+        }
+
+        return true
+      }
     },
   }
 </script>

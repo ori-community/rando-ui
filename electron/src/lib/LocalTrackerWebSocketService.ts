@@ -115,6 +115,15 @@ const TRACKED_UBER_STATES: TrackedUberState[] = [
   { uberId: { group: 34543, state: 11226 }, trackingId: 'game_finished' },
 
   { uberId: { group: 14019, state: 44578 }, trackingId: 'quest_rebuild_glades' },
+  
+  { uberId: { group: 42178, state: 16825 }, trackingId: 'builder_project_spirit_well' },
+  { uberId: { group: 42178, state: 51230 }, trackingId: 'builder_project_houses' },
+  { uberId: { group: 42178, state: 18751 }, trackingId: 'builder_project_remove_thorns' },
+  { uberId: { group: 42178, state: 23607 }, trackingId: 'builder_project_houses_b' },
+  { uberId: { group: 42178, state: 40448 }, trackingId: 'builder_project_houses_c' },
+  { uberId: { group: 42178, state: 16586 }, trackingId: 'builder_project_open_cave' },
+  { uberId: { group: 42178, state: 15068 }, trackingId: 'builder_project_beautify' },
+
 
   // Maybe for later...
   { uberId: { group: 945, state: 49747 }, trackingId: 'wisp_pools' },

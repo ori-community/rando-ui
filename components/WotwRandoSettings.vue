@@ -378,7 +378,7 @@
         })
       },
       getBaseName(path){
-        return filepath?.match(/[\\/]([^\\/]*)$/)[1]
+        return path?.match(/[\\/]([^\\/]*)$/)[1]
       },
       async selectSteamPath() {
         const newPath = await window.electronApi.invoke('settings.selectSteamPath')

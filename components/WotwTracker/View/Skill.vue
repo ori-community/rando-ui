@@ -36,14 +36,14 @@
         type: Boolean,
         default: false,
       },
-      fragmentsFound:{
+      fragmentsFound: {
         type: Number,
         default: 0,
       },
-      fragmentsRequired:{
+      fragmentsRequired: {
         type: Number,
         default: 0,
-      }
+      },
     },
     computed: {
       imageSource() {

@@ -92,6 +92,9 @@ const TRACKED_UBER_STATES: TrackedUberState[] = [
   { uberId: { group: 4, state: 74 }, trackingId: 'melting_spike'},
   { uberId: { group: 4, state: 75 }, trackingId: 'melting_shuriken'},
 
+  { uberId: { group: 9, state: 2 }, trackingId: 'launch_fragments_count'},
+  { uberId: { group: 9, state: 4 }, trackingId: 'launch_fragments_required'},
+
   { uberId: { group: 15, state: 0 }, trackingId: 'resource_spirit_light' },
   { uberId: { group: 15, state: 1 }, trackingId: 'resource_gorlek_ore' },
   { uberId: { group: 6, state: 5 }, trackingId: 'resource_gorlek_ore_collected' },

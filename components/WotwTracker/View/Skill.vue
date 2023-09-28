@@ -10,6 +10,9 @@
       <img class="glow" src="@/assets/images/tracker/melting.png" alt="" />
       <img src="@/assets/images/tracker/melting.png" alt="" />
     </div>
+    <div v-if="fragmentsRequired > 0" class="fragments" :class="{ 'completed': fragmentsFound >= fragmentsRequired}">
+      <span class="found">{{fragmentsFound }} </span><span class="required">/ {{ fragmentsRequired }}</span>
+    </div>
   </div>
 </template>
 
@@ -33,6 +36,14 @@
         type: Boolean,
         default: false,
       },
+      fragmentsFound:{
+        type: Number,
+        default: 0,
+      },
+      fragmentsRequired:{
+        type: Number,
+        default: 0,
+      }
     },
     computed: {
       imageSource() {
@@ -123,6 +134,28 @@
         transform-origin: bottom center;
         transform: scale(1.2);
         filter: blur(6px);
+      }
+    }
+
+    .completed {
+      color: var(--v-success-base);
+    }
+
+    .fragments {
+      z-index: 0;
+      position: absolute;
+      left: 15%;
+      width: 50%;
+      bottom: 0;
+      text-shadow: -1px -1px 0.2vw #000, 1px -1px 0.2vw #000, -1px 1px 0.2vw #000, 1px 1px 0.2vw #000;
+      .found{
+        font-size: 3vw;
+        font-weight: bold;
+      }
+
+      .required{
+        font-size: 2vw;
+        font-weight: bold;
       }
     }
   }

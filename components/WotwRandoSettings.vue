@@ -377,7 +377,7 @@
           }
         })
       },
-      getFilename(filepath){
+      getBaseName(path){
         return filepath?.match(/[\\/]([^\\/]*)$/)[1]
       },
       async selectSteamPath() {

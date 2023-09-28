@@ -148,12 +148,12 @@
       width: 50%;
       bottom: 0;
       text-shadow: -1px -1px 0.2vw #000, 1px -1px 0.2vw #000, -1px 1px 0.2vw #000, 1px 1px 0.2vw #000;
-      .found{
+      .found {
         font-size: 3vw;
         font-weight: bold;
       }
 
-      .required{
+      .required {
         font-size: 2vw;
         font-weight: bold;
       }

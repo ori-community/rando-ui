@@ -48,7 +48,7 @@
     <WotwTrackerViewSkill skill="double_jump" :tree-acquired="trackedValues.tree_double_jump > 0" :acquired="trackedValues.skill_double_jump > 0" />
     <WotwTrackerViewSkill skill="regenerate" :tree-acquired="trackedValues.tree_regenerate > 0" :acquired="trackedValues.skill_regenerate > 0" />
     <WotwTrackerViewSkill skill="grapple" :tree-acquired="trackedValues.tree_grapple > 0" :acquired="trackedValues.skill_grapple > 0" />
-    <WotwTrackerViewSkill skill="launch" :tree-acquired="trackedValues.tree_launch > 0" :acquired="trackedValues.skill_launch > 0" />
+    <WotwTrackerViewSkill skill="launch" :tree-acquired="trackedValues.tree_launch > 0" :acquired="trackedValues.skill_launch > 0" :fragments-found="trackedValues.launch_fragments_count" :fragments-required="trackedValues.launch_fragments_required"/>
     <WotwTrackerViewSkill skill="flash" :tree-acquired="trackedValues.tree_flash > 0" :acquired="trackedValues.skill_flash > 0" />
     <WotwTrackerViewSkill skill="light_burst" :tree-acquired="trackedValues.tree_light_burst > 0" :acquired="trackedValues.skill_light_burst > 0" />
     <WotwTrackerViewSkill skill="ancestral_light_marsh" :tree-acquired="trackedValues.tree_ancestral_light_marsh > 0" :acquired="trackedValues.skill_ancestral_light_marsh > 0" />

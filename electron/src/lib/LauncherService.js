@@ -4,13 +4,11 @@ import fs from 'fs'
 import { RandoIPCService } from '~/electron/src/lib/RandoIPCService'
 import { CURRENT_SEED_PATH_FILE, RANDOMIZER_BASE_PATH } from './Constants'
 import { BindingsService } from '~/electron/src/lib/BindingsService'
-import { Library as FFILibrary } from '@lwahonen/ffi-napi'
-import { UCS2String } from '~/electron/src/lib/UCS2String'
 import { SeedParser } from '~/assets/lib/SeedParser'
 import { uiIpc } from '~/electron/src/api'
 import { isProcessRunning } from '~/electron/src/lib/isProcessRunning'
 import { LocalTrackerService } from '@/lib/LocalTrackerService'
-import { getOS, isOS, Platform } from '~/assets/lib/os'
+import { getOS, Platform } from '~/assets/lib/os'
 import { WineService } from '@/lib/linux/WineService'
 
 
@@ -32,21 +30,7 @@ const waitForProcess = (processName, maxTries = 20) => new Promise((resolve, rej
 })
 
 const focusGameWindow = () => {
-  if (!isOS(Platform.Windows)) {
-    throw new Error('focusGameWindow is only implemented for Windows')
-  }
-
-  const user32 = new FFILibrary('user32', {
-    'FindWindowW': ['long', ['string', UCS2String]],
-    'SetForegroundWindow': ['bool', ['long']],
-  })
-  const gameWindowHandle = user32.FindWindowW(null, 'OriAndTheWilloftheWisps')
-  if (gameWindowHandle) {
-    console.log('Focusing game...')
-    user32.SetForegroundWindow(gameWindowHandle)
-  } else {
-    console.log('Could not focus game. Handle not found.')
-  }
+  // TODO: Reimplement focus using IPC
 }
 
 export class LauncherService {

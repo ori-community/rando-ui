@@ -11,7 +11,7 @@
       <img src="@/assets/images/tracker/melting.png" alt="" />
     </div>
     <div v-if="fragmentsRequired > 0" class="fragments" :class="{ 'completed': fragmentsFound >= fragmentsRequired }">
-      <span class="found">{{ fragmentsFound }} </span><span class="required">/ {{ fragmentsRequired }}</span>
+      <span class="found">{{ fragmentsFound }}</span><span class="required">/{{ fragmentsRequired }}</span>
     </div>
   </div>
 </template>

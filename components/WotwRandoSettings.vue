@@ -283,7 +283,7 @@
       isLinux: () => isOS(Platform.Linux),
       isWindows: () => isOS(Platform.Windows),
       steamPathWarning() {
-        const filename = this.getFilename(this.settings['Paths.Steam'])
+        const filename = this.getBaseName(this.settings['Paths.Steam'])
 
         switch (filename?.toLowerCase()){
           case 'steam.exe':
@@ -295,7 +295,7 @@
         }
       },
       gameBinaryWarning() {
-        const filename = this.getFilename(this.settings['Paths.GameBinary'])
+        const filename = this.getBaseName(this.settings['Paths.GameBinary'])
 
         if (filename?.toLowerCase() !== 'oriwotw.exe' ){ 
           return 'Warning! Make sure to select the game executable (oriwotw.exe)'

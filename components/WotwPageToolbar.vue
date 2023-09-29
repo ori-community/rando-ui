@@ -82,7 +82,7 @@
       <div v-if="userLoaded" class="d-flex align-center">
         <template v-if="isLoggedIn">
           <div class="mr-4 user-info">
-            <div>{{ randomGreeting() }}, {{ user.name }}!</div>
+            <div>{{ randomGreeting }}, {{ user.name }}!</div>
             <v-tooltip bottom>
               <template #activator="{on}">
                 <wotw-experience-points v-on="on">{{ user.points }}</wotw-experience-points>
@@ -181,6 +181,10 @@
       currentMultiverseId() {
         return this.user?.currentMultiverseId ?? null
       },
+      randomGreeting(){
+        const greetings = ["Hi", "Hello", "Hey", "Hiya", "Yo", "Ahoy", "Howdy", "oriHi"]
+        return greetings[(Math.floor(Math.random() * greetings.length))]
+      },
     },
     methods: {
       buildAbsoluteUrl(relativeUrl) {
@@ -270,10 +274,6 @@
       },
       openRandoDevtools() {
         window.electronApi.invoke('devtools.open')
-      },
-      randomGreeting(){
-        const greetings = ["Hi", "Hello", "Hey", "Hiya", "Yo", "Ahoy", "Howdy", "oriHi"]
-        return greetings[(Math.floor(Math.random() * greetings.length))]
       },
     },
   }

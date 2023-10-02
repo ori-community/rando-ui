@@ -20,6 +20,18 @@
           </div>
         </template>
 
+        <div class="mb-5" v-if="singleWorldPresets?.length > 0 || (universeSettings.worldSettings.length === 0 && customPresets?.length > 0)">
+          <h2 class="mb-3">Select a custom preset</h2>
+          <wotw-seedgen-custom-preset-select
+            class="mb-3"
+            :custom-presets='customPresets'
+            :display-multiworlds='universeSettings.worldSettings.length === 0'
+            @delete='index => $emit("custom-preset-delete", index)' 
+            @selected='index => $emit("custom-preset-selected", index)'
+            />
+
+        </div>
+
         <h2 class="mb-3">Select a base preset</h2>
 
         <v-card
@@ -97,6 +109,10 @@
         type: Object,
         required: true,
       },
+      customPresets: {
+        type: Array,
+        default: null,
+      }
     },
     data: () => ({
       selectedBasePresetId: null,
@@ -118,6 +134,9 @@
             ([, preset]) => preset.info?.group !== 'Base',
           ),
         )
+      },
+      singleWorldPresets() {
+        return this.customPresets?.filter((p) => p.multiverseSettings.universeSettings.worldSettings.length === 1)
       },
     },
     methods: {

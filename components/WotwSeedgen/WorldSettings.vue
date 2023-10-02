@@ -165,6 +165,7 @@
         },
       },
       inlineHeader(value) {
+        if (this.model.inlineHeaders.length === 0 && value.length === 0) {return}
         if (this.model.inlineHeaders.length === 0 && value.length > 0) {
           this.model.inlineHeaders.push({
             content: value,

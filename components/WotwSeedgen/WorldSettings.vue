@@ -170,9 +170,6 @@
         },
       },
       inlineHeader(value) {
-        if (this.model.inlineHeaders.length === 0 && value.length === 0) {
-          return
-        }
         if (this.model.inlineHeaders.length === 0 && value.length > 0) {
           this.model.inlineHeaders.push({
             content: value,
@@ -180,7 +177,7 @@
           })
         } else if (this.model.inlineHeaders.length > 0 && value.length === 0) {
           this.model.inlineHeaders = []
-        } else if (this.model.inlineHeaders[0].content !== value) {
+        } else if (value.length > 0 && this.model.inlineHeaders[0].content !== value) {
           this.model.inlineHeaders[0].content = value
         }
       },

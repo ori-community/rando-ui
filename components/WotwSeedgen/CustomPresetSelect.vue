@@ -13,8 +13,12 @@
               :key="customPreset.name"
               :custom-preset="customPreset"
               @selected="$emit('selected', customPresets.indexOf(customPreset))"
-              @contextmenu="openContextMenu($event, customPresets.indexOf(customPreset))"
-            />
+              @contextmenu.native.prevent="openContextMenu($event, customPresets.indexOf(customPreset))"
+            >
+              <template v-if="customPreset.name === CUSTOM_PRESET_LAST_CONFIG_NAME" #prepend>
+                <v-icon left>mdi-restore</v-icon>
+              </template>
+            </wotw-seedgen-custom-preset-button>
           </div>
         </div>
       </v-row>
@@ -27,8 +31,12 @@
               :key="customPreset.name"
               :custom-preset="customPreset"
               @selected="$emit('selected', customPresets.indexOf(customPreset))"
-              @contextmenu.prevent="openContextMenu($event, customPresets.indexOf(customPreset))"
-            />
+              @contextmenu.native.prevent="openContextMenu($event, customPresets.indexOf(customPreset))"
+            >
+              <template v-if="customPreset.name === CUSTOM_PRESET_LAST_CONFIG_NAME" #prepend>
+                <v-icon left>mdi-restore</v-icon>
+              </template>
+            </wotw-seedgen-custom-preset-button>
           </div>
         </div>
       </v-row>
@@ -50,6 +58,7 @@
 
 <script>
   import { EventBus } from '~/assets/lib/EventBus'
+  import { CUSTOM_PRESET_LAST_CONFIG_NAME } from '~/components/WotwSeedgen.vue'
 
   export default {
     name: 'PresetSelect',
@@ -64,6 +73,7 @@
       },
     },
     data: () => ({
+      CUSTOM_PRESET_LAST_CONFIG_NAME,
       contextMenuCustomPresetIndex: null,
       contextMenuOpen: false,
       contextMenuX: 0,

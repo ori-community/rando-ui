@@ -170,8 +170,8 @@
             </div>
           </v-row>
           <v-row justify="end" class="buttons">
-            <v-btn color="accent" @click.native="customPresetConfirmationCallback"> Yes </v-btn>
-            <v-btn @click="customPresetConfirmationDialogOpen = false"> No </v-btn>
+            <v-btn text @click="customPresetConfirmationDialogOpen = false">No</v-btn>
+            <v-btn depressed color="accent" @click.native="customPresetConfirmationCallback">Yes</v-btn>
           </v-row>
         </v-col>
       </v-card>
@@ -196,7 +196,7 @@
         <div class="d-flex pa-5 buttons custom-preset-import-button-area">
           <input ref="presetUploadInput" type="file" accept=".txt" hidden @change="readCustomPresetFromFile" />
           <v-btn type="file" color="accent" @click="selectFileForCustomPresetImport" depressed>Open from file</v-btn>
-          
+
           <v-alert v-if="customPresetImportShowError" dense type="error">{{
             customPresetImportErrorMessageText
           }}</v-alert>
@@ -235,7 +235,7 @@
   import { EventBus } from '~/assets/lib/EventBus'
   import { getSeedgen } from '~/assets/lib/getSeedgen'
 
-  const CustomPresetLastConfigName = 'Last Config'
+  export const CUSTOM_PRESET_LAST_CONFIG_NAME = 'Last Config'
   const SEEDGEN_CUSTOM_PRESETS_KEY = 'seedgen-custom-presets'
   const SeedgenWASM = getSeedgen()
 
@@ -618,10 +618,10 @@
       },
       sortCustomPresets() {
         this.customPresets.sort((a, b) => {
-          if (a.name === CustomPresetLastConfigName) {
+          if (a.name === CUSTOM_PRESET_LAST_CONFIG_NAME) {
             return -1
           }
-          if (b.name === CustomPresetLastConfigName) {
+          if (b.name === CUSTOM_PRESET_LAST_CONFIG_NAME) {
             return 1
           }
 
@@ -690,8 +690,12 @@
       },
 
       createLastConfigPreset() {
+        if (this.universeSettings.worldSettings.length === 0) {
+          return
+        }
+
         this.currentCustomPreset = createDefaultCustomPreset()
-        this.currentCustomPreset.name = CustomPresetLastConfigName
+        this.currentCustomPreset.name = CUSTOM_PRESET_LAST_CONFIG_NAME
         this.currentCustomPreset.description = 'Configuration of your last generated seed/game'
         this.selectedCustomPresetIndex = this.customPresets?.findIndex(
           (p) => p.name.toUpperCase() === this.currentCustomPreset.name.toUpperCase(),
@@ -732,7 +736,6 @@
         }
 
         if (this.universeSettings.worldSettings.length === 0 || setAllWorlds) {
-          console.log(multiverseSettings.universeSettings)
           this.universeSettings = cloneDeep(multiverseSettings.universeSettings) ?? createDefaultUniverseSettings()
           this.worldIndex = 0
         } else {

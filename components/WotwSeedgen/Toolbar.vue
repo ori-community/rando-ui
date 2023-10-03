@@ -38,7 +38,7 @@
     <!-- custom presets -->
     <v-menu offset-y left close-on-content-click>
       <template #activator="{ on, attrs }">
-        <v-btn text v-bind="attrs" class="ml-2" v-on="on"> Custom Presets </v-btn>
+        <v-btn text v-bind="attrs" class="ml-2" v-on="on">Custom Presets</v-btn>
       </template>
       <v-list>
         <v-list-item :disabled="loadCustomPresetDisabled" @click="$emit('load-custom-preset')"> Load </v-list-item>
@@ -68,7 +68,7 @@
 
     <v-tooltip bottom open-delay="300">
       <template #activator="{ on }">
-        <v-btn icon @click="$emit('start-over')" class="ml-2" :disabled="disabled" v-on="on">
+        <v-btn icon @click="$emit('start-over')" class="ml-2" :disabled="disabled || universePreset.worldSettings.length === 0" v-on="on">
           <v-icon>mdi-restart</v-icon>
         </v-btn>
       </template>

@@ -4,11 +4,11 @@
       <template #activator="{ on }">
         <v-btn
           v-on="on"
+          depressed
           class="text-none"
           :color="'background lighten-2'"
-          @contextmenu="$emit('contextmenu', $event)"
           @click="$emit('selected')"
-          >{{ customPreset.name }}</v-btn
+          ><slot name="prepend" />{{ customPreset.name }}</v-btn
         >
       </template>
       <span class="description">{{ customPreset.description }}</span>

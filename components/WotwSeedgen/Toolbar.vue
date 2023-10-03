@@ -5,7 +5,7 @@
         v-for="(worldPreset, index) in universePreset.worldSettings"
         :key="index"
         :disabled="disabled"
-        @contextmenu="event => openWorldContextMenu(event, index)"
+        @contextmenu="(event) => openWorldContextMenu(event, index)"
       >
         <v-icon left>mdi-earth</v-icon>
         {{ index + 1 }}
@@ -35,36 +35,45 @@
 
     <v-spacer />
 
+    <!-- custom presets -->
+    <v-menu offset-y left close-on-content-click>
+      <template #activator="{ on, attrs }">
+        <v-btn text v-bind="attrs" class="ml-2" v-on="on">Custom Presets</v-btn>
+      </template>
+      <v-list>
+        <v-list-item :disabled="loadCustomPresetDisabled" @click="$emit('load-custom-preset')"> Load </v-list-item>
+        <v-list-item :disabled="!(universePreset.worldSettings.length > 0)" @click="$emit('save-as-custom-preset')">
+          Save
+        </v-list-item>
+        <v-list-item @click="$emit('import-custom-preset')"> Import </v-list-item>
+      </v-list>
+    </v-menu>
+
     <v-menu v-model="worldMenuOpen" :position-x="worldMenuX" :position-y="worldMenuY" absolute offset-y>
       <v-list>
         <v-list-item :disabled="disabled" @click="$emit('copy-world', worldMenuWorldIndex)">
           <v-icon left>mdi-content-duplicate</v-icon>
-          Copy world
+          Duplicate
         </v-list-item>
         <v-list-item :disabled="disabled" @click="$emit('delete-world', worldMenuWorldIndex)">
           <v-icon left>mdi-delete-outline</v-icon>
-          Delete world
+          Delete
+        </v-list-item>
+        <v-list-item :disabled="disabled" @click="$emit('save-world-as-custom-preset', worldMenuWorldIndex)">
+          <v-icon left>mdi-content-save-outline</v-icon>
+          Save as custom preset
         </v-list-item>
       </v-list>
     </v-menu>
 
-    <v-menu offset-y left close-on-content-click :disabled="disabled">
-      <template #activator="{ on, attrs }">
-        <v-btn icon v-bind="attrs" class="ml-2" :disabled="disabled" v-on="on">
-          <v-icon>mdi-dots-vertical</v-icon>
+    <v-tooltip bottom open-delay="300">
+      <template #activator="{ on }">
+        <v-btn icon @click="$emit('start-over')" class="ml-2" :disabled="disabled || universePreset.worldSettings.length === 0" v-on="on">
+          <v-icon>mdi-restart</v-icon>
         </v-btn>
       </template>
-      <v-list>
-        <v-list-item :disabled="disabled" @click="$emit('start-over')">
-          <v-icon left>mdi-delete-outline</v-icon>
-          Start over
-        </v-list-item>
-        <v-list-item :disabled="disabled" @click="$emit('restore-last-config')">
-          <v-icon left>mdi-restore</v-icon>
-          Restore last config
-        </v-list-item>
-      </v-list>
-    </v-menu>
+      <span>Start over</span>
+    </v-tooltip>
   </div>
 </template>
 
@@ -86,6 +95,10 @@
       addingNewWorld: {
         type: Boolean,
         default: false,
+      },
+      loadCustomPresetDisabled: {
+        type: Boolean,
+        default: true,
       },
     },
     data: () => ({

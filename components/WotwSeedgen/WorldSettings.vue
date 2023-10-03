@@ -93,7 +93,12 @@
             <h3>Custom header</h3>
           </div>
 
-          <textarea v-model="inlineHeader" autofocus class="inline-header pa-5 flex-grow-1" placeholder="Write your custom header here..."></textarea>
+          <textarea
+            v-model="inlineHeader"
+            autofocus
+            class="inline-header pa-5 flex-grow-1"
+            placeholder="Write your custom header here..."
+          ></textarea>
 
           <div class="d-flex pa-5">
             <v-spacer />
@@ -172,7 +177,7 @@
           })
         } else if (this.model.inlineHeaders.length > 0 && value.length === 0) {
           this.model.inlineHeaders = []
-        } else if (this.model.inlineHeaders[0].content !== value) {
+        } else if (value.length > 0 && this.model.inlineHeaders[0].content !== value) {
           this.model.inlineHeaders[0].content = value
         }
       },
@@ -237,6 +242,6 @@
     outline: none;
     resize: vertical;
     color: white;
-    font-family: "Fira Code", "Consolas", monospace;
+    font-family: 'Fira Code', 'Consolas', monospace;
   }
 </style>

@@ -8,13 +8,18 @@
         Loading map: {{ Math.round(loadingProgressValue / loadingProgressMax * 100.0) }}%...
       </template>
     </v-snackbar>
-    <canvas ref="canvas" class="fill-canvas"/>
+    <div ref="timelineStageContainer" class="stage-container fill-height">
+      <k-stage ref="stage" :config="stageConfig" @wheel="onStageWheel">
+        <k-layer>
+          <k-image v-for="(tile, index) in mapTiles" :key="index" :config="tile" />
+        </k-layer>
+      </k-stage>
+    </div>
   </div>
 </template>
 
 <script>
   import * as PIXI from 'pixi.js'
-  import {Viewport} from 'pixi-viewport'
 
   export default {
     name: 'WotwMap',
@@ -22,115 +27,119 @@
       renderFn: {
         type: Function,
         default: null,
-      }
+      },
     },
     data: () => ({
-      loading: true,
+      stageConfig: {
+        width: 1,
+        height: 1,
+        x: 1000,
+        y: -2880,
+        scale: {
+          x: 0.75,
+          y: 0.75,
+        },
+        draggable: true,
+      },
+      mapTiles: [],
+      loading: false,
       loadingProgressValue: 0,
       loadingProgressMax: 1,
       customLoadingText: null,
       isDestroyed: false,
     }),
-    async mounted() {
-      this.app = new PIXI.Application({
-        view: this.$refs.canvas,
-        backgroundColor: 0x000000,
-        resizeTo: this.$refs.container,
-        antialias: true,
-      })
-      const app = this.app
+    computed: {
+      constants: () => ({
+        tilesX: 36,
+        tilesY: 9,
+        tileSize: 512,
+        // Calculated with S C I E N C E
+        tileScale: 3023.460435 / 12359.664154,
+        mapOffsetX: -2015.2614140037902,
+        mapOffsetY: 3513.5714250429464,
+      }),
+      stage() {
+        return this.$refs.stage.getStage()
+      }
+    },
+    mounted() {
+      const observer = new ResizeObserver(() => this.updateStageSize())
+      observer.observe(this.$refs.timelineStageContainer)
 
-      this.viewport = new Viewport({
-        interaction: app.renderer.plugins.interaction // the interaction module is important for wheel to work properly when renderer.view is placed or scaled
-      })
-      const viewport = this.viewport
-
-      viewport.interactive = true
-
-      new ResizeObserver(() => {
-        if (!this.isDestroyed) {
-          viewport.resize()
-        }
-      }).observe(this.$refs.canvas)
-
-      app.stage.addChild(viewport)
-
-      console.log('Loading map...')
-
-      const TILES_X = 35
-      const TILES_Y = 8
-      const TILE_SIZE = 512
-
-      // Calculated with S C I E N C E
-      const TILE_SCALE = 3023.460435 / 12359.664154
-      const MAP_OFFSET_X = -2015.2614140037902
-      const MAP_OFFSET_Y = 3513.5714250429464
-
-      viewport
-        .clampZoom({
-          minScale: 0.6,
-          maxScale: 8.0,
-        })
-        .drag({
-          mouseButtons: 'left',
-        })
-        .pinch()
-        .wheel()
-        .decelerate({
-          friction: 0.9,
-        })
-        .clamp({
-          left: TILES_X * TILE_SIZE * TILE_SCALE * -0.5 + MAP_OFFSET_X,
-          top: TILES_Y * TILE_SIZE * TILE_SCALE * -1.0 + MAP_OFFSET_Y,
-          right: TILES_X * TILE_SIZE * TILE_SCALE * 1.5 + MAP_OFFSET_X,
-          bottom: TILES_Y * TILE_SIZE * TILE_SCALE * 2.0 + MAP_OFFSET_Y,
-          // direction: 'all',
-          underflow: 'none',
-        })
-
-        // Zoom to Marsh
-        .setZoom(2.0)
-        .moveCenter(-800, 4340)
-
-
-      const promises = []
-      for (let x = 0; x <= 35; x++) {
-        for (let y = 0; y <= 8; y++) {
-          promises.push((async () => {
-            const tileResource = await import((`@/assets/images/map/tile-${x}_${y}.png`))
-
-            this.loadingProgressMax++
-
-            app.loader.add(`tile-${x}_${y}`, tileResource.default, (resource) => {
-              resource.texture.mipmap = PIXI.MIPMAP_MODES.ON
-              const tileSprite = new PIXI.Sprite(resource.texture)
-              tileSprite.x = 512 * x * TILE_SCALE + MAP_OFFSET_X
-              tileSprite.y = 512 * y * TILE_SCALE + MAP_OFFSET_Y
-              tileSprite.scale.x = TILE_SCALE
-              tileSprite.scale.y = TILE_SCALE
-              viewport.addChild(tileSprite)
-
-              this.loadingProgressValue++
-            })
-          })())
+      for (let x = 0; x < this.constants.tilesX; x++) {
+        for (let y = 0; y < this.constants.tilesY; y++) {
+          this.loadImage(x, y)
         }
       }
-
-      await Promise.allSettled(promises)
-      app.loader.load(async () => {
-        console.log('Map loaded.')
-        await this.renderOverlay()
-      })
     },
     beforeDestroy() {
       this.isDestroyed = true
-      this.app?.destroy(true, {
-        children: true,
-        texture: true,
-        baseTexture: true,
-      })
     },
     methods: {
+      async loadImage(x, y) {
+        try {
+          const image = await this.getImage(x, y)
+          this.mapTiles.push({
+            image,
+            x: 512 * this.constants.tileScale * x + this.constants.mapOffsetX,
+            y: 512 * this.constants.tileScale * y + this.constants.mapOffsetY,
+            scale: {
+              x: this.constants.tileScale,
+              y: this.constants.tileScale,
+            },
+          })
+        } catch (e) {
+
+        }
+      },
+      async getImage(x, y) {
+        const image = new Image()
+        image.src = (await import((`@/assets/images/map/tile-${x}_${y}.png`))).default
+        return await new Promise(resolve => {
+          image.onload = () => {
+            resolve(image)
+          }
+        })
+      },
+      updateStageSize() {
+        if (!this.$refs.timelineStageContainer) {
+          return
+        }
+
+        this.stageConfig.width = this.$refs.timelineStageContainer.clientWidth
+        this.stageConfig.height = this.$refs.timelineStageContainer.clientHeight
+      },
+      onStageWheel(e) {
+        const scaleBy = 0.96
+        const stage = this.stage
+        const oldScale = stage.scaleX()
+        const pointer = stage.getPointerPosition()
+
+        const mousePointTo = {
+          x: (pointer.x - stage.x()) / oldScale,
+          y: (pointer.y - stage.y()) / oldScale,
+        }
+
+        // how to scale? Zoom in? Or zoom out?
+        let direction = e.evt.deltaY > 0 ? 1 : -1
+
+        // when we zoom on trackpad, e.evt.ctrlKey is true
+        // in that case lets revert direction
+        if (e.evt.ctrlKey) {
+          direction = -direction
+        }
+
+        const newScale = direction > 0 ? oldScale * scaleBy : oldScale / scaleBy
+
+        stage.scale({ x: newScale, y: newScale })
+
+        const newPos = {
+          x: pointer.x - mousePointTo.x * newScale,
+          y: pointer.y - mousePointTo.y * newScale,
+        }
+
+        stage.position(newPos)
+      },
       async renderOverlay() {
         this.loading = true
 
@@ -146,8 +155,8 @@
         }
 
         this.loading = false
-      }
-    }
+      },
+    },
   }
 </script>
 

@@ -31,7 +31,7 @@
     "file-saver": "^2.0.5",
     "html-to-image": "^1.11.4",
     "js-yaml-loader": "^1.2.2",
-    "konva": "^8.3.13",
+    "konva": "^9.2.1",
     "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0",
     "nuxt": "^2.15.8",

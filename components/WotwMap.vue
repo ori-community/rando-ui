@@ -13,14 +13,13 @@
         <k-layer>
           <k-image v-for="(tile, index) in mapTiles" :key="index" :config="tile" />
         </k-layer>
+        <slot />
       </k-stage>
     </div>
   </div>
 </template>
 
 <script>
-  import * as PIXI from 'pixi.js'
-
   export default {
     name: 'WotwMap',
     props: {
@@ -37,7 +36,7 @@
         y: -2880,
         scale: {
           x: 0.75,
-          y: 0.75,
+          y: -0.75,
         },
         draggable: true,
       },
@@ -56,7 +55,7 @@
         // Calculated with S C I E N C E
         tileScale: 3023.460435 / 12359.664154,
         mapOffsetX: -2015.2614140037902,
-        mapOffsetY: 3513.5714250429464,
+        mapOffsetY: -3513.5714250429464,
       }),
       stage() {
         return this.$refs.stage.getStage()
@@ -82,10 +81,10 @@
           this.mapTiles.push({
             image,
             x: 512 * this.constants.tileScale * x + this.constants.mapOffsetX,
-            y: 512 * this.constants.tileScale * y + this.constants.mapOffsetY,
+            y: -512 * this.constants.tileScale * y + this.constants.mapOffsetY,
             scale: {
               x: this.constants.tileScale,
-              y: this.constants.tileScale,
+              y: -this.constants.tileScale,
             },
           })
         } catch (e) {
@@ -131,7 +130,7 @@
 
         const newScale = direction > 0 ? oldScale * scaleBy : oldScale / scaleBy
 
-        stage.scale({ x: newScale, y: newScale })
+        stage.scale({ x: newScale, y: -newScale })
 
         const newPos = {
           x: pointer.x - mousePointTo.x * newScale,
@@ -139,22 +138,6 @@
         }
 
         stage.position(newPos)
-      },
-      async renderOverlay() {
-        this.loading = true
-
-        if (!this.renderContainer) {
-          this.renderContainer = new PIXI.Container()
-          this.renderContainer.interactive = true
-          this.viewport.addChild(this.renderContainer)
-        }
-
-        if (this.renderFn) {
-          this.customLoadingText = 'Loading overlays...'
-          await this.renderFn(this.app, this.renderContainer, this.viewport)
-        }
-
-        this.loading = false
       },
     },
   }

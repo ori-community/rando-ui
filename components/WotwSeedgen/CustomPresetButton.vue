@@ -3,12 +3,12 @@
     <v-tooltip bottom open-delay="300" :disabled="!(customPreset.description?.length > 0)">
       <template #activator="{ on }">
         <v-btn
-          v-on="on"
           depressed
           class="text-none"
           :color="'background lighten-2'"
+          v-on="on"
           @click="$emit('selected')"
-          ><slot name="prepend" />{{ customPreset.name }}</v-btn
+        ><slot name="prepend" />{{ customPreset.name }}</v-btn
         >
       </template>
       <span class="description">{{ customPreset.description }}</span>

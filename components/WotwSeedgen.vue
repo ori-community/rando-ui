@@ -92,18 +92,18 @@
         <v-label>Save the current configuration as a custom preset</v-label>
         <div class="mt-5">
           <v-text-field
+            v-model="currentCustomPreset.name"
             :counter="customPresetNameMaxLength"
             label="Name"
             autofocus
-            v-model="currentCustomPreset.name"
           />
           <v-textarea
+            v-model="currentCustomPreset.description"
             auto-grow
             :counter="customPresetDescriptionMaxLength"
             clearable
             clear-icon="mdi-close-circle"
             label="Description (optional)"
-            v-model="currentCustomPreset.description"
           />
           <v-col>
             <v-row class="mt-1" justify="end">
@@ -195,7 +195,7 @@
 
         <div class="d-flex pa-5 buttons custom-preset-import-button-area">
           <input ref="presetUploadInput" type="file" accept=".txt" hidden @change="readCustomPresetFromFile" />
-          <v-btn type="file" color="accent" @click="selectFileForCustomPresetImport" depressed>Open from file</v-btn>
+          <v-btn type="file" color="accent" depressed @click="selectFileForCustomPresetImport">Open from file</v-btn>
 
           <v-alert v-if="customPresetImportShowError" dense type="error">{{
             customPresetImportErrorMessageText

@@ -2,8 +2,8 @@
   <div>
     <v-col>
       <v-row
-        :class="{'mb-3': multiWorldPresets?.length > 0 && displayMultiworlds}"
         v-if="singleWorldPresets?.length > 0"
+        :class="{'mb-3': multiWorldPresets?.length > 0 && displayMultiworlds}"
       >
         <div>
           <v-label>Single Worlds</v-label>

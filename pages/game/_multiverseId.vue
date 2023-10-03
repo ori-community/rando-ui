@@ -351,7 +351,7 @@
     </v-dialog>
 
     <v-dialog v-model="viewSpoilerDialogOpen" transition="dialog-bottom-transition" fullscreen>
-      <v-sheet v-if="hasSeed">
+      <v-sheet v-if="hasSeed" class="fill-height d-flex flex-column">
         <v-toolbar color="secondary">
           <v-toolbar-title>Spoiler</v-toolbar-title>
           <div class="ml-3">
@@ -365,11 +365,21 @@
             </v-tooltip>
           </div>
           <v-spacer />
+          <div class="mr-3">
+            <v-text-field
+              ref="spoilerSearchInput"
+              v-model="spoilerSearchQuery"
+              solo
+              flat
+              placeholder="Search..."
+              hide-details
+            />
+          </div>
           <v-btn icon @click="viewSpoilerDialogOpen = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-toolbar>
-        <div class="spoiler-text pa-3">{{ spoilerText }}</div>
+        <div ref="spoilerText" class="spoiler-text pa-3">{{ spoilerText }}</div>
       </v-sheet>
     </v-dialog>
   </div>
@@ -411,6 +421,7 @@
       downloadSpoilerLoading: false,
       viewSpoilerDialogOpen: false,
       spoilerText: '',
+      spoilerSearchQuery: '',
       enableRaceModeDialogOpen: false,
       enableRaceModeLoading: false,
       forfeitDialogOpen: false,
@@ -628,6 +639,16 @@
             })
           }
         },
+      },
+      spoilerSearchQuery(query) {
+        const range = document.createRange()
+
+        const offset = this.spoilerText.indexOf(query)
+
+        if (offset > 0) {
+          range.setStart(this.$refs.spoilerText.childNodes[0], offset)
+          this.$refs.spoilerText.scrollTop = Math.max(0, this.$refs.spoilerText.scrollTop + range.getBoundingClientRect()?.top - 100)
+        }
       },
     },
     mounted() {
@@ -955,7 +976,8 @@
 
   .spoiler-text {
     font-family: Consolas, 'Fira Code', monospace;
-    overflow-x: scroll;
+    overflow-y: scroll;
+    flex-grow: 1;
     white-space: pre;
   }
 </style>

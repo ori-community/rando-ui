@@ -1,117 +1,137 @@
 <template>
   <throttled-spinner>
-    <div v-if='library !== null'>
+    <div v-if="library !== null">
       <wotw-seedgen-toolbar
-        v-model='WorldIndex'
-        :universe-preset='universeSettings'
-        :adding-new-world='addingNewWorld'
-        :disabled='loading'
-        :load-custom-preset-disabled='!(customPresets?.length > 0)'
-        @add-world='addNewWorld()'
-        @start-over='resetEverything()'
-        @save-as-custom-preset='customPresetSaveDialogOpen = true'
-        @load-custom-preset='customPresetLoadDialogOpen = true'
-        @delete-world='deleteWorld'
-        @copy-world='createNewWorldFromExistingWorld'
-        @save-world-as-custom-preset='customPresetCreateFromWorld'
-        @import-custom-preset='customPresetImportDialogOpen = true'
+        v-model="worldIndex"
+        :universe-preset="universeSettings"
+        :adding-new-world="addingNewWorld"
+        :disabled="loading"
+        :load-custom-preset-disabled="!(customPresets?.length > 0)"
+        @add-world="addNewWorld()"
+        @start-over="resetEverything()"
+        @save-as-custom-preset="customPresetSaveDialogOpen = true"
+        @load-custom-preset="customPresetLoadDialogOpen = true"
+        @delete-world="deleteWorld"
+        @copy-world="createNewWorldFromExistingWorld"
+        @save-world-as-custom-preset="customPresetCreateFromWorld"
+        @import-custom-preset="customPresetImportDialogOpen = true"
       />
 
-      <div class='mb-12'>
-        <v-slide-y-reverse-transition :duration='{ enter: 200, leave: 0 }' mode='out-in'>
-          <v-card :key='WorldIndex' class='pa-5 seedgen'>
-            <v-scroll-x-reverse-transition :duration='{ enter: 200, leave: 0 }' mode='out-in'>
+      <div class="mb-12">
+        <v-slide-y-reverse-transition :duration="{ enter: 200, leave: 0 }" mode="out-in">
+          <v-card :key="worldIndex" class="pa-5 seedgen">
+            <v-scroll-x-reverse-transition :duration="{ enter: 200, leave: 0 }" mode="out-in">
               <wotw-seedgen-world-preset-setup
-                v-if='addingNewWorld'
-                :universe-settings='universeSettings'
-                :custom-presets='customPresets'
-                class='preset-setup'
-                @create-new-world='createNewWorldWithPresets'
-                @copy-from-world='createNewWorldFromExistingWorld'
-                @custom-preset-delete='removeCustomPreset'
-                @custom-preset-selected='loadCustomPreset'
+                v-if="addingNewWorld"
+                :universe-settings="universeSettings"
+                :custom-presets="customPresets"
+                class="preset-setup"
+                @create-new-world="createNewWorldWithPresets"
+                @copy-from-world="createNewWorldFromExistingWorld"
+                @custom-preset-delete="removeCustomPreset"
+                @custom-preset-selected="loadCustomPreset"
               />
               <wotw-seedgen-world-settings
-                v-else-if='universeSettings.worldSettings.length > 0'
-                v-model='universeSettings.worldSettings[WorldIndex]'
+                v-else-if="universeSettings.worldSettings.length > 0"
+                v-model="universeSettings.worldSettings[worldIndex]"
               />
             </v-scroll-x-reverse-transition>
           </v-card>
         </v-slide-y-reverse-transition>
       </div>
 
-      <v-scroll-x-reverse-transition :duration='{ enter: 200, leave: 0 }' mode='out-in'>
-        <div v-if='availableActions.length > 0' key='buttons' class='buttons'>
-          <v-tooltip v-for='action in availableActions' :key='action.id' :disabled='!action.hint' bottom>
-            <template #activator='{ on }'>
-              <div v-on='on'>
+      <v-scroll-x-reverse-transition :duration="{ enter: 200, leave: 0 }" mode="out-in">
+        <div v-if="availableActions.length > 0" key="buttons" class="buttons">
+          <v-tooltip v-for="action in availableActions" :key="action.id" :disabled="!action.hint" bottom>
+            <template #activator="{ on }">
+              <div v-on="on">
                 <v-btn
-                  :ref='
+                  :ref="
                     (el) => {
                       if (action.id === runningActionId) {
                         runningActionElement = el
                       }
                     }
-                  '
-                  :disabled='action.disabled || loading'
-                  :loading='loading && action.id === runningActionId'
-                  color='accent'
+                  "
+                  :disabled="action.disabled || loading"
+                  :loading="loading && action.id === runningActionId"
+                  color="accent"
                   x-large
-                  @click='action.handler'
+                  @click="action.handler"
                 >
                   <v-icon left>{{ action.icon }}</v-icon>
                   {{ action.label }}
                 </v-btn>
               </div>
             </template>
-            <span class='text-pre'>{{ action.hint }}</span>
+            <span class="text-pre">{{ action.hint }}</span>
           </v-tooltip>
         </div>
-        <div v-else key='empty'></div>
+        <div v-else key="empty"></div>
       </v-scroll-x-reverse-transition>
     </div>
 
     <!-- bingo settings -->
-    <v-dialog v-model='bingoSettingsDialogOpen' :persistent='bingoLoading' max-width='600'>
-      <v-card class='pa-5'>
-        <h2 class='mb-5'>Bingo Settings</h2>
+    <v-dialog v-model="bingoSettingsDialogOpen" :persistent="bingoLoading" max-width="600">
+      <v-card class="pa-5">
+        <h2 class="mb-5">Bingo Settings</h2>
 
-        <wotw-seedgen-bingo-settings v-model='bingoSettings' />
+        <wotw-seedgen-bingo-settings v-model="bingoSettings" />
 
-        <div class='d-flex'>
+        <div class="d-flex">
           <v-spacer />
-          <v-btn color='accent' :loading='bingoLoading' depressed @click='createBingoGame()'>Play Bingo</v-btn>
+          <v-btn color="accent" :loading="bingoLoading" depressed @click="createBingoGame()">Play Bingo</v-btn>
         </div>
       </v-card>
     </v-dialog>
-    
+
     <!-- save custom preset -->
-    <v-dialog v-model='customPresetSaveDialogOpen'  max-width='650'>
-      <v-card class='pa-5'>
+    <v-dialog v-model="customPresetSaveDialogOpen" max-width="650">
+      <v-card class="pa-5">
         <h2>Save Custom Preset</h2>
         <v-label>Save the current configuration as a custom preset</v-label>
         <div class="mt-5">
-          <v-text-field :counter='customPresetNameMaxLength' label="Name" autofocus v-model="currentCustomPreset.name" />
-          <v-textarea auto-grow :counter='customPresetDescriptionMaxLength' clearable clear-icon="mdi-close-circle" label="Description (optional)" v-model="currentCustomPreset.description"/>
+          <v-text-field
+            :counter="customPresetNameMaxLength"
+            label="Name"
+            autofocus
+            v-model="currentCustomPreset.name"
+          />
+          <v-textarea
+            auto-grow
+            :counter="customPresetDescriptionMaxLength"
+            clearable
+            clear-icon="mdi-close-circle"
+            label="Description (optional)"
+            v-model="currentCustomPreset.description"
+          />
           <v-col>
             <v-row class="mt-1" justify="end">
-              <v-btn 
+              <v-btn
                 large
                 color="accent"
-                depressed 
-                :disabled='!currentCustomPreset.name || currentCustomPreset.description?.length > customPresetDescriptionMaxLength || currentCustomPreset.name?.length > customPresetNameMaxLength'
+                depressed
+                :disabled="
+                  !currentCustomPreset.name ||
+                  currentCustomPreset.description?.length > customPresetDescriptionMaxLength ||
+                  currentCustomPreset.name?.length > customPresetNameMaxLength
+                "
                 @click="saveCurrentSettingsAsPreset"
-                >
+              >
                 <v-icon left>mdi-content-save-outline</v-icon>
                 Save
               </v-btn>
             </v-row>
           </v-col>
-          <template v-if='customPresets?.length > 0'>
+          <template v-if="customPresets?.length > 0">
             <v-divider class="mt-3" />
             <h3 class="mt-5">Overwrite Existing Preset</h3>
             <div class="mt-3">
-              <wotw-seedgen-custom-preset-select :custom-presets='customPresets' @delete='removeCustomPreset' @selected='setAsCurrentCustomPreset'/>
+              <wotw-seedgen-custom-preset-select
+                :custom-presets="customPresets"
+                @delete="removeCustomPreset"
+                @selected="setAsCurrentCustomPreset"
+              />
             </div>
           </template>
         </div>
@@ -119,40 +139,39 @@
     </v-dialog>
 
     <!-- load custom preset -->
-    <v-dialog v-model='customPresetLoadDialogOpen'  max-width='650'>
-      <v-card class='pa-5'>
-        <h2 class='mb-3'>Load Custom Presets</h2>
+    <v-dialog v-model="customPresetLoadDialogOpen" max-width="650">
+      <v-card class="pa-5">
+        <h2 class="mb-3">Load Custom Presets</h2>
         <div>
-          <wotw-seedgen-custom-preset-select 
-            :custom-presets='customPresets'
-            @selected='index => loadCustomPreset(index, true)'
-            @delete='removeCustomPreset' />
+          <wotw-seedgen-custom-preset-select
+            :custom-presets="customPresets"
+            @selected="(index) => loadCustomPreset(index, true)"
+            @delete="removeCustomPreset"
+          />
         </div>
       </v-card>
     </v-dialog>
 
     <!-- custom preset confirmation -->
-    <v-dialog v-if="customPresets?.length > 0" v-model='customPresetConfirmationDialogOpen' width="unset" max-width="600">
-      <v-card class='pa-5'>
+    <v-dialog
+      v-if="customPresets?.length > 0"
+      v-model="customPresetConfirmationDialogOpen"
+      width="unset"
+      max-width="600"
+    >
+      <v-card class="pa-5">
         <v-col>
           <v-row>
-          <div class="mb-4 confirmation-dialog-info" >
-            <v-label class="mb-2">{{ customPresetConfirmationText }}</v-label>
-            <v-label v-if="selectedCustomPresetIndex >= 0"><strong>{{ customPresets[selectedCustomPresetIndex].name }}</strong></v-label>
-          </div>
+            <div class="mb-4 confirmation-dialog-info">
+              <v-label class="mb-2">{{ customPresetConfirmationText }}</v-label>
+              <v-label v-if="selectedCustomPresetIndex >= 0"
+                ><strong>{{ customPresets[selectedCustomPresetIndex].name }}</strong></v-label
+              >
+            </div>
           </v-row>
           <v-row justify="end" class="buttons">
-            <v-btn 
-              color="accent"
-              @click.native='customPresetConfirmationCallback'
-              >
-              Yes
-            </v-btn>
-            <v-btn
-              @click='customPresetConfirmationDialogOpen = false'
-              >
-              No
-            </v-btn>
+            <v-btn color="accent" @click.native="customPresetConfirmationCallback"> Yes </v-btn>
+            <v-btn @click="customPresetConfirmationDialogOpen = false"> No </v-btn>
           </v-row>
         </v-col>
       </v-card>
@@ -160,33 +179,48 @@
 
     <!-- custom preset import -->
     <v-dialog v-model="customPresetImportDialogOpen" fullscreen>
-        <v-card class="d-flex flex-column">
-          <div class="pt-5 px-5 pb-2">
-            <h3>Import Custom Preset</h3>
+      <v-card class="d-flex flex-column">
+        <div class="pt-5 px-5 pb-2">
+          <h3>Import Custom Preset</h3>
+        </div>
+
+        <textarea
+          v-model="customPresetImportText"
+          no-resize
+          autofocus
+          clearable
+          class="custom-header-import-textarea flex-grow-1 pa-5"
+          placeholder="Paste your custom preset here..."
+        ></textarea>
+
+        <div class="d-flex pa-5 buttons custom-preset-import-button-area">
+          <input ref="presetUploadInput" type="file" accept=".txt" hidden @change="readCustomPresetFromFile" />
+          <v-btn type="file" color="accent" @click="selectFileForCustomPresetImport" depressed>Open from file</v-btn>
+          
+          <v-alert v-if="customPresetImportShowError" dense type="error">{{
+            customPresetImportErrorMessageText
+          }}</v-alert>
+          <div>
+            <v-btn
+              depressed
+              text
+              @click="
+                customPresetImportDialogOpen = false
+                customPresetImportText = ''
+              "
+              >Cancel</v-btn
+            >
+            <v-btn
+              color="accent"
+              :disabled="!customPresetImportText"
+              depressed
+              @click="importCustomPreset(customPresetImportText)"
+              >Import</v-btn
+            >
           </div>
-
-          <textarea v-model="customPresetImportText" no-resize autofocus class="custom-header-import-textarea flex-grow-1 pa-5" placeholder="Write your custom preset here..."></textarea>
-
-          <div class="d-flex pa-5 buttons custom-header-import-button-area">
-            
-            <input 
-              id="presetUploadInput"
-              ref="presetUploadInput"
-              type="file"
-              accept=".txt"
-              hidden
-              @change="readCustomPresetFromFile"
-            />
-            <v-btn type="file" color="accent" @click="selectFileForCustomPresetImport" depressed>Read from file</v-btn>
-            <v-spacer />
-            <v-alert v-if="customPresetImportShowError" dense type="error">{{ customPresetImportErrorMessageText }}</v-alert>
-            <v-spacer />
-            <v-btn color="accent" :disabled="!customPresetImportText" depressed @click="importCustomPreset(customPresetImportText)">Import</v-btn>
-            <v-btn color="accent" depressed @click="customPresetImportDialogOpen = false; customPresetImportText = ''">Cancel</v-btn>
-          </div>
-        </v-card>
-      </v-dialog>
-
+        </div>
+      </v-card>
+    </v-dialog>
   </throttled-spinner>
 </template>
 
@@ -201,9 +235,9 @@
   import { EventBus } from '~/assets/lib/EventBus'
   import { getSeedgen } from '~/assets/lib/getSeedgen'
 
+  const CustomPresetLastConfigName = 'Last Config'
   const SEEDGEN_CUSTOM_PRESETS_KEY = 'seedgen-custom-presets'
   const SeedgenWASM = getSeedgen()
-
 
   const createDefaultUniverseSettings = () => ({
     worldSettings: [],
@@ -213,20 +247,19 @@
   })
 
   const createDefaultCustomPreset = () => ({
-    name: null, 
-        description: null, 
-        multiverseSettings: null,
+    name: null,
+    description: null,
+    multiverseSettings: null,
   })
 
-  class SilentError extends Error {
-    }
+  class SilentError extends Error {}
 
   export default {
     name: 'WotwSeedgen',
     data: () => ({
       universeSettings: createDefaultUniverseSettings(),
       addingNewWorld: true,
-      WorldIndex: 0,
+      worldIndex: 0,
       loading: false,
       bingoLoading: false,
       runningActionId: null,
@@ -423,7 +456,7 @@
       },
     },
     watch: {
-      WorldIndex(_value, oldValue) {
+      worldIndex(_value, oldValue) {
         if (this.addingNewWorld && oldValue === this.universeSettings.worldSettings.length) {
           this.addingNewWorld = false
         }
@@ -440,14 +473,14 @@
     },
     methods: {
       resetEverything() {
-        this.CreateLastConfigPreset()
+        this.createLastConfigPreset()
         this.universeSettings = createDefaultUniverseSettings()
-        this.WorldIndex = 0
+        this.worldIndex = 0
         this.addingNewWorld = true
       },
       addNewWorld() {
         this.addingNewWorld = true
-        this.WorldIndex = this.universeSettings.worldSettings.length
+        this.worldIndex = this.universeSettings.worldSettings.length
       },
       async createNewWorldWithPresets(presets) {
         const seedgen = await SeedgenWASM
@@ -462,13 +495,13 @@
         }
 
         this.universeSettings.worldSettings.push(JSON.parse(worldSettings.toJson()))
-        this.WorldIndex = this.universeSettings.worldSettings.length - 1
+        this.worldIndex = this.universeSettings.worldSettings.length - 1
         this.addingNewWorld = false
       },
       createNewWorldFromExistingWorld(worldIndex) {
         const copiedWorld = cloneDeep(this.universeSettings.worldSettings[worldIndex])
         this.universeSettings.worldSettings.push(copiedWorld)
-        this.WorldIndex = this.universeSettings.worldSettings.length - 1
+        this.worldIndex = this.universeSettings.worldSettings.length - 1
         this.addingNewWorld = false
       },
       /**
@@ -493,11 +526,11 @@
         this.loading = false
 
         if (snapshotConfig) {
-          this.CreateLastConfigPreset()
+          this.createLastConfigPreset()
         }
 
         return seedgenResponse
-      },      
+      },
       async createBingoGame() {
         this.bingoLoading = true
 
@@ -565,7 +598,7 @@
       deleteWorld(worldIndex) {
         this.universeSettings.worldSettings.splice(worldIndex, 1)
 
-        this.WorldIndex = Math.min(this.WorldIndex, this.universeSettings.worldSettings.length - 1)
+        this.worldIndex = Math.min(this.worldIndex, this.universeSettings.worldSettings.length - 1)
 
         if (this.universeSettings.worldSettings.length === 0) {
           this.addingNewWorld = true
@@ -573,22 +606,22 @@
       },
 
       // CUSTOM PRESETS
-      storeCustomPresets(){
+      storeCustomPresets() {
         window.localStorage.setItem(SEEDGEN_CUSTOM_PRESETS_KEY, JSON.stringify(this.customPresets))
       },
-      loadCustomPresets(){
+      loadCustomPresets() {
         const storageData = window.localStorage.getItem(SEEDGEN_CUSTOM_PRESETS_KEY)
         if (storageData) {
           this.customPresets = JSON.parse(storageData)
           this.sortCustomPresets()
         }
       },
-      sortCustomPresets(){
+      sortCustomPresets() {
         this.customPresets.sort((a, b) => {
-          if (a.name === "Last Config") {
+          if (a.name === CustomPresetLastConfigName) {
             return -1
           }
-          if (b.name === "Last Config") {
+          if (b.name === CustomPresetLastConfigName) {
             return 1
           }
 
@@ -596,33 +629,40 @@
         })
       },
 
-      GetMultiverseSettings(index = null){
-          return {
-            universeSettings: !index ? this.universeSettings : {...this.universeSettings, worldSettings: [this.universeSettings.worldSettings[index]]},
-            bingoSettings: this.bingoSettings,
+      getMultiverseSettings(index = null) {
+        return {
+          universeSettings: !index
+            ? this.universeSettings
+            : { ...this.universeSettings, worldSettings: [this.universeSettings.worldSettings[index]] },
+          bingoSettings: this.bingoSettings,
         }
       },
-      
-      addCurrentCustomPresetToArray(){
 
+      addCurrentCustomPresetToArray() {
         const newCustomPreset = this.currentCustomPreset
 
-        if(!this.customPresets){ this.customPresets= []}
+        if (!this.customPresets) {
+          this.customPresets = []
+        }
 
-        if(this.selectedCustomPresetIndex > -1){
+        if (this.selectedCustomPresetIndex > -1) {
           this.$set(this.customPresets, this.selectedCustomPresetIndex, newCustomPreset)
         } else {
-        this.customPresets.push(newCustomPreset)
+          this.customPresets.push(newCustomPreset)
         }
         this.sortCustomPresets()
         this.storeCustomPresets()
       },
 
       saveCustomPreset() {
-        if (!this.currentCustomPreset?.name) { return }
-        this.selectedCustomPresetIndex = this.customPresets?.findIndex(p => p.name.toUpperCase() === this.currentCustomPreset.name.toUpperCase())
+        if (!this.currentCustomPreset?.name) {
+          return
+        }
+        this.selectedCustomPresetIndex = this.customPresets?.findIndex(
+          (p) => p.name.toUpperCase() === this.currentCustomPreset.name.toUpperCase(),
+        )
 
-        if( this.selectedCustomPresetIndex >= 0){
+        if (this.selectedCustomPresetIndex >= 0) {
           this.customPresetConfirmationCallback = this.saveCustomPresetConfirmed
           this.customPresetConfirmationText = 'Are you sure you want to overwrite this custom preset:'
           this.customPresetConfirmationDialogOpen = true
@@ -631,26 +671,32 @@
         this.saveCustomPresetConfirmed()
       },
 
-      saveCustomPresetConfirmed(){
+      saveCustomPresetConfirmed() {
         this.customPresetSaveDialogOpen = false
         this.customPresetConfirmationDialogOpen = false
-        if (!this.currentCustomPreset?.name) { return }
+        if (!this.currentCustomPreset?.name) {
+          return
+        }
         this.addCurrentCustomPresetToArray()
         this.currentCustomPreset = createDefaultCustomPreset()
       },
 
-      saveCurrentSettingsAsPreset(){
-        if (!this.currentCustomPreset?.name) { return }
-        this.currentCustomPreset.multiverseSettings = this.GetMultiverseSettings( this.customPresetSaveWorldIndex )
+      saveCurrentSettingsAsPreset() {
+        if (!this.currentCustomPreset?.name) {
+          return
+        }
+        this.currentCustomPreset.multiverseSettings = this.getMultiverseSettings(this.customPresetSaveWorldIndex)
         this.saveCustomPreset()
       },
 
-      CreateLastConfigPreset(){
+      createLastConfigPreset() {
         this.currentCustomPreset = createDefaultCustomPreset()
-        this.currentCustomPreset.name = 'Last Config'
+        this.currentCustomPreset.name = CustomPresetLastConfigName
         this.currentCustomPreset.description = 'Configuration of your last generated seed/game'
-        this.selectedCustomPresetIndex = this.customPresets?.findIndex(p => p.name.toUpperCase() === this.currentCustomPreset.name.toUpperCase())
-        this.currentCustomPreset.multiverseSettings = this.GetMultiverseSettings( null )
+        this.selectedCustomPresetIndex = this.customPresets?.findIndex(
+          (p) => p.name.toUpperCase() === this.currentCustomPreset.name.toUpperCase(),
+        )
+        this.currentCustomPreset.multiverseSettings = this.getMultiverseSettings(null)
         this.saveCustomPresetConfirmed()
       },
 
@@ -659,78 +705,85 @@
         this.customPresetSaveDialogOpen = true
       },
 
-      removeCustomPreset(index){
+      removeCustomPreset(index) {
         this.selectedCustomPresetIndex = index
         this.customPresetConfirmationCallback = this.removeCustomPresetConfirmed
         this.customPresetConfirmationText = 'Are you sure you want to delete this custom preset:'
         this.customPresetConfirmationDialogOpen = true
       },
 
-      removeCustomPresetConfirmed(){
+      removeCustomPresetConfirmed() {
         this.customPresetConfirmationDialogOpen = false
         this.customPresets.splice(this.selectedCustomPresetIndex, 1)
         this.storeCustomPresets()
         this.currentCustomPreset = createDefaultCustomPreset()
-        if (!(this.customPresets?.length > 0)) { this.customPresetLoadDialogOpen = false }
+        if (!(this.customPresets?.length > 0)) {
+          this.customPresetLoadDialogOpen = false
+        }
       },
 
-
-      loadCustomPreset(index, overwrite = false){
-        this.setConfig(this.customPresets[index].multiverseSettings, overwrite)
+      loadCustomPreset(index, setAllWorlds = false) {
+        this.setMultiverseSettings(this.customPresets[index].multiverseSettings, setAllWorlds)
         this.customPresetLoadDialogOpen = false
       },
-      setConfig(multiverseSettings, overwrite){
-        
-        if(this.universeSettings.worldSettings.length === 0 || overwrite) {this.bingoSettings = multiverseSettings.bingoSettings ?? new BingoSettings()}
-        
-        if(this.universeSettings.worldSettings.length === 0 || overwrite){
+      setMultiverseSettings(multiverseSettings, setAllWorlds) {
+        if (this.universeSettings.worldSettings.length === 0 || setAllWorlds) {
+          this.bingoSettings = multiverseSettings.bingoSettings ?? new BingoSettings()
+        }
+
+        if (this.universeSettings.worldSettings.length === 0 || setAllWorlds) {
           console.log(multiverseSettings.universeSettings)
           this.universeSettings = cloneDeep(multiverseSettings.universeSettings) ?? createDefaultUniverseSettings()
-          this.WorldIndex = 0
+          this.worldIndex = 0
         } else {
-            this.universeSettings.worldSettings[this.WorldIndex] = multiverseSettings.universeSettings.worldSettings[0]
+          this.universeSettings.worldSettings[this.worldIndex] = multiverseSettings.universeSettings.worldSettings[0]
         }
         this.addingNewWorld = false
       },
 
-
-      setAsCurrentCustomPreset(index){
+      setAsCurrentCustomPreset(index) {
         this.currentCustomPreset = cloneDeep(this.customPresets[index])
       },
-      
-      importCustomPreset(jsonString){
+
+      importCustomPreset(jsonString) {
         try {
           this.currentCustomPreset = JSON.parse(jsonString)
         } catch (e) {
           this.importCustomPresetShowError(String(e))
           return
         }
-        
+
         if (!this.currentCustomPreset.name) {
           this.importCustomPresetShowError('Name has to be set')
           return
         }
 
-        if (!this.currentCustomPreset.multiverseSettings){
+        if (!this.currentCustomPreset.multiverseSettings) {
           this.importCustomPresetShowError('Configuration cannot be empty')
           return
         }
 
-        if (this.currentCustomPreset.name.length > this.customPresetNameMaxLength){
-          this.importCustomPresetShowError(`Name of custom header is too long (${ this.currentCustomPreset.name.length }/${ this.customPresetNameMaxLength })`)
+        if (this.currentCustomPreset.name.length > this.customPresetNameMaxLength) {
+          this.importCustomPresetShowError(
+            `Name of custom header is too long (${this.currentCustomPreset.name.length}/${this.customPresetNameMaxLength})`,
+          )
           return
         }
 
-        if (this.currentCustomPreset.description?.length > this.customPresetDescriptionMaxLength){
-          this.importCustomPresetShowError(`Description of custom header is too long (${ this.currentCustomPreset.description.length }/${ this.customPresetDescriptionMaxLength })`)
+        if (this.currentCustomPreset.description?.length > this.customPresetDescriptionMaxLength) {
+          this.importCustomPresetShowError(
+            `Description of custom header is too long (${this.currentCustomPreset.description.length}/${this.customPresetDescriptionMaxLength})`,
+          )
           return
         }
 
         this.saveCustomPreset()
         this.customPresetImportDialogOpen = false
       },
-      importCustomPresetShowError(message){
-        clearTimeout(this.customPresetImportErrorMessageTimeout)
+      importCustomPresetShowError(message) {
+        if (this.customPresetImportErrorMessageTimeout !== null) {
+          clearTimeout(this.customPresetImportErrorMessageTimeout)
+        }
 
         this.customPresetImportErrorMessageText = message
         this.customPresetImportShowError = true
@@ -738,27 +791,26 @@
         this.customPresetImportErrorMessageTimeout = setTimeout(() => {
           this.customPresetImportShowError = false
         }, 5000)
-
       },
       selectFileForCustomPresetImport() {
-        document.getElementById('presetUploadInput').click()
+        this.$refs.presetUploadInput.click()
       },
       readCustomPresetFromFile(event) {
-        const [file] = event.target.files;
-        const reader = new FileReader();
+        const [file] = event.target.files
+        const reader = new FileReader()
 
         reader.addEventListener(
-            "load",
-            () => {
-              // this will then display a text file
-              this.customPresetImportText = reader.result;
-            },
-            false,
-          );
+          'load',
+          () => {
+            // this will then display a text file
+            this.customPresetImportText = reader.result
+          },
+          false,
+        )
 
-          if (file) {
-            reader.readAsText(file);
-          }
+        if (file) {
+          reader.readAsText(file)
+        }
 
         this.$refs.presetUploadInput.value = ''
       },
@@ -766,7 +818,7 @@
   }
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
   .seedgen {
     position: relative;
   }
@@ -785,21 +837,21 @@
     gap: 0.4em;
   }
   .confirmation-dialog-info label {
-    display:block;
+    display: block;
   }
 
   .custom-header-import-textarea {
-      background-color: rgba(255, 255, 255, 0.1);
-      width: 100%;
-      min-height: 100%;
-      border: none;
-      outline: none;
-      resize: none;
-      color: white;
-      font-family: "Fira Code", "Consolas", monospace;
+    background-color: rgba(255, 255, 255, 0.1);
+    width: 100%;
+    min-height: 100%;
+    border: none;
+    outline: none;
+    resize: none;
+    color: white;
+    font-family: 'Fira Code', 'Consolas', monospace;
   }
-  .custom-header-import-button-area {
+  .custom-preset-import-button-area {
     min-height: 100px;
+    justify-content: space-between;
   }
-
 </style>

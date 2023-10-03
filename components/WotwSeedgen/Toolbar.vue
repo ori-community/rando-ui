@@ -5,7 +5,7 @@
         v-for="(worldPreset, index) in universePreset.worldSettings"
         :key="index"
         :disabled="disabled"
-        @contextmenu="event => openWorldContextMenu(event, index)"
+        @contextmenu="(event) => openWorldContextMenu(event, index)"
       >
         <v-icon left>mdi-earth</v-icon>
         {{ index + 1 }}
@@ -34,28 +34,18 @@
     </v-btn>
 
     <v-spacer />
-    
+
     <!-- custom presets -->
     <v-menu offset-y left close-on-content-click>
       <template #activator="{ on, attrs }">
-        <v-btn 
-          text
-          v-bind="attrs"
-          class="ml-2"
-          v-on="on">
-          Custom Presets
-        </v-btn>
+        <v-btn text v-bind="attrs" class="ml-2" v-on="on"> Custom Presets </v-btn>
       </template>
       <v-list>
-        <v-list-item :disabled='loadCustomPresetDisabled' @click="$emit('load-custom-preset')">
-          Load
-        </v-list-item>
-        <v-list-item :disabled='!(universePreset.worldSettings.length > 0)'  @click="$emit('save-as-custom-preset')">
+        <v-list-item :disabled="loadCustomPresetDisabled" @click="$emit('load-custom-preset')"> Load </v-list-item>
+        <v-list-item :disabled="!(universePreset.worldSettings.length > 0)" @click="$emit('save-as-custom-preset')">
           Save
         </v-list-item>
-        <v-list-item @click="$emit('import-custom-preset')">
-          Import
-        </v-list-item>
+        <v-list-item @click="$emit('import-custom-preset')"> Import </v-list-item>
       </v-list>
     </v-menu>
 
@@ -77,12 +67,12 @@
     </v-menu>
 
     <v-tooltip bottom open-delay="300">
-      <template #activator='{ on }'>
+      <template #activator="{ on }">
         <v-btn icon @click="$emit('start-over')" class="ml-2" :disabled="disabled" v-on="on">
           <v-icon>mdi-restart</v-icon>
         </v-btn>
-        </template>
-      <span >Start over</span>
+      </template>
+      <span>Start over</span>
     </v-tooltip>
   </div>
 </template>
@@ -109,7 +99,7 @@
       loadCustomPresetDisabled: {
         type: Boolean,
         default: true,
-      }
+      },
     },
     data: () => ({
       worldMenuWorldIndex: null,

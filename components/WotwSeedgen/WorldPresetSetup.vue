@@ -20,16 +20,20 @@
           </div>
         </template>
 
-        <div class="mb-5" v-if="singleWorldPresets?.length > 0 || (universeSettings.worldSettings.length === 0 && customPresets?.length > 0)">
+        <div
+          class="mb-5"
+          v-if="
+            singleWorldPresets?.length > 0 || (universeSettings.worldSettings.length === 0 && customPresets?.length > 0)
+          "
+        >
           <h2 class="mb-3">Select a custom preset</h2>
           <wotw-seedgen-custom-preset-select
             class="mb-3"
-            :custom-presets='customPresets'
-            :display-multiworlds='universeSettings.worldSettings.length === 0'
-            @delete='index => $emit("custom-preset-delete", index)' 
-            @selected='index => $emit("custom-preset-selected", index)'
-            />
-
+            :custom-presets="customPresets"
+            :display-multiworlds="universeSettings.worldSettings.length === 0"
+            @delete="(index) => $emit('custom-preset-delete', index)"
+            @selected="(index) => $emit('custom-preset-selected', index)"
+          />
         </div>
 
         <h2 class="mb-3">Select a base preset</h2>
@@ -51,16 +55,12 @@
           </div>
         </v-card>
 
-        <div class="mt-5 text-right">
-          or <a @click="$emit('create-new-world', [])">start from scratch</a>
-        </div>
+        <div class="mt-5 text-right">or <a @click="$emit('create-new-world', [])">start from scratch</a></div>
       </v-window-item>
 
       <v-window-item value="select_overlay_presets" active-class="active-window-item">
         <div class="d-flex align-center">
-          <h2 class="mr-3">
-            Good choice! Anything else?
-          </h2>
+          <h2 class="mr-3">Good choice! Anything else?</h2>
           <v-spacer />
           <v-btn small text @click="state = 'select_base_preset'">
             <v-icon left>mdi-arrow-left</v-icon>
@@ -68,12 +68,8 @@
           </v-btn>
         </div>
         <div class="mb-4">
-          Select any amount of additional configuration presets to apply in
-          addition to the
-          <b>{{
-            library.worldPresets[selectedBasePresetId]?.info?.name ??
-            selectedBasePresetId
-          }}</b>
+          Select any amount of additional configuration presets to apply in addition to the
+          <b>{{ library.worldPresets[selectedBasePresetId]?.info?.name ?? selectedBasePresetId }}</b>
           preset.
         </div>
 
@@ -112,7 +108,7 @@
       customPresets: {
         type: Array,
         default: null,
-      }
+      },
     },
     data: () => ({
       selectedBasePresetId: null,
@@ -123,16 +119,12 @@
       ...mapState('seedgen', ['library']),
       basePresets() {
         return Object.fromEntries(
-          Object.entries(this.library.worldPresets).filter(
-            ([, preset]) => preset.info?.group === 'Base',
-          ),
+          Object.entries(this.library.worldPresets).filter(([, preset]) => preset.info?.group === 'Base'),
         )
       },
       nonBasePresets() {
         return Object.fromEntries(
-          Object.entries(this.library.worldPresets).filter(
-            ([, preset]) => preset.info?.group !== 'Base',
-          ),
+          Object.entries(this.library.worldPresets).filter(([, preset]) => preset.info?.group !== 'Base'),
         )
       },
       singleWorldPresets() {
@@ -150,17 +142,11 @@
         if (selected && !alreadySelected) {
           this.selectedOverlayPresets.push(presetId)
         } else if (!selected && alreadySelected) {
-          this.selectedOverlayPresets.splice(
-            this.selectedOverlayPresets.indexOf(presetId),
-            1,
-          )
+          this.selectedOverlayPresets.splice(this.selectedOverlayPresets.indexOf(presetId), 1)
         }
       },
       onDoneClicked() {
-        this.$emit(
-          'create-new-world',
-          [this.selectedBasePresetId].concat(this.selectedOverlayPresets),
-        )
+        this.$emit('create-new-world', [this.selectedBasePresetId].concat(this.selectedOverlayPresets))
       },
       onCopyFromWorldClicked(worldIndex) {
         this.$emit('copy-from-world', worldIndex)

@@ -1,8 +1,7 @@
 <template>
-    <v-row>
-      <v-btn @click='$emit("load-preset", presetName)'>{{ presetName }}
-      </v-btn>
-    </v-row>
+  <v-row>
+    <v-btn @click="$emit('load-preset', presetName)">{{ presetName }}</v-btn>
+  </v-row>
 </template>
 
 <script>

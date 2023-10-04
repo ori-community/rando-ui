@@ -643,7 +643,7 @@
       spoilerSearchQuery(query) {
         const range = document.createRange()
 
-        const offset = this.spoilerText.indexOf(query)
+        const offset = this.spoilerText.toLowerCase().indexOf(query.toLowerCase())
 
         if (offset > 0) {
           range.setStart(this.$refs.spoilerText.childNodes[0], offset)

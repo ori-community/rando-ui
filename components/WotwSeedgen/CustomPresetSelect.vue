@@ -101,7 +101,7 @@
         await window.navigator.clipboard.writeText(JSON.stringify(this.customPresets[customPresetIndex], null, 2))
         EventBus.$emit('notification', {
           message: `Copied to clipboard`,
-          color: 'success',
+          color: 'success darken-2',
           timeout: 1000,
         })
       },

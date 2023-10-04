@@ -103,7 +103,7 @@ export default {
           info: '#5199CD',
           warning: colors.orange.base,
           error: colors.deepOrange.accent4,
-          success: colors.green.darken1,
+          success: colors.green.accent3,
         },
       },
     },

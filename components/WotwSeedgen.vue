@@ -739,7 +739,11 @@
           this.universeSettings = cloneDeep(multiverseSettings.universeSettings) ?? createDefaultUniverseSettings()
           this.worldIndex = 0
         } else {
-          this.universeSettings.worldSettings[this.worldIndex] = multiverseSettings.universeSettings.worldSettings[0]
+          this.$set(
+            this.universeSettings.worldSettings,
+            this.worldIndex,
+            multiverseSettings.universeSettings.worldSettings[0],
+          )
         }
         this.addingNewWorld = false
       },

@@ -120,6 +120,7 @@
   import { mapState } from 'vuex'
   import { capitalCase } from 'capital-case'
   import { hasModelObject } from '~/assets/lib/hasModelObject'
+  import { hasOwnProperty } from '~/assets/lib/hasOwnProperty'
 
   export const ParameterType = Object.freeze({
     Bool: 0,
@@ -319,9 +320,20 @@
                 const existingValue =
                   parameterValuesByParameterIdentifierByHeaderName[header.name]?.[parameter.identifier]
 
-                if (existingValue === undefined) {
-                  this.headerParameterStates[header.name][parameter.identifier] = this.getTypedValue(parameter.default_value, parameter.parameter_type)
+                if (!hasOwnProperty(this.headerParameterStates, header.name)) {
+                  this.$set(this.headerParameterStates, header.name, {})
                 }
+
+                this.$set(
+                  this.headerParameterStates[header.name],
+                  parameter.identifier,
+                  this.getTypedValue(
+                    existingValue !== undefined
+                      ? existingValue
+                      : parameter.default_value,
+                    parameter.parameter_type,
+                  ),
+                )
               }
             }
           })

@@ -86,6 +86,7 @@ message BingoSquare {
   string text = 1;
   repeated int64 completedBy = 2;
   repeated BingoGoal goals = 3;
+  repeated int64 visibleFor = 4;
 }
 
 message RequestUpdatesMessage {

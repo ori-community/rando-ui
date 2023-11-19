@@ -128,6 +128,7 @@ export interface BingoSquare {
   text: string;
   completedBy: number[];
   goals: BingoGoal[];
+  visibleFor: number[];
 }
 
 export interface RequestUpdatesMessage {
@@ -336,16 +337,18 @@ export const Packet = {
 
   toJSON(message: Packet): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = Math.round(message.id));
-    message.packet !== undefined &&
-      (obj.packet = base64FromBytes(message.packet !== undefined ? message.packet : new Uint8Array(0)));
+    if (message.id !== 0) {
+      obj.id = Math.round(message.id);
+    }
+    if (message.packet.length !== 0) {
+      obj.packet = base64FromBytes(message.packet);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<Packet>, I>>(base?: I): Packet {
-    return Packet.fromPartial(base ?? {});
+    return Packet.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<Packet>, I>>(object: I): Packet {
     const message = createBasePacket();
     message.id = object.id ?? 0;
@@ -413,15 +416,18 @@ export const BingoGoal = {
 
   toJSON(message: BingoGoal): unknown {
     const obj: any = {};
-    message.text !== undefined && (obj.text = message.text);
-    message.completed !== undefined && (obj.completed = message.completed);
+    if (message.text !== "") {
+      obj.text = message.text;
+    }
+    if (message.completed === true) {
+      obj.completed = message.completed;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<BingoGoal>, I>>(base?: I): BingoGoal {
-    return BingoGoal.fromPartial(base ?? {});
+    return BingoGoal.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<BingoGoal>, I>>(object: I): BingoGoal {
     const message = createBaseBingoGoal();
     message.text = object.text ?? "";
@@ -565,22 +571,36 @@ export const UserInfo = {
 
   toJSON(message: UserInfo): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
-    message.name !== undefined && (obj.name = message.name);
-    message.avatarId !== undefined && (obj.avatarId = message.avatarId);
-    message.connectedMultiverseId !== undefined &&
-      (obj.connectedMultiverseId = Math.round(message.connectedMultiverseId));
-    message.currentMultiverseId !== undefined && (obj.currentMultiverseId = Math.round(message.currentMultiverseId));
-    message.isDeveloper !== undefined && (obj.isDeveloper = message.isDeveloper);
-    message.points !== undefined && (obj.points = Math.round(message.points));
-    message.raceReady !== undefined && (obj.raceReady = message.raceReady);
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.avatarId !== undefined) {
+      obj.avatarId = message.avatarId;
+    }
+    if (message.connectedMultiverseId !== undefined) {
+      obj.connectedMultiverseId = Math.round(message.connectedMultiverseId);
+    }
+    if (message.currentMultiverseId !== undefined) {
+      obj.currentMultiverseId = Math.round(message.currentMultiverseId);
+    }
+    if (message.isDeveloper === true) {
+      obj.isDeveloper = message.isDeveloper;
+    }
+    if (message.points !== 0) {
+      obj.points = Math.round(message.points);
+    }
+    if (message.raceReady === true) {
+      obj.raceReady = message.raceReady;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<UserInfo>, I>>(base?: I): UserInfo {
-    return UserInfo.fromPartial(base ?? {});
+    return UserInfo.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<UserInfo>, I>>(object: I): UserInfo {
     const message = createBaseUserInfo();
     message.id = object.id ?? "";
@@ -687,22 +707,27 @@ export const WorldInfo = {
 
   toJSON(message: WorldInfo): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = Math.round(message.id));
-    message.name !== undefined && (obj.name = message.name);
-    message.color !== undefined && (obj.color = message.color);
-    if (message.members) {
-      obj.members = message.members.map((e) => e ? UserInfo.toJSON(e) : undefined);
-    } else {
-      obj.members = [];
+    if (message.id !== 0) {
+      obj.id = Math.round(message.id);
     }
-    message.seedId !== undefined && (obj.seedId = Math.round(message.seedId));
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.color !== "") {
+      obj.color = message.color;
+    }
+    if (message.members?.length) {
+      obj.members = message.members.map((e) => UserInfo.toJSON(e));
+    }
+    if (message.seedId !== undefined) {
+      obj.seedId = Math.round(message.seedId);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<WorldInfo>, I>>(base?: I): WorldInfo {
-    return WorldInfo.fromPartial(base ?? {});
+    return WorldInfo.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<WorldInfo>, I>>(object: I): WorldInfo {
     const message = createBaseWorldInfo();
     message.id = object.id ?? 0;
@@ -795,21 +820,24 @@ export const UniverseInfo = {
 
   toJSON(message: UniverseInfo): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = Math.round(message.id));
-    message.name !== undefined && (obj.name = message.name);
-    message.color !== undefined && (obj.color = message.color);
-    if (message.worlds) {
-      obj.worlds = message.worlds.map((e) => e ? WorldInfo.toJSON(e) : undefined);
-    } else {
-      obj.worlds = [];
+    if (message.id !== 0) {
+      obj.id = Math.round(message.id);
+    }
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.color !== "") {
+      obj.color = message.color;
+    }
+    if (message.worlds?.length) {
+      obj.worlds = message.worlds.map((e) => WorldInfo.toJSON(e));
     }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<UniverseInfo>, I>>(base?: I): UniverseInfo {
-    return UniverseInfo.fromPartial(base ?? {});
+    return UniverseInfo.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<UniverseInfo>, I>>(object: I): UniverseInfo {
     const message = createBaseUniverseInfo();
     message.id = object.id ?? 0;
@@ -890,16 +918,21 @@ export const RaceTeamMemberInfo = {
 
   toJSON(message: RaceTeamMemberInfo): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = Math.round(message.id));
-    message.user !== undefined && (obj.user = message.user ? UserInfo.toJSON(message.user) : undefined);
-    message.finishedTime !== undefined && (obj.finishedTime = message.finishedTime);
+    if (message.id !== 0) {
+      obj.id = Math.round(message.id);
+    }
+    if (message.user !== undefined) {
+      obj.user = UserInfo.toJSON(message.user);
+    }
+    if (message.finishedTime !== undefined) {
+      obj.finishedTime = message.finishedTime;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<RaceTeamMemberInfo>, I>>(base?: I): RaceTeamMemberInfo {
-    return RaceTeamMemberInfo.fromPartial(base ?? {});
+    return RaceTeamMemberInfo.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<RaceTeamMemberInfo>, I>>(object: I): RaceTeamMemberInfo {
     const message = createBaseRaceTeamMemberInfo();
     message.id = object.id ?? 0;
@@ -990,21 +1023,24 @@ export const RaceTeamInfo = {
 
   toJSON(message: RaceTeamInfo): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = Math.round(message.id));
-    if (message.members) {
-      obj.members = message.members.map((e) => e ? RaceTeamMemberInfo.toJSON(e) : undefined);
-    } else {
-      obj.members = [];
+    if (message.id !== 0) {
+      obj.id = Math.round(message.id);
     }
-    message.points !== undefined && (obj.points = Math.round(message.points));
-    message.finishedTime !== undefined && (obj.finishedTime = message.finishedTime);
+    if (message.members?.length) {
+      obj.members = message.members.map((e) => RaceTeamMemberInfo.toJSON(e));
+    }
+    if (message.points !== 0) {
+      obj.points = Math.round(message.points);
+    }
+    if (message.finishedTime !== undefined) {
+      obj.finishedTime = message.finishedTime;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<RaceTeamInfo>, I>>(base?: I): RaceTeamInfo {
-    return RaceTeamInfo.fromPartial(base ?? {});
+    return RaceTeamInfo.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<RaceTeamInfo>, I>>(object: I): RaceTeamInfo {
     const message = createBaseRaceTeamInfo();
     message.id = object.id ?? 0;
@@ -1085,20 +1121,21 @@ export const RaceInfo = {
 
   toJSON(message: RaceInfo): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = Math.round(message.id));
-    if (message.teams) {
-      obj.teams = message.teams.map((e) => e ? RaceTeamInfo.toJSON(e) : undefined);
-    } else {
-      obj.teams = [];
+    if (message.id !== 0) {
+      obj.id = Math.round(message.id);
     }
-    message.finishedTime !== undefined && (obj.finishedTime = message.finishedTime);
+    if (message.teams?.length) {
+      obj.teams = message.teams.map((e) => RaceTeamInfo.toJSON(e));
+    }
+    if (message.finishedTime !== undefined) {
+      obj.finishedTime = message.finishedTime;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<RaceInfo>, I>>(base?: I): RaceInfo {
-    return RaceInfo.fromPartial(base ?? {});
+    return RaceInfo.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<RaceInfo>, I>>(object: I): RaceInfo {
     const message = createBaseRaceInfo();
     message.id = object.id ?? 0;
@@ -1297,42 +1334,48 @@ export const MultiverseInfoMessage = {
 
   toJSON(message: MultiverseInfoMessage): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = Math.round(message.id));
-    if (message.universes) {
-      obj.universes = message.universes.map((e) => e ? UniverseInfo.toJSON(e) : undefined);
-    } else {
-      obj.universes = [];
+    if (message.id !== 0) {
+      obj.id = Math.round(message.id);
     }
-    message.hasBingoBoard !== undefined && (obj.hasBingoBoard = message.hasBingoBoard);
-    if (message.spectators) {
-      obj.spectators = message.spectators.map((e) => e ? UserInfo.toJSON(e) : undefined);
-    } else {
-      obj.spectators = [];
+    if (message.universes?.length) {
+      obj.universes = message.universes.map((e) => UniverseInfo.toJSON(e));
     }
-    message.seedId !== undefined && (obj.seedId = Math.round(message.seedId));
-    message.gameHandlerType !== undefined &&
-      (obj.gameHandlerType = multiverseInfoMessage_GameHandlerTypeToJSON(message.gameHandlerType));
-    message.gameHandlerClientInfo !== undefined &&
-      (obj.gameHandlerClientInfo = base64FromBytes(
-        message.gameHandlerClientInfo !== undefined ? message.gameHandlerClientInfo : new Uint8Array(0),
-      ));
-    message.visibility !== undefined &&
-      (obj.visibility = message.visibility ? VisibilityMessage.toJSON(message.visibility) : undefined);
-    message.locked !== undefined && (obj.locked = message.locked);
-    message.isLockable !== undefined && (obj.isLockable = message.isLockable);
-    message.race !== undefined && (obj.race = message.race ? RaceInfo.toJSON(message.race) : undefined);
-    if (message.seedSpoilerDownloadedBy) {
-      obj.seedSpoilerDownloadedBy = message.seedSpoilerDownloadedBy.map((e) => e ? UserInfo.toJSON(e) : undefined);
-    } else {
-      obj.seedSpoilerDownloadedBy = [];
+    if (message.hasBingoBoard === true) {
+      obj.hasBingoBoard = message.hasBingoBoard;
+    }
+    if (message.spectators?.length) {
+      obj.spectators = message.spectators.map((e) => UserInfo.toJSON(e));
+    }
+    if (message.seedId !== undefined) {
+      obj.seedId = Math.round(message.seedId);
+    }
+    if (message.gameHandlerType !== 0) {
+      obj.gameHandlerType = multiverseInfoMessage_GameHandlerTypeToJSON(message.gameHandlerType);
+    }
+    if (message.gameHandlerClientInfo.length !== 0) {
+      obj.gameHandlerClientInfo = base64FromBytes(message.gameHandlerClientInfo);
+    }
+    if (message.visibility !== undefined) {
+      obj.visibility = VisibilityMessage.toJSON(message.visibility);
+    }
+    if (message.locked === true) {
+      obj.locked = message.locked;
+    }
+    if (message.isLockable === true) {
+      obj.isLockable = message.isLockable;
+    }
+    if (message.race !== undefined) {
+      obj.race = RaceInfo.toJSON(message.race);
+    }
+    if (message.seedSpoilerDownloadedBy?.length) {
+      obj.seedSpoilerDownloadedBy = message.seedSpoilerDownloadedBy.map((e) => UserInfo.toJSON(e));
     }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<MultiverseInfoMessage>, I>>(base?: I): MultiverseInfoMessage {
-    return MultiverseInfoMessage.fromPartial(base ?? {});
+    return MultiverseInfoMessage.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<MultiverseInfoMessage>, I>>(object: I): MultiverseInfoMessage {
     const message = createBaseMultiverseInfoMessage();
     message.id = object.id ?? 0;
@@ -1412,23 +1455,18 @@ export const VisibilityMessage = {
 
   toJSON(message: VisibilityMessage): unknown {
     const obj: any = {};
-    if (message.hiddenInWorld) {
-      obj.hiddenInWorld = message.hiddenInWorld.map((e) => e);
-    } else {
-      obj.hiddenInWorld = [];
+    if (message.hiddenInWorld?.length) {
+      obj.hiddenInWorld = message.hiddenInWorld;
     }
-    if (message.hiddenOnMap) {
-      obj.hiddenOnMap = message.hiddenOnMap.map((e) => e);
-    } else {
-      obj.hiddenOnMap = [];
+    if (message.hiddenOnMap?.length) {
+      obj.hiddenOnMap = message.hiddenOnMap;
     }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<VisibilityMessage>, I>>(base?: I): VisibilityMessage {
-    return VisibilityMessage.fromPartial(base ?? {});
+    return VisibilityMessage.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<VisibilityMessage>, I>>(object: I): VisibilityMessage {
     const message = createBaseVisibilityMessage();
     message.hiddenInWorld = object.hiddenInWorld?.map((e) => e) || [];
@@ -1440,7 +1478,7 @@ export const VisibilityMessage = {
 messageTypeRegistry.set(VisibilityMessage.$type, VisibilityMessage);
 
 function createBaseBingoSquare(): BingoSquare {
-  return { $type: "RandoProto.BingoSquare", text: "", completedBy: [], goals: [] };
+  return { $type: "RandoProto.BingoSquare", text: "", completedBy: [], goals: [], visibleFor: [] };
 }
 
 export const BingoSquare = {
@@ -1458,6 +1496,11 @@ export const BingoSquare = {
     for (const v of message.goals) {
       BingoGoal.encode(v!, writer.uint32(26).fork()).ldelim();
     }
+    writer.uint32(34).fork();
+    for (const v of message.visibleFor) {
+      writer.int64(v);
+    }
+    writer.ldelim();
     return writer;
   },
 
@@ -1499,6 +1542,23 @@ export const BingoSquare = {
 
           message.goals.push(BingoGoal.decode(reader, reader.uint32()));
           continue;
+        case 4:
+          if (tag === 32) {
+            message.visibleFor.push(longToNumber(reader.int64() as Long));
+
+            continue;
+          }
+
+          if (tag === 34) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.visibleFor.push(longToNumber(reader.int64() as Long));
+            }
+
+            continue;
+          }
+
+          break;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1514,34 +1574,36 @@ export const BingoSquare = {
       text: isSet(object.text) ? String(object.text) : "",
       completedBy: Array.isArray(object?.completedBy) ? object.completedBy.map((e: any) => Number(e)) : [],
       goals: Array.isArray(object?.goals) ? object.goals.map((e: any) => BingoGoal.fromJSON(e)) : [],
+      visibleFor: Array.isArray(object?.visibleFor) ? object.visibleFor.map((e: any) => Number(e)) : [],
     };
   },
 
   toJSON(message: BingoSquare): unknown {
     const obj: any = {};
-    message.text !== undefined && (obj.text = message.text);
-    if (message.completedBy) {
-      obj.completedBy = message.completedBy.map((e) => Math.round(e));
-    } else {
-      obj.completedBy = [];
+    if (message.text !== "") {
+      obj.text = message.text;
     }
-    if (message.goals) {
-      obj.goals = message.goals.map((e) => e ? BingoGoal.toJSON(e) : undefined);
-    } else {
-      obj.goals = [];
+    if (message.completedBy?.length) {
+      obj.completedBy = message.completedBy.map((e) => Math.round(e));
+    }
+    if (message.goals?.length) {
+      obj.goals = message.goals.map((e) => BingoGoal.toJSON(e));
+    }
+    if (message.visibleFor?.length) {
+      obj.visibleFor = message.visibleFor.map((e) => Math.round(e));
     }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<BingoSquare>, I>>(base?: I): BingoSquare {
-    return BingoSquare.fromPartial(base ?? {});
+    return BingoSquare.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<BingoSquare>, I>>(object: I): BingoSquare {
     const message = createBaseBingoSquare();
     message.text = object.text ?? "";
     message.completedBy = object.completedBy?.map((e) => e) || [];
     message.goals = object.goals?.map((e) => BingoGoal.fromPartial(e)) || [];
+    message.visibleFor = object.visibleFor?.map((e) => e) || [];
     return message;
   },
 };
@@ -1591,14 +1653,15 @@ export const RequestUpdatesMessage = {
 
   toJSON(message: RequestUpdatesMessage): unknown {
     const obj: any = {};
-    message.playerId !== undefined && (obj.playerId = message.playerId);
+    if (message.playerId !== "") {
+      obj.playerId = message.playerId;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<RequestUpdatesMessage>, I>>(base?: I): RequestUpdatesMessage {
-    return RequestUpdatesMessage.fromPartial(base ?? {});
+    return RequestUpdatesMessage.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<RequestUpdatesMessage>, I>>(object: I): RequestUpdatesMessage {
     const message = createBaseRequestUpdatesMessage();
     message.playerId = object.playerId ?? "";
@@ -1698,18 +1761,27 @@ export const BingoUniverseInfo = {
 
   toJSON(message: BingoUniverseInfo): unknown {
     const obj: any = {};
-    message.universeId !== undefined && (obj.universeId = Math.round(message.universeId));
-    message.score !== undefined && (obj.score = message.score);
-    message.rank !== undefined && (obj.rank = Math.round(message.rank));
-    message.squares !== undefined && (obj.squares = Math.round(message.squares));
-    message.lines !== undefined && (obj.lines = Math.round(message.lines));
+    if (message.universeId !== 0) {
+      obj.universeId = Math.round(message.universeId);
+    }
+    if (message.score !== "") {
+      obj.score = message.score;
+    }
+    if (message.rank !== 0) {
+      obj.rank = Math.round(message.rank);
+    }
+    if (message.squares !== 0) {
+      obj.squares = Math.round(message.squares);
+    }
+    if (message.lines !== 0) {
+      obj.lines = Math.round(message.lines);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<BingoUniverseInfo>, I>>(base?: I): BingoUniverseInfo {
-    return BingoUniverseInfo.fromPartial(base ?? {});
+    return BingoUniverseInfo.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<BingoUniverseInfo>, I>>(object: I): BingoUniverseInfo {
     const message = createBaseBingoUniverseInfo();
     message.universeId = object.universeId ?? 0;
@@ -1771,18 +1843,15 @@ export const SyncBingoUniversesMessage = {
 
   toJSON(message: SyncBingoUniversesMessage): unknown {
     const obj: any = {};
-    if (message.bingoUniverses) {
-      obj.bingoUniverses = message.bingoUniverses.map((e) => e ? BingoUniverseInfo.toJSON(e) : undefined);
-    } else {
-      obj.bingoUniverses = [];
+    if (message.bingoUniverses?.length) {
+      obj.bingoUniverses = message.bingoUniverses.map((e) => BingoUniverseInfo.toJSON(e));
     }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<SyncBingoUniversesMessage>, I>>(base?: I): SyncBingoUniversesMessage {
-    return SyncBingoUniversesMessage.fromPartial(base ?? {});
+    return SyncBingoUniversesMessage.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<SyncBingoUniversesMessage>, I>>(object: I): SyncBingoUniversesMessage {
     const message = createBaseSyncBingoUniversesMessage();
     message.bingoUniverses = object.bingoUniverses?.map((e) => BingoUniverseInfo.fromPartial(e)) || [];
@@ -1849,15 +1918,18 @@ export const Position = {
 
   toJSON(message: Position): unknown {
     const obj: any = {};
-    message.x !== undefined && (obj.x = Math.round(message.x));
-    message.y !== undefined && (obj.y = Math.round(message.y));
+    if (message.x !== 0) {
+      obj.x = Math.round(message.x);
+    }
+    if (message.y !== 0) {
+      obj.y = Math.round(message.y);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<Position>, I>>(base?: I): Position {
-    return Position.fromPartial(base ?? {});
+    return Position.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<Position>, I>>(object: I): Position {
     const message = createBasePosition();
     message.x = object.x ?? 0;
@@ -1925,15 +1997,18 @@ export const PositionedBingoSquare = {
 
   toJSON(message: PositionedBingoSquare): unknown {
     const obj: any = {};
-    message.position !== undefined && (obj.position = message.position ? Position.toJSON(message.position) : undefined);
-    message.square !== undefined && (obj.square = message.square ? BingoSquare.toJSON(message.square) : undefined);
+    if (message.position !== undefined) {
+      obj.position = Position.toJSON(message.position);
+    }
+    if (message.square !== undefined) {
+      obj.square = BingoSquare.toJSON(message.square);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<PositionedBingoSquare>, I>>(base?: I): PositionedBingoSquare {
-    return PositionedBingoSquare.fromPartial(base ?? {});
+    return PositionedBingoSquare.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<PositionedBingoSquare>, I>>(object: I): PositionedBingoSquare {
     const message = createBasePositionedBingoSquare();
     message.position = (object.position !== undefined && object.position !== null)
@@ -2016,20 +2091,21 @@ export const BingoBoardMessage = {
 
   toJSON(message: BingoBoardMessage): unknown {
     const obj: any = {};
-    if (message.squares) {
-      obj.squares = message.squares.map((e) => e ? PositionedBingoSquare.toJSON(e) : undefined);
-    } else {
-      obj.squares = [];
+    if (message.squares?.length) {
+      obj.squares = message.squares.map((e) => PositionedBingoSquare.toJSON(e));
     }
-    message.size !== undefined && (obj.size = Math.round(message.size));
-    message.lockout !== undefined && (obj.lockout = message.lockout);
+    if (message.size !== 0) {
+      obj.size = Math.round(message.size);
+    }
+    if (message.lockout === true) {
+      obj.lockout = message.lockout;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<BingoBoardMessage>, I>>(base?: I): BingoBoardMessage {
-    return BingoBoardMessage.fromPartial(base ?? {});
+    return BingoBoardMessage.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<BingoBoardMessage>, I>>(object: I): BingoBoardMessage {
     const message = createBaseBingoBoardMessage();
     message.squares = object.squares?.map((e) => PositionedBingoSquare.fromPartial(e)) || [];
@@ -2098,15 +2174,18 @@ export const SyncBoardMessage = {
 
   toJSON(message: SyncBoardMessage): unknown {
     const obj: any = {};
-    message.board !== undefined && (obj.board = message.board ? BingoBoardMessage.toJSON(message.board) : undefined);
-    message.replace !== undefined && (obj.replace = message.replace);
+    if (message.board !== undefined) {
+      obj.board = BingoBoardMessage.toJSON(message.board);
+    }
+    if (message.replace === true) {
+      obj.replace = message.replace;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<SyncBoardMessage>, I>>(base?: I): SyncBoardMessage {
-    return SyncBoardMessage.fromPartial(base ?? {});
+    return SyncBoardMessage.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<SyncBoardMessage>, I>>(object: I): SyncBoardMessage {
     const message = createBaseSyncBoardMessage();
     message.board = (object.board !== undefined && object.board !== null)
@@ -2162,14 +2241,15 @@ export const AuthenticateMessage = {
 
   toJSON(message: AuthenticateMessage): unknown {
     const obj: any = {};
-    message.jwt !== undefined && (obj.jwt = message.jwt);
+    if (message.jwt !== "") {
+      obj.jwt = message.jwt;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<AuthenticateMessage>, I>>(base?: I): AuthenticateMessage {
-    return AuthenticateMessage.fromPartial(base ?? {});
+    return AuthenticateMessage.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<AuthenticateMessage>, I>>(object: I): AuthenticateMessage {
     const message = createBaseAuthenticateMessage();
     message.jwt = object.jwt ?? "";
@@ -2247,17 +2327,21 @@ export const AuthenticatedMessage = {
 
   toJSON(message: AuthenticatedMessage): unknown {
     const obj: any = {};
-    message.user !== undefined && (obj.user = message.user ? UserInfo.toJSON(message.user) : undefined);
-    message.udpId !== undefined && (obj.udpId = Math.round(message.udpId));
-    message.udpKey !== undefined &&
-      (obj.udpKey = base64FromBytes(message.udpKey !== undefined ? message.udpKey : new Uint8Array(0)));
+    if (message.user !== undefined) {
+      obj.user = UserInfo.toJSON(message.user);
+    }
+    if (message.udpId !== 0) {
+      obj.udpId = Math.round(message.udpId);
+    }
+    if (message.udpKey.length !== 0) {
+      obj.udpKey = base64FromBytes(message.udpKey);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<AuthenticatedMessage>, I>>(base?: I): AuthenticatedMessage {
-    return AuthenticatedMessage.fromPartial(base ?? {});
+    return AuthenticatedMessage.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<AuthenticatedMessage>, I>>(object: I): AuthenticatedMessage {
     const message = createBaseAuthenticatedMessage();
     message.user = (object.user !== undefined && object.user !== null) ? UserInfo.fromPartial(object.user) : undefined;
@@ -2326,15 +2410,18 @@ export const PlayerPositionMessage = {
 
   toJSON(message: PlayerPositionMessage): unknown {
     const obj: any = {};
-    message.x !== undefined && (obj.x = message.x);
-    message.y !== undefined && (obj.y = message.y);
+    if (message.x !== 0) {
+      obj.x = message.x;
+    }
+    if (message.y !== 0) {
+      obj.y = message.y;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<PlayerPositionMessage>, I>>(base?: I): PlayerPositionMessage {
-    return PlayerPositionMessage.fromPartial(base ?? {});
+    return PlayerPositionMessage.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<PlayerPositionMessage>, I>>(object: I): PlayerPositionMessage {
     const message = createBasePlayerPositionMessage();
     message.x = object.x ?? 0;
@@ -2413,16 +2500,21 @@ export const UpdatePlayerPositionMessage = {
 
   toJSON(message: UpdatePlayerPositionMessage): unknown {
     const obj: any = {};
-    message.playerId !== undefined && (obj.playerId = message.playerId);
-    message.x !== undefined && (obj.x = message.x);
-    message.y !== undefined && (obj.y = message.y);
+    if (message.playerId !== "") {
+      obj.playerId = message.playerId;
+    }
+    if (message.x !== 0) {
+      obj.x = message.x;
+    }
+    if (message.y !== 0) {
+      obj.y = message.y;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<UpdatePlayerPositionMessage>, I>>(base?: I): UpdatePlayerPositionMessage {
-    return UpdatePlayerPositionMessage.fromPartial(base ?? {});
+    return UpdatePlayerPositionMessage.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<UpdatePlayerPositionMessage>, I>>(object: I): UpdatePlayerPositionMessage {
     const message = createBaseUpdatePlayerPositionMessage();
     message.playerId = object.playerId ?? "";
@@ -2491,18 +2583,18 @@ export const UdpPacket = {
 
   toJSON(message: UdpPacket): unknown {
     const obj: any = {};
-    message.udpId !== undefined && (obj.udpId = Math.round(message.udpId));
-    message.encryptedPacket !== undefined &&
-      (obj.encryptedPacket = base64FromBytes(
-        message.encryptedPacket !== undefined ? message.encryptedPacket : new Uint8Array(0),
-      ));
+    if (message.udpId !== 0) {
+      obj.udpId = Math.round(message.udpId);
+    }
+    if (message.encryptedPacket.length !== 0) {
+      obj.encryptedPacket = base64FromBytes(message.encryptedPacket);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<UdpPacket>, I>>(base?: I): UdpPacket {
-    return UdpPacket.fromPartial(base ?? {});
+    return UdpPacket.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<UdpPacket>, I>>(object: I): UdpPacket {
     const message = createBaseUdpPacket();
     message.udpId = object.udpId ?? 0;
@@ -2570,15 +2662,18 @@ export const TrackerUpdate = {
 
   toJSON(message: TrackerUpdate): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
-    message.value !== undefined && (obj.value = Math.round(message.value));
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.value !== 0) {
+      obj.value = Math.round(message.value);
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<TrackerUpdate>, I>>(base?: I): TrackerUpdate {
-    return TrackerUpdate.fromPartial(base ?? {});
+    return TrackerUpdate.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<TrackerUpdate>, I>>(object: I): TrackerUpdate {
     const message = createBaseTrackerUpdate();
     message.id = object.id ?? "";
@@ -2626,9 +2721,8 @@ export const ResetTracker = {
   },
 
   create<I extends Exact<DeepPartial<ResetTracker>, I>>(base?: I): ResetTracker {
-    return ResetTracker.fromPartial(base ?? {});
+    return ResetTracker.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<ResetTracker>, I>>(_: I): ResetTracker {
     const message = createBaseResetTracker();
     return message;
@@ -2683,18 +2777,15 @@ export const TrackerFlagsUpdate = {
 
   toJSON(message: TrackerFlagsUpdate): unknown {
     const obj: any = {};
-    if (message.flags) {
-      obj.flags = message.flags.map((e) => e);
-    } else {
-      obj.flags = [];
+    if (message.flags?.length) {
+      obj.flags = message.flags;
     }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<TrackerFlagsUpdate>, I>>(base?: I): TrackerFlagsUpdate {
-    return TrackerFlagsUpdate.fromPartial(base ?? {});
+    return TrackerFlagsUpdate.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<TrackerFlagsUpdate>, I>>(object: I): TrackerFlagsUpdate {
     const message = createBaseTrackerFlagsUpdate();
     message.flags = object.flags?.map((e) => e) || [];
@@ -2741,9 +2832,8 @@ export const RequestFullUpdate = {
   },
 
   create<I extends Exact<DeepPartial<RequestFullUpdate>, I>>(base?: I): RequestFullUpdate {
-    return RequestFullUpdate.fromPartial(base ?? {});
+    return RequestFullUpdate.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<RequestFullUpdate>, I>>(_: I): RequestFullUpdate {
     const message = createBaseRequestFullUpdate();
     return message;
@@ -2795,14 +2885,15 @@ export const SetTrackerEndpointId = {
 
   toJSON(message: SetTrackerEndpointId): unknown {
     const obj: any = {};
-    message.endpointId !== undefined && (obj.endpointId = message.endpointId);
+    if (message.endpointId !== "") {
+      obj.endpointId = message.endpointId;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<SetTrackerEndpointId>, I>>(base?: I): SetTrackerEndpointId {
-    return SetTrackerEndpointId.fromPartial(base ?? {});
+    return SetTrackerEndpointId.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<SetTrackerEndpointId>, I>>(object: I): SetTrackerEndpointId {
     const message = createBaseSetTrackerEndpointId();
     message.endpointId = object.endpointId ?? "";
@@ -2880,16 +2971,21 @@ export const TrackerTimerStateUpdate = {
 
   toJSON(message: TrackerTimerStateUpdate): unknown {
     const obj: any = {};
-    message.totalTime !== undefined && (obj.totalTime = message.totalTime);
-    message.loadingTime !== undefined && (obj.loadingTime = message.loadingTime);
-    message.timerShouldRun !== undefined && (obj.timerShouldRun = message.timerShouldRun);
+    if (message.totalTime !== 0) {
+      obj.totalTime = message.totalTime;
+    }
+    if (message.loadingTime !== 0) {
+      obj.loadingTime = message.loadingTime;
+    }
+    if (message.timerShouldRun === true) {
+      obj.timerShouldRun = message.timerShouldRun;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<TrackerTimerStateUpdate>, I>>(base?: I): TrackerTimerStateUpdate {
-    return TrackerTimerStateUpdate.fromPartial(base ?? {});
+    return TrackerTimerStateUpdate.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<TrackerTimerStateUpdate>, I>>(object: I): TrackerTimerStateUpdate {
     const message = createBaseTrackerTimerStateUpdate();
     message.totalTime = object.totalTime ?? 0;
@@ -3082,41 +3178,60 @@ export const NormalGameHandlerState = {
 
   toJSON(message: NormalGameHandlerState): unknown {
     const obj: any = {};
-    message.raceStartingAt !== undefined && (obj.raceStartingAt = Math.round(message.raceStartingAt));
-    message.finishedTime !== undefined && (obj.finishedTime = message.finishedTime);
-    obj.playerLoadingTimes = {};
+    if (message.raceStartingAt !== undefined) {
+      obj.raceStartingAt = Math.round(message.raceStartingAt);
+    }
+    if (message.finishedTime !== undefined) {
+      obj.finishedTime = message.finishedTime;
+    }
     if (message.playerLoadingTimes) {
-      Object.entries(message.playerLoadingTimes).forEach(([k, v]) => {
-        obj.playerLoadingTimes[k] = v;
-      });
+      const entries = Object.entries(message.playerLoadingTimes);
+      if (entries.length > 0) {
+        obj.playerLoadingTimes = {};
+        entries.forEach(([k, v]) => {
+          obj.playerLoadingTimes[k] = v;
+        });
+      }
     }
-    obj.playerFinishedTimes = {};
     if (message.playerFinishedTimes) {
-      Object.entries(message.playerFinishedTimes).forEach(([k, v]) => {
-        obj.playerFinishedTimes[k] = v;
-      });
+      const entries = Object.entries(message.playerFinishedTimes);
+      if (entries.length > 0) {
+        obj.playerFinishedTimes = {};
+        entries.forEach(([k, v]) => {
+          obj.playerFinishedTimes[k] = v;
+        });
+      }
     }
-    obj.worldFinishedTimes = {};
     if (message.worldFinishedTimes) {
-      Object.entries(message.worldFinishedTimes).forEach(([k, v]) => {
-        obj.worldFinishedTimes[k] = v;
-      });
+      const entries = Object.entries(message.worldFinishedTimes);
+      if (entries.length > 0) {
+        obj.worldFinishedTimes = {};
+        entries.forEach(([k, v]) => {
+          obj.worldFinishedTimes[k] = v;
+        });
+      }
     }
-    obj.universeFinishedTimes = {};
     if (message.universeFinishedTimes) {
-      Object.entries(message.universeFinishedTimes).forEach(([k, v]) => {
-        obj.universeFinishedTimes[k] = v;
-      });
+      const entries = Object.entries(message.universeFinishedTimes);
+      if (entries.length > 0) {
+        obj.universeFinishedTimes = {};
+        entries.forEach(([k, v]) => {
+          obj.universeFinishedTimes[k] = v;
+        });
+      }
     }
-    message.raceModeEnabled !== undefined && (obj.raceModeEnabled = message.raceModeEnabled);
-    message.raceStarted !== undefined && (obj.raceStarted = message.raceStarted);
+    if (message.raceModeEnabled === true) {
+      obj.raceModeEnabled = message.raceModeEnabled;
+    }
+    if (message.raceStarted === true) {
+      obj.raceStarted = message.raceStarted;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<NormalGameHandlerState>, I>>(base?: I): NormalGameHandlerState {
-    return NormalGameHandlerState.fromPartial(base ?? {});
+    return NormalGameHandlerState.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<NormalGameHandlerState>, I>>(object: I): NormalGameHandlerState {
     const message = createBaseNormalGameHandlerState();
     message.raceStartingAt = object.raceStartingAt ?? undefined;
@@ -3224,17 +3339,20 @@ export const NormalGameHandlerState_PlayerLoadingTimesEntry = {
 
   toJSON(message: NormalGameHandlerState_PlayerLoadingTimesEntry): unknown {
     const obj: any = {};
-    message.key !== undefined && (obj.key = message.key);
-    message.value !== undefined && (obj.value = message.value);
+    if (message.key !== "") {
+      obj.key = message.key;
+    }
+    if (message.value !== 0) {
+      obj.value = message.value;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<NormalGameHandlerState_PlayerLoadingTimesEntry>, I>>(
     base?: I,
   ): NormalGameHandlerState_PlayerLoadingTimesEntry {
-    return NormalGameHandlerState_PlayerLoadingTimesEntry.fromPartial(base ?? {});
+    return NormalGameHandlerState_PlayerLoadingTimesEntry.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<NormalGameHandlerState_PlayerLoadingTimesEntry>, I>>(
     object: I,
   ): NormalGameHandlerState_PlayerLoadingTimesEntry {
@@ -3310,17 +3428,20 @@ export const NormalGameHandlerState_PlayerFinishedTimesEntry = {
 
   toJSON(message: NormalGameHandlerState_PlayerFinishedTimesEntry): unknown {
     const obj: any = {};
-    message.key !== undefined && (obj.key = message.key);
-    message.value !== undefined && (obj.value = message.value);
+    if (message.key !== "") {
+      obj.key = message.key;
+    }
+    if (message.value !== 0) {
+      obj.value = message.value;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<NormalGameHandlerState_PlayerFinishedTimesEntry>, I>>(
     base?: I,
   ): NormalGameHandlerState_PlayerFinishedTimesEntry {
-    return NormalGameHandlerState_PlayerFinishedTimesEntry.fromPartial(base ?? {});
+    return NormalGameHandlerState_PlayerFinishedTimesEntry.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<NormalGameHandlerState_PlayerFinishedTimesEntry>, I>>(
     object: I,
   ): NormalGameHandlerState_PlayerFinishedTimesEntry {
@@ -3396,17 +3517,20 @@ export const NormalGameHandlerState_WorldFinishedTimesEntry = {
 
   toJSON(message: NormalGameHandlerState_WorldFinishedTimesEntry): unknown {
     const obj: any = {};
-    message.key !== undefined && (obj.key = Math.round(message.key));
-    message.value !== undefined && (obj.value = message.value);
+    if (message.key !== 0) {
+      obj.key = Math.round(message.key);
+    }
+    if (message.value !== 0) {
+      obj.value = message.value;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<NormalGameHandlerState_WorldFinishedTimesEntry>, I>>(
     base?: I,
   ): NormalGameHandlerState_WorldFinishedTimesEntry {
-    return NormalGameHandlerState_WorldFinishedTimesEntry.fromPartial(base ?? {});
+    return NormalGameHandlerState_WorldFinishedTimesEntry.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<NormalGameHandlerState_WorldFinishedTimesEntry>, I>>(
     object: I,
   ): NormalGameHandlerState_WorldFinishedTimesEntry {
@@ -3482,17 +3606,20 @@ export const NormalGameHandlerState_UniverseFinishedTimesEntry = {
 
   toJSON(message: NormalGameHandlerState_UniverseFinishedTimesEntry): unknown {
     const obj: any = {};
-    message.key !== undefined && (obj.key = Math.round(message.key));
-    message.value !== undefined && (obj.value = message.value);
+    if (message.key !== 0) {
+      obj.key = Math.round(message.key);
+    }
+    if (message.value !== 0) {
+      obj.value = message.value;
+    }
     return obj;
   },
 
   create<I extends Exact<DeepPartial<NormalGameHandlerState_UniverseFinishedTimesEntry>, I>>(
     base?: I,
   ): NormalGameHandlerState_UniverseFinishedTimesEntry {
-    return NormalGameHandlerState_UniverseFinishedTimesEntry.fromPartial(base ?? {});
+    return NormalGameHandlerState_UniverseFinishedTimesEntry.fromPartial(base ?? ({} as any));
   },
-
   fromPartial<I extends Exact<DeepPartial<NormalGameHandlerState_UniverseFinishedTimesEntry>, I>>(
     object: I,
   ): NormalGameHandlerState_UniverseFinishedTimesEntry {

@@ -28,7 +28,8 @@
 
         const items = []
 
-        for (let groupIndex = 0; groupIndex <= Math.min(this.timelineProgress, this.spoiler.groups.length - 1); groupIndex++) {
+        const maxGroupIndex = Math.min(this.timelineProgress, this.spoiler.groups.length - 1)
+        for (let groupIndex = 0; groupIndex <= maxGroupIndex; groupIndex++) {
           const group = this.spoiler.groups[groupIndex]
 
           for (const placement of group.placements) {
@@ -40,7 +41,7 @@
               x: placement.location.position.x,
               y: placement.location.position.y,
               radius: 6,
-              fill: '#ffffff',
+              fill: `rgba(255, 255, 255, ${1.0 / (maxGroupIndex - groupIndex + 1)})`,
               name: placement.itemName,
             })
           }

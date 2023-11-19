@@ -10,6 +10,15 @@
         <v-btn color="accent" to="/dev/handler-state">
           Handler State
         </v-btn>
+        <v-btn color="accent" to="/dev/token">
+          JWT
+        </v-btn>
+        <v-btn color="accent" to="/dev/impersonate">
+          Impersonation
+        </v-btn>
+        <v-btn color="accent" to="/dev/bingo-tools">
+          Bingo Tools
+        </v-btn>
       </div>
     </div>
   </v-container>

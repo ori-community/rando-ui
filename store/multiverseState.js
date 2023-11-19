@@ -174,6 +174,7 @@ export const actions = {
 
         switch (packet.$type) {
           case 'RandoProto.SyncBoardMessage':
+            console.log(packet.board)
             commit('setBingoBoard', { multiverseId, board: packet.board })
             break
           case 'RandoProto.MultiverseInfoMessage':

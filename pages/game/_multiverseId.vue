@@ -741,7 +741,9 @@
       async createBingothonToken() {
         this.bingothonTokenLoading = true
 
-        const token = await this.$axios.$post('/bingothon/token')
+        const token = await this.$axios.$post('/bingothon/token', {
+          multiverseId: this.multiverseId,
+        })
 
         await window.navigator.clipboard.writeText(token)
 

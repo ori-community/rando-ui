@@ -371,7 +371,7 @@
           case ParameterType.Float:
             return Number(value)
           case ParameterType.Bool:
-            return value === 'true'
+            return value === 'true' || value === true
           default:
             return String(value)
         }

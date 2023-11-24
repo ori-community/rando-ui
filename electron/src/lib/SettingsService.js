@@ -251,7 +251,7 @@ export class SettingsService {
       set(settingsObject, key, value)
     }
 
-    await fs.promises.writeFile(SETTINGS_PATH, ini.encode(settingsObject), { encoding: 'utf16le' })
+    await fs.promises.writeFile(SETTINGS_PATH, ini.encode(settingsObject), { encoding: 'utf-8' })
   }
 
   /**

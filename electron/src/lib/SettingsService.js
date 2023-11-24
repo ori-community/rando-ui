@@ -98,7 +98,32 @@ export class SettingsService {
     return events
   }
 
-  static async migrateSettingsVersion() {
+  /**
+   * Runs migrations before having read the settings
+   * @returns {Promise<void>}
+   */
+  static async runPreSettingsMigrations() {
+    if (!fs.existsSync(SETTINGS_PATH)) {
+      return
+    }
+
+    const currentVersion = (await updater.getVersion()).trim()
+
+    if (fs.existsSync(LAST_VERSION_FILE) && currentVersion !== 'develop') {
+      const lastVersion = (await fs.promises.readFile(LAST_VERSION_FILE, { encoding: 'utf-8' })).trim()
+
+      if (semver.lt(lastVersion, '3.0.0') && semver.gte(currentVersion, '3.0.0')) {  // settings.ini encoding changed from utf16le to utf-8 in 3.0.0
+        const settingsIniContent = await fs.promises.readFile(SETTINGS_PATH, { encoding: 'utf16le' });
+        await fs.promises.writeFile(SETTINGS_PATH, settingsIniContent, { encoding: 'utf-8' });
+      }
+    }
+  }
+
+  /**
+   * Run migrations after having read the settings
+   * @returns {Promise<void>}
+   */
+  static async runSettingsMigrations() {
     const currentVersion = (await updater.getVersion()).trim()
 
     if (fs.existsSync(LAST_VERSION_FILE) && currentVersion !== 'develop') {
@@ -175,7 +200,7 @@ export class SettingsService {
     let settingsObject = getDefaultSettings()
 
     if (fs.existsSync(SETTINGS_PATH)) {
-      const settingsIniContent = await fs.promises.readFile(SETTINGS_PATH, { encoding: 'utf16le' });
+      const settingsIniContent = await fs.promises.readFile(SETTINGS_PATH, { encoding: 'utf-8' });
       settingsObject = merge(settingsObject, ini.parse(settingsIniContent.trimStart()))
     } else {
       console.log("Settings file not found. Using default settings.");

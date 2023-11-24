@@ -28,8 +28,9 @@ export function getWindow() {
 }
 
 async function createWindow() {
+  await SettingsService.runPreSettingsMigrations()
   await SettingsService.makeSureSettingsFileExists()
-  await SettingsService.migrateSettingsVersion()
+  await SettingsService.runSettingsMigrations()
 
   registerUIIpcApi()
 

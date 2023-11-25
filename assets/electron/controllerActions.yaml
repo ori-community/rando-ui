@@ -55,6 +55,18 @@ DialogueExit:
 OpenMapsShardsInventory:
   displayName: OpenMapsShardsInventory
   composable: false
+OpenAreaMap:
+  displayName: OpenAreaMap
+  composable: false
+OpenInventory:
+  displayName: OpenInventory
+  composable: false
+OpenWorldMap:
+  displayName: OpenWorldMap
+  composable: false
+OpenShards:
+  displayName: OpenShards
+  composable: false
 OpenWeaponWheel:
   displayName: OpenWeaponWheel
   composable: false

@@ -49,7 +49,7 @@
           <table class="selection-info-table">
             <tbody>
               <tr v-for="connection in selectionInfo.nodeConnections" :key="connection.nodeName"
-                :class="{ 'inderect-Connection': connection.toNode }">
+                :class="{ 'indirect-Connection': connection.toNode }">
                 <td>
                   {{
                     capitalCase(connection.typeDescription) }}:
@@ -280,6 +280,8 @@ export default {
         if (connection.unidirectional) { this.addConnectionDirectionIndicators(count - 1) }
 
       }
+
+      this.updateSelection()
     },
 
     addConnectionDirectionIndicators(connectionDisplayIndex) {
@@ -337,10 +339,24 @@ export default {
       }
     },
 
+    updateSelection(){
+    if (this.selectedObject) {
+        if (!this.getDisplayedObject(this.selectedObject.name)) {
+          this.deselectDisplayedObject()
+        } else {
+          this.selectDisplayedObject(this.selectedObject.name)
+        }
+      }
+    },
+
     selectDisplayedObject(objectName) {
 
       // get selected object
       let object = this.displayedObjects.find(obj => obj.name === objectName)
+      if (!object) {
+        console.warn(`Object ${objectName} not found`)
+        return
+      }
       if (object.parentName) { object = this.getDisplayedObject(object.parentName) }
 
       // deselect/unmark previous object
@@ -388,6 +404,12 @@ export default {
       if (!this.selectionInfoOpen) { this.selectionInfoOpen = true }
     },
 
+    deselectDisplayedObject() {
+      this.selectionInfoOpen = false
+      this.selectedObject = null
+      this.selectionInfo = null
+    },
+
     getNodeConnections(objectName, logicalType) {
       const nodeConnections = []
       for (const connection of this.graphObjects.filter(connection => connection.end === objectName || connection.start === objectName)) {
@@ -430,7 +452,12 @@ export default {
 
     setDisplayObjectSelectionWidth(displayObjectName, isMouseOver) {
       const displayedObject = this.getDisplayedObject(displayObjectName)
-      const lines = this.displayedLines.filter(line => line.name === displayedObject.name || line.parentName === displayedObject.name || line.name === displayedObject.parentName || (line.parentName === displayedObject.parentName && displayedObject.parentName))
+      if (!displayedObject) {
+        console.warn(`Object ${displayObjectName} not found`)
+        return
+      }
+      
+      const lines = this.displayedLines.filter(line => line.name === displayedObject.name || line.parentName === displayedObject.name || line.name === displayedObject?.parentName || (line.parentName === displayedObject?.parentName && displayedObject.parentName))
       lines.forEach(line => {
         line.strokeWidth = isMouseOver ? line.strokeWidth * 2 : line.initialStrokeWidth
       });
@@ -454,6 +481,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.relative {
+  position: relative;
+}
+
 .selection-info-right {
   position: absolute;
   top: 4em;
@@ -468,10 +500,6 @@ export default {
   right: 1em;
 }
 
-.relative {
-  position: relative;
-}
-
 .selection-info-table {
   border-collapse: collapse;
 }
@@ -484,7 +512,7 @@ export default {
   text-align: end;
 }
 
-.inderect-Connection {
+.indirect-Connection {
   font-style: italic;
   filter: brightness(0.75)
 }

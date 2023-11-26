@@ -5,8 +5,9 @@
     <wotw-map ref="map" class="flex-grow-1 flex-shrink-1">
       <k-layer>
 
-        <k-line v-for="line in displayedLines" :key="line.elementDisplayIndex" :config="line" @click="selectDisplayedObject(line.name)"
-          @mouseout="displayElementMouseOut(line.name)" @mouseover="displayElementMouseOver(line.name)" />
+        <k-line v-for="line in displayedLines" :key="line.elementDisplayIndex" :config="line"
+          @click="selectDisplayedObject(line.name)" @mouseout="displayElementMouseOut(line.name)"
+          @mouseover="displayElementMouseOver(line.name)" />
 
         <k-circle v-for="circle in displayedCircles" :key="circle.elementDisplayIndex" :config="circle"
           @click="selectDisplayedObject(circle.name)" @mouseout="displayElementMouseOut(circle.name)"
@@ -90,7 +91,6 @@
                   <a @click="selectDisplayedObject(selectedObject.end)"
                     @mouseover="displayElementMouseOver(selectedObject.end)"
                     @mouseout="displayElementMouseOut(selectedObject.end)"> {{ selectedObject.end }} </a>
-
                 </td>
               </tr>
             </tbody>
@@ -151,8 +151,8 @@ export default {
   },
   methods: {
     capitalCase,
-    getGraphObject(name){return this.graphObjects.find(obj => obj.name === name)},
-    getDisplayedObject(name){return this.displayedObjects.find(obj => obj.name === name)},
+    getGraphObject(name) { return this.graphObjects.find(obj => obj.name === name) },
+    getDisplayedObject(name) { return this.displayedObjects.find(obj => obj.name === name) },
 
     async updateOverlay() {
 
@@ -239,7 +239,7 @@ export default {
       this.currentDisplayIndex = 0
 
       // nodes
-      for (const node of this.graphObjects.filter(obj => obj.graphObjectType === GraphObjectType.Node)){
+      for (const node of this.graphObjects.filter(obj => obj.graphObjectType === GraphObjectType.Node)) {
         const radius = node.logicalType === LogicalType.Anchor ? 4 : 3.5
         const color = node.logicalType === LogicalType.Anchor ? COLOR_ANCHOR : COLOR_PICKUP
         this.displayedObjects.push({
@@ -258,7 +258,7 @@ export default {
       }
 
       // connections
-      for (const connection of this.graphObjects.filter(obj => obj.graphObjectType === GraphObjectType.Connection)){
+      for (const connection of this.graphObjects.filter(obj => obj.graphObjectType === GraphObjectType.Connection)) {
         const strokeWidth = connection.type === this.connectionType.Branch ? 2 : 1.5
         const color = connection.type === this.connectionType.Branch
           ? COLOR_ANCHOR
@@ -344,7 +344,7 @@ export default {
       if (object.parentName) { object = this.getDisplayedObject(object.parentName) }
 
       // deselect/unmark previous object
-      if (this.selectedObject) { 
+      if (this.selectedObject) {
         this.setDisplayObjectSelectionColor(this.selectedObject.name, false)
         this.setDisplayObjectSelectionWidth(this.selectedObject.name, false)
       }
@@ -390,7 +390,7 @@ export default {
 
     getNodeConnections(objectName, logicalType) {
       const nodeConnections = []
-      for ( const connection of this.graphObjects.filter(connection => connection.end === objectName || connection.start === objectName)){
+      for (const connection of this.graphObjects.filter(connection => connection.end === objectName || connection.start === objectName)) {
         const nodeLogicalType = logicalType === LogicalType.Anchor && connection.type === this.connectionType.Leaf ? LogicalType.Pickup : LogicalType.Anchor
         nodeConnections.push({
           ...connection,

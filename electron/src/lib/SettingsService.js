@@ -112,7 +112,7 @@ export class SettingsService {
     if (fs.existsSync(LAST_VERSION_FILE) && currentVersion !== 'develop') {
       const lastVersion = (await fs.promises.readFile(LAST_VERSION_FILE, { encoding: 'utf-8' })).trim()
 
-      if (semver.lt(lastVersion, '3.0.0') && semver.gte(currentVersion, '3.0.0')) {  // settings.ini encoding changed from utf16le to utf-8 in 3.0.0
+      if (semver.lt(lastVersion, '3.0.0') && semver.gte(currentVersion, '3.0.0-beta.1')) {  // settings.ini encoding changed from utf16le to utf-8 in 3.0.0
         const settingsIniContent = await fs.promises.readFile(SETTINGS_PATH, { encoding: 'utf16le' });
         await fs.promises.writeFile(SETTINGS_PATH, settingsIniContent, { encoding: 'utf-8' });
       }

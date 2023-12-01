@@ -257,7 +257,7 @@
             messages='Connect to the Server using HTTPS and WSS instead of HTTP and WS'
           />
           <v-btn depressed color="accent" class="mt-5" @click="disableDevTools">
-              Hide Developer Tools
+              Disable Developer Tools
           </v-btn>
         </template>
       </div>
@@ -420,6 +420,7 @@
 
 <style lang='scss' scoped>
   .filepath-warning {
-    font-style: italic;
+    color: #ffb32f;
+    font-weight: bold;
   }
 </style>

@@ -1,6 +1,11 @@
 import fs from 'fs'
 import ini from 'ini'
-import { LAST_VERSION_FILE, SETTINGS_PATH } from './Constants'
+import {
+  DEPRECATED_SETTINGS_INI_BACKUP_PATH,
+  DEPRECATED_SETTINGS_INI_PATH,
+  LAST_VERSION_FILE,
+  SETTINGS_PATH,
+} from './Constants'
 import merge from 'lodash.merge'
 import cloneDeep from 'lodash.clonedeep'
 import debounce from 'lodash.debounce'
@@ -103,7 +108,7 @@ export class SettingsService {
    * @returns {Promise<void>}
    */
   static async runPreSettingsMigrations() {
-    if (!fs.existsSync(SETTINGS_PATH)) {
+    if (!fs.existsSync(DEPRECATED_SETTINGS_INI_PATH)) {
       return
     }
 
@@ -113,8 +118,20 @@ export class SettingsService {
       const lastVersion = (await fs.promises.readFile(LAST_VERSION_FILE, { encoding: 'utf-8' })).trim()
 
       if (semver.lt(lastVersion, '3.0.0') && semver.gte(currentVersion, '3.0.0-beta.1')) {  // settings.ini encoding changed from utf16le to utf-8 in 3.0.0
-        const settingsIniContent = await fs.promises.readFile(SETTINGS_PATH, { encoding: 'utf16le' });
-        await fs.promises.writeFile(SETTINGS_PATH, settingsIniContent, { encoding: 'utf-8' });
+        const settingsIniContent = await fs.promises.readFile(DEPRECATED_SETTINGS_INI_PATH, { encoding: 'utf16le' });
+        await fs.promises.writeFile(DEPRECATED_SETTINGS_INI_PATH, settingsIniContent, { encoding: 'utf-8' });
+      }
+
+      if (semver.lt(lastVersion, '3.0.0-beta.6') && semver.gte(currentVersion, '3.0.0-beta.7')) {  // settings.ini encoding changed from utf16le to utf-8 in 3.0.0
+        const settingsIniContent = await fs.promises.readFile(DEPRECATED_SETTINGS_INI_PATH, { encoding: 'utf-8' });
+
+        try {
+          const settingsData = ini.parse(settingsIniContent.trimStart())
+          await fs.promises.writeFile(SETTINGS_PATH, JSON.stringify(settingsData, null, 2), { encoding: 'utf-8' });
+          await fs.promises.rename(DEPRECATED_SETTINGS_INI_PATH, DEPRECATED_SETTINGS_INI_BACKUP_PATH)
+        } catch (e) {
+          console.error('SettingsService: INI to JSON migration failed', e)
+        }
       }
     }
   }
@@ -200,8 +217,8 @@ export class SettingsService {
     let settingsObject = getDefaultSettings()
 
     if (fs.existsSync(SETTINGS_PATH)) {
-      const settingsIniContent = await fs.promises.readFile(SETTINGS_PATH, { encoding: 'utf-8' });
-      settingsObject = merge(settingsObject, ini.parse(settingsIniContent.trimStart()))
+      const settingsContent = await fs.promises.readFile(SETTINGS_PATH, { encoding: 'utf-8' });
+      settingsObject = merge(settingsObject, JSON.parse(settingsContent))
     } else {
       console.log("Settings file not found. Using default settings.");
     }
@@ -251,7 +268,7 @@ export class SettingsService {
       set(settingsObject, key, value)
     }
 
-    await fs.promises.writeFile(SETTINGS_PATH, ini.encode(settingsObject), { encoding: 'utf-8' })
+    await fs.promises.writeFile(SETTINGS_PATH, JSON.stringify(settingsObject, null, 2), { encoding: 'utf-8' })
   }
 
   /**

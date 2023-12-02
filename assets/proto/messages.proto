@@ -176,8 +176,8 @@ message SetTrackerEndpointId { // 104
 }
 
 message TrackerTimerStateUpdate { // 105
-  float totalTime = 1;
-  float loadingTime = 2;
+  float inGameTime = 1;
+  float asyncLoadingTime = 2;
   bool timerShouldRun = 3;
 }
 

@@ -65,8 +65,8 @@
       timerUpdateIntervalId: null,
       timerStartTimestamp: 0,
       displayedTime: 0,
-      totalTime: 0,
-      loadingTime: 0,
+      inGameTime: 0,
+      asyncLoadingTime: 0,
       timerShouldRun: false,
       appliedDelay: 0,
       delayQueued: false,
@@ -158,10 +158,10 @@
           }, 4000)
         }
       },
-      totalTime() {
+      inGameTime() {
         this.updateTimerStartTimestamp()
       },
-      loadingTime() {
+      asyncLoadingTime() {
         this.updateTimerStartTimestamp()
       },
       timerShouldRun() {
@@ -181,15 +181,9 @@
 
       this.timerStartTimestamp = (Date.now() / 1000.0)
       this.connect()
-
-      this.timerUpdateIntervalId = setInterval(this.updateTimer, 50)
     },
     beforeDestroy() {
       this.tryDisconnect()
-
-      if (this.timerUpdateIntervalId !== null) {
-        clearInterval(this.timerUpdateIntervalId)
-      }
     },
     methods: {
       connect() {
@@ -233,16 +227,16 @@
                 this.receivedPacket = true
                 break
               case TrackerTimerStateUpdate.$type:
-                this.totalTime = packet.totalTime
-                this.loadingTime = packet.loadingTime
+                this.inGameTime = packet.inGameTime
+                this.asyncLoadingTime = packet.asyncLoadingTime
                 this.timerShouldRun = packet.timerShouldRun
                 break
               case ResetTracker.$type:
                 this.trackedValues = {}
                 this.seedFlags = []
                 this.displayedTime = 0
-                this.totalTime = 0
-                this.loadingTime = 0
+                this.inGameTime = 0
+                this.asyncLoadingTime = 0
                 break
             }
           }
@@ -271,7 +265,7 @@
         }
       },
       updateTimerStartTimestamp() {
-        this.timerStartTimestamp = (Date.now() / 1000.0) - this.loadingTime - this.totalTime - this.requestedDelay
+        this.timerStartTimestamp = (Date.now() / 1000.0) - this.inGameTime - this.requestedDelay
         this.updateTimer()
       },
       updateTimer() {
@@ -280,7 +274,7 @@
         }
 
         if (this.trackedValues.game_finished) {
-          this.displayedTime = Math.max(this.totalTime, 0)
+          this.displayedTime = Math.max(this.inGameTime, 0)
         } else if (this.timerShouldRun) {
           this.displayedTime = Math.max((Date.now() / 1000.0) - this.timerStartTimestamp, 0)
         }

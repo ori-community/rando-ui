@@ -1,8 +1,8 @@
 import { uiIpc } from "@/api";
 
 export class TASService {
-  static reportLoadingStateChanged(state: string) {
-    uiIpc.queueSend("tas.loadingStateChanged", {state})
+  static reportAsyncLoadingStateChanged(state: string) {
+    uiIpc.queueSend("tas.asyncLoadingStateChanged", {state})
   }
 
   static reportStateChanged(state: any) {

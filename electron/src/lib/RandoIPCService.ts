@@ -140,8 +140,8 @@ export class RandoIPCService {
   static async handleIncomingRequest(request: Request) {
     switch (request.method) {
       case 'notify_timer_state_changed': {
-        const { total_time: totalTime, loading_time: loadingTime, timer_should_run: timerShouldRun } = request.payload
-        LocalTrackerWebSocketService.reportTimerState(totalTime, loadingTime, timerShouldRun)
+        const { in_game_time: inGameTime, async_loading_time: asyncLoadingTime, timer_should_run: timerShouldRun } = request.payload
+        LocalTrackerWebSocketService.reportTimerState(inGameTime, asyncLoadingTime, timerShouldRun)
         break
       }
       case 'notify_on_uber_state_changed': {
@@ -171,8 +171,8 @@ export class RandoIPCService {
 
         break
       }
-      case 'notify_loading_state_changed': {
-        TASService.reportLoadingStateChanged(request.payload)
+      case 'notify_async_loading_state_changed': {
+        TASService.reportAsyncLoadingStateChanged(request.payload)
         break
       }
       case 'notify_tas_state_changed': {

@@ -119,7 +119,7 @@ const TRACKED_UBER_STATES: TrackedUberState[] = [
   { uberId: { group: 34543, state: 11226 }, trackingId: 'game_finished' },
 
   { uberId: { group: 14019, state: 44578 }, trackingId: 'quest_rebuild_glades' },
-  
+
   { uberId: { group: 42178, state: 16825 }, trackingId: 'builder_project_spirit_well' },
   { uberId: { group: 42178, state: 51230 }, trackingId: 'builder_project_houses' },
   { uberId: { group: 42178, state: 18751 }, trackingId: 'builder_project_remove_thorns' },
@@ -145,7 +145,7 @@ export class LocalTrackerWebSocketService {
 
   private static _remoteTrackerEndpointId: string | null = null
 
-  private static updateTimerStateIntervalId: NodeJS.Timer | null = null
+  private static updateTimerStateIntervalId: NodeJS.Timeout | null = null
 
   public static get remoteTrackerEndpointId() {
     return this._remoteTrackerEndpointId
@@ -224,30 +224,30 @@ export class LocalTrackerWebSocketService {
   }
 
   static async reportCurrentTimerState() {
-    const { total_time: totalTime, loading_time: loadingTime, timer_should_run: timerShouldRun } = await RandoIPCService.request('timer.get_timer_state')
-    this.reportTimerState(totalTime, loadingTime, timerShouldRun)
+    const { in_game_time: inGameTime, async_loading_time: asyncLoadingTime, timer_should_run: timerShouldRun } = await RandoIPCService.request('timer.get_timer_state')
+    this.reportTimerState(inGameTime, asyncLoadingTime, timerShouldRun)
   }
 
   static async reportCurrentTimerStateToClient(client: WebSocket) {
-    const { total_time: totalTime, loading_time: loadingTime, timer_should_run: timerShouldRun } = await RandoIPCService.request('timer.get_timer_state')
-    this.reportTimerStateToClient(client, totalTime, loadingTime, timerShouldRun)
+    const { in_game_time: inGameTime, async_loading_time: asyncLoadingTime, timer_should_run: timerShouldRun } = await RandoIPCService.request('timer.get_timer_state')
+    this.reportTimerStateToClient(client, inGameTime, asyncLoadingTime, timerShouldRun)
   }
 
-  static reportTimerState(totalTime: number, loadingTime: number, timerShouldRun: boolean) {
+  static reportTimerState(inGameTime: number, asyncLoadingTime: number, timerShouldRun: boolean) {
     for (const client of this.wss?.clients || []) {
-      this.reportTimerStateToClient(client, totalTime, loadingTime, timerShouldRun)
+      this.reportTimerStateToClient(client, inGameTime, asyncLoadingTime, timerShouldRun)
     }
 
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.reportTimerStateToClient(this.ws, totalTime, loadingTime, timerShouldRun)
+      this.reportTimerStateToClient(this.ws, inGameTime, asyncLoadingTime, timerShouldRun)
     }
   }
 
-  static reportTimerStateToClient(client: WebSocket, totalTime: number, loadingTime: number, timerShouldRun: boolean) {
+  static reportTimerStateToClient(client: WebSocket, inGameTime: number, asyncLoadingTime: number, timerShouldRun: boolean) {
     client.send(
       makePacket(TrackerTimerStateUpdate, {
-        totalTime,
-        loadingTime,
+        inGameTime,
+        asyncLoadingTime,
         timerShouldRun,
       }),
     )

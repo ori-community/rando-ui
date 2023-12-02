@@ -239,8 +239,8 @@ export interface SetTrackerEndpointId {
 /** 105 */
 export interface TrackerTimerStateUpdate {
   $type: "RandoProto.TrackerTimerStateUpdate";
-  totalTime: number;
-  loadingTime: number;
+  inGameTime: number;
+  asyncLoadingTime: number;
   timerShouldRun: boolean;
 }
 
@@ -2904,18 +2904,18 @@ export const SetTrackerEndpointId = {
 messageTypeRegistry.set(SetTrackerEndpointId.$type, SetTrackerEndpointId);
 
 function createBaseTrackerTimerStateUpdate(): TrackerTimerStateUpdate {
-  return { $type: "RandoProto.TrackerTimerStateUpdate", totalTime: 0, loadingTime: 0, timerShouldRun: false };
+  return { $type: "RandoProto.TrackerTimerStateUpdate", inGameTime: 0, asyncLoadingTime: 0, timerShouldRun: false };
 }
 
 export const TrackerTimerStateUpdate = {
   $type: "RandoProto.TrackerTimerStateUpdate" as const,
 
   encode(message: TrackerTimerStateUpdate, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.totalTime !== 0) {
-      writer.uint32(13).float(message.totalTime);
+    if (message.inGameTime !== 0) {
+      writer.uint32(13).float(message.inGameTime);
     }
-    if (message.loadingTime !== 0) {
-      writer.uint32(21).float(message.loadingTime);
+    if (message.asyncLoadingTime !== 0) {
+      writer.uint32(21).float(message.asyncLoadingTime);
     }
     if (message.timerShouldRun === true) {
       writer.uint32(24).bool(message.timerShouldRun);
@@ -2935,14 +2935,14 @@ export const TrackerTimerStateUpdate = {
             break;
           }
 
-          message.totalTime = reader.float();
+          message.inGameTime = reader.float();
           continue;
         case 2:
           if (tag !== 21) {
             break;
           }
 
-          message.loadingTime = reader.float();
+          message.asyncLoadingTime = reader.float();
           continue;
         case 3:
           if (tag !== 24) {
@@ -2963,19 +2963,19 @@ export const TrackerTimerStateUpdate = {
   fromJSON(object: any): TrackerTimerStateUpdate {
     return {
       $type: TrackerTimerStateUpdate.$type,
-      totalTime: isSet(object.totalTime) ? Number(object.totalTime) : 0,
-      loadingTime: isSet(object.loadingTime) ? Number(object.loadingTime) : 0,
+      inGameTime: isSet(object.inGameTime) ? Number(object.inGameTime) : 0,
+      asyncLoadingTime: isSet(object.asyncLoadingTime) ? Number(object.asyncLoadingTime) : 0,
       timerShouldRun: isSet(object.timerShouldRun) ? Boolean(object.timerShouldRun) : false,
     };
   },
 
   toJSON(message: TrackerTimerStateUpdate): unknown {
     const obj: any = {};
-    if (message.totalTime !== 0) {
-      obj.totalTime = message.totalTime;
+    if (message.inGameTime !== 0) {
+      obj.inGameTime = message.inGameTime;
     }
-    if (message.loadingTime !== 0) {
-      obj.loadingTime = message.loadingTime;
+    if (message.asyncLoadingTime !== 0) {
+      obj.asyncLoadingTime = message.asyncLoadingTime;
     }
     if (message.timerShouldRun === true) {
       obj.timerShouldRun = message.timerShouldRun;
@@ -2988,8 +2988,8 @@ export const TrackerTimerStateUpdate = {
   },
   fromPartial<I extends Exact<DeepPartial<TrackerTimerStateUpdate>, I>>(object: I): TrackerTimerStateUpdate {
     const message = createBaseTrackerTimerStateUpdate();
-    message.totalTime = object.totalTime ?? 0;
-    message.loadingTime = object.loadingTime ?? 0;
+    message.inGameTime = object.inGameTime ?? 0;
+    message.asyncLoadingTime = object.asyncLoadingTime ?? 0;
     message.timerShouldRun = object.timerShouldRun ?? false;
     return message;
   },

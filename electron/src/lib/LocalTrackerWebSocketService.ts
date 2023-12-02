@@ -105,6 +105,7 @@ const TRACKED_UBER_STATES: TrackedUberState[] = [
   { uberId: { group: 15, state: 502 }, trackingId: 'tree_count' },
   { uberId: { group: 15, state: 503 }, trackingId: 'wisp_count' },
   { uberId: { group: 15, state: 504 }, trackingId: 'quest_count' },
+  { uberId: { group: 15, state: 505 }, trackingId: 'relic_current_area_uncollected' },
 
   { uberId: { group: 16155, state: 42976 }, trackingId: 'heart_wind_spinners' },
   { uberId: { group: 16155, state: 54940 }, trackingId: 'heart_spinning_lasers' },

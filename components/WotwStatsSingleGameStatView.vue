@@ -27,13 +27,13 @@
           <div class="stats-content">
             <h1 class="stat-heading">Global Stats</h1>
             <div class="d-flex flex-wrap stats-container">
-              <wotw-stats-singlestat-view label="Time" :text="formatTime(stats.save.total_time)" />
+              <wotw-stats-singlestat-view label="Time" :text="formatTime(stats.save.in_game_time)" />
               <wotw-stats-singlestat-view label="Deaths" :text="stats.save.total_deaths" />
               <wotw-stats-singlestat-view label="Time lost" :text="formatTime(stats.save.time_lost_to_deaths)" />
               <wotw-stats-singlestat-view label="TPs" :text="stats.save.teleport_count" />
               <wotw-stats-singlestat-view
                 label="PPM"
-                :text="calculatePPM(stats.checkpoint.total_pickups, stats.save.total_time)"
+                :text="calculatePPM(stats.checkpoint.total_pickups, stats.save.in_game_time)"
               />
               <wotw-stats-singlestat-view label="Peak PPM">
                 <template v-if="stats.save.max_ppm_over_timespan > 0">
@@ -57,7 +57,7 @@
 
           <div class="pt-8 ability-timeline">
             <wotw-stats-key-events-timeline
-              :total-time="stats.save.total_time"
+              :total-time="stats.save.in_game_time"
               :ability-timestamps="stats.save.ability_timestamps"
               :world-event-timestamps="stats.save.world_event_timestamps"
             />
@@ -74,7 +74,7 @@
                 <div class="d-flex flex-wrap stats-container mb-1">
                   <wotw-stats-singlestat-view
                     label="Time"
-                    :text="formatTime(stats.save.area_stats[zone.id]?.time_spent ?? 0)"
+                    :text="formatTime(stats.save.area_stats[zone.id]?.in_game_time_spent ?? 0)"
                   />
                   <wotw-stats-singlestat-view label="Deaths" :text="stats.save.area_stats[zone.id]?.deaths ?? 0" />
                   <wotw-stats-singlestat-view
@@ -82,7 +82,7 @@
                     :text="
                       calculatePPM(
                         stats.checkpoint.pickups_per_area[zone.id] ?? 0,
-                        stats.save.area_stats[zone.id]?.time_spent ?? 0,
+                        stats.save.area_stats[zone.id]?.in_game_time_spent ?? 0,
                       )
                     "
                   />
@@ -172,7 +172,7 @@
         this.screenshotLoading = false
       },
       getZoneTimePercentage(zoneId) {
-        return ((this.stats.save.area_stats[zoneId]?.time_spent ?? 0) / this.stats.save.total_time) * 100
+        return ((this.stats.save.area_stats[zoneId]?.in_game_time_spent ?? 0) / this.stats.save.in_game_time) * 100
       },
       calculatePPM(pickups, totalSeconds) {
         const minutes = totalSeconds / 60

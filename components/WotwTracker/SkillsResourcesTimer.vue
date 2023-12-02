@@ -25,7 +25,7 @@
       :relic-count="trackedValues.relic_count"
       :heart-count="heartCount"
       :glades-rebuild-projects-done="gladesRebuildProjectsDone"
-      :current-area-has-uncollected-relic="trackedValues.relic_current_area_uncollected"
+      :current-area-has-uncollected-relic="trackedValues.relic_current_area_uncollected > 0"
       :show-timer="showTimer"
       :time="time"
       :loading-time="loadingTime"

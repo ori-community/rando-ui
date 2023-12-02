@@ -10,7 +10,8 @@
         :hide-color="multiverse.universes.length < 2"
         :universe="universe"
         :multiverse-id="multiverseId"
-        :player-loading-times="playerLoadingTimes"
+        :race-starting-at="raceStartingAt"
+        :player-in-game-times="playerInGameTimes"
         :player-finished-times="playerFinishedTimes"
         :world-finished-times="worldFinishedTimes"
         :finished-at="universeFinishedTimes[universe.id] ?? null"
@@ -69,7 +70,12 @@
         type: Object,
         required: true,
       },
-      playerLoadingTimes: {
+      raceStartingAt: {
+        type: Number,
+        required: false,
+        default: null,
+      },
+      playerInGameTimes: {
         type: Object,
         required: false,
         default: () => ({}),

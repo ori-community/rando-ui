@@ -30,8 +30,8 @@
             <span v-if="hasMultiplePlayers && hasOwnProperty(playerFinishedTimes, player.id)" class="finished-time" :class="{forfeited: playerFinishedTimes[player.id] === 0.0}" title="Finished time">{{
               playerFinishedTimes[player.id] !== 0.0 ? formatTime(playerFinishedTimes[player.id]) : 'DNF'
             }}</span>
-            <span v-else-if="hasOwnProperty(playerLoadingTimes, player.id)" class="loading-time" title="Loading time">{{
-              formatTime(-1 * playerLoadingTimes[player.id])
+            <span v-else-if="hasOwnProperty(playerInGameTimes, player.id)" class="loading-time" title="Loading time">{{
+              formatTime(playerInGameTimes[player.id] - (now() - raceStartingAt) / 1000.0, 1, false, true)
             }}</span>
           </div>
         </wotw-player-view>
@@ -69,7 +69,12 @@
         required: false,
         default: null,
       },
-      playerLoadingTimes: {
+      raceStartingAt: {
+        type: Number,
+        required: false,
+        default: null,
+      },
+      playerInGameTimes: {
         type: Object,
         required: false,
         default: () => ({}),
@@ -116,6 +121,9 @@
     methods: {
       formatTime,
       hasOwnProperty,
+      now() {
+        return Date.now()
+      },
     },
   }
 </script>

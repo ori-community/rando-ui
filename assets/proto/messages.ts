@@ -248,7 +248,7 @@ export interface NormalGameHandlerState {
   $type: "RandoProto.NormalGameHandlerState";
   raceStartingAt?: number | undefined;
   finishedTime?: number | undefined;
-  playerLoadingTimes: { [key: string]: number };
+  playerInGameTimes: { [key: string]: number };
   playerFinishedTimes: { [key: string]: number };
   worldFinishedTimes: { [key: number]: number };
   universeFinishedTimes: { [key: number]: number };
@@ -256,8 +256,8 @@ export interface NormalGameHandlerState {
   raceStarted: boolean;
 }
 
-export interface NormalGameHandlerState_PlayerLoadingTimesEntry {
-  $type: "RandoProto.NormalGameHandlerState.PlayerLoadingTimesEntry";
+export interface NormalGameHandlerState_PlayerInGameTimesEntry {
+  $type: "RandoProto.NormalGameHandlerState.PlayerInGameTimesEntry";
   key: string;
   value: number;
 }
@@ -3002,7 +3002,7 @@ function createBaseNormalGameHandlerState(): NormalGameHandlerState {
     $type: "RandoProto.NormalGameHandlerState",
     raceStartingAt: undefined,
     finishedTime: undefined,
-    playerLoadingTimes: {},
+    playerInGameTimes: {},
     playerFinishedTimes: {},
     worldFinishedTimes: {},
     universeFinishedTimes: {},
@@ -3021,9 +3021,9 @@ export const NormalGameHandlerState = {
     if (message.finishedTime !== undefined) {
       writer.uint32(21).float(message.finishedTime);
     }
-    Object.entries(message.playerLoadingTimes).forEach(([key, value]) => {
-      NormalGameHandlerState_PlayerLoadingTimesEntry.encode({
-        $type: "RandoProto.NormalGameHandlerState.PlayerLoadingTimesEntry",
+    Object.entries(message.playerInGameTimes).forEach(([key, value]) => {
+      NormalGameHandlerState_PlayerInGameTimesEntry.encode({
+        $type: "RandoProto.NormalGameHandlerState.PlayerInGameTimesEntry",
         key: key as any,
         value,
       }, writer.uint32(26).fork()).ldelim();
@@ -3084,9 +3084,9 @@ export const NormalGameHandlerState = {
             break;
           }
 
-          const entry3 = NormalGameHandlerState_PlayerLoadingTimesEntry.decode(reader, reader.uint32());
+          const entry3 = NormalGameHandlerState_PlayerInGameTimesEntry.decode(reader, reader.uint32());
           if (entry3.value !== undefined) {
-            message.playerLoadingTimes[entry3.key] = entry3.value;
+            message.playerInGameTimes[entry3.key] = entry3.value;
           }
           continue;
         case 4:
@@ -3147,8 +3147,8 @@ export const NormalGameHandlerState = {
       $type: NormalGameHandlerState.$type,
       raceStartingAt: isSet(object.raceStartingAt) ? Number(object.raceStartingAt) : undefined,
       finishedTime: isSet(object.finishedTime) ? Number(object.finishedTime) : undefined,
-      playerLoadingTimes: isObject(object.playerLoadingTimes)
-        ? Object.entries(object.playerLoadingTimes).reduce<{ [key: string]: number }>((acc, [key, value]) => {
+      playerInGameTimes: isObject(object.playerInGameTimes)
+        ? Object.entries(object.playerInGameTimes).reduce<{ [key: string]: number }>((acc, [key, value]) => {
           acc[key] = Number(value);
           return acc;
         }, {})
@@ -3184,12 +3184,12 @@ export const NormalGameHandlerState = {
     if (message.finishedTime !== undefined) {
       obj.finishedTime = message.finishedTime;
     }
-    if (message.playerLoadingTimes) {
-      const entries = Object.entries(message.playerLoadingTimes);
+    if (message.playerInGameTimes) {
+      const entries = Object.entries(message.playerInGameTimes);
       if (entries.length > 0) {
-        obj.playerLoadingTimes = {};
+        obj.playerInGameTimes = {};
         entries.forEach(([k, v]) => {
-          obj.playerLoadingTimes[k] = v;
+          obj.playerInGameTimes[k] = v;
         });
       }
     }
@@ -3236,7 +3236,7 @@ export const NormalGameHandlerState = {
     const message = createBaseNormalGameHandlerState();
     message.raceStartingAt = object.raceStartingAt ?? undefined;
     message.finishedTime = object.finishedTime ?? undefined;
-    message.playerLoadingTimes = Object.entries(object.playerLoadingTimes ?? {}).reduce<{ [key: string]: number }>(
+    message.playerInGameTimes = Object.entries(object.playerInGameTimes ?? {}).reduce<{ [key: string]: number }>(
       (acc, [key, value]) => {
         if (value !== undefined) {
           acc[key] = Number(value);
@@ -3279,17 +3279,14 @@ export const NormalGameHandlerState = {
 
 messageTypeRegistry.set(NormalGameHandlerState.$type, NormalGameHandlerState);
 
-function createBaseNormalGameHandlerState_PlayerLoadingTimesEntry(): NormalGameHandlerState_PlayerLoadingTimesEntry {
-  return { $type: "RandoProto.NormalGameHandlerState.PlayerLoadingTimesEntry", key: "", value: 0 };
+function createBaseNormalGameHandlerState_PlayerInGameTimesEntry(): NormalGameHandlerState_PlayerInGameTimesEntry {
+  return { $type: "RandoProto.NormalGameHandlerState.PlayerInGameTimesEntry", key: "", value: 0 };
 }
 
-export const NormalGameHandlerState_PlayerLoadingTimesEntry = {
-  $type: "RandoProto.NormalGameHandlerState.PlayerLoadingTimesEntry" as const,
+export const NormalGameHandlerState_PlayerInGameTimesEntry = {
+  $type: "RandoProto.NormalGameHandlerState.PlayerInGameTimesEntry" as const,
 
-  encode(
-    message: NormalGameHandlerState_PlayerLoadingTimesEntry,
-    writer: _m0.Writer = _m0.Writer.create(),
-  ): _m0.Writer {
+  encode(message: NormalGameHandlerState_PlayerInGameTimesEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.key !== "") {
       writer.uint32(10).string(message.key);
     }
@@ -3299,10 +3296,10 @@ export const NormalGameHandlerState_PlayerLoadingTimesEntry = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): NormalGameHandlerState_PlayerLoadingTimesEntry {
+  decode(input: _m0.Reader | Uint8Array, length?: number): NormalGameHandlerState_PlayerInGameTimesEntry {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseNormalGameHandlerState_PlayerLoadingTimesEntry();
+    const message = createBaseNormalGameHandlerState_PlayerInGameTimesEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -3329,15 +3326,15 @@ export const NormalGameHandlerState_PlayerLoadingTimesEntry = {
     return message;
   },
 
-  fromJSON(object: any): NormalGameHandlerState_PlayerLoadingTimesEntry {
+  fromJSON(object: any): NormalGameHandlerState_PlayerInGameTimesEntry {
     return {
-      $type: NormalGameHandlerState_PlayerLoadingTimesEntry.$type,
+      $type: NormalGameHandlerState_PlayerInGameTimesEntry.$type,
       key: isSet(object.key) ? String(object.key) : "",
       value: isSet(object.value) ? Number(object.value) : 0,
     };
   },
 
-  toJSON(message: NormalGameHandlerState_PlayerLoadingTimesEntry): unknown {
+  toJSON(message: NormalGameHandlerState_PlayerInGameTimesEntry): unknown {
     const obj: any = {};
     if (message.key !== "") {
       obj.key = message.key;
@@ -3348,15 +3345,15 @@ export const NormalGameHandlerState_PlayerLoadingTimesEntry = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<NormalGameHandlerState_PlayerLoadingTimesEntry>, I>>(
+  create<I extends Exact<DeepPartial<NormalGameHandlerState_PlayerInGameTimesEntry>, I>>(
     base?: I,
-  ): NormalGameHandlerState_PlayerLoadingTimesEntry {
-    return NormalGameHandlerState_PlayerLoadingTimesEntry.fromPartial(base ?? ({} as any));
+  ): NormalGameHandlerState_PlayerInGameTimesEntry {
+    return NormalGameHandlerState_PlayerInGameTimesEntry.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<NormalGameHandlerState_PlayerLoadingTimesEntry>, I>>(
+  fromPartial<I extends Exact<DeepPartial<NormalGameHandlerState_PlayerInGameTimesEntry>, I>>(
     object: I,
-  ): NormalGameHandlerState_PlayerLoadingTimesEntry {
-    const message = createBaseNormalGameHandlerState_PlayerLoadingTimesEntry();
+  ): NormalGameHandlerState_PlayerInGameTimesEntry {
+    const message = createBaseNormalGameHandlerState_PlayerInGameTimesEntry();
     message.key = object.key ?? "";
     message.value = object.value ?? 0;
     return message;
@@ -3364,8 +3361,8 @@ export const NormalGameHandlerState_PlayerLoadingTimesEntry = {
 };
 
 messageTypeRegistry.set(
-  NormalGameHandlerState_PlayerLoadingTimesEntry.$type,
-  NormalGameHandlerState_PlayerLoadingTimesEntry,
+  NormalGameHandlerState_PlayerInGameTimesEntry.$type,
+  NormalGameHandlerState_PlayerInGameTimesEntry,
 );
 
 function createBaseNormalGameHandlerState_PlayerFinishedTimesEntry(): NormalGameHandlerState_PlayerFinishedTimesEntry {

@@ -1,9 +1,11 @@
-export function formatTime(totalSeconds, subSecondDigits = 1, omitMinutesIfZero = false) {
+export function formatTime(totalSeconds, subSecondDigits = 1, omitMinutesIfZero = false, alwaysShowSign = false) {
   let string = ''
 
   if (totalSeconds < 0) {
     string += '-'
     totalSeconds *= -1
+  } else if (alwaysShowSign) {
+    string += '+'
   }
 
   const hours = Math.floor(totalSeconds / 3600)

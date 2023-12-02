@@ -91,7 +91,8 @@
               <wotw-multiverse-view
                 :is-spectating="isSpectating"
                 :multiverse="multiverse"
-                :player-loading-times="normalGameHandlerState?.playerLoadingTimes"
+                :race-starting-at="normalGameHandlerState?.raceStartingAt"
+                :player-in-game-times="normalGameHandlerState?.playerInGameTimes"
                 :player-finished-times="normalGameHandlerState?.playerFinishedTimes"
                 :world-finished-times="normalGameHandlerState?.worldFinishedTimes"
                 :universe-finished-times="normalGameHandlerState?.universeFinishedTimes"

@@ -24,7 +24,8 @@
             :disabled="disabled"
             :can-join="canJoin"
             :multiverse-id="multiverseId"
-            :player-loading-times="playerLoadingTimes"
+            :race-starting-at="raceStartingAt"
+            :player-in-game-times="playerInGameTimes"
             :player-finished-times="playerFinishedTimes"
             :finished-at="worldFinishedTimes[world.id] ?? null"
             :show-world-finished-time="hasMultipleWorlds"
@@ -77,7 +78,12 @@
         type: Boolean,
         default: false
       },
-      playerLoadingTimes: {
+      raceStartingAt: {
+        type: Number,
+        required: false,
+        default: null,
+      },
+      playerInGameTimes: {
         type: Object,
         required: false,
         default: () => ({}),

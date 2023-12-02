@@ -28,8 +28,7 @@
       :current-area-has-uncollected-relic="trackedValues.relic_current_area_uncollected > 0"
       :show-timer="showTimer"
       :time="time"
-      :loading-time="loadingTime"
-      />
+    />
     <WotwTrackerViewSkill skill="hammer" :bonus-melting-acquired="trackedValues.melting_hammer > 0" :acquired="trackedValues.skill_hammer > 0" />
     <WotwTrackerViewSkill skill="shuriken" :bonus-melting-acquired="trackedValues.melting_shuriken > 0" :acquired="trackedValues.skill_shuriken > 0" />
     <WotwTrackerViewSkill skill="water_breath" :acquired="trackedValues.skill_water_breath > 0" />
@@ -82,10 +81,6 @@
         default: true,
       },
       time: {
-        type: Number,
-        default: 0,
-      },
-      loadingTime: {
         type: Number,
         default: 0,
       },

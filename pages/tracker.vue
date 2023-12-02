@@ -15,7 +15,6 @@
             :heart-count="heartCount"
             :show-willow-hearts="showWillowHearts"
             :time="displayedTime"
-            :loading-time="loadingTime"
             :show-timer="showTimer"
           />
           <wotw-tracker-teleporters v-if="showTeleporters" :tracked-values="trackedValues" />

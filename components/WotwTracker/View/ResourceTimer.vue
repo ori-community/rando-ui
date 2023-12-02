@@ -73,7 +73,6 @@
         <div class="timer-container">
           <div class="timer" :class="{ completed: gameFinished }">{{ mainTimerText }}<span class="fraction">{{
             fractionTimerText }}</span></div>
-          <div class="loading-time">{{ loadingTimeText }}</div>
         </div>
       </div>
     </div>
@@ -170,10 +169,6 @@ export default {
       type: Number,
       default: 0,
     },
-    loadingTime: {
-      type: Number,
-      default: 0,
-    },
   },
   data: () => ({
     mainTimerText: '0:00',
@@ -206,15 +201,6 @@ export default {
         ? 0.8
         : 1.0
     },
-    loadingTimeText() {
-      let text = this.gameFinished
-        ? 'LT: '
-        : '-'
-
-      text += formatTime(this.loadingTime, 1, true)
-
-      return text
-    }
   },
   watch: {
     time: {
@@ -271,14 +257,6 @@ export default {
           font-weight: 200;
           font-size: 2.5vw;
         }
-      }
-
-      .loading-time {
-        opacity: 0.75;
-        font-size: 1.75vw;
-        font-weight: 500;
-        transform: scaleY(0.8);
-        margin-top: -0.4vw;
       }
     }
   }

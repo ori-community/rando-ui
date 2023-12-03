@@ -134,7 +134,7 @@ export class SettingsService {
         }
       }
 
-      if (semver.lte(lastVersion, '3.0.0-beta.10') && semver.gte(currentVersion, '3.0.0-beta.11')) {  // Fix numbers in json
+      if (semver.lte(lastVersion, '3.0.0-beta.11') && semver.gte(currentVersion, '3.0.0-beta.12')) {  // Fix numbers in json
         const settingsJsonContent = await fs.promises.readFile(SETTINGS_PATH, { encoding: 'utf-8' });
 
         try {
@@ -146,6 +146,10 @@ export class SettingsService {
 
           if (typeof settingsData?.Values?.CameraShakeIntensity === 'string') {
             settingsData.Values.CameraShakeIntensity = Number(settingsData.Values.CameraShakeIntensity)
+          }
+
+          if (typeof settingsData?.Paths?.UdpPort === 'string') {
+            settingsData.Paths.UdpPort = Number(settingsData.Paths.UdpPort)
           }
 
           await fs.promises.writeFile(SETTINGS_PATH, JSON.stringify(settingsData, null, 2), { encoding: 'utf-8' });

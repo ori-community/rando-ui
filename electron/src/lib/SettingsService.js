@@ -122,13 +122,33 @@ export class SettingsService {
         await fs.promises.writeFile(DEPRECATED_SETTINGS_INI_PATH, settingsIniContent, { encoding: 'utf-8' });
       }
 
-      if (semver.lt(lastVersion, '3.0.0-beta.6') && semver.gte(currentVersion, '3.0.0-beta.7')) {  // settings.ini encoding changed from utf16le to utf-8 in 3.0.0
+      if (semver.lte(lastVersion, '3.0.0-beta.6') && semver.gte(currentVersion, '3.0.0-beta.7')) {  // settings.ini encoding changed from utf16le to utf-8 in 3.0.0
         const settingsIniContent = await fs.promises.readFile(DEPRECATED_SETTINGS_INI_PATH, { encoding: 'utf-8' });
 
         try {
           const settingsData = ini.parse(settingsIniContent.trimStart())
           await fs.promises.writeFile(SETTINGS_PATH, JSON.stringify(settingsData, null, 2), { encoding: 'utf-8' });
           await fs.promises.rename(DEPRECATED_SETTINGS_INI_PATH, DEPRECATED_SETTINGS_INI_BACKUP_PATH)
+        } catch (e) {
+          console.error('SettingsService: INI to JSON migration failed', e)
+        }
+      }
+
+      if (semver.lte(lastVersion, '3.0.0-beta.10') && semver.gte(currentVersion, '3.0.0-beta.11')) {  // Fix numbers in json
+        const settingsJsonContent = await fs.promises.readFile(SETTINGS_PATH, { encoding: 'utf-8' });
+
+        try {
+          const settingsData = JSON.parse(settingsJsonContent)
+
+          if (typeof settingsData?.Values?.MapIconTransparency === 'string') {
+            settingsData.Values.MapIconTransparency = Number(settingsData.Values.MapIconTransparency)
+          }
+
+          if (typeof settingsData?.Values?.CameraShakeIntensity === 'string') {
+            settingsData.Values.CameraShakeIntensity = Number(settingsData.Values.CameraShakeIntensity)
+          }
+
+          await fs.promises.writeFile(SETTINGS_PATH, JSON.stringify(settingsData, null, 2), { encoding: 'utf-8' });
         } catch (e) {
           console.error('SettingsService: INI to JSON migration failed', e)
         }

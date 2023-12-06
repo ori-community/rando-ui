@@ -1,7 +1,6 @@
 import fs from 'fs'
 import ini from 'ini'
 import {
-  DEPRECATED_SETTINGS_INI_BACKUP_PATH,
   DEPRECATED_SETTINGS_INI_PATH,
   LAST_VERSION_FILE,
   SETTINGS_PATH,
@@ -117,44 +116,31 @@ export class SettingsService {
     if (fs.existsSync(LAST_VERSION_FILE) && currentVersion !== 'develop') {
       const lastVersion = (await fs.promises.readFile(LAST_VERSION_FILE, { encoding: 'utf-8' })).trim()
 
-      if (semver.lt(lastVersion, '3.0.0') && semver.gte(currentVersion, '3.0.0-beta.1')) {  // settings.ini encoding changed from utf16le to utf-8 in 3.0.0
-        const settingsIniContent = await fs.promises.readFile(DEPRECATED_SETTINGS_INI_PATH, { encoding: 'utf16le' });
-        await fs.promises.writeFile(DEPRECATED_SETTINGS_INI_PATH, settingsIniContent, { encoding: 'utf-8' });
-      }
+      // Migrate settings to JSON
+      if (semver.lt(lastVersion, '3.0.0') && semver.gte(currentVersion, '3.0.0-beta.1')) {
+        if (!fs.existsSync(SETTINGS_PATH) && fs.existsSync(DEPRECATED_SETTINGS_INI_PATH)) {  // Don't do it if there's already a new settings file
+          const settingsIniContent = await fs.promises.readFile(DEPRECATED_SETTINGS_INI_PATH, { encoding: 'utf16le' });
 
-      if (semver.lte(lastVersion, '3.0.0-beta.6') && semver.gte(currentVersion, '3.0.0-beta.7')) {  // settings.ini encoding changed from utf16le to utf-8 in 3.0.0
-        const settingsIniContent = await fs.promises.readFile(DEPRECATED_SETTINGS_INI_PATH, { encoding: 'utf-8' });
+          try {
+            const settingsData = ini.parse(settingsIniContent.trimStart())
 
-        try {
-          const settingsData = ini.parse(settingsIniContent.trimStart())
-          await fs.promises.writeFile(SETTINGS_PATH, JSON.stringify(settingsData, null, 2), { encoding: 'utf-8' });
-          await fs.promises.rename(DEPRECATED_SETTINGS_INI_PATH, DEPRECATED_SETTINGS_INI_BACKUP_PATH)
-        } catch (e) {
-          console.error('SettingsService: INI to JSON migration failed', e)
-        }
-      }
+            // Fix numeric values
+            if (typeof settingsData?.Values?.MapIconTransparency === 'string') {
+              settingsData.Values.MapIconTransparency = Number(settingsData.Values.MapIconTransparency)
+            }
 
-      if (semver.lte(lastVersion, '3.0.0-beta.11') && semver.gte(currentVersion, '3.0.0-beta.12')) {  // Fix numbers in json
-        const settingsJsonContent = await fs.promises.readFile(SETTINGS_PATH, { encoding: 'utf-8' });
+            if (typeof settingsData?.Values?.CameraShakeIntensity === 'string') {
+              settingsData.Values.CameraShakeIntensity = Number(settingsData.Values.CameraShakeIntensity)
+            }
 
-        try {
-          const settingsData = JSON.parse(settingsJsonContent)
+            if (typeof settingsData?.Paths?.UdpPort === 'string') {
+              settingsData.Paths.UdpPort = Number(settingsData.Paths.UdpPort)
+            }
 
-          if (typeof settingsData?.Values?.MapIconTransparency === 'string') {
-            settingsData.Values.MapIconTransparency = Number(settingsData.Values.MapIconTransparency)
+            await fs.promises.writeFile(SETTINGS_PATH, JSON.stringify(settingsData, null, 2), { encoding: 'utf-8' });
+          } catch (e) {
+            console.error('SettingsService: INI to JSON migration failed', e)
           }
-
-          if (typeof settingsData?.Values?.CameraShakeIntensity === 'string') {
-            settingsData.Values.CameraShakeIntensity = Number(settingsData.Values.CameraShakeIntensity)
-          }
-
-          if (typeof settingsData?.Paths?.UdpPort === 'string') {
-            settingsData.Paths.UdpPort = Number(settingsData.Paths.UdpPort)
-          }
-
-          await fs.promises.writeFile(SETTINGS_PATH, JSON.stringify(settingsData, null, 2), { encoding: 'utf-8' });
-        } catch (e) {
-          console.error('SettingsService: INI to JSON migration failed', e)
         }
       }
     }

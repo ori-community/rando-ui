@@ -323,7 +323,7 @@ export default {
 
       &.highlight,
       .highlight {
-        color: #feb81f
+        color: #ffd300
       }
 
       .small {

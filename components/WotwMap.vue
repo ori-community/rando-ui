@@ -9,8 +9,8 @@
       </template>
     </v-snackbar>
     <div ref="timelineStageContainer" class="stage-container fill-height">
-      <k-stage ref="stage" :config="stageConfig" @wheel="onStageWheel">
-        <k-layer>
+      <k-stage ref="stage" :config="stageConfig" @wheel="onStageWheel" @mouseMove="e => emitMousePosition('mousemove', e)" @click="e => emitMousePosition('click', e)">
+        <k-layer ref="layer">
           <k-image v-for="(tile, index) in mapTiles" :key="index" :config="tile" />
         </k-layer>
         <slot />
@@ -59,7 +59,7 @@
       }),
       stage() {
         return this.$refs.stage.getStage()
-      }
+      },
     },
     mounted() {
       const observer = new ResizeObserver(() => this.updateStageSize())
@@ -75,6 +75,10 @@
       this.isDestroyed = true
     },
     methods: {
+      emitMousePosition(eventName, event) {
+        const layer = this.stage.children[0]
+        this.$emit(eventName, event, layer.getRelativePointerPosition())
+      },
       async loadImage(x, y) {
         try {
           const image = await this.getImage(x, y)
@@ -87,14 +91,12 @@
               y: -this.constants.tileScale,
             },
           })
-        } catch (e) {
-
-        }
+        } catch (e) {}
       },
       async getImage(x, y) {
         const image = new Image()
-        image.src = (await import((`@/assets/images/map/tile-${x}_${y}.png`))).default
-        return await new Promise(resolve => {
+        image.src = (await import(`@/assets/images/map/tile-${x}_${y}.png`)).default
+        return await new Promise((resolve) => {
           image.onload = () => {
             resolve(image)
           }

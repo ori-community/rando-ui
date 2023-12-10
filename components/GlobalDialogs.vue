@@ -37,6 +37,9 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
+          <v-btn text class='mr-1' @click='showUpdateAvailableDialog = false'>
+            Cancel
+          </v-btn>
           <v-btn text class='mr-1' @click='forceLaunch'>
             Launch anyway
           </v-btn>

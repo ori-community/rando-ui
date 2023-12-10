@@ -20,7 +20,7 @@ export const state = () => ({
 })
 
 export const getters = {
-  isNewVersion(state, getters, rootState, rootGetters) {
+  isNewVersion(state, _getters, _rootState, rootGetters) {
     return version => {
       if (state.currentVersion === '' || state.currentVersion === 'develop') {
         return false
@@ -37,7 +37,7 @@ export const getters = {
       }
     }
   },
-  updateAvailable(state, getters, rootState, rootGetters) {
+  updateAvailable(_state, getters, rootState, rootGetters) {
     if (rootGetters['version/latestVisibleVersion']) {
       return rootState.version.latestVisibleRelease !== null && getters.isNewVersion(rootGetters['version/latestVisibleVersion'])
     }
@@ -131,7 +131,7 @@ export const actions = {
       commit('setUpdateDownloadProgress', 0)
       commit('setUpdateDownloading', true)
 
-      window.electronApi.on('updater.downloadProgress', (event, progress) => {
+      window.electronApi.on('updater.downloadProgress', (_event, progress) => {
         commit('setUpdateDownloadProgress', progress * 100)
       })
 
@@ -167,7 +167,7 @@ export const actions = {
         await dispatch('checkForUpdatesOnce')
       }
 
-      if (!forceLaunch && getters.updateAvailable && !window.electronApi.invoke('launcher.isRandomizerRunning')) {
+      if (!forceLaunch && getters.updateAvailable && !(await window.electronApi.invoke('launcher.isRandomizerRunning'))) {
         commit('setShowUpdateAvailableDialog', true)
       } else {
         await window.electronApi.invoke('launcher.launch', seedFile)

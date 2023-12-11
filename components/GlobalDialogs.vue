@@ -81,6 +81,7 @@
     methods: {
       async downloadAndInstallUpdate() {
         await this.$store.dispatch('electron/downloadAndInstallUpdate')
+        await this.$router.push({name: 'electron-index'})
       },
       async forceLaunch() {
         await this.$store.dispatch('electron/launch', {

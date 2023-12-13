@@ -47,7 +47,7 @@ const TRACKED_UBER_STATES: TrackedUberState[] = [
   { uberId: { group: 945, state: 1370 }, trackingId: 'tp_luma_pools_west', valueConverter: teleporterValueConverter },
   { uberId: { group: 53632, state: 18181 }, trackingId: 'tp_wellspring', valueConverter: teleporterValueConverter },
   { uberId: { group: 28895, state: 54235 }, trackingId: 'tp_baurs_reach', valueConverter: teleporterValueConverter },
-  { uberId: { group: 6, state: 106 }, trackingId: 'tp_kwoloks_hollow', valueConverter: teleporterValueConverter },
+  { uberId: { group: 937, state: 26601 }, trackingId: 'tp_kwoloks_hollow', valueConverter: teleporterValueConverter },
   { uberId: { group: 18793, state: 38871 }, trackingId: 'tp_mouldwood_depths', valueConverter: teleporterValueConverter },
   { uberId: { group: 16155, state: 41465 }, trackingId: 'tp_willow_inner', valueConverter: teleporterValueConverter },
   { uberId: { group: 16155, state: 50867 }, trackingId: 'tp_willow_outer', valueConverter: teleporterValueConverter },
@@ -127,7 +127,6 @@ const TRACKED_UBER_STATES: TrackedUberState[] = [
   { uberId: { group: 42178, state: 40448 }, trackingId: 'builder_project_houses_c' },
   { uberId: { group: 42178, state: 16586 }, trackingId: 'builder_project_open_cave' },
   { uberId: { group: 42178, state: 15068 }, trackingId: 'builder_project_beautify' },
-
 
   // Maybe for later...
   { uberId: { group: 945, state: 49747 }, trackingId: 'wisp_pools' },

@@ -228,9 +228,11 @@
             messages='Search for and ask to update to unreleased unstable versions'
           />
 
-          <v-btn v-if="$store.getters['electron/updateAvailable']" depressed color='accent' @click='downloadAndInstallUpdate'>
-            Apply update
-          </v-btn>
+          <v-expand-transition>
+            <v-btn v-if="$store.getters['electron/differentVersionAvailable']" depressed color='accent' @click='downloadAndInstallUpdate'>
+              Install latest version: {{ $store.getters['version/latestVisibleVersion'] }}
+            </v-btn>
+          </v-expand-transition>
 
           <v-checkbox
             v-model='settings["Flags.WaitForDebugger"]'
@@ -367,10 +369,10 @@
         })
 
       },
-      disableDevTools(){
+      disableDevTools() {
         this.settings['Flags.Dev'] = false
       },
-      hostChanged(){
+      hostChanged() {
         this.$nextTick(() => {
           switch(this.settings["Paths.Host"]){
             case "wotw.orirando.com":

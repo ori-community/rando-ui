@@ -20,12 +20,22 @@ export const state = () => ({
 })
 
 export const getters = {
-  isNewVersion(state, _getters, _rootState, rootGetters) {
+  isDifferentThanCurrentVersion(state, _getters, _rootState, rootGetters) {
     return version => {
       if (state.currentVersion === '' || state.currentVersion === 'develop') {
         return false
       }
+
       if (!rootGetters['version/shouldShowVersion'](version)) {
+        return false
+      }
+
+      return version !== state.currentVersion
+    }
+  },
+  isNewVersion(state, getters, _rootState) {
+    return version => {
+      if (!getters.isDifferentThanCurrentVersion(version)) {
         return false
       }
 
@@ -40,6 +50,11 @@ export const getters = {
   updateAvailable(_state, getters, rootState, rootGetters) {
     if (rootGetters['version/latestVisibleVersion']) {
       return rootState.version.latestVisibleRelease !== null && getters.isNewVersion(rootGetters['version/latestVisibleVersion'])
+    }
+  },
+  differentVersionAvailable(_state, getters, rootState, rootGetters) {
+    if (rootGetters['version/latestVisibleVersion']) {
+      return rootState.version.latestVisibleRelease !== null && getters.isDifferentThanCurrentVersion(rootGetters['version/latestVisibleVersion'])
     }
   },
   currentSeedPathBasename(state) {

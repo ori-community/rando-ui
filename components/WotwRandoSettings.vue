@@ -423,7 +423,7 @@
       },
       async downloadAndInstallUpdate() {
         await this.$store.dispatch('electron/downloadAndInstallUpdate')
-        await this.$router.push({name: 'electron-index'})
+        await this.$router.push({path: '/electron'})
       }
     }
   }

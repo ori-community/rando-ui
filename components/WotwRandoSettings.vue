@@ -227,6 +227,11 @@
             label='Update to prerelease versions'
             messages='Search for and ask to update to unreleased unstable versions'
           />
+
+          <v-btn v-if="$store.getters['electron/updateAvailable']" depressed color='accent' @click='downloadAndInstallUpdate'>
+            Apply update
+          </v-btn>
+
           <v-checkbox
             v-model='settings["Flags.WaitForDebugger"]'
             label='Wait for Debugger'
@@ -297,7 +302,7 @@
       gameBinaryWarning() {
         const filename = this.getBaseName(this.settings['Paths.GameBinary'])
 
-        if (filename?.toLowerCase() !== 'oriwotw.exe' ){ 
+        if (filename?.toLowerCase() !== 'oriwotw.exe' ){
           return 'Warning! Make sure to select the game executable (oriwotw.exe)'
         }
         return null
@@ -360,7 +365,7 @@
             block: 'nearest',
           })
         })
-        
+
       },
       disableDevTools(){
         this.settings['Flags.Dev'] = false
@@ -414,6 +419,10 @@
           this.localTrackerPositionReset = false
         }, 2000)
       },
+      async downloadAndInstallUpdate() {
+        await this.$store.dispatch('electron/downloadAndInstallUpdate')
+        await this.$router.push({name: 'electron-index'})
+      }
     }
   }
 </script>

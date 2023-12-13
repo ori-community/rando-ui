@@ -228,11 +228,9 @@
             messages='Search for and ask to update to unreleased unstable versions'
           />
 
-          <v-expand-transition>
-            <v-btn v-if="$store.getters['electron/differentVersionAvailable']" depressed color='accent' @click='downloadAndInstallUpdate'>
-              Install latest version: {{ $store.getters['version/latestVisibleVersion'] }}
-            </v-btn>
-          </v-expand-transition>
+          <v-btn v-if="$store.getters['electron/differentVersionAvailable']" class="mt-1" depressed color='accent' @click='downloadAndInstallUpdate'>
+            Install version {{ $store.getters['version/latestVisibleVersion'] }}
+          </v-btn>
 
           <v-checkbox
             v-model='settings["Flags.WaitForDebugger"]'

@@ -37,6 +37,7 @@ const getDefaultSettings = () => {
       GrappleMouseControl: false,
       BurrowMouseControl: false,
       WaterDashMouseControl: false,
+      HybridMouseControl: false,
       DisableNetcode: false,
       LaunchWithTracker: false,
       BoringMoney: true,

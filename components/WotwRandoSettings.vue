@@ -145,6 +145,12 @@
           messages='Enable Swimming and Water Dashing towards your mouse cursor'
         />
         <v-checkbox
+          v-model='settings["Flags.HybridMouseControl"]'
+          :disabled='!settings["Flags.BurrowMouseControl"] && !settings["Flags.WaterDashMouseControl"]'
+          label='Hybrid Mouse Control'
+          messages='Use Mouse Aiming for Burrow and Swimming only when no directional input is pressed. Mouse Aiming needs to be enabled'
+        />
+        <v-checkbox
           v-model='settings["Flags.InvertSwim"]'
           label='Invert swim speeds'
           messages='Swim fast by default. Hold jump to swim slower instead'

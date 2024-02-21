@@ -21,12 +21,13 @@ export default {
       }
     }, 100))
 
-    console.log('Spawning process: ', targetPath)
-    spawn(`${targetPath}`, ['/SILENT'], {
-      detached: true,
-      stdio: 'ignore',
-    }).unref()
+    app.on('will-quit', () => {
+      console.log('Spawning process: ', targetPath)
+      spawn(`${targetPath}`, ['/SILENT'], {
+        detached: true,
+        stdio: 'ignore',
+      }).unref()
+    })
     app.quit()
-    process.exit()
   },
 }

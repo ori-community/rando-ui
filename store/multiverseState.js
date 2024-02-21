@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { hasOwnProperty } from '~/assets/lib/hasOwnProperty'
 import { WebSocketFactory } from '~/assets/lib/WebSocketFactory'
 import { decodePacket } from '~/assets/proto/ProtoUtil.ts'
+import { EventBus } from '~/assets/lib/EventBus'
 
 /** @type Object<Number, WebSocket> */
 const webSockets = {} // multiverseId → ws
@@ -192,6 +193,12 @@ export const actions = {
             break
           case 'RandoProto.SyncBingoUniversesMessage':
             commit('setBingoUniverses', { multiverseId, bingoUniverses: packet.bingoUniverses })
+            break
+          case 'RandoProto.ShowUINotificationMessage':
+            EventBus.$emit('notification', {
+              message: packet.text,
+              color: packet.color,
+            })
             break
         }
       })

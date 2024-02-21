@@ -178,6 +178,13 @@ export interface SyncBoardMessage {
 export interface AuthenticateMessage {
   $type: "RandoProto.AuthenticateMessage";
   jwt: string;
+  clientVersion: string;
+}
+
+export interface ShowUINotificationMessage {
+  $type: "RandoProto.ShowUINotificationMessage";
+  text: string;
+  color: string;
 }
 
 /** Unused in web */
@@ -2199,7 +2206,7 @@ export const SyncBoardMessage = {
 messageTypeRegistry.set(SyncBoardMessage.$type, SyncBoardMessage);
 
 function createBaseAuthenticateMessage(): AuthenticateMessage {
-  return { $type: "RandoProto.AuthenticateMessage", jwt: "" };
+  return { $type: "RandoProto.AuthenticateMessage", jwt: "", clientVersion: "" };
 }
 
 export const AuthenticateMessage = {
@@ -2208,6 +2215,9 @@ export const AuthenticateMessage = {
   encode(message: AuthenticateMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.jwt !== "") {
       writer.uint32(10).string(message.jwt);
+    }
+    if (message.clientVersion !== "") {
+      writer.uint32(18).string(message.clientVersion);
     }
     return writer;
   },
@@ -2226,6 +2236,13 @@ export const AuthenticateMessage = {
 
           message.jwt = reader.string();
           continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.clientVersion = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -2236,13 +2253,20 @@ export const AuthenticateMessage = {
   },
 
   fromJSON(object: any): AuthenticateMessage {
-    return { $type: AuthenticateMessage.$type, jwt: isSet(object.jwt) ? String(object.jwt) : "" };
+    return {
+      $type: AuthenticateMessage.$type,
+      jwt: isSet(object.jwt) ? String(object.jwt) : "",
+      clientVersion: isSet(object.clientVersion) ? String(object.clientVersion) : "",
+    };
   },
 
   toJSON(message: AuthenticateMessage): unknown {
     const obj: any = {};
     if (message.jwt !== "") {
       obj.jwt = message.jwt;
+    }
+    if (message.clientVersion !== "") {
+      obj.clientVersion = message.clientVersion;
     }
     return obj;
   },
@@ -2253,11 +2277,91 @@ export const AuthenticateMessage = {
   fromPartial<I extends Exact<DeepPartial<AuthenticateMessage>, I>>(object: I): AuthenticateMessage {
     const message = createBaseAuthenticateMessage();
     message.jwt = object.jwt ?? "";
+    message.clientVersion = object.clientVersion ?? "";
     return message;
   },
 };
 
 messageTypeRegistry.set(AuthenticateMessage.$type, AuthenticateMessage);
+
+function createBaseShowUINotificationMessage(): ShowUINotificationMessage {
+  return { $type: "RandoProto.ShowUINotificationMessage", text: "", color: "" };
+}
+
+export const ShowUINotificationMessage = {
+  $type: "RandoProto.ShowUINotificationMessage" as const,
+
+  encode(message: ShowUINotificationMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.text !== "") {
+      writer.uint32(10).string(message.text);
+    }
+    if (message.color !== "") {
+      writer.uint32(18).string(message.color);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ShowUINotificationMessage {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseShowUINotificationMessage();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.text = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.color = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ShowUINotificationMessage {
+    return {
+      $type: ShowUINotificationMessage.$type,
+      text: isSet(object.text) ? String(object.text) : "",
+      color: isSet(object.color) ? String(object.color) : "",
+    };
+  },
+
+  toJSON(message: ShowUINotificationMessage): unknown {
+    const obj: any = {};
+    if (message.text !== "") {
+      obj.text = message.text;
+    }
+    if (message.color !== "") {
+      obj.color = message.color;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ShowUINotificationMessage>, I>>(base?: I): ShowUINotificationMessage {
+    return ShowUINotificationMessage.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ShowUINotificationMessage>, I>>(object: I): ShowUINotificationMessage {
+    const message = createBaseShowUINotificationMessage();
+    message.text = object.text ?? "";
+    message.color = object.color ?? "";
+    return message;
+  },
+};
+
+messageTypeRegistry.set(ShowUINotificationMessage.$type, ShowUINotificationMessage);
 
 function createBaseAuthenticatedMessage(): AuthenticatedMessage {
   return { $type: "RandoProto.AuthenticatedMessage", user: undefined, udpId: 0, udpKey: new Uint8Array(0) };

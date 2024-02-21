@@ -9,9 +9,10 @@ export class WebSocketFactory {
       let connected = false
       const ws = new WebSocket(`${$paths.WS_BASE_URL}${endpoint}`)
 
-      ws.addEventListener('open', () => {
+      ws.addEventListener('open', async () => {
         ws.send(makePacket(AuthenticateMessage, {
           jwt: this.jwt,
+          clientVersion: await window.electronApi.invoke('updater.getVersion'),
         }))
 
         resolve(ws)

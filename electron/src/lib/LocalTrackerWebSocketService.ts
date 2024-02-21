@@ -10,6 +10,7 @@ import {
 } from '~/assets/proto/messages'
 import { decodePacket, makePacket } from '~/assets/proto/ProtoUtil'
 import { uiIpc } from '@/api'
+import { VersionService } from '@/lib/VersionService'
 
 type TrackedUberState = {
   uberId: UberId,
@@ -339,10 +340,11 @@ export class LocalTrackerWebSocketService {
         console.log(`LocalTrackerWebSocketService: Connecting to ${url}`)
         const ws = new WebSocket(url)
 
-        ws.on('open', () => {
+        ws.on('open', async () => {
           ws?.send(
             makePacket(AuthenticateMessage, {
               jwt,
+              clientVersion: await VersionService.getVersion(),
             }),
           )
         })

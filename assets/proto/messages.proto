@@ -128,8 +128,13 @@ message SyncBoardMessage {
 
 message AuthenticateMessage {
   string jwt = 1;
+  string clientVersion = 2;
 }
 
+message ShowUINotificationMessage {
+  string text = 1;
+  string color = 2;
+}
 
 // Unused in web
 message AuthenticatedMessage {

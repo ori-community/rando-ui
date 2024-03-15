@@ -5,6 +5,7 @@ import path from 'path'
 import { LauncherService } from '~/electron/src/lib/LauncherService'
 
 const CRASH_DUMPS_PATH = `${process.env.LOCALAPPDATA || '.'}/Temp/Moon Studios/OriAndTheWilloftheWisps/Crashes`
+const SAVE_FILES_PATH = `${process.env.LOCALAPPDATA || '.'}/Ori and the Will of the Wisps`
 const CRASH_ZIP_PATH = `${RANDOMIZER_BASE_PATH}/support-bundles`
 
 export class CrashDetectService {
@@ -76,7 +77,17 @@ export class CrashDetectService {
     }
 
     // Collect logs and Git revisions
-    const logFiles = ['cs_log.txt', 'inject_log.csv', 'VERSION', 'settings.ini', 'run_id', 'reach.log']
+    const logFiles = [
+      'inject_log.csv',
+      'controller_bindings.json',
+      'LAST_VERSION',
+      'VERSION',
+      'settings.json',
+      'modloader_config.json',
+      'run_id',
+      'reach_check_log.txt',
+    ]
+
     for (const file of await fs.promises.readdir(RANDOMIZER_BASE_PATH)) {
       if (logFiles.includes(file) || file.endsWith('.revision')) {
         const fullPath = path.join(RANDOMIZER_BASE_PATH, file)
@@ -91,6 +102,19 @@ export class CrashDetectService {
     const currentSeedPath = await LauncherService.getCurrentSeedPath()
     if (currentSeedPath && fs.existsSync(currentSeedPath)) {
       await zip.addFile('seed.wotwr', await fs.promises.readFile(currentSeedPath))
+    }
+
+    // Collect save files
+    if (fs.existsSync(SAVE_FILES_PATH)) {
+      for (const file of await fs.promises.readdir(SAVE_FILES_PATH)) {
+        if (file.endsWith('.uberstate')) {
+          const fullPath = path.join(SAVE_FILES_PATH, file)
+
+          if (fs.existsSync(fullPath)) {
+            zip.addLocalFile(fullPath)
+          }
+        }
+      }
     }
 
     const supportBundleName = `${Date.now()}.zip`

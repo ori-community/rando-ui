@@ -829,15 +829,7 @@
       },
       async launch() {
         if (this.ownWorld?.seedId) {
-          const url = `${this.$axios.defaults.baseURL}/world-seeds/${this.ownWorld.seedId}/file`
-          const fileName = `${this.ownWorld.seedId}.wotwr`
-
-          await window.electronApi.invoke('launcher.downloadSeedFromUrl', {
-            url,
-            fileName,
-            setToCurrent: true,
-            showInExplorer: false,
-          })
+          await window.electronApi.invoke('launcher.setNewGameSeedSource', `server:${this.multiverseId}`)
         }
 
         await this.$store.dispatch('electron/launch')

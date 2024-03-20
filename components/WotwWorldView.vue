@@ -18,7 +18,8 @@
           :key="player.id"
           class="mb-1"
           :user="player"
-          :multiverse-id="multiverseId"
+          :connected="connectedUserIds.includes(player.id)"
+          :race-ready="raceReadyUserIds.includes(player.id)"
         >
           <div class="player-info" title="Loading time">
             <v-tooltip v-if="seedSpoilerDownloadedByIds.includes(player.id)" bottom>
@@ -64,11 +65,6 @@
         type: Boolean,
         default: true,
       },
-      multiverseId: {
-        type: Number,
-        required: false,
-        default: null,
-      },
       raceStartingAt: {
         type: Number,
         required: false,
@@ -95,7 +91,15 @@
       seedSpoilerDownloadedByIds: {
         type: Array,
         default: () => ([]),
-      }
+      },
+      connectedUserIds: {
+        type: Array,
+        default: () => ([]),
+      },
+      raceReadyUserIds: {
+        type: Array,
+        default: () => ([]),
+      },
     },
     computed: {
       ...mapState('user', ['user']),

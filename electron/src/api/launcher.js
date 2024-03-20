@@ -20,16 +20,12 @@ export default {
     return LauncherService.getOpenedSeedPath()
   },
 
-  async getCurrentSeedPath() {
-    return await LauncherService.getCurrentSeedPath()
+  async getNewGameSeedSource() {
+    return await LauncherService.getNewGameSeedSource()
   },
 
-  async getCurrentSeedInfo() {
-    return await LauncherService.getCurrentSeedInfo()
-  },
-
-  async setCurrentSeedPath(event, seedPath) {
-    await LauncherService.setCurrentSeedPath(seedPath)
+  async setNewGameSeedSource(event, seedPath) {
+    await LauncherService.setNewGameSeedSource(seedPath)
   },
 
   async isRandomizerRunning() {

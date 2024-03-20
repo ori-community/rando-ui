@@ -1,5 +1,6 @@
 import { AuthenticateMessage } from '~/assets/proto/messages.ts'
 import { makePacket } from '~/assets/proto/ProtoUtil.ts'
+import { isElectron } from '~/assets/lib/isElectron'
 
 export class WebSocketFactory {
   static jwt = null
@@ -12,7 +13,9 @@ export class WebSocketFactory {
       ws.addEventListener('open', async () => {
         ws.send(makePacket(AuthenticateMessage, {
           jwt: this.jwt,
-          clientVersion: await window.electronApi.invoke('updater.getVersion'),
+          clientVersion: isElectron()
+            ? await window.electronApi.invoke('updater.getVersion')
+            : '4.0.0',
         }))
 
         resolve(ws)

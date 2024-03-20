@@ -2,9 +2,8 @@ import { SettingsService } from '~/electron/src/lib/SettingsService'
 import { spawn } from 'child_process'
 import fs from 'fs'
 import { RandoIPCService } from '~/electron/src/lib/RandoIPCService'
-import { CURRENT_SEED_PATH_FILE, RANDOMIZER_BASE_PATH } from './Constants'
+import { NEW_GAME_SEED_SOURCE_FILE, RANDOMIZER_BASE_PATH } from './Constants'
 import { BindingsService } from '~/electron/src/lib/BindingsService'
-import { SeedParser } from '~/assets/lib/SeedParser'
 import { uiIpc } from '~/electron/src/api'
 import { isProcessRunning } from '~/electron/src/lib/isProcessRunning'
 import { LocalTrackerService } from '@/lib/LocalTrackerService'
@@ -38,9 +37,9 @@ export class LauncherService {
     return process.argv[1] || null
   }
 
-  static async getCurrentSeedPath(returnNonExisting = false) {
-    if (fs.existsSync(CURRENT_SEED_PATH_FILE)) {
-      const path = await fs.promises.readFile(CURRENT_SEED_PATH_FILE, { encoding: 'utf-8' })
+  static async getNewGameSeedSource(returnNonExisting = false) {
+    if (fs.existsSync(NEW_GAME_SEED_SOURCE_FILE)) {
+      const path = await fs.promises.readFile(NEW_GAME_SEED_SOURCE_FILE, { encoding: 'utf-8' })
 
       if (returnNonExisting) {
         return path
@@ -52,22 +51,12 @@ export class LauncherService {
     return null
   }
 
-  static async getCurrentSeedInfo() {
-    const path = await this.getCurrentSeedPath()
-    if (path) {
-      const content = await fs.promises.readFile(path, { encoding: 'utf-8' })
-      return SeedParser.parse(content)
-    }
-    return null
-  }
-
-  static async setCurrentSeedPath(seedFilePath) {
-    if (await this.getCurrentSeedPath() !== seedFilePath.trim()) {
-      console.log(`Setting current seed path to ${seedFilePath.trim()}`)
-      await fs.promises.writeFile(CURRENT_SEED_PATH_FILE, seedFilePath.trim())
-      uiIpc.queueSend('main.currentSeedChanged', {
-        currentSeedPath: seedFilePath.trim(),
-        currentSeedInfo: SeedParser.parse(await fs.promises.readFile(seedFilePath.trim(), {encoding: 'utf-8'})),
+  static async setNewGameSeedSource(newGameSeedSource) {
+    if (await this.getNewGameSeedSource() !== newGameSeedSource.trim()) {
+      console.log(`Setting new game seed source to ${newGameSeedSource.trim()}`)
+      await fs.promises.writeFile(NEW_GAME_SEED_SOURCE_FILE, newGameSeedSource.trim())
+      uiIpc.queueSend('main.newGameSeedSourceChanged', {
+        newGameSeedSource: newGameSeedSource.trim(),
       })
     }
   }
@@ -87,7 +76,7 @@ export class LauncherService {
   static async launch(seedFilePath = null) {
     if (seedFilePath) {
       console.log('Launching seed', seedFilePath)
-      await this.setCurrentSeedPath(seedFilePath)
+      await this.setNewGameSeedSource(seedFilePath)
     } else {
       console.log('Launching last seed')
     }

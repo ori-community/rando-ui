@@ -1,6 +1,6 @@
 <template>
   <div class='player-view'>
-    <discord-avatar :user='user' class='mr-1' :multiverse-id='multiverseId' v-bind='$attrs' />
+    <discord-avatar :user='user' class='mr-1' :connected="connected" :race-ready="raceReady" v-bind='$attrs' />
     <div>
       <div class="name-and-points">
         {{ user.name }}
@@ -22,15 +22,20 @@
         type: Object,
         required: true,
       },
-      multiverseId: {
-        type: Number,
-        required: false,
-        default: null,
-      },
       withPoints: {
         type: Boolean,
         default: false,
-      }
+      },
+      connected: {
+        type: Boolean,
+        required: false,
+        default: false,
+      },
+      raceReady: {
+        type: Boolean,
+        required: false,
+        default: false,
+      },
     },
     computed: {
       ...mapState('dev', ['devtoolsEnabled']),

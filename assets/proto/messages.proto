@@ -16,11 +16,8 @@ message UserInfo {
   string id = 1;
   string name = 2;
   optional string avatarId = 3;
-  optional int64 connectedMultiverseId = 4;
-  optional int64 currentMultiverseId = 5;
   bool isDeveloper = 6;
   int32 points = 7;
-  bool raceReady = 8;
 }
 
 message WorldInfo {
@@ -75,6 +72,8 @@ message MultiverseInfoMessage {
   bool isLockable = 10;
   optional RaceInfo race = 11;
   repeated UserInfo seedSpoilerDownloadedBy = 12;
+  repeated string connectedUserIds = 13;
+  repeated string raceReadyUserIds = 14;
 }
 
 message VisibilityMessage {

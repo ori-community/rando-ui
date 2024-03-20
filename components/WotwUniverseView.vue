@@ -23,13 +23,14 @@
             :world="world"
             :disabled="disabled"
             :can-join="canJoin"
-            :multiverse-id="multiverseId"
             :race-starting-at="raceStartingAt"
             :player-in-game-times="playerInGameTimes"
             :player-finished-times="playerFinishedTimes"
             :finished-at="worldFinishedTimes[world.id] ?? null"
             :show-world-finished-time="hasMultipleWorlds"
             :seed-spoiler-downloaded-by-ids="seedSpoilerDownloadedByIds"
+            :connected-user-ids="connectedUserIds"
+            :race-ready-user-ids="raceReadyUserIds"
             @join="$emit('join-world', world.id)"
           />
         </v-scroll-y-reverse-transition>
@@ -63,11 +64,6 @@
       canCreateWorld: {
         type: Boolean,
         default: true,
-      },
-      multiverseId: {
-        type: Number,
-        required: false,
-        default: null,
       },
       hideColor: {
         type: Boolean,
@@ -109,7 +105,15 @@
       seedSpoilerDownloadedByIds: {
         type: Array,
         default: () => ([]),
-      }
+      },
+      connectedUserIds: {
+        type: Array,
+        default: () => ([]),
+      },
+      raceReadyUserIds: {
+        type: Array,
+        default: () => ([]),
+      },
     },
     computed: {
       ...mapState('user', ['user']),

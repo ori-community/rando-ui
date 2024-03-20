@@ -27,6 +27,8 @@ const ensureMultiverseExists = (state, multiverseId) => {
       seedId: null,
       seed: null,
       locked: false,
+      connectedUserIds: [],
+      raceReadyUserIds: [],
     })
   }
 }
@@ -48,6 +50,8 @@ export const mutations = {
     state.multiverses[multiverseId].isLockable = multiverseInfo.isLockable
     state.multiverses[multiverseId].race = multiverseInfo.race ?? null
     state.multiverses[multiverseId].seedSpoilerDownloadedBy = multiverseInfo.seedSpoilerDownloadedBy ?? []
+    state.multiverses[multiverseId].connectedUserIds = multiverseInfo.connectedUserIds ?? []
+    state.multiverses[multiverseId].raceReadyUserIds = multiverseInfo.raceReadyUserIds ?? []
 
     if (typeof multiverseInfo.gameHandlerClientInfo === 'string') {
       const decodedBinaryString = atob(multiverseInfo.gameHandlerClientInfo)

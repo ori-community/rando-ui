@@ -99,9 +99,9 @@ export class CrashDetectService {
     }
 
     // Collect current seed
-    const currentSeedPath = await LauncherService.getCurrentSeedPath()
-    if (currentSeedPath && fs.existsSync(currentSeedPath)) {
-      await zip.addFile('seed.wotwr', await fs.promises.readFile(currentSeedPath))
+    const newGameSeedSource = await LauncherService.getNewGameSeedSource()
+    if (newGameSeedSource && newGameSeedSource.startsWith('file:') && fs.existsSync(newGameSeedSource.substring(5))) {
+      await zip.addFile('seed.wotwr', await fs.promises.readFile(newGameSeedSource.substring(5)))
     }
 
     // Collect save files

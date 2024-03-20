@@ -12,7 +12,7 @@ export const state = () => ({
   updateDownloadProgress: 0,
   launching: false,
   offlineMode: false,
-  currentSeedPath: null,
+  newGameSeedSource: null,
   currentSupportBundleName: null,
   showUpdateAvailableDialog: false,
   localTrackerRunning: false,
@@ -57,13 +57,21 @@ export const getters = {
       return rootState.version.latestVisibleRelease !== null && getters.isDifferentThanCurrentVersion(rootGetters['version/latestVisibleVersion'])
     }
   },
-  currentSeedPathBasename(state) {
-    if (!state.currentSeedPath) {
+  newGameSeedSourceDisplayString(state) {
+    if (!state.newGameSeedSource) {
       return null
     }
 
-    const parts = state.currentSeedPath.split(/[/\\]/)
-    return parts[parts.length - 1]
+    if (state.newGameSeedSource.startsWith('file:')) {
+      const parts = state.newGameSeedSource.substring(5).split(/[/\\]/)
+      return parts[parts.length - 1]
+    }
+
+    if (state.newGameSeedSource.startsWith('server:')) {
+      return `Online Game ${state.newGameSeedSource.substring(7)}`
+    }
+
+    return state.newGameSeedSource
   },
 }
 
@@ -100,8 +108,8 @@ export const mutations = {
   setLaunching(state, value) {
     state.launching = value
   },
-  setCurrentSeedPath(state, value) {
-    state.currentSeedPath = value
+  setNewGameSeedSource(state, value) {
+    state.newGameSeedSource = value
   },
   setCurrentSupportBundleName(state, value) {
     state.currentSupportBundleName = value
@@ -175,7 +183,7 @@ export const actions = {
 
     try {
       if (seedFile !== null) {
-        await window.electronApi.invoke('launcher.setCurrentSeedPath', seedFile)
+        await window.electronApi.invoke('launcher.setNewGameSeedSource', `file:${seedFile}`)
       }
 
       if (!forceLaunch) {

@@ -83,15 +83,15 @@
             color="accent"
             block
             class="mt-6"
-            :class="{ 'bottom-border-radius-0': currentSeedPath !== null }"
+            :class="{ 'bottom-border-radius-0': newGameSeedSource !== null }"
             :loading="launching"
             @click="launch()"
           >
             <img class="launch-icon" src="../../assets/images/launch.png" alt="" />
             Launch
           </v-btn>
-          <v-card v-if="currentSeedPath !== null" class="pa-2 text-center top-border-radius-0 current-seed-path">
-            {{ currentSeedPathBasename }}
+          <v-card v-if="newGameSeedSource !== null" class="pa-2 text-center top-border-radius-0 current-seed-path">
+            {{ newGameSeedSourceDisplayString }}
           </v-card>
 
           <div class="text-center mt-5">
@@ -179,12 +179,12 @@
         'updateDownloadProgress',
         'launching',
         'offlineMode',
-        'currentSeedPath',
+        'newGameSeedSource',
         'currentSupportBundleName',
         'showUpdateAvailableDialog',
       ]),
       ...mapState('multiverseState', ['multiverses']),
-      ...mapGetters('electron', ['updateAvailable', 'currentSeedPathBasename', 'isNewVersion']),
+      ...mapGetters('electron', ['updateAvailable', 'newGameSeedSourceDisplayString', 'isNewVersion']),
       ...mapGetters('version', ['latestVisibleVersion', 'visibleReleases']),
     },
     watch: {
@@ -211,15 +211,15 @@
     },
     async mounted() {
       // We might already have a seed path from launching...
-      if (this.currentSeedPath === null) {
+      if (this.newGameSeedSource === null) {
         this.$store.commit(
-          'electron/setCurrentSeedPath',
-          await window.electronApi.invoke('launcher.getCurrentSeedPath'),
+          'electron/setNewGameSeedSource',
+          await window.electronApi.invoke('launcher.getNewGameSeedSource'),
         )
       }
     },
     methods: {
-      ...mapMutations('electron', ['setCurrentSeedPath']),
+      ...mapMutations('electron', ['setNewGameSeedSource']),
       getSetupAssetFromRelease(release) {
         switch (getOS()) {
           case Platform.Linux:

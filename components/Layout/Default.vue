@@ -132,8 +132,8 @@
           this.$store.commit('electron/setSettings', settings)
         })
 
-        window.electronApi.on('main.currentSeedChanged', (_event, { currentSeedPath }) => {
-          this.$store.commit('electron/setCurrentSeedPath', currentSeedPath)
+        window.electronApi.on('main.newGameSeedSourceChanged', (_event, { newGameSeedSource }) => {
+          this.$store.commit('electron/setNewGameSeedSource', newGameSeedSource)
         })
 
         window.electronApi.on('localTracker.setIsRunning', (_event, isRunning) => {

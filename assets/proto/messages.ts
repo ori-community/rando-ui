@@ -22,11 +22,8 @@ export interface UserInfo {
   id: string;
   name: string;
   avatarId?: string | undefined;
-  connectedMultiverseId?: number | undefined;
-  currentMultiverseId?: number | undefined;
   isDeveloper: boolean;
   points: number;
-  raceReady: boolean;
 }
 
 export interface WorldInfo {
@@ -82,6 +79,8 @@ export interface MultiverseInfoMessage {
   isLockable: boolean;
   race?: RaceInfo | undefined;
   seedSpoilerDownloadedBy: UserInfo[];
+  connectedUserIds: string[];
+  raceReadyUserIds: string[];
 }
 
 export enum MultiverseInfoMessage_GameHandlerType {
@@ -337,7 +336,7 @@ export const Packet = {
   fromJSON(object: any): Packet {
     return {
       $type: Packet.$type,
-      id: isSet(object.id) ? Number(object.id) : 0,
+      id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       packet: isSet(object.packet) ? bytesFromBase64(object.packet) : new Uint8Array(0),
     };
   },
@@ -377,7 +376,7 @@ export const BingoGoal = {
     if (message.text !== "") {
       writer.uint32(10).string(message.text);
     }
-    if (message.completed === true) {
+    if (message.completed !== false) {
       writer.uint32(16).bool(message.completed);
     }
     return writer;
@@ -416,8 +415,8 @@ export const BingoGoal = {
   fromJSON(object: any): BingoGoal {
     return {
       $type: BingoGoal.$type,
-      text: isSet(object.text) ? String(object.text) : "",
-      completed: isSet(object.completed) ? Boolean(object.completed) : false,
+      text: isSet(object.text) ? globalThis.String(object.text) : "",
+      completed: isSet(object.completed) ? globalThis.Boolean(object.completed) : false,
     };
   },
 
@@ -426,7 +425,7 @@ export const BingoGoal = {
     if (message.text !== "") {
       obj.text = message.text;
     }
-    if (message.completed === true) {
+    if (message.completed !== false) {
       obj.completed = message.completed;
     }
     return obj;
@@ -446,17 +445,7 @@ export const BingoGoal = {
 messageTypeRegistry.set(BingoGoal.$type, BingoGoal);
 
 function createBaseUserInfo(): UserInfo {
-  return {
-    $type: "RandoProto.UserInfo",
-    id: "",
-    name: "",
-    avatarId: undefined,
-    connectedMultiverseId: undefined,
-    currentMultiverseId: undefined,
-    isDeveloper: false,
-    points: 0,
-    raceReady: false,
-  };
+  return { $type: "RandoProto.UserInfo", id: "", name: "", avatarId: undefined, isDeveloper: false, points: 0 };
 }
 
 export const UserInfo = {
@@ -472,20 +461,11 @@ export const UserInfo = {
     if (message.avatarId !== undefined) {
       writer.uint32(26).string(message.avatarId);
     }
-    if (message.connectedMultiverseId !== undefined) {
-      writer.uint32(32).int64(message.connectedMultiverseId);
-    }
-    if (message.currentMultiverseId !== undefined) {
-      writer.uint32(40).int64(message.currentMultiverseId);
-    }
-    if (message.isDeveloper === true) {
+    if (message.isDeveloper !== false) {
       writer.uint32(48).bool(message.isDeveloper);
     }
     if (message.points !== 0) {
       writer.uint32(56).int32(message.points);
-    }
-    if (message.raceReady === true) {
-      writer.uint32(64).bool(message.raceReady);
     }
     return writer;
   },
@@ -518,20 +498,6 @@ export const UserInfo = {
 
           message.avatarId = reader.string();
           continue;
-        case 4:
-          if (tag !== 32) {
-            break;
-          }
-
-          message.connectedMultiverseId = longToNumber(reader.int64() as Long);
-          continue;
-        case 5:
-          if (tag !== 40) {
-            break;
-          }
-
-          message.currentMultiverseId = longToNumber(reader.int64() as Long);
-          continue;
         case 6:
           if (tag !== 48) {
             break;
@@ -546,13 +512,6 @@ export const UserInfo = {
 
           message.points = reader.int32();
           continue;
-        case 8:
-          if (tag !== 64) {
-            break;
-          }
-
-          message.raceReady = reader.bool();
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -565,14 +524,11 @@ export const UserInfo = {
   fromJSON(object: any): UserInfo {
     return {
       $type: UserInfo.$type,
-      id: isSet(object.id) ? String(object.id) : "",
-      name: isSet(object.name) ? String(object.name) : "",
-      avatarId: isSet(object.avatarId) ? String(object.avatarId) : undefined,
-      connectedMultiverseId: isSet(object.connectedMultiverseId) ? Number(object.connectedMultiverseId) : undefined,
-      currentMultiverseId: isSet(object.currentMultiverseId) ? Number(object.currentMultiverseId) : undefined,
-      isDeveloper: isSet(object.isDeveloper) ? Boolean(object.isDeveloper) : false,
-      points: isSet(object.points) ? Number(object.points) : 0,
-      raceReady: isSet(object.raceReady) ? Boolean(object.raceReady) : false,
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
+      avatarId: isSet(object.avatarId) ? globalThis.String(object.avatarId) : undefined,
+      isDeveloper: isSet(object.isDeveloper) ? globalThis.Boolean(object.isDeveloper) : false,
+      points: isSet(object.points) ? globalThis.Number(object.points) : 0,
     };
   },
 
@@ -587,20 +543,11 @@ export const UserInfo = {
     if (message.avatarId !== undefined) {
       obj.avatarId = message.avatarId;
     }
-    if (message.connectedMultiverseId !== undefined) {
-      obj.connectedMultiverseId = Math.round(message.connectedMultiverseId);
-    }
-    if (message.currentMultiverseId !== undefined) {
-      obj.currentMultiverseId = Math.round(message.currentMultiverseId);
-    }
-    if (message.isDeveloper === true) {
+    if (message.isDeveloper !== false) {
       obj.isDeveloper = message.isDeveloper;
     }
     if (message.points !== 0) {
       obj.points = Math.round(message.points);
-    }
-    if (message.raceReady === true) {
-      obj.raceReady = message.raceReady;
     }
     return obj;
   },
@@ -613,11 +560,8 @@ export const UserInfo = {
     message.id = object.id ?? "";
     message.name = object.name ?? "";
     message.avatarId = object.avatarId ?? undefined;
-    message.connectedMultiverseId = object.connectedMultiverseId ?? undefined;
-    message.currentMultiverseId = object.currentMultiverseId ?? undefined;
     message.isDeveloper = object.isDeveloper ?? false;
     message.points = object.points ?? 0;
-    message.raceReady = object.raceReady ?? false;
     return message;
   },
 };
@@ -704,11 +648,11 @@ export const WorldInfo = {
   fromJSON(object: any): WorldInfo {
     return {
       $type: WorldInfo.$type,
-      id: isSet(object.id) ? Number(object.id) : 0,
-      name: isSet(object.name) ? String(object.name) : "",
-      color: isSet(object.color) ? String(object.color) : "",
-      members: Array.isArray(object?.members) ? object.members.map((e: any) => UserInfo.fromJSON(e)) : [],
-      seedId: isSet(object.seedId) ? Number(object.seedId) : undefined,
+      id: isSet(object.id) ? globalThis.Number(object.id) : 0,
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
+      color: isSet(object.color) ? globalThis.String(object.color) : "",
+      members: globalThis.Array.isArray(object?.members) ? object.members.map((e: any) => UserInfo.fromJSON(e)) : [],
+      seedId: isSet(object.seedId) ? globalThis.Number(object.seedId) : undefined,
     };
   },
 
@@ -818,10 +762,10 @@ export const UniverseInfo = {
   fromJSON(object: any): UniverseInfo {
     return {
       $type: UniverseInfo.$type,
-      id: isSet(object.id) ? Number(object.id) : 0,
-      name: isSet(object.name) ? String(object.name) : "",
-      color: isSet(object.color) ? String(object.color) : "",
-      worlds: Array.isArray(object?.worlds) ? object.worlds.map((e: any) => WorldInfo.fromJSON(e)) : [],
+      id: isSet(object.id) ? globalThis.Number(object.id) : 0,
+      name: isSet(object.name) ? globalThis.String(object.name) : "",
+      color: isSet(object.color) ? globalThis.String(object.color) : "",
+      worlds: globalThis.Array.isArray(object?.worlds) ? object.worlds.map((e: any) => WorldInfo.fromJSON(e)) : [],
     };
   },
 
@@ -917,9 +861,9 @@ export const RaceTeamMemberInfo = {
   fromJSON(object: any): RaceTeamMemberInfo {
     return {
       $type: RaceTeamMemberInfo.$type,
-      id: isSet(object.id) ? Number(object.id) : 0,
+      id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       user: isSet(object.user) ? UserInfo.fromJSON(object.user) : undefined,
-      finishedTime: isSet(object.finishedTime) ? Number(object.finishedTime) : undefined,
+      finishedTime: isSet(object.finishedTime) ? globalThis.Number(object.finishedTime) : undefined,
     };
   },
 
@@ -1021,10 +965,12 @@ export const RaceTeamInfo = {
   fromJSON(object: any): RaceTeamInfo {
     return {
       $type: RaceTeamInfo.$type,
-      id: isSet(object.id) ? Number(object.id) : 0,
-      members: Array.isArray(object?.members) ? object.members.map((e: any) => RaceTeamMemberInfo.fromJSON(e)) : [],
-      points: isSet(object.points) ? Number(object.points) : 0,
-      finishedTime: isSet(object.finishedTime) ? Number(object.finishedTime) : undefined,
+      id: isSet(object.id) ? globalThis.Number(object.id) : 0,
+      members: globalThis.Array.isArray(object?.members)
+        ? object.members.map((e: any) => RaceTeamMemberInfo.fromJSON(e))
+        : [],
+      points: isSet(object.points) ? globalThis.Number(object.points) : 0,
+      finishedTime: isSet(object.finishedTime) ? globalThis.Number(object.finishedTime) : undefined,
     };
   },
 
@@ -1120,9 +1066,9 @@ export const RaceInfo = {
   fromJSON(object: any): RaceInfo {
     return {
       $type: RaceInfo.$type,
-      id: isSet(object.id) ? Number(object.id) : 0,
-      teams: Array.isArray(object?.teams) ? object.teams.map((e: any) => RaceTeamInfo.fromJSON(e)) : [],
-      finishedTime: isSet(object.finishedTime) ? Number(object.finishedTime) : undefined,
+      id: isSet(object.id) ? globalThis.Number(object.id) : 0,
+      teams: globalThis.Array.isArray(object?.teams) ? object.teams.map((e: any) => RaceTeamInfo.fromJSON(e)) : [],
+      finishedTime: isSet(object.finishedTime) ? globalThis.Number(object.finishedTime) : undefined,
     };
   },
 
@@ -1169,6 +1115,8 @@ function createBaseMultiverseInfoMessage(): MultiverseInfoMessage {
     isLockable: false,
     race: undefined,
     seedSpoilerDownloadedBy: [],
+    connectedUserIds: [],
+    raceReadyUserIds: [],
   };
 }
 
@@ -1182,7 +1130,7 @@ export const MultiverseInfoMessage = {
     for (const v of message.universes) {
       UniverseInfo.encode(v!, writer.uint32(18).fork()).ldelim();
     }
-    if (message.hasBingoBoard === true) {
+    if (message.hasBingoBoard !== false) {
       writer.uint32(24).bool(message.hasBingoBoard);
     }
     for (const v of message.spectators) {
@@ -1200,10 +1148,10 @@ export const MultiverseInfoMessage = {
     if (message.visibility !== undefined) {
       VisibilityMessage.encode(message.visibility, writer.uint32(66).fork()).ldelim();
     }
-    if (message.locked === true) {
+    if (message.locked !== false) {
       writer.uint32(72).bool(message.locked);
     }
-    if (message.isLockable === true) {
+    if (message.isLockable !== false) {
       writer.uint32(80).bool(message.isLockable);
     }
     if (message.race !== undefined) {
@@ -1211,6 +1159,12 @@ export const MultiverseInfoMessage = {
     }
     for (const v of message.seedSpoilerDownloadedBy) {
       UserInfo.encode(v!, writer.uint32(98).fork()).ldelim();
+    }
+    for (const v of message.connectedUserIds) {
+      writer.uint32(106).string(v!);
+    }
+    for (const v of message.raceReadyUserIds) {
+      writer.uint32(114).string(v!);
     }
     return writer;
   },
@@ -1306,6 +1260,20 @@ export const MultiverseInfoMessage = {
 
           message.seedSpoilerDownloadedBy.push(UserInfo.decode(reader, reader.uint32()));
           continue;
+        case 13:
+          if (tag !== 106) {
+            break;
+          }
+
+          message.connectedUserIds.push(reader.string());
+          continue;
+        case 14:
+          if (tag !== 114) {
+            break;
+          }
+
+          message.raceReadyUserIds.push(reader.string());
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -1318,11 +1286,15 @@ export const MultiverseInfoMessage = {
   fromJSON(object: any): MultiverseInfoMessage {
     return {
       $type: MultiverseInfoMessage.$type,
-      id: isSet(object.id) ? Number(object.id) : 0,
-      universes: Array.isArray(object?.universes) ? object.universes.map((e: any) => UniverseInfo.fromJSON(e)) : [],
-      hasBingoBoard: isSet(object.hasBingoBoard) ? Boolean(object.hasBingoBoard) : false,
-      spectators: Array.isArray(object?.spectators) ? object.spectators.map((e: any) => UserInfo.fromJSON(e)) : [],
-      seedId: isSet(object.seedId) ? Number(object.seedId) : undefined,
+      id: isSet(object.id) ? globalThis.Number(object.id) : 0,
+      universes: globalThis.Array.isArray(object?.universes)
+        ? object.universes.map((e: any) => UniverseInfo.fromJSON(e))
+        : [],
+      hasBingoBoard: isSet(object.hasBingoBoard) ? globalThis.Boolean(object.hasBingoBoard) : false,
+      spectators: globalThis.Array.isArray(object?.spectators)
+        ? object.spectators.map((e: any) => UserInfo.fromJSON(e))
+        : [],
+      seedId: isSet(object.seedId) ? globalThis.Number(object.seedId) : undefined,
       gameHandlerType: isSet(object.gameHandlerType)
         ? multiverseInfoMessage_GameHandlerTypeFromJSON(object.gameHandlerType)
         : 0,
@@ -1330,11 +1302,17 @@ export const MultiverseInfoMessage = {
         ? bytesFromBase64(object.gameHandlerClientInfo)
         : new Uint8Array(0),
       visibility: isSet(object.visibility) ? VisibilityMessage.fromJSON(object.visibility) : undefined,
-      locked: isSet(object.locked) ? Boolean(object.locked) : false,
-      isLockable: isSet(object.isLockable) ? Boolean(object.isLockable) : false,
+      locked: isSet(object.locked) ? globalThis.Boolean(object.locked) : false,
+      isLockable: isSet(object.isLockable) ? globalThis.Boolean(object.isLockable) : false,
       race: isSet(object.race) ? RaceInfo.fromJSON(object.race) : undefined,
-      seedSpoilerDownloadedBy: Array.isArray(object?.seedSpoilerDownloadedBy)
+      seedSpoilerDownloadedBy: globalThis.Array.isArray(object?.seedSpoilerDownloadedBy)
         ? object.seedSpoilerDownloadedBy.map((e: any) => UserInfo.fromJSON(e))
+        : [],
+      connectedUserIds: globalThis.Array.isArray(object?.connectedUserIds)
+        ? object.connectedUserIds.map((e: any) => globalThis.String(e))
+        : [],
+      raceReadyUserIds: globalThis.Array.isArray(object?.raceReadyUserIds)
+        ? object.raceReadyUserIds.map((e: any) => globalThis.String(e))
         : [],
     };
   },
@@ -1347,7 +1325,7 @@ export const MultiverseInfoMessage = {
     if (message.universes?.length) {
       obj.universes = message.universes.map((e) => UniverseInfo.toJSON(e));
     }
-    if (message.hasBingoBoard === true) {
+    if (message.hasBingoBoard !== false) {
       obj.hasBingoBoard = message.hasBingoBoard;
     }
     if (message.spectators?.length) {
@@ -1365,10 +1343,10 @@ export const MultiverseInfoMessage = {
     if (message.visibility !== undefined) {
       obj.visibility = VisibilityMessage.toJSON(message.visibility);
     }
-    if (message.locked === true) {
+    if (message.locked !== false) {
       obj.locked = message.locked;
     }
-    if (message.isLockable === true) {
+    if (message.isLockable !== false) {
       obj.isLockable = message.isLockable;
     }
     if (message.race !== undefined) {
@@ -1376,6 +1354,12 @@ export const MultiverseInfoMessage = {
     }
     if (message.seedSpoilerDownloadedBy?.length) {
       obj.seedSpoilerDownloadedBy = message.seedSpoilerDownloadedBy.map((e) => UserInfo.toJSON(e));
+    }
+    if (message.connectedUserIds?.length) {
+      obj.connectedUserIds = message.connectedUserIds;
+    }
+    if (message.raceReadyUserIds?.length) {
+      obj.raceReadyUserIds = message.raceReadyUserIds;
     }
     return obj;
   },
@@ -1399,6 +1383,8 @@ export const MultiverseInfoMessage = {
     message.isLockable = object.isLockable ?? false;
     message.race = (object.race !== undefined && object.race !== null) ? RaceInfo.fromPartial(object.race) : undefined;
     message.seedSpoilerDownloadedBy = object.seedSpoilerDownloadedBy?.map((e) => UserInfo.fromPartial(e)) || [];
+    message.connectedUserIds = object.connectedUserIds?.map((e) => e) || [];
+    message.raceReadyUserIds = object.raceReadyUserIds?.map((e) => e) || [];
     return message;
   },
 };
@@ -1455,8 +1441,12 @@ export const VisibilityMessage = {
   fromJSON(object: any): VisibilityMessage {
     return {
       $type: VisibilityMessage.$type,
-      hiddenInWorld: Array.isArray(object?.hiddenInWorld) ? object.hiddenInWorld.map((e: any) => String(e)) : [],
-      hiddenOnMap: Array.isArray(object?.hiddenOnMap) ? object.hiddenOnMap.map((e: any) => String(e)) : [],
+      hiddenInWorld: globalThis.Array.isArray(object?.hiddenInWorld)
+        ? object.hiddenInWorld.map((e: any) => globalThis.String(e))
+        : [],
+      hiddenOnMap: globalThis.Array.isArray(object?.hiddenOnMap)
+        ? object.hiddenOnMap.map((e: any) => globalThis.String(e))
+        : [],
     };
   },
 
@@ -1578,10 +1568,14 @@ export const BingoSquare = {
   fromJSON(object: any): BingoSquare {
     return {
       $type: BingoSquare.$type,
-      text: isSet(object.text) ? String(object.text) : "",
-      completedBy: Array.isArray(object?.completedBy) ? object.completedBy.map((e: any) => Number(e)) : [],
-      goals: Array.isArray(object?.goals) ? object.goals.map((e: any) => BingoGoal.fromJSON(e)) : [],
-      visibleFor: Array.isArray(object?.visibleFor) ? object.visibleFor.map((e: any) => Number(e)) : [],
+      text: isSet(object.text) ? globalThis.String(object.text) : "",
+      completedBy: globalThis.Array.isArray(object?.completedBy)
+        ? object.completedBy.map((e: any) => globalThis.Number(e))
+        : [],
+      goals: globalThis.Array.isArray(object?.goals) ? object.goals.map((e: any) => BingoGoal.fromJSON(e)) : [],
+      visibleFor: globalThis.Array.isArray(object?.visibleFor)
+        ? object.visibleFor.map((e: any) => globalThis.Number(e))
+        : [],
     };
   },
 
@@ -1655,7 +1649,10 @@ export const RequestUpdatesMessage = {
   },
 
   fromJSON(object: any): RequestUpdatesMessage {
-    return { $type: RequestUpdatesMessage.$type, playerId: isSet(object.playerId) ? String(object.playerId) : "" };
+    return {
+      $type: RequestUpdatesMessage.$type,
+      playerId: isSet(object.playerId) ? globalThis.String(object.playerId) : "",
+    };
   },
 
   toJSON(message: RequestUpdatesMessage): unknown {
@@ -1758,11 +1755,11 @@ export const BingoUniverseInfo = {
   fromJSON(object: any): BingoUniverseInfo {
     return {
       $type: BingoUniverseInfo.$type,
-      universeId: isSet(object.universeId) ? Number(object.universeId) : 0,
-      score: isSet(object.score) ? String(object.score) : "",
-      rank: isSet(object.rank) ? Number(object.rank) : 0,
-      squares: isSet(object.squares) ? Number(object.squares) : 0,
-      lines: isSet(object.lines) ? Number(object.lines) : 0,
+      universeId: isSet(object.universeId) ? globalThis.Number(object.universeId) : 0,
+      score: isSet(object.score) ? globalThis.String(object.score) : "",
+      rank: isSet(object.rank) ? globalThis.Number(object.rank) : 0,
+      squares: isSet(object.squares) ? globalThis.Number(object.squares) : 0,
+      lines: isSet(object.lines) ? globalThis.Number(object.lines) : 0,
     };
   },
 
@@ -1842,7 +1839,7 @@ export const SyncBingoUniversesMessage = {
   fromJSON(object: any): SyncBingoUniversesMessage {
     return {
       $type: SyncBingoUniversesMessage.$type,
-      bingoUniverses: Array.isArray(object?.bingoUniverses)
+      bingoUniverses: globalThis.Array.isArray(object?.bingoUniverses)
         ? object.bingoUniverses.map((e: any) => BingoUniverseInfo.fromJSON(e))
         : [],
     };
@@ -1918,8 +1915,8 @@ export const Position = {
   fromJSON(object: any): Position {
     return {
       $type: Position.$type,
-      x: isSet(object.x) ? Number(object.x) : 0,
-      y: isSet(object.y) ? Number(object.y) : 0,
+      x: isSet(object.x) ? globalThis.Number(object.x) : 0,
+      y: isSet(object.y) ? globalThis.Number(object.y) : 0,
     };
   },
 
@@ -2044,7 +2041,7 @@ export const BingoBoardMessage = {
     if (message.size !== 0) {
       writer.uint32(16).int32(message.size);
     }
-    if (message.lockout === true) {
+    if (message.lockout !== false) {
       writer.uint32(24).bool(message.lockout);
     }
     return writer;
@@ -2090,9 +2087,11 @@ export const BingoBoardMessage = {
   fromJSON(object: any): BingoBoardMessage {
     return {
       $type: BingoBoardMessage.$type,
-      squares: Array.isArray(object?.squares) ? object.squares.map((e: any) => PositionedBingoSquare.fromJSON(e)) : [],
-      size: isSet(object.size) ? Number(object.size) : 0,
-      lockout: isSet(object.lockout) ? Boolean(object.lockout) : false,
+      squares: globalThis.Array.isArray(object?.squares)
+        ? object.squares.map((e: any) => PositionedBingoSquare.fromJSON(e))
+        : [],
+      size: isSet(object.size) ? globalThis.Number(object.size) : 0,
+      lockout: isSet(object.lockout) ? globalThis.Boolean(object.lockout) : false,
     };
   },
 
@@ -2104,7 +2103,7 @@ export const BingoBoardMessage = {
     if (message.size !== 0) {
       obj.size = Math.round(message.size);
     }
-    if (message.lockout === true) {
+    if (message.lockout !== false) {
       obj.lockout = message.lockout;
     }
     return obj;
@@ -2135,7 +2134,7 @@ export const SyncBoardMessage = {
     if (message.board !== undefined) {
       BingoBoardMessage.encode(message.board, writer.uint32(10).fork()).ldelim();
     }
-    if (message.replace === true) {
+    if (message.replace !== false) {
       writer.uint32(16).bool(message.replace);
     }
     return writer;
@@ -2175,7 +2174,7 @@ export const SyncBoardMessage = {
     return {
       $type: SyncBoardMessage.$type,
       board: isSet(object.board) ? BingoBoardMessage.fromJSON(object.board) : undefined,
-      replace: isSet(object.replace) ? Boolean(object.replace) : false,
+      replace: isSet(object.replace) ? globalThis.Boolean(object.replace) : false,
     };
   },
 
@@ -2184,7 +2183,7 @@ export const SyncBoardMessage = {
     if (message.board !== undefined) {
       obj.board = BingoBoardMessage.toJSON(message.board);
     }
-    if (message.replace === true) {
+    if (message.replace !== false) {
       obj.replace = message.replace;
     }
     return obj;
@@ -2255,8 +2254,8 @@ export const AuthenticateMessage = {
   fromJSON(object: any): AuthenticateMessage {
     return {
       $type: AuthenticateMessage.$type,
-      jwt: isSet(object.jwt) ? String(object.jwt) : "",
-      clientVersion: isSet(object.clientVersion) ? String(object.clientVersion) : "",
+      jwt: isSet(object.jwt) ? globalThis.String(object.jwt) : "",
+      clientVersion: isSet(object.clientVersion) ? globalThis.String(object.clientVersion) : "",
     };
   },
 
@@ -2334,8 +2333,8 @@ export const ShowUINotificationMessage = {
   fromJSON(object: any): ShowUINotificationMessage {
     return {
       $type: ShowUINotificationMessage.$type,
-      text: isSet(object.text) ? String(object.text) : "",
-      color: isSet(object.color) ? String(object.color) : "",
+      text: isSet(object.text) ? globalThis.String(object.text) : "",
+      color: isSet(object.color) ? globalThis.String(object.color) : "",
     };
   },
 
@@ -2424,7 +2423,7 @@ export const AuthenticatedMessage = {
     return {
       $type: AuthenticatedMessage.$type,
       user: isSet(object.user) ? UserInfo.fromJSON(object.user) : undefined,
-      udpId: isSet(object.udpId) ? Number(object.udpId) : 0,
+      udpId: isSet(object.udpId) ? globalThis.Number(object.udpId) : 0,
       udpKey: isSet(object.udpKey) ? bytesFromBase64(object.udpKey) : new Uint8Array(0),
     };
   },
@@ -2507,8 +2506,8 @@ export const PlayerPositionMessage = {
   fromJSON(object: any): PlayerPositionMessage {
     return {
       $type: PlayerPositionMessage.$type,
-      x: isSet(object.x) ? Number(object.x) : 0,
-      y: isSet(object.y) ? Number(object.y) : 0,
+      x: isSet(object.x) ? globalThis.Number(object.x) : 0,
+      y: isSet(object.y) ? globalThis.Number(object.y) : 0,
     };
   },
 
@@ -2596,9 +2595,9 @@ export const UpdatePlayerPositionMessage = {
   fromJSON(object: any): UpdatePlayerPositionMessage {
     return {
       $type: UpdatePlayerPositionMessage.$type,
-      playerId: isSet(object.playerId) ? String(object.playerId) : "",
-      x: isSet(object.x) ? Number(object.x) : 0,
-      y: isSet(object.y) ? Number(object.y) : 0,
+      playerId: isSet(object.playerId) ? globalThis.String(object.playerId) : "",
+      x: isSet(object.x) ? globalThis.Number(object.x) : 0,
+      y: isSet(object.y) ? globalThis.Number(object.y) : 0,
     };
   },
 
@@ -2680,7 +2679,7 @@ export const UdpPacket = {
   fromJSON(object: any): UdpPacket {
     return {
       $type: UdpPacket.$type,
-      udpId: isSet(object.udpId) ? Number(object.udpId) : 0,
+      udpId: isSet(object.udpId) ? globalThis.Number(object.udpId) : 0,
       encryptedPacket: isSet(object.encryptedPacket) ? bytesFromBase64(object.encryptedPacket) : new Uint8Array(0),
     };
   },
@@ -2759,8 +2758,8 @@ export const TrackerUpdate = {
   fromJSON(object: any): TrackerUpdate {
     return {
       $type: TrackerUpdate.$type,
-      id: isSet(object.id) ? String(object.id) : "",
-      value: isSet(object.value) ? Number(object.value) : 0,
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      value: isSet(object.value) ? globalThis.Number(object.value) : 0,
     };
   },
 
@@ -2875,7 +2874,7 @@ export const TrackerFlagsUpdate = {
   fromJSON(object: any): TrackerFlagsUpdate {
     return {
       $type: TrackerFlagsUpdate.$type,
-      flags: Array.isArray(object?.flags) ? object.flags.map((e: any) => String(e)) : [],
+      flags: globalThis.Array.isArray(object?.flags) ? object.flags.map((e: any) => globalThis.String(e)) : [],
     };
   },
 
@@ -2984,7 +2983,10 @@ export const SetTrackerEndpointId = {
   },
 
   fromJSON(object: any): SetTrackerEndpointId {
-    return { $type: SetTrackerEndpointId.$type, endpointId: isSet(object.endpointId) ? String(object.endpointId) : "" };
+    return {
+      $type: SetTrackerEndpointId.$type,
+      endpointId: isSet(object.endpointId) ? globalThis.String(object.endpointId) : "",
+    };
   },
 
   toJSON(message: SetTrackerEndpointId): unknown {
@@ -3021,7 +3023,7 @@ export const TrackerTimerStateUpdate = {
     if (message.asyncLoadingTime !== 0) {
       writer.uint32(21).float(message.asyncLoadingTime);
     }
-    if (message.timerShouldRun === true) {
+    if (message.timerShouldRun !== false) {
       writer.uint32(24).bool(message.timerShouldRun);
     }
     return writer;
@@ -3067,9 +3069,9 @@ export const TrackerTimerStateUpdate = {
   fromJSON(object: any): TrackerTimerStateUpdate {
     return {
       $type: TrackerTimerStateUpdate.$type,
-      inGameTime: isSet(object.inGameTime) ? Number(object.inGameTime) : 0,
-      asyncLoadingTime: isSet(object.asyncLoadingTime) ? Number(object.asyncLoadingTime) : 0,
-      timerShouldRun: isSet(object.timerShouldRun) ? Boolean(object.timerShouldRun) : false,
+      inGameTime: isSet(object.inGameTime) ? globalThis.Number(object.inGameTime) : 0,
+      asyncLoadingTime: isSet(object.asyncLoadingTime) ? globalThis.Number(object.asyncLoadingTime) : 0,
+      timerShouldRun: isSet(object.timerShouldRun) ? globalThis.Boolean(object.timerShouldRun) : false,
     };
   },
 
@@ -3081,7 +3083,7 @@ export const TrackerTimerStateUpdate = {
     if (message.asyncLoadingTime !== 0) {
       obj.asyncLoadingTime = message.asyncLoadingTime;
     }
-    if (message.timerShouldRun === true) {
+    if (message.timerShouldRun !== false) {
       obj.timerShouldRun = message.timerShouldRun;
     }
     return obj;
@@ -3153,10 +3155,10 @@ export const NormalGameHandlerState = {
         value,
       }, writer.uint32(50).fork()).ldelim();
     });
-    if (message.raceModeEnabled === true) {
+    if (message.raceModeEnabled !== false) {
       writer.uint32(56).bool(message.raceModeEnabled);
     }
-    if (message.raceStarted === true) {
+    if (message.raceStarted !== false) {
       writer.uint32(64).bool(message.raceStarted);
     }
     return writer;
@@ -3249,8 +3251,8 @@ export const NormalGameHandlerState = {
   fromJSON(object: any): NormalGameHandlerState {
     return {
       $type: NormalGameHandlerState.$type,
-      raceStartingAt: isSet(object.raceStartingAt) ? Number(object.raceStartingAt) : undefined,
-      finishedTime: isSet(object.finishedTime) ? Number(object.finishedTime) : undefined,
+      raceStartingAt: isSet(object.raceStartingAt) ? globalThis.Number(object.raceStartingAt) : undefined,
+      finishedTime: isSet(object.finishedTime) ? globalThis.Number(object.finishedTime) : undefined,
       playerInGameTimes: isObject(object.playerInGameTimes)
         ? Object.entries(object.playerInGameTimes).reduce<{ [key: string]: number }>((acc, [key, value]) => {
           acc[key] = Number(value);
@@ -3265,18 +3267,18 @@ export const NormalGameHandlerState = {
         : {},
       worldFinishedTimes: isObject(object.worldFinishedTimes)
         ? Object.entries(object.worldFinishedTimes).reduce<{ [key: number]: number }>((acc, [key, value]) => {
-          acc[Number(key)] = Number(value);
+          acc[globalThis.Number(key)] = Number(value);
           return acc;
         }, {})
         : {},
       universeFinishedTimes: isObject(object.universeFinishedTimes)
         ? Object.entries(object.universeFinishedTimes).reduce<{ [key: number]: number }>((acc, [key, value]) => {
-          acc[Number(key)] = Number(value);
+          acc[globalThis.Number(key)] = Number(value);
           return acc;
         }, {})
         : {},
-      raceModeEnabled: isSet(object.raceModeEnabled) ? Boolean(object.raceModeEnabled) : false,
-      raceStarted: isSet(object.raceStarted) ? Boolean(object.raceStarted) : false,
+      raceModeEnabled: isSet(object.raceModeEnabled) ? globalThis.Boolean(object.raceModeEnabled) : false,
+      raceStarted: isSet(object.raceStarted) ? globalThis.Boolean(object.raceStarted) : false,
     };
   },
 
@@ -3324,10 +3326,10 @@ export const NormalGameHandlerState = {
         });
       }
     }
-    if (message.raceModeEnabled === true) {
+    if (message.raceModeEnabled !== false) {
       obj.raceModeEnabled = message.raceModeEnabled;
     }
-    if (message.raceStarted === true) {
+    if (message.raceStarted !== false) {
       obj.raceStarted = message.raceStarted;
     }
     return obj;
@@ -3343,7 +3345,7 @@ export const NormalGameHandlerState = {
     message.playerInGameTimes = Object.entries(object.playerInGameTimes ?? {}).reduce<{ [key: string]: number }>(
       (acc, [key, value]) => {
         if (value !== undefined) {
-          acc[key] = Number(value);
+          acc[key] = globalThis.Number(value);
         }
         return acc;
       },
@@ -3352,7 +3354,7 @@ export const NormalGameHandlerState = {
     message.playerFinishedTimes = Object.entries(object.playerFinishedTimes ?? {}).reduce<{ [key: string]: number }>(
       (acc, [key, value]) => {
         if (value !== undefined) {
-          acc[key] = Number(value);
+          acc[key] = globalThis.Number(value);
         }
         return acc;
       },
@@ -3361,7 +3363,7 @@ export const NormalGameHandlerState = {
     message.worldFinishedTimes = Object.entries(object.worldFinishedTimes ?? {}).reduce<{ [key: number]: number }>(
       (acc, [key, value]) => {
         if (value !== undefined) {
-          acc[Number(key)] = Number(value);
+          acc[globalThis.Number(key)] = globalThis.Number(value);
         }
         return acc;
       },
@@ -3371,7 +3373,7 @@ export const NormalGameHandlerState = {
       { [key: number]: number }
     >((acc, [key, value]) => {
       if (value !== undefined) {
-        acc[Number(key)] = Number(value);
+        acc[globalThis.Number(key)] = globalThis.Number(value);
       }
       return acc;
     }, {});
@@ -3433,8 +3435,8 @@ export const NormalGameHandlerState_PlayerInGameTimesEntry = {
   fromJSON(object: any): NormalGameHandlerState_PlayerInGameTimesEntry {
     return {
       $type: NormalGameHandlerState_PlayerInGameTimesEntry.$type,
-      key: isSet(object.key) ? String(object.key) : "",
-      value: isSet(object.value) ? Number(object.value) : 0,
+      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      value: isSet(object.value) ? globalThis.Number(object.value) : 0,
     };
   },
 
@@ -3522,8 +3524,8 @@ export const NormalGameHandlerState_PlayerFinishedTimesEntry = {
   fromJSON(object: any): NormalGameHandlerState_PlayerFinishedTimesEntry {
     return {
       $type: NormalGameHandlerState_PlayerFinishedTimesEntry.$type,
-      key: isSet(object.key) ? String(object.key) : "",
-      value: isSet(object.value) ? Number(object.value) : 0,
+      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      value: isSet(object.value) ? globalThis.Number(object.value) : 0,
     };
   },
 
@@ -3611,8 +3613,8 @@ export const NormalGameHandlerState_WorldFinishedTimesEntry = {
   fromJSON(object: any): NormalGameHandlerState_WorldFinishedTimesEntry {
     return {
       $type: NormalGameHandlerState_WorldFinishedTimesEntry.$type,
-      key: isSet(object.key) ? Number(object.key) : 0,
-      value: isSet(object.value) ? Number(object.value) : 0,
+      key: isSet(object.key) ? globalThis.Number(object.key) : 0,
+      value: isSet(object.value) ? globalThis.Number(object.value) : 0,
     };
   },
 
@@ -3700,8 +3702,8 @@ export const NormalGameHandlerState_UniverseFinishedTimesEntry = {
   fromJSON(object: any): NormalGameHandlerState_UniverseFinishedTimesEntry {
     return {
       $type: NormalGameHandlerState_UniverseFinishedTimesEntry.$type,
-      key: isSet(object.key) ? Number(object.key) : 0,
-      value: isSet(object.value) ? Number(object.value) : 0,
+      key: isSet(object.key) ? globalThis.Number(object.key) : 0,
+      value: isSet(object.value) ? globalThis.Number(object.value) : 0,
     };
   },
 
@@ -3736,30 +3738,11 @@ messageTypeRegistry.set(
   NormalGameHandlerState_UniverseFinishedTimesEntry,
 );
 
-declare const self: any | undefined;
-declare const window: any | undefined;
-declare const global: any | undefined;
-const tsProtoGlobalThis: any = (() => {
-  if (typeof globalThis !== "undefined") {
-    return globalThis;
-  }
-  if (typeof self !== "undefined") {
-    return self;
-  }
-  if (typeof window !== "undefined") {
-    return window;
-  }
-  if (typeof global !== "undefined") {
-    return global;
-  }
-  throw "Unable to locate global object";
-})();
-
 function bytesFromBase64(b64: string): Uint8Array {
-  if (tsProtoGlobalThis.Buffer) {
-    return Uint8Array.from(tsProtoGlobalThis.Buffer.from(b64, "base64"));
+  if ((globalThis as any).Buffer) {
+    return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
   } else {
-    const bin = tsProtoGlobalThis.atob(b64);
+    const bin = globalThis.atob(b64);
     const arr = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; ++i) {
       arr[i] = bin.charCodeAt(i);
@@ -3769,21 +3752,22 @@ function bytesFromBase64(b64: string): Uint8Array {
 }
 
 function base64FromBytes(arr: Uint8Array): string {
-  if (tsProtoGlobalThis.Buffer) {
-    return tsProtoGlobalThis.Buffer.from(arr).toString("base64");
+  if ((globalThis as any).Buffer) {
+    return globalThis.Buffer.from(arr).toString("base64");
   } else {
     const bin: string[] = [];
     arr.forEach((byte) => {
-      bin.push(String.fromCharCode(byte));
+      bin.push(globalThis.String.fromCharCode(byte));
     });
-    return tsProtoGlobalThis.btoa(bin.join(""));
+    return globalThis.btoa(bin.join(""));
   }
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
-  : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
+  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
+  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in Exclude<keyof T, "$type">]?: DeepPartial<T[K]> }
   : Partial<T>;
 
@@ -3792,8 +3776,8 @@ export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P> | "$type">]: never };
 
 function longToNumber(long: Long): number {
-  if (long.gt(Number.MAX_SAFE_INTEGER)) {
-    throw new tsProtoGlobalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  if (long.gt(globalThis.Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
   }
   return long.toNumber();
 }

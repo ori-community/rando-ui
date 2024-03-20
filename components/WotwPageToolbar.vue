@@ -191,6 +191,8 @@
         return `${window.location.origin}${relativeUrl}`
       },
       async login(event) {
+        this.$store.commit('auth/setRedirectPath', window.location.pathname + window.location.search)
+
         if (isElectron()) {
           try {
             const jwt = await window.electronApi.invoke(
@@ -207,7 +209,6 @@
             })
           }
         } else {
-          this.$store.commit('auth/setRedirectPath', window.location.pathname + window.location.search)
           window.location.href = `${this.$axios.defaults.baseURL}/login?redirect=${this.buildAbsoluteUrl(
             '/auth/callback',
           )}`

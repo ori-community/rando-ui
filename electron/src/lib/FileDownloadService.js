@@ -53,7 +53,7 @@ export class FileDownloadService {
     console.log(`Downloaded seed to ${targetFile}`)
 
     if (setToCurrent) {
-      await LauncherService.setNewGameSeedSource(targetFile)
+      await LauncherService.setNewGameSeedSource(`file:${targetFile}`)
     }
 
     if (showInExplorer) {

@@ -244,9 +244,8 @@
           await this.$store.dispatch('electron/downloadAndInstallUpdate')
         }
       },
-      async launch(seedFile = null, forceLaunch = false) {
+      async launch(forceLaunch = false) {
         await this.$store.dispatch('electron/launch', {
-          seedFile,
           forceLaunch,
         })
       },

@@ -73,10 +73,10 @@ export class LauncherService {
     return true
   }
 
-  static async launch(seedFilePath = null) {
-    if (seedFilePath) {
-      console.log('Launching seed', seedFilePath)
-      await this.setNewGameSeedSource(seedFilePath)
+  static async launch(newGameSeedSource = null) {
+    if (newGameSeedSource) {
+      console.log('Launching source', newGameSeedSource)
+      await this.setNewGameSeedSource(newGameSeedSource)
     } else {
       console.log('Launching last seed')
     }

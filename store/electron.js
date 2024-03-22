@@ -173,7 +173,7 @@ export const actions = {
       })
     }
   },
-  async launch({ commit, state, getters, dispatch }, { seedFile = null, forceLaunch = false } = {}) {
+  async launch({ commit, state, getters, dispatch }, { newGameSeedSource = null, forceLaunch = false } = {}) {
     if (state.launching) {
       return
     }
@@ -182,8 +182,8 @@ export const actions = {
     commit('setLaunching', true)
 
     try {
-      if (seedFile !== null) {
-        await window.electronApi.invoke('launcher.setNewGameSeedSource', `file:${seedFile}`)
+      if (newGameSeedSource !== null) {
+        await window.electronApi.invoke('launcher.setNewGameSeedSource', newGameSeedSource)
       }
 
       if (!forceLaunch) {
@@ -193,7 +193,7 @@ export const actions = {
       if (!forceLaunch && getters.updateAvailable && !(await window.electronApi.invoke('launcher.isRandomizerRunning'))) {
         commit('setShowUpdateAvailableDialog', true)
       } else {
-        await window.electronApi.invoke('launcher.launch', seedFile)
+        await window.electronApi.invoke('launcher.launch', newGameSeedSource)
       }
     } catch (e) {
       console.error(e)

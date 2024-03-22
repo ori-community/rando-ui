@@ -78,7 +78,7 @@
 
           window.electronApi.on('main.openSeed', (_event, seedFile) => {
             this.$store.dispatch('electron/launch', {
-              seedFile,
+              newGameSeedSource: `file:${seedFile}`,
             })
           })
 

@@ -24,17 +24,17 @@ export default {
     return await LauncherService.getNewGameSeedSource()
   },
 
-  async setNewGameSeedSource(event, seedPath) {
-    await LauncherService.setNewGameSeedSource(seedPath)
+  async setNewGameSeedSource(event, seedSource) {
+    await LauncherService.setNewGameSeedSource(seedSource)
   },
 
   async isRandomizerRunning() {
     return await LauncherService.isRandomizerRunning()
   },
 
-  async launch(event, seedPath = null) {
+  async launch(event, newGameSeedSource = null) {
     try {
-      await LauncherService.launch(seedPath)
+      await LauncherService.launch(newGameSeedSource)
     } catch (e) {
       console.log('Failed to launch:', e)
       event.sender.send('main.error', e)

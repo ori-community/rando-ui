@@ -87,6 +87,8 @@ export class LauncherService {
 
     const settings = await SettingsService.getCurrentSettings()
 
+    const wasRunning = await LauncherService.isRandomizerRunning()
+
     switch (getOS()) {
       case Platform.Windows:
         await this.launchWindows(settings)
@@ -96,7 +98,7 @@ export class LauncherService {
         break;
     }
 
-    if (settings['Flags.LaunchWithTracker']) {
+    if (!wasRunning && settings['Flags.LaunchWithTracker']) {
       await LocalTrackerService.openLocalTracker()
     }
   }

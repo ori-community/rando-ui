@@ -19,6 +19,9 @@
         <v-btn color="accent" to="/dev/bingo-tools">
           Bingo Tools
         </v-btn>
+        <v-btn color="accent" to="/dev/league-season">
+          League Season
+        </v-btn>
       </div>
     </div>
   </v-container>

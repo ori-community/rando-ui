@@ -4,7 +4,7 @@
       <div v-if="leagueGame !== null">
         <h1>Game {{ leagueGame.gameNumber }}</h1>
 
-        <v-btn :loading="actionLoading">Join</v-btn>
+        <v-btn :loading="actionLoading">Play</v-btn>
 
         <pre>{{ leagueGame }}</pre>
       </div>

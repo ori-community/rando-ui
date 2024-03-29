@@ -67,18 +67,12 @@ message MultiverseInfoMessage {
   optional int64 seedId = 5;
   GameHandlerType gameHandlerType = 6;
   bytes gameHandlerClientInfo = 7;
-  optional VisibilityMessage visibility = 8;
-  bool locked = 9;
-  bool isLockable = 10;
-  optional RaceInfo race = 11;
-  repeated UserInfo seedSpoilerDownloadedBy = 12;
-  repeated string connectedUserIds = 13;
-  repeated string raceReadyUserIds = 14;
-}
-
-message VisibilityMessage {
-  repeated string hiddenInWorld = 1;
-  repeated string hiddenOnMap = 2;
+  bool locked = 8;
+  bool isLockable = 9;
+  optional RaceInfo race = 10;
+  repeated UserInfo seedSpoilerDownloadedBy = 11;
+  repeated string connectedUserIds = 12;
+  repeated string raceReadyUserIds = 13;
 }
 
 message BingoSquare {

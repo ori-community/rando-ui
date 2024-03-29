@@ -74,7 +74,6 @@ export interface MultiverseInfoMessage {
   seedId?: number | undefined;
   gameHandlerType: MultiverseInfoMessage_GameHandlerType;
   gameHandlerClientInfo: Uint8Array;
-  visibility?: VisibilityMessage | undefined;
   locked: boolean;
   isLockable: boolean;
   race?: RaceInfo | undefined;
@@ -114,12 +113,6 @@ export function multiverseInfoMessage_GameHandlerTypeToJSON(object: MultiverseIn
     default:
       return "UNRECOGNIZED";
   }
-}
-
-export interface VisibilityMessage {
-  $type: "RandoProto.VisibilityMessage";
-  hiddenInWorld: string[];
-  hiddenOnMap: string[];
 }
 
 export interface BingoSquare {
@@ -1110,7 +1103,6 @@ function createBaseMultiverseInfoMessage(): MultiverseInfoMessage {
     seedId: undefined,
     gameHandlerType: 0,
     gameHandlerClientInfo: new Uint8Array(0),
-    visibility: undefined,
     locked: false,
     isLockable: false,
     race: undefined,
@@ -1145,26 +1137,23 @@ export const MultiverseInfoMessage = {
     if (message.gameHandlerClientInfo.length !== 0) {
       writer.uint32(58).bytes(message.gameHandlerClientInfo);
     }
-    if (message.visibility !== undefined) {
-      VisibilityMessage.encode(message.visibility, writer.uint32(66).fork()).ldelim();
-    }
     if (message.locked !== false) {
-      writer.uint32(72).bool(message.locked);
+      writer.uint32(64).bool(message.locked);
     }
     if (message.isLockable !== false) {
-      writer.uint32(80).bool(message.isLockable);
+      writer.uint32(72).bool(message.isLockable);
     }
     if (message.race !== undefined) {
-      RaceInfo.encode(message.race, writer.uint32(90).fork()).ldelim();
+      RaceInfo.encode(message.race, writer.uint32(82).fork()).ldelim();
     }
     for (const v of message.seedSpoilerDownloadedBy) {
-      UserInfo.encode(v!, writer.uint32(98).fork()).ldelim();
+      UserInfo.encode(v!, writer.uint32(90).fork()).ldelim();
     }
     for (const v of message.connectedUserIds) {
-      writer.uint32(106).string(v!);
+      writer.uint32(98).string(v!);
     }
     for (const v of message.raceReadyUserIds) {
-      writer.uint32(114).string(v!);
+      writer.uint32(106).string(v!);
     }
     return writer;
   },
@@ -1226,49 +1215,42 @@ export const MultiverseInfoMessage = {
           message.gameHandlerClientInfo = reader.bytes();
           continue;
         case 8:
-          if (tag !== 66) {
+          if (tag !== 64) {
             break;
           }
 
-          message.visibility = VisibilityMessage.decode(reader, reader.uint32());
+          message.locked = reader.bool();
           continue;
         case 9:
           if (tag !== 72) {
             break;
           }
 
-          message.locked = reader.bool();
+          message.isLockable = reader.bool();
           continue;
         case 10:
-          if (tag !== 80) {
+          if (tag !== 82) {
             break;
           }
 
-          message.isLockable = reader.bool();
+          message.race = RaceInfo.decode(reader, reader.uint32());
           continue;
         case 11:
           if (tag !== 90) {
             break;
           }
 
-          message.race = RaceInfo.decode(reader, reader.uint32());
+          message.seedSpoilerDownloadedBy.push(UserInfo.decode(reader, reader.uint32()));
           continue;
         case 12:
           if (tag !== 98) {
             break;
           }
 
-          message.seedSpoilerDownloadedBy.push(UserInfo.decode(reader, reader.uint32()));
+          message.connectedUserIds.push(reader.string());
           continue;
         case 13:
           if (tag !== 106) {
-            break;
-          }
-
-          message.connectedUserIds.push(reader.string());
-          continue;
-        case 14:
-          if (tag !== 114) {
             break;
           }
 
@@ -1301,7 +1283,6 @@ export const MultiverseInfoMessage = {
       gameHandlerClientInfo: isSet(object.gameHandlerClientInfo)
         ? bytesFromBase64(object.gameHandlerClientInfo)
         : new Uint8Array(0),
-      visibility: isSet(object.visibility) ? VisibilityMessage.fromJSON(object.visibility) : undefined,
       locked: isSet(object.locked) ? globalThis.Boolean(object.locked) : false,
       isLockable: isSet(object.isLockable) ? globalThis.Boolean(object.isLockable) : false,
       race: isSet(object.race) ? RaceInfo.fromJSON(object.race) : undefined,
@@ -1340,9 +1321,6 @@ export const MultiverseInfoMessage = {
     if (message.gameHandlerClientInfo.length !== 0) {
       obj.gameHandlerClientInfo = base64FromBytes(message.gameHandlerClientInfo);
     }
-    if (message.visibility !== undefined) {
-      obj.visibility = VisibilityMessage.toJSON(message.visibility);
-    }
     if (message.locked !== false) {
       obj.locked = message.locked;
     }
@@ -1376,9 +1354,6 @@ export const MultiverseInfoMessage = {
     message.seedId = object.seedId ?? undefined;
     message.gameHandlerType = object.gameHandlerType ?? 0;
     message.gameHandlerClientInfo = object.gameHandlerClientInfo ?? new Uint8Array(0);
-    message.visibility = (object.visibility !== undefined && object.visibility !== null)
-      ? VisibilityMessage.fromPartial(object.visibility)
-      : undefined;
     message.locked = object.locked ?? false;
     message.isLockable = object.isLockable ?? false;
     message.race = (object.race !== undefined && object.race !== null) ? RaceInfo.fromPartial(object.race) : undefined;
@@ -1390,89 +1365,6 @@ export const MultiverseInfoMessage = {
 };
 
 messageTypeRegistry.set(MultiverseInfoMessage.$type, MultiverseInfoMessage);
-
-function createBaseVisibilityMessage(): VisibilityMessage {
-  return { $type: "RandoProto.VisibilityMessage", hiddenInWorld: [], hiddenOnMap: [] };
-}
-
-export const VisibilityMessage = {
-  $type: "RandoProto.VisibilityMessage" as const,
-
-  encode(message: VisibilityMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.hiddenInWorld) {
-      writer.uint32(10).string(v!);
-    }
-    for (const v of message.hiddenOnMap) {
-      writer.uint32(18).string(v!);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): VisibilityMessage {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseVisibilityMessage();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.hiddenInWorld.push(reader.string());
-          continue;
-        case 2:
-          if (tag !== 18) {
-            break;
-          }
-
-          message.hiddenOnMap.push(reader.string());
-          continue;
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skipType(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): VisibilityMessage {
-    return {
-      $type: VisibilityMessage.$type,
-      hiddenInWorld: globalThis.Array.isArray(object?.hiddenInWorld)
-        ? object.hiddenInWorld.map((e: any) => globalThis.String(e))
-        : [],
-      hiddenOnMap: globalThis.Array.isArray(object?.hiddenOnMap)
-        ? object.hiddenOnMap.map((e: any) => globalThis.String(e))
-        : [],
-    };
-  },
-
-  toJSON(message: VisibilityMessage): unknown {
-    const obj: any = {};
-    if (message.hiddenInWorld?.length) {
-      obj.hiddenInWorld = message.hiddenInWorld;
-    }
-    if (message.hiddenOnMap?.length) {
-      obj.hiddenOnMap = message.hiddenOnMap;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<VisibilityMessage>, I>>(base?: I): VisibilityMessage {
-    return VisibilityMessage.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<VisibilityMessage>, I>>(object: I): VisibilityMessage {
-    const message = createBaseVisibilityMessage();
-    message.hiddenInWorld = object.hiddenInWorld?.map((e) => e) || [];
-    message.hiddenOnMap = object.hiddenOnMap?.map((e) => e) || [];
-    return message;
-  },
-};
-
-messageTypeRegistry.set(VisibilityMessage.$type, VisibilityMessage);
 
 function createBaseBingoSquare(): BingoSquare {
   return { $type: "RandoProto.BingoSquare", text: "", completedBy: [], goals: [], visibleFor: [] };

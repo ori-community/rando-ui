@@ -13,6 +13,15 @@
         <v-col cols="4">
           <v-text-field v-model="createGameCount" type="number" label="Game count" />
         </v-col>
+        <v-col cols="12">
+          <v-text-field v-model="createShortDescription" label="Short Description" />
+        </v-col>
+        <v-col cols="12">
+          <v-textarea v-model="createLongDescriptionMarkdown" auto-grow label="Long Description (Markdown)" />
+        </v-col>
+        <v-col cols="12">
+          <v-textarea v-model="createRulesMarkdown" auto-grow label="Rules (Markdown)" />
+        </v-col>
       </v-row>
 
       <v-btn color="accent" @click="create">
@@ -41,6 +50,9 @@
       createName: 'My League Season',
       createCron: '*/10 * * * *',
       createGameCount: 3,
+      createShortDescription: 'Test League, Gorlek, All Trees',
+      createLongDescriptionMarkdown: 'Welcome to the *Test League*.\nWhat you can expect here:\n- Fun\n- Bugs\n- even more Fun',
+      createRulesMarkdown: '1. Do not cheat\n2. If you do, uninstall the game immediately',
       forceContinueId: 0,
     }),
     methods: {
@@ -50,6 +62,9 @@
             name: this.createName,
             cron: this.createCron,
             gameCount: this.createGameCount,
+            shortDescription: this.createShortDescription,
+            longDescriptionMarkdown: this.createLongDescriptionMarkdown,
+            rulesMarkdown: this.createRulesMarkdown,
           })
 
           await this.$router.push({name: 'league-seasons-seasonId', params: {seasonId}})

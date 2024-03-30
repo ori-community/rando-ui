@@ -8,6 +8,14 @@
         <v-icon left>mdi-dice-multiple</v-icon>
         Seed Generator
       </v-btn>
+      <v-btn key="league" x-large depressed text to="/league/seasons">
+        <v-icon left>mdi-trophy</v-icon>
+        League
+      </v-btn>
+      <!-- for testing -->
+      <v-btn v-if="isLoggedIn && isDeveloper" key="leagueControl" x-large depressed text to="/dev/league">
+        leagueControl
+      </v-btn>
       <template v-if="isElectron">
         <v-btn
             :disabled="currentMultiverseId == null"

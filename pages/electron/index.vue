@@ -140,7 +140,7 @@
               <span>Discord</span>
               <template #activator="{ on }">
                 <v-btn icon v-on="on" @click="openDiscord">
-                  <v-icon>mdi-discord</v-icon>
+                  <v-icon>$si-discord</v-icon>
                 </v-btn>
               </template>
             </v-tooltip>

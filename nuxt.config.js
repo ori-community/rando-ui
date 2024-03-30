@@ -1,4 +1,5 @@
 import colors from 'vuetify/es5/util/colors'
+import * as simpleIcons from 'simple-icons'
 
 const env = {
   PLATFORM: process.env.PLATFORM || 'web',
@@ -88,6 +89,12 @@ export default {
     treeShake: true,
     defaultAssets: false,
     customVariables: ['@/assets/style/variables.scss'],
+    icons: {
+      iconfont: 'mdi',
+      values: {
+        'si-discord': simpleIcons.siDiscord.path
+      }
+    },
     theme: {
       dark: true,
       options: {

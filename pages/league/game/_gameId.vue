@@ -5,24 +5,44 @@
         <h1 class="text-center mt-12">Season {{ leagueSeason.name }}</h1>
         <h2 class="text-center mb-6">Game #{{ leagueGame.gameNumber }}</h2>
         <div class="d-flex justify-center align-center">
-          <v-btn x-large color="accent" @click="launchGame()">
+          <v-btn v-if="!didSubmit && canSubmit" x-large color="accent" @click="launchGame()">
             <img class="launch-icon" src="../../../assets/images/launch.png" alt="" />
             Launch
           </v-btn>
         </div>
-        <v-btn text :to="{ name: 'league-seasons-seasonId', params: { seasonId: leagueGame.seasonId } }">
-          <v-icon>mdi-arrow-left-thin</v-icon>
-          Go Back
-        </v-btn>
-        <v-card class="pa-5">
-          <div v-for="submission in gameSubmissions" :key="submission.id">
-            <div>
-              {{ submission.membership.user.name }}
+        <div class="submissions-container mt-7">
+          <v-btn text :to="{ name: 'league-seasons-seasonId', params: { seasonId: leagueGame.seasonId } }">
+            <v-icon>mdi-arrow-left-thin</v-icon>
+            Go Back
+          </v-btn>
+          <v-card class="pa-5">
+            <h2 class="text-center mb-5">Submissions</h2>
+            <div
+              v-if="sortedSubmissions?.length > 0"
+              class="submissions-grid"
+              :style="{ gridTemplateRows: `repeat(${sortedSubmissions?.length + 1}, 1fr)` }"
+            >
+              <div>#</div>
+              <div>Member</div>
+              <div>time</div>
+              <div>points</div>
+              <div>discarded</div>
+              <template v-for="submission in sortedSubmissions">
+                <div :key="`${submission.id}-rank`">
+                  <place-badge :size="40" :place="!submission.rankingData.rank ? '' : submission.rankingData.rank" />
+                </div>
+                <div :key="`${submission.id}-name`">
+                  <discord-avatar :user="submission.membership.user" class="mr-1" />{{ submission.membership.user.name }}
+                </div>
+                <div :key="`${submission.id}-time`">{{ formatTime(submission.rankingData.time) }}</div>
+                <div :key="`${submission.id}-points`">{{ submission.rankingData.points }}</div>
+                <div :key="`${submission.id}-discarded`">{{ submission.rankingData.discarded }}</div>
+              </template>
             </div>
-          </div>
-          <div v-if="!(gameSubmissions?.length > 0)">Be the first to submit</div>
-        </v-card>
-        <!-- <pre>{{ leagueGame }}</pre> -->
+            <div v-if="!(gameSubmissions?.length > 0) && canSubmit" class="mt-5">Be the first to submit!</div>
+          </v-card>
+        </div>
+        <pre>{{ leagueGame }}</pre>
         <!-- <pre>{{ gameSubmissions }}</pre> -->
       </div>
     </throttled-spinner>
@@ -30,7 +50,12 @@
 </template>
 
 <script>
+
+  // TODO:
+  // beautify grid
+
   import { mapGetters, mapState } from 'vuex'
+  import { formatTime } from '~/assets/lib/formatTime'
 
   export default {
     data: () => ({
@@ -44,42 +69,40 @@
       ...mapGetters('user', ['isLoggedIn']),
       ...mapState('multiverseState', ['multiverses']),
       canSubmit() {
-        return this.leagueGame !== null && this.leagueGame.permissions?.canSubmit
+        return this.leagueGame !== null && this.leagueGame.userMetadata.canSubmit
+      },
+      didSubmit() {
+        return this.gameSubmissions?.some((s) => s.membership.user.id === this.user.id)
       },
       multiverse() {
         return this.multiverses[this.leagueGame.multiverseId]
       },
-    },
-    watch: {
-      '$route.params.gameId': {
-        immediate: true,
-        handler() {
-          this.loadGame()
-        },
-      },
-    },
-    methods: {
-      async loadGame() {
-        try {
-          this.leagueGame = await this.$axios.$get(`/league/games/${this.$route.params.gameId}`)
-          this.leagueSeason = await this.$axios.$get(`/league/seasons/${this.leagueGame.seasonId}`)
-          this.gameSubmissions = await this.$axios.$get(`/league/games/${this.$route.params.gameId}/submissions`)
-        } catch (e) {
-          console.error(e)
+      sortedSubmissions() {
+        if (!this.gameSubmissions) {
+          return []
         }
-      },
-      async launchGame() {
-        await this.$store.dispatch('multiverseState/fetchMultiverse', this.leagueGame.multiverseId)
-
-        // create world if it doesn't exist
-        if (!this.ownWorld()) {
-          const universeId = null
-          await this.$axios.post(`/multiverses/${this.leagueGame.multiverseId}/${universeId}/worlds`)
+        if (this.didSubmit) {
+          return [...this.gameSubmissions].sort((a, b) => {
+            // if discarded, rank stays null
+            if (!a.rankingData.rank && !b.rankingData.rank) {
+              return 0
+            }
+            if (!a.rankingData.rank) {
+              return 1
+            }
+            if (!b.rankingData.rank) {
+              return -1
+            }
+            // if same rank, order by username
+            if (b.rankingData.rank === a.rankingData.rank) {
+              return a.membership.user.name.localeCompare(b.membership.user.name)
+            }
+            return a.rankingData.rank - b.rankingData.rank
+          })
+        } else {
+          // order by username
+          return [...this.gameSubmissions].sort((a, b) => a.membership.user.name.localeCompare(b.membership.user.name))
         }
-
-        // launch
-        await window.electronApi.invoke('launcher.setNewGameSeedSource', `server:${this.leagueGame.multiverseId}`)
-        await this.$store.dispatch('electron/launch')
       },
       ownWorld() {
         console.log(this.multiverse)
@@ -98,6 +121,40 @@
         return null
       },
     },
+    watch: {
+      '$route.params.gameId': {
+        immediate: true,
+        handler() {
+          this.loadGame()
+        },
+      },
+    },
+    methods: {
+      formatTime,
+      async loadGame() {
+        try {
+          this.leagueGame = await this.$axios.$get(`/league/games/${this.$route.params.gameId}`)
+          this.leagueSeason = await this.$axios.$get(`/league/seasons/${this.leagueGame.seasonId}`)
+          this.gameSubmissions = await this.$axios.$get(`/league/games/${this.$route.params.gameId}/submissions`)
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      async launchGame() {
+        await this.$store.dispatch('multiverseState/fetchMultiverse', this.leagueGame.multiverseId)
+
+        // create world if it doesn't exist
+        if (!this.ownWorld) {
+          const universeId = null
+          await this.$axios.post(`/multiverses/${this.leagueGame.multiverseId}/${universeId}/worlds`)
+        }
+
+        // launch
+        this.$store.dispatch('electron/launch', {
+          newGameSeedSource: `server:${this.leagueGame.multiverseId}`,
+        })
+      },
+    },
   }
 </script>
 
@@ -112,5 +169,15 @@
       opacity: 0.4;
       filter: grayscale(1);
     }
+  }
+
+  .submissions-container {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .submissions-grid {
+    display: grid;
+    grid-template-columns: 0.5fr 2fr 1fr 1fr 1fr;
   }
 </style>

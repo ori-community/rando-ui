@@ -1,7 +1,13 @@
 <template>
   <div class="place-badge">
-    <v-icon size="64" :color="color">{{ icon }}</v-icon>
-    <div class="text-container">
+    <v-icon :size="size" :color="color">{{ icon }}</v-icon>
+    <div
+      class="text-container"
+      :style="{
+        fontSize: `${calcFontSize}px`, // Set font size using the prop value
+        fontWeight: calcFontWeight,
+      }"
+    >
       {{ place }}
     </div>
   </div>
@@ -12,8 +18,12 @@
     name: 'PlaceBadge',
     props: {
       place: {
-        type: Number,
+        type: [String, Number],
         default: 1,
+      },
+      size: {
+        type: Number,
+        default: 64,
       },
     },
     computed: {
@@ -39,7 +49,13 @@
             return 'background lighten-1'
         }
       },
-    }
+      calcFontSize (){
+        return this.size * 0.4
+      },
+      calcFontWeight (){
+        return this.size * 14 
+      },
+    },
   }
 </script>
 
@@ -57,8 +73,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 26px;
-      font-weight: 900;
     }
   }
 </style>

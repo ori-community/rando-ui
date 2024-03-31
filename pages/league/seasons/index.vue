@@ -95,6 +95,8 @@ export default {
 <style lang="scss" scoped>
   .seasons-container {
     display: grid;
-    grid-template-columns: 2fr 5fr 2fr 0.5fr 2fr;
+    grid-template-columns: auto 1fr auto auto auto;
+    grid-auto-rows: 1fr;
+    gap: 0.75em;
   }
 </style>

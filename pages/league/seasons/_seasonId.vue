@@ -59,14 +59,14 @@
       <v-dialog v-model="showSeasonInfo" max-width="800">
         <v-card class="pa-5">
           <div v-if="leagueSeason">
-            <div v-html="leagueSeason.longDescriptionMarkdown"></div>
+            <div v-html="longDescriptionHtml"></div>
           </div>
         </v-card>
       </v-dialog>
       <v-dialog v-model="showSeasonRules" max-width="800">
         <v-card class="pa-5">
           <div v-if="leagueSeason">
-            <div v-html="leagueSeason.rulesMarkdown"></div>
+            <div v-html="rulesHtml"></div>
           </div>
         </v-card>
       </v-dialog>
@@ -75,11 +75,11 @@
 </template>
 
 <script>
-
   // TODO
   // update lists when something changes
 
   import { mapGetters, mapState } from 'vuex'
+  import { renderMarkdown } from '~/assets/lib/markdown'
 
   export default {
     data: () => ({
@@ -100,6 +100,12 @@
       },
       sortedMembers() {
         return this.leagueSeason.memberships.toSorted((a, b) => b.points - a.points)
+      },
+      rulesHtml() {
+        return renderMarkdown(this.leagueSeason.rulesMarkdown)
+      },
+      longDescriptionHtml() {
+        return renderMarkdown(this.leagueSeason.longDescriptionMarkdown)
       },
     },
     watch: {

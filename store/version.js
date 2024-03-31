@@ -1,5 +1,5 @@
-import * as commonmark from 'commonmark'
 import * as semver from 'semver'
+import { renderMarkdown } from '~/assets/lib/markdown'
 
 export const state = () => ({
   availableReleases: null,
@@ -51,15 +51,10 @@ export const actions = {
         (await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/releases`))
           .filter((release) => !release.draft && !release.prerelease)
           .sort((a, b) => semver.compareLoose(b.name, a.name))
-          .map((release) => {
-            const parser = new commonmark.Parser()
-            const writer = new commonmark.HtmlRenderer()
-
-            return {
-              ...release,
-              bodyHtml: writer.render(parser.parse(release.body)),
-            }
-          }),
+          .map((release) => ({
+            ...release,
+            bodyHtml: renderMarkdown(release.body),
+          })),
       )
     } catch (e) {
       console.error(e)

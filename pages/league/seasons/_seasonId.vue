@@ -44,40 +44,31 @@
             </div>
             <div v-if="!(sortedMembers.length > 0) && canJoin" class="mt-5">Be the first to <b>JOIN!</b></div>
           </v-card>
-          <v-card class="pa-5">
-            <h2 class="text-center mb-5">Games</h2>
-            <div class="gameslist" :style="{ gridTemplateRows: `repeat(${leagueSeason.games.length + 1}, 1fr)` }">
-              <div>#</div>
-              <div>Open until</div>
-              <div>Submissions</div>
-              <template v-for="game in leagueSeason.games">
-                <v-btn :key="`${game.id}-nr`" :to="{ name: 'league-game-gameId', params: { gameId: game.id } }">
-                  #{{ game.gameNumber }}
-                  <v-icon right>mdi-gamepad-variant-outline</v-icon>
-                </v-btn>
-                <div :key="`${game.id}-date`">todo</div>
-                <div :key="`${game.id}-submits`">todo</div>
-              </template>
+          <div>
+            <div class="games-list">
+              <league-game-card v-if="currentGame !== null" :game="currentGame" />
+              <h3 v-if="pastGames.length > 0" class="text-center" :class="{'mt-3': currentGame !== null}">Past Games</h3>
+              <v-data-table disable-pagination hide-default-footer /> <!-- TODO -->
             </div>
-          </v-card>
+          </div>
         </div>
         <!-- <pre>{{ leagueSeason }}</pre> -->
       </div>
-      <v-dialog v-model="showSeasonInfo" max-width="800">
-        <v-card class="pa-5">
-          <div v-if="leagueSeason">
-            <div v-html="longDescriptionHtml"></div>
-          </div>
-        </v-card>
-      </v-dialog>
-      <v-dialog v-model="showSeasonRules" max-width="800">
-        <v-card class="pa-5">
-          <div v-if="leagueSeason">
-            <div v-html="rulesHtml"></div>
-          </div>
-        </v-card>
-      </v-dialog>
     </throttled-spinner>
+    <v-dialog v-model="showSeasonInfo" max-width="800">
+      <v-card class="pa-5">
+        <div v-if="leagueSeason">
+          <div v-html="longDescriptionHtml"></div>
+        </div>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="showSeasonRules" max-width="800">
+      <v-card class="pa-5">
+        <div v-if="leagueSeason">
+          <div v-html="rulesHtml"></div>
+        </div>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -100,19 +91,25 @@
       ...mapState('user', ['user']),
       ...mapGetters('user', ['isLoggedIn']),
       isJoined() {
-        return this.leagueSeason.memberships.some((m) => m.user.id === this.user.id)
+        return this.leagueSeason !== null && this.leagueSeason.memberships.some((m) => m.user.id === this.user?.id)
       },
       canJoin() {
         return this.leagueSeason !== null && this.leagueSeason.canJoin && this.isLoggedIn && !this.isJoined
       },
       sortedMembers() {
-        return this.leagueSeason.memberships.toSorted((a, b) => b.points - a.points)
+        return this.leagueSeason?.memberships?.toSorted((a, b) => b.points - a.points) ?? []
       },
       rulesHtml() {
         return renderMarkdown(this.leagueSeason.rulesMarkdown)
       },
       longDescriptionHtml() {
         return renderMarkdown(this.leagueSeason.longDescriptionMarkdown)
+      },
+      currentGame() {
+        return this.leagueSeason?.games?.find(g => g.isCurrent)
+      },
+      pastGames() {
+        return this.leagueSeason?.games?.filter(g => !g.isCurrent)
       },
     },
     watch: {
@@ -149,15 +146,13 @@
 <style lang="scss" scoped>
   .tables-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 2fr 1fr;
     grid-auto-flow: column;
-    grid-template-rows: 100%;
     gap: 1em;
 
     @media (max-width: 900px) {
       grid-template-columns: 1fr;
       grid-auto-flow: row;
-      grid-template-rows: repeat(2, 1fr);
     }
   }
 
@@ -166,8 +161,9 @@
     grid-template-columns: 0.5fr 5fr 1fr;
   }
 
-  .gameslist {
-    display: grid;
-    grid-template-columns: 1fr 2fr 4fr;
+  .games-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75em;
   }
 </style>

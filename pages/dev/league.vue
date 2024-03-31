@@ -22,6 +22,9 @@
         <v-col cols="12">
           <v-textarea v-model="createRulesMarkdown" auto-grow label="Rules (Markdown)" />
         </v-col>
+        <v-col cols="12">
+          <v-text-field v-model="createBackgroundImageUrl" label="Background Image URL (optional)" />
+        </v-col>
       </v-row>
 
       <v-btn color="accent" @click="create">
@@ -53,6 +56,7 @@
       createShortDescription: 'Test League, Gorlek, All Trees',
       createLongDescriptionMarkdown: 'Welcome to the *Test League*.\nWhat you can expect here:\n- Fun\n- Bugs\n- even more Fun',
       createRulesMarkdown: '1. Do not cheat\n2. If you do, uninstall the game immediately',
+      createBackgroundImageUrl: '',
       forceContinueId: 0,
     }),
     methods: {
@@ -65,6 +69,7 @@
             shortDescription: this.createShortDescription,
             longDescriptionMarkdown: this.createLongDescriptionMarkdown,
             rulesMarkdown: this.createRulesMarkdown,
+            backgroundImageUrl: this.createBackgroundImageUrl,
           })
 
           await this.$router.push({name: 'league-seasons-seasonId', params: {seasonId}})

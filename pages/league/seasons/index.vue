@@ -2,7 +2,7 @@
   <v-container>
     <h1 class='text-center mt-12 mb-6'>Randomizer League</h1>
     <div class="mb-3">
-      Small league introduction</br>
+      Small league introduction<br />
       Lorem ipsum dolor sit amet, consectetur adipiscing elit,
       sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
       Cursus mattis molestie a iaculis. Viverra justo nec ultrices dui.

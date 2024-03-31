@@ -2,14 +2,21 @@
   <v-container>
     <throttled-spinner>
       <div v-if="leagueSeason !== null">
-        <h1 class="text-center mt-12 mb-6">Season {{ leagueSeason.name }}</h1>
+        <h1 class="text-center mt-12 mb-6">{{ leagueSeason.name }}</h1>
 
         <div class="mb-2">
           <v-btn text @click="showSeasonInfo = true"><v-icon left>mdi-information-outline</v-icon>Info</v-btn>
           <v-btn text @click="showSeasonRules = true"><v-icon left>mdi-book-open-outline</v-icon>Rules</v-btn>
-          <v-btn v-if="!isJoined" color="accent" :loading="actionLoading" :disabled="!canJoin" @click="joinSeason"
-            >Join</v-btn
+          <v-btn
+            v-if="!isJoined"
+            color="accent"
+            :loading="actionLoading"
+            :disabled="!canJoin"
+            @click="joinSeason"
           >
+            <v-icon left>mdi-plus-circle-outline</v-icon>
+            Join
+          </v-btn>
           <v-btn
             text
             :loading="actionLoading"

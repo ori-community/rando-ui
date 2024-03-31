@@ -2,8 +2,8 @@
   <v-container>
     <throttled-spinner>
       <div v-if="leagueSeason !== null && leagueGame !== null">
-        <h1 class="text-center mt-12">{{ leagueSeason.name }}</h1>
-        <h2 class="text-center mb-6">Game #{{ leagueGame.gameNumber }}</h2>
+        <h1 class="text-center mt-12">Game #{{ leagueGame.gameNumber }}</h1>
+        <h2 class="text-center mb-6">{{ leagueSeason.name }}</h2>
         <div class="d-flex justify-center align-center">
           <v-tooltip v-if="!isElectron" bottom>
             <template #activator="{ on }">
@@ -20,9 +20,9 @@
           </v-btn>
         </div>
         <div class="submissions-container mt-7">
-          <v-btn text :to="{ name: 'league-seasons-seasonId', params: { seasonId: leagueGame.seasonId } }">
+          <v-btn class="mb-1" text :to="{ name: 'league-seasons-seasonId', params: { seasonId: leagueGame.seasonId } }">
             <v-icon>mdi-arrow-left-thin</v-icon>
-            Go Back
+            Season
           </v-btn>
           <v-card class="pa-5">
             <h2 class="text-center mb-5">Submissions</h2>

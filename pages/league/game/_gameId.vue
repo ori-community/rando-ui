@@ -2,10 +2,19 @@
   <v-container>
     <throttled-spinner>
       <div v-if="leagueSeason !== null && leagueGame !== null">
-        <h1 class="text-center mt-12">Season {{ leagueSeason.name }}</h1>
+        <h1 class="text-center mt-12">{{ leagueSeason.name }}</h1>
         <h2 class="text-center mb-6">Game #{{ leagueGame.gameNumber }}</h2>
         <div class="d-flex justify-center align-center">
-          <v-btn v-if="!didSubmit && canSubmit" x-large color="accent" @click="launchGame()">
+          <v-tooltip v-if="!isElectron" bottom>
+            <template #activator="{ on }">
+              <v-btn color="accent" x-large v-on="on" @click="openInLauncher">
+                <v-icon left>mdi-launch</v-icon>
+                Open in Launcher
+              </v-btn>
+            </template>
+            <span><kbd>Ctrl</kbd> + Click to close this window</span>
+          </v-tooltip>
+          <v-btn v-else-if="!didSubmit && canSubmit" x-large color="accent" @click="launchGame()">
             <img class="launch-icon" src="../../../assets/images/launch.png" alt="" />
             Launch
           </v-btn>
@@ -56,6 +65,7 @@
 
   import { mapGetters, mapState } from 'vuex'
   import { formatTime } from '~/assets/lib/formatTime'
+  import { isElectron } from '~/assets/lib/isElectron'
 
   export default {
     data: () => ({
@@ -68,6 +78,7 @@
       ...mapState('user', ['user']),
       ...mapGetters('user', ['isLoggedIn']),
       ...mapState('multiverseState', ['multiverses']),
+      isElectron,
       canSubmit() {
         return this.leagueGame !== null && this.leagueGame.userMetadata.canSubmit
       },
@@ -120,6 +131,9 @@
 
         return null
       },
+      launcherUrl() {
+        return `ori-rando://league/game/${this.leagueGame.id}`
+      },
     },
     watch: {
       '$route.params.gameId': {
@@ -153,6 +167,15 @@
         this.$store.dispatch('electron/launch', {
           newGameSeedSource: `server:${this.leagueGame.multiverseId}`,
         })
+      },
+      openInLauncher(event) {
+        window.open(this.launcherUrl, '_self')
+
+        if (event.ctrlKey) {
+          setTimeout(() => {
+            window.close()
+          }, 500)
+        }
       },
     },
   }

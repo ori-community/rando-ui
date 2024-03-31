@@ -25,5 +25,10 @@ export const formatsDates = {
         locale: enCA,
       })
     },
+    formatDateEpoch(epochMillis, format = 'dd.MM.yyyy') {
+      return formatDate(new Date(epochMillis), format, {
+        locale: enCA,
+      })
+    },
   },
 }

@@ -15,29 +15,26 @@
       Mi proin sed libero enim. Etiam non quam lacus suspendisse faucibus interdum
       posuere lorem ipsum. Auctor elit sed vulputate mi sit.
     </div>
-    <v-btn small text outlined @click="showLeagueInfo = true"><v-icon left>mdi-information-outline</v-icon>More Info</v-btn>
-    <v-card class="mt-5 pa-3">
-      <div class="seasons-container" :style="{ gridTemplateRows: `repeat(${sortedSeasons.length + 1}, 1fr)` }">
-        <div>Name</div>
-        <div>Description</div>
-        <div>Start Date</div>
-        <div>Games</div>
-        <div>Members</div>
-        <template v-for="season in sortedSeasons">
-          <div :key="`${season.id}-name`">
-            <v-btn :to="{ name: 'league-seasons-seasonId', params: { seasonId: season.id } }">
-              <template v-if="isDeveloper">{{ season.id }} / </template>
-              {{ season.name }}
-            </v-btn>
-          </div>
-          <div :key="`${season.id}-desc`">{{ season.shortDescription }}</div>
-          <div :key="`${season.id}-date`">todo</div>
-          <div :key="`${season.id}-games`">todo</div>
-          <div :key="`${season.id}-members`">todo</div>
-        </template>
+    <v-btn class="mb-3" small text outlined @click="showLeagueInfo = true">
+      <v-icon left>mdi-information-outline</v-icon>
+      More Info
+    </v-btn>
+
+    <template v-if="categorizedSeasons.active.length > 0 || categorizedSeasons.upcoming.length > 0">
+      <h2 class="mt-5 mb-2">Active & Upcoming</h2>
+
+      <div class="seasons-container">
+        <league-season-card v-for="season in categorizedSeasons.active" :key="season.id" :season="season" mode="active" />
+        <league-season-card v-for="season in categorizedSeasons.upcoming" :key="season.id" :season="season" mode="upcoming" />
       </div>
-    </v-card>
-    <!-- <pre>{{ leagueSeasons }}</pre> -->
+    </template>
+
+    <template v-if="categorizedSeasons.past.length > 0">
+      <h2 class="mt-5 mb-2">Past Seasons</h2>
+      <div class="seasons-container">
+        <league-season-card v-for="season in categorizedSeasons.past" :key="season.id" :season="season" />
+      </div>
+    </template>
 
     <v-dialog v-model="showLeagueInfo" max-width="800">
       <v-card class="pa-5">
@@ -60,43 +57,59 @@
   // total point counter
   import { mapGetters, mapState } from 'vuex'
 
-export default {
-  data: () => ({
-    seasonsLoading: false,
-    leagueSeasons: [],
-    showLeagueInfo: false,
-  }),
-  computed: {
-    ...mapState('user', ['user']),
-    ...mapGetters('user', ['isLoggedIn', 'isDeveloper']),
-    sortedSeasons() {
-      return this.leagueSeasons.toSorted((a, b) => b.id - a.id)
-    },
-  },
-  mounted() {
-    this.loadSeasons()
-  },
-  methods: {
-    async loadSeasons() {
-      this.seasonsLoading = true
+  export default {
+    data: () => ({
+      seasonsLoading: false,
+      leagueSeasons: [],
+      showLeagueInfo: false,
+    }),
+    computed: {
+      ...mapState('user', ['user']),
+      ...mapGetters('user', ['isLoggedIn', 'isDeveloper']),
+      categorizedSeasons() {
+        const value = {
+          upcoming: [],
+          active: [],
+          past: [],
+        }
 
-      try {
-        this.leagueSeasons = await this.$axios.$get('/league/seasons')
-      } catch (e) {
-        console.error(e)
+        for (const season of this.leagueSeasons) {
+          if (season.canJoin && season.currentGameId === null) {
+            value.upcoming.push(season)
+          } else if (season.currentGameId !== null) {
+            value.active.push(season)
+          } else {
+            value.past.push(season)
+          }
+        }
+
+        return value
       }
+    },
+    mounted() {
+      this.loadSeasons()
+    },
+    methods: {
+      async loadSeasons() {
+        this.seasonsLoading = true
 
-      this.seasonsLoading = false
+        try {
+          this.leagueSeasons = await this.$axios.$get('/league/seasons')
+        } catch (e) {
+          console.error(e)
+        }
+
+        this.seasonsLoading = false
+      }
     }
   }
-}
 </script>
 
 <style lang="scss" scoped>
   .seasons-container {
     display: grid;
-    grid-template-columns: auto 1fr auto auto auto;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     grid-auto-rows: 1fr;
-    gap: 0.75em;
+    gap: 1em;
   }
 </style>

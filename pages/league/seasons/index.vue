@@ -18,24 +18,24 @@
     <v-btn small text outlined @click="showLeagueInfo = true"><v-icon left>mdi-information-outline</v-icon>More Info</v-btn>
     <v-card class="mt-5 pa-3">
       <div class="seasons-container" :style="{ gridTemplateRows: `repeat(${sortedSeasons.length + 1}, 1fr)` }">
-              <div>Name</div>
-              <div>Description</div>
-              <div>Start Date</div>
-              <div>Games</div>
-              <div>Members</div>
-              <template v-for="season in sortedSeasons">
-                <div :key="`${season.id}-name`">
-                  <v-btn :to="{ name: 'league-seasons-seasonId', params: { seasonId: season.id } }">
-                    <template v-if="user.isDeveloper">{{ season.id }} / </template>
-                    {{ season.name }}
-                  </v-btn>
-                </div>
-                <div :key="`${season.id}-desc`">{{ season.shortDescription }}</div>
-                <div :key="`${season.id}-date`">todo</div>
-                <div :key="`${season.id}-games`">todo</div>
-                <div :key="`${season.id}-members`">todo</div>
-              </template>
-            </div>
+        <div>Name</div>
+        <div>Description</div>
+        <div>Start Date</div>
+        <div>Games</div>
+        <div>Members</div>
+        <template v-for="season in sortedSeasons">
+          <div :key="`${season.id}-name`">
+            <v-btn :to="{ name: 'league-seasons-seasonId', params: { seasonId: season.id } }">
+              <template v-if="isDeveloper">{{ season.id }} / </template>
+              {{ season.name }}
+            </v-btn>
+          </div>
+          <div :key="`${season.id}-desc`">{{ season.shortDescription }}</div>
+          <div :key="`${season.id}-date`">todo</div>
+          <div :key="`${season.id}-games`">todo</div>
+          <div :key="`${season.id}-members`">todo</div>
+        </template>
+      </div>
     </v-card>
     <!-- <pre>{{ leagueSeasons }}</pre> -->
 
@@ -55,10 +55,10 @@
   // grid view for list of leagues (Name, short description, scheduled start, current game / game count, amount of members)
   // mark season if: you joined it, its active
   // update list by seasons change (for example new season added, season ended, member joined)
-  
-  // IDEA: 
+
+  // IDEA:
   // total point counter
-import { mapState } from 'vuex'
+  import { mapGetters, mapState } from 'vuex'
 
 export default {
   data: () => ({
@@ -66,14 +66,15 @@ export default {
     leagueSeasons: [],
     showLeagueInfo: false,
   }),
-  mounted() {
-    this.loadSeasons()
-  },
   computed: {
     ...mapState('user', ['user']),
+    ...mapGetters('user', ['isLoggedIn', 'isDeveloper']),
     sortedSeasons() {
-      return [...this.leagueSeasons].sort((a, b) => (b.id) - (a.id))
+      return this.leagueSeasons.toSorted((a, b) => b.id - a.id)
     },
+  },
+  mounted() {
+    this.loadSeasons()
   },
   methods: {
     async loadSeasons() {

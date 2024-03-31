@@ -99,7 +99,7 @@
         return this.leagueSeason !== null && this.leagueSeason.canJoin && this.isLoggedIn && !this.isJoined
       },
       sortedMembers() {
-        return [...this.leagueSeason.memberships].sort((a, b) => b.points - a.points)
+        return this.leagueSeason.memberships.toSorted((a, b) => b.points - a.points)
       },
     },
     watch: {

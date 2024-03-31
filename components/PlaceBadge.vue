@@ -28,7 +28,7 @@
     },
     computed: {
       icon() {
-        switch (this.place) {
+        switch (Number(this.place)) {
           case 1:
           case 2:
           case 3:
@@ -38,7 +38,7 @@
         }
       },
       color() {
-        switch (this.place) {
+        switch (Number(this.place)) {
           case 1:
             return '#ffd200'
           case 2:
@@ -53,7 +53,7 @@
         return this.size * 0.4
       },
       calcFontWeight (){
-        return this.size * 14 
+        return this.size * 14
       },
     },
   }

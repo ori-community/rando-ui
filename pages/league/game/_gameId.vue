@@ -38,14 +38,23 @@
               <div>discarded</div>
               <template v-for="submission in sortedSubmissions">
                 <div :key="`${submission.id}-rank`">
-                  <place-badge :size="40" :place="!submission.rankingData.rank ? '' : submission.rankingData.rank" />
+                  <place-badge
+                    v-if="submission.rankingData !== null"
+                    :size="40"
+                    :place="!submission.rankingData.rank ? '' : submission.rankingData.rank"
+                  />
+                  <span v-else>?</span>
                 </div>
                 <div :key="`${submission.id}-name`">
-                  <discord-avatar :user="submission.membership.user" class="mr-1" />{{ submission.membership.user.name }}
+                  <discord-avatar :user="submission.membership.user" class="mr-1" />{{
+                    submission.membership.user.name
+                  }}
                 </div>
-                <div :key="`${submission.id}-time`">{{ formatTime(submission.rankingData.time) }}</div>
-                <div :key="`${submission.id}-points`">{{ submission.rankingData.points }}</div>
-                <div :key="`${submission.id}-discarded`">{{ submission.rankingData.discarded }}</div>
+                <div :key="`${submission.id}-time`">
+                  {{ submission.rankingData !== null ? formatTime(submission.rankingData.time) : '?' }}
+                </div>
+                <div :key="`${submission.id}-points`">{{ submission.rankingData?.points ?? '?' }}</div>
+                <div :key="`${submission.id}-discarded`">{{ submission.rankingData?.discarded ?? '?' }}</div>
               </template>
             </div>
             <div v-if="!(gameSubmissions?.length > 0) && canSubmit" class="mt-5">Be the first to submit!</div>
@@ -59,7 +68,6 @@
 </template>
 
 <script>
-
   // TODO:
   // beautify grid
 
@@ -94,21 +102,15 @@
         }
         if (this.didSubmit) {
           return [...this.gameSubmissions].sort((a, b) => {
-            // if discarded, rank stays null
-            if (!a.rankingData.rank && !b.rankingData.rank) {
-              return 0
-            }
-            if (!a.rankingData.rank) {
-              return 1
-            }
-            if (!b.rankingData.rank) {
-              return -1
-            }
-            // if same rank, order by username
-            if (b.rankingData.rank === a.rankingData.rank) {
+            // Put submissions without rankingData to the bottom
+            const aRankOrder = a.rankingData?.rank ?? Number.MAX_VALUE
+            const bRankOrder = b.rankingData?.rank ?? Number.MAX_VALUE
+
+            if (aRankOrder === bRankOrder) {
               return a.membership.user.name.localeCompare(b.membership.user.name)
             }
-            return a.rankingData.rank - b.rankingData.rank
+
+            return aRankOrder - bRankOrder
           })
         } else {
           // order by username

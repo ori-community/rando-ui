@@ -482,7 +482,7 @@
         }
 
         for (const universe of this.multiverse.universes) {
-          const world = universe.worlds.find((world) => world.members.find((player) => player.id === this.user?.id))
+          const world = universe.worlds.find(w => w.memberships.find(m => m.user.id === this.user?.id))
 
           if (world) {
             return world

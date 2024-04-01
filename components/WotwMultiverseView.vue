@@ -117,7 +117,7 @@
       },
       ownUniverse() {
         return this.multiverse.universes.find((universe) =>
-          universe.worlds.find((world) => world.members.find((player) => player.id === this.user?.id)),
+          universe.worlds.find(world => world.memberships.find(m => m.user.id === this.user?.id)),
         )
       },
       ownUniverseId() {

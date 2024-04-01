@@ -14,25 +14,25 @@
     <v-card-text>
       <v-scroll-x-transition leave-absolute group tag="div">
         <wotw-player-view
-          v-for="player in world.members"
-          :key="player.id"
+          v-for="membership in world.memberships"
+          :key="membership.id"
           class="mb-1"
-          :user="player"
-          :connected="connectedUserIds.includes(player.id)"
-          :race-ready="raceReadyUserIds.includes(player.id)"
+          :user="membership.user"
+          :connected="connectedUserIds.includes(membership.user.id)"
+          :race-ready="raceReadyUserIds.includes(membership.user.id)"
         >
           <div class="player-info" title="Loading time">
-            <v-tooltip v-if="seedSpoilerDownloadedByIds.includes(player.id)" bottom>
+            <v-tooltip v-if="seedSpoilerDownloadedByIds.includes(membership.user.id)" bottom>
               <template #activator="{on}">
                 <v-icon x-small v-on="on">mdi-eye-outline</v-icon>
               </template>
               <span>Has seen spoiler</span>
             </v-tooltip>
-            <span v-if="hasMultiplePlayers && hasOwnProperty(playerFinishedTimes, player.id)" class="finished-time" :class="{forfeited: playerFinishedTimes[player.id] === 0.0}" title="Finished time">{{
-              playerFinishedTimes[player.id] !== 0.0 ? formatTime(playerFinishedTimes[player.id]) : 'DNF'
+            <span v-if="hasMultiplePlayers && hasOwnProperty(playerFinishedTimes, membership.id)" class="finished-time" :class="{forfeited: playerFinishedTimes[membership.id] === 0.0}" title="Finished time">{{
+              playerFinishedTimes[membership.id] !== 0.0 ? formatTime(playerFinishedTimes[membership.id]) : 'DNF'
             }}</span>
-            <span v-else-if="raceStartingAt > 0 && hasOwnProperty(playerInGameTimes, player.id)" class="loading-time" title="Loading time">{{
-              formatTime(playerInGameTimes[player.id] - (now() - raceStartingAt) / 1000.0, 1, false, true)
+            <span v-else-if="raceStartingAt > 0 && hasOwnProperty(playerInGameTimes, membership.id)" class="loading-time" title="Loading time">{{
+              formatTime(playerInGameTimes[membership.id] - (now() - raceStartingAt) / 1000.0, 1, false, true)
             }}</span>
           </div>
         </wotw-player-view>
@@ -106,10 +106,10 @@
       ...mapState('dev', ['devtoolsEnabled']),
       isElectron,
       canJoinInternal() {
-        return this.canJoin && !this.world.members.some((u) => u.id === this.user?.id)
+        return this.canJoin && !this.world.memberships.some(m => m.user.id === this.user?.id)
       },
       hasMultiplePlayers() {
-        return this.world.members.length > 1
+        return this.world.memberships.length > 1
       },
     },
     watch: {

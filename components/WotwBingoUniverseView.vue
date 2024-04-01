@@ -12,7 +12,7 @@
     <div v-if="!!universe" class="pa-2 players">
       <template v-for="world in universe.worlds">
         <wotw-player-view
-          v-for="player in world.members"
+          v-for="player in world.memberships.map(m => m.user)"
           :key="player.id"
           class="player-view"
           :user="player"

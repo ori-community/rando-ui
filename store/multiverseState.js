@@ -187,9 +187,9 @@ export const actions = {
 
             for (const universe of packet.universes) {
               for (const world of universe.worlds) {
-                for (const member of world.members) {
-                  if (member.id === rootState.user.user?.id) {
-                    commit('user/setUser', member, { root: true })
+                for (const membership of world.memberships) {
+                  if (membership.user.id === rootState.user.user?.id) {
+                    commit('user/setUser', membership.user, { root: true })
                   }
                 }
               }

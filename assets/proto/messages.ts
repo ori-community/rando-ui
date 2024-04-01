@@ -26,12 +26,18 @@ export interface UserInfo {
   points: number;
 }
 
+export interface WorldMembershipInfo {
+  $type: "RandoProto.WorldMembershipInfo";
+  id: number;
+  user: UserInfo | undefined;
+}
+
 export interface WorldInfo {
   $type: "RandoProto.WorldInfo";
   id: number;
   name: string;
   color: string;
-  members: UserInfo[];
+  memberships: WorldMembershipInfo[];
   seedId?: number | undefined;
 }
 
@@ -561,8 +567,87 @@ export const UserInfo = {
 
 messageTypeRegistry.set(UserInfo.$type, UserInfo);
 
+function createBaseWorldMembershipInfo(): WorldMembershipInfo {
+  return { $type: "RandoProto.WorldMembershipInfo", id: 0, user: undefined };
+}
+
+export const WorldMembershipInfo = {
+  $type: "RandoProto.WorldMembershipInfo" as const,
+
+  encode(message: WorldMembershipInfo, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== 0) {
+      writer.uint32(8).int64(message.id);
+    }
+    if (message.user !== undefined) {
+      UserInfo.encode(message.user, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): WorldMembershipInfo {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseWorldMembershipInfo();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.id = longToNumber(reader.int64() as Long);
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.user = UserInfo.decode(reader, reader.uint32());
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): WorldMembershipInfo {
+    return {
+      $type: WorldMembershipInfo.$type,
+      id: isSet(object.id) ? globalThis.Number(object.id) : 0,
+      user: isSet(object.user) ? UserInfo.fromJSON(object.user) : undefined,
+    };
+  },
+
+  toJSON(message: WorldMembershipInfo): unknown {
+    const obj: any = {};
+    if (message.id !== 0) {
+      obj.id = Math.round(message.id);
+    }
+    if (message.user !== undefined) {
+      obj.user = UserInfo.toJSON(message.user);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<WorldMembershipInfo>, I>>(base?: I): WorldMembershipInfo {
+    return WorldMembershipInfo.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<WorldMembershipInfo>, I>>(object: I): WorldMembershipInfo {
+    const message = createBaseWorldMembershipInfo();
+    message.id = object.id ?? 0;
+    message.user = (object.user !== undefined && object.user !== null) ? UserInfo.fromPartial(object.user) : undefined;
+    return message;
+  },
+};
+
+messageTypeRegistry.set(WorldMembershipInfo.$type, WorldMembershipInfo);
+
 function createBaseWorldInfo(): WorldInfo {
-  return { $type: "RandoProto.WorldInfo", id: 0, name: "", color: "", members: [], seedId: undefined };
+  return { $type: "RandoProto.WorldInfo", id: 0, name: "", color: "", memberships: [], seedId: undefined };
 }
 
 export const WorldInfo = {
@@ -578,8 +663,8 @@ export const WorldInfo = {
     if (message.color !== "") {
       writer.uint32(26).string(message.color);
     }
-    for (const v of message.members) {
-      UserInfo.encode(v!, writer.uint32(34).fork()).ldelim();
+    for (const v of message.memberships) {
+      WorldMembershipInfo.encode(v!, writer.uint32(34).fork()).ldelim();
     }
     if (message.seedId !== undefined) {
       writer.uint32(40).int64(message.seedId);
@@ -620,7 +705,7 @@ export const WorldInfo = {
             break;
           }
 
-          message.members.push(UserInfo.decode(reader, reader.uint32()));
+          message.memberships.push(WorldMembershipInfo.decode(reader, reader.uint32()));
           continue;
         case 5:
           if (tag !== 40) {
@@ -644,7 +729,9 @@ export const WorldInfo = {
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       color: isSet(object.color) ? globalThis.String(object.color) : "",
-      members: globalThis.Array.isArray(object?.members) ? object.members.map((e: any) => UserInfo.fromJSON(e)) : [],
+      memberships: globalThis.Array.isArray(object?.memberships)
+        ? object.memberships.map((e: any) => WorldMembershipInfo.fromJSON(e))
+        : [],
       seedId: isSet(object.seedId) ? globalThis.Number(object.seedId) : undefined,
     };
   },
@@ -660,8 +747,8 @@ export const WorldInfo = {
     if (message.color !== "") {
       obj.color = message.color;
     }
-    if (message.members?.length) {
-      obj.members = message.members.map((e) => UserInfo.toJSON(e));
+    if (message.memberships?.length) {
+      obj.memberships = message.memberships.map((e) => WorldMembershipInfo.toJSON(e));
     }
     if (message.seedId !== undefined) {
       obj.seedId = Math.round(message.seedId);
@@ -677,7 +764,7 @@ export const WorldInfo = {
     message.id = object.id ?? 0;
     message.name = object.name ?? "";
     message.color = object.color ?? "";
-    message.members = object.members?.map((e) => UserInfo.fromPartial(e)) || [];
+    message.memberships = object.memberships?.map((e) => WorldMembershipInfo.fromPartial(e)) || [];
     message.seedId = object.seedId ?? undefined;
     return message;
   },

@@ -3,7 +3,7 @@
     <img v-if="!!season.backgroundImageUrl" class="background-image" alt="" :src="season.backgroundImageUrl" />
 
     <div class="gradient-overlay"></div>
-s
+
     <v-icon v-if="joined" class="joined" small>mdi-star</v-icon>
 
     <div v-if="mode === MODE_UPCOMING" class="card-tag px-2 blue darken-1">Upcoming</div>

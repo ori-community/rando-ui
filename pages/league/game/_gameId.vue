@@ -117,21 +117,12 @@
           return [...this.gameSubmissions].sort((a, b) => a.membership.user.name.localeCompare(b.membership.user.name))
         }
       },
-      ownWorld() {
-        console.log(this.multiverse)
+      hasWorldWithCurrentUser() {
         if (!this.multiverse) {
-          return null
+          return false
         }
 
-        for (const universe of this.multiverse.universes) {
-          const world = universe.worlds.find((world) => world.members.find((player) => player.id === this.user?.id))
-
-          if (world) {
-            return world
-          }
-        }
-
-        return null
+        return this.multiverse.universes.some(u => u.worlds.some(w => w.memberships.find(m => m.user.id === this.user?.id)))
       },
       launcherUrl() {
         return `ori-rando://league/game/${this.leagueGame.id}`
@@ -160,7 +151,7 @@
         await this.$store.dispatch('multiverseState/fetchMultiverse', this.leagueGame.multiverseId)
 
         // create world if it doesn't exist
-        if (!this.ownWorld) {
+        if (!this.hasWorldWithCurrentUser) {
           const universeId = null
           await this.$axios.post(`/multiverses/${this.leagueGame.multiverseId}/${universeId}/worlds`)
         }

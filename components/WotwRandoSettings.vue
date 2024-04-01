@@ -266,13 +266,13 @@
             @change="hostChanged"
             label="Server Host"
             v-model="settings['Paths.Host']"
-            :items="['wotw.orirando.com', 'dev.wotw.orirando.com']"
+            :items="['wotw.orirando.com', 'dev.wotw.orirando.com', '127.0.0.1:8081']"
             messages="Press Ctrl+R after changing this setting for it to apply in the launcher"
           ></v-combobox>
           <v-combobox
             label="UDP Port"
             v-model="settings['Paths.UdpPort']"
-            :items="['31415', '31416']"
+            :items="['31415', '31416', '52423']"
             hide-details
           ></v-combobox>
           <v-checkbox
@@ -393,6 +393,9 @@
               break
             case 'dev.wotw.orirando.com':
               this.settings['Paths.UdpPort'] = '31416'
+              break
+            case '127.0.0.1:8081':
+              this.settings['Paths.UdpPort'] = '52423'
               break
           }
         })

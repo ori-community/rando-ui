@@ -1,15 +1,13 @@
 <template>
-  <v-card class="season-card" :to="{name: 'league-seasons-seasonId', params: {seasonId: season.id}}">
+  <v-card class="season-card" :to="{ name: 'league-seasons-seasonId', params: { seasonId: season.id } }">
     <img v-if="!!season.backgroundImageUrl" class="background-image" alt="" :src="season.backgroundImageUrl" />
 
     <div class="gradient-overlay"></div>
+s
+    <v-icon v-if="joined" class="joined" small>mdi-star</v-icon>
 
-    <div v-if="mode === MODE_UPCOMING" class="card-tag px-2 blue darken-1">
-      Upcoming
-    </div>
-    <div v-else-if="mode === MODE_ACTIVE" class="card-tag px-2 green darken-2">
-      Active
-    </div>
+    <div v-if="mode === MODE_UPCOMING" class="card-tag px-2 blue darken-1">Upcoming</div>
+    <div v-else-if="mode === MODE_ACTIVE" class="card-tag px-2 green darken-2">Active</div>
 
     <div class="card-content pa-4">
       <h3>{{ season.name }}</h3>
@@ -48,6 +46,10 @@
         type: String,
         default: MODE_DEFAULT,
       },
+      joined: {
+        type: Boolean,
+        default: false,
+      }
     },
     data: () => ({
       MODE_DEFAULT,
@@ -99,6 +101,12 @@
       .spacer {
         flex-grow: 1;
       }
+    }
+
+    .joined {
+      position: absolute;
+      top: 0;
+      left: 0;
     }
 
     .card-tag {

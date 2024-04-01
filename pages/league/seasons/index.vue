@@ -24,8 +24,8 @@
       <h2 class="mt-5 mb-2">Active & Upcoming</h2>
 
       <div class="seasons-container">
-        <league-season-card v-for="season in categorizedSeasons.active" :key="season.id" :season="season" mode="active" />
-        <league-season-card v-for="season in categorizedSeasons.upcoming" :key="season.id" :season="season" mode="upcoming" />
+        <league-season-card v-for="season in categorizedSeasons.active" :key="season.id" :season="season" mode="active" :joined="userIsMemberOfSeason(season)" />
+        <league-season-card v-for="season in categorizedSeasons.upcoming" :key="season.id" :season="season" mode="upcoming" :joined="userIsMemberOfSeason(season)"/>
       </div>
     </template>
 
@@ -49,7 +49,6 @@
   // TODO:
   // league description
   // general league ruleset
-  // grid view for list of leagues (Name, short description, scheduled start, current game / game count, amount of members)
   // mark season if: you joined it, its active
   // update list by seasons change (for example new season added, season ended, member joined)
 
@@ -84,7 +83,7 @@
         }
 
         return value
-      }
+      },
     },
     mounted() {
       this.loadSeasons()
@@ -100,7 +99,10 @@
         }
 
         this.seasonsLoading = false
-      }
+      },
+      userIsMemberOfSeason(season){
+        return season.memberships?.some((m) => m.user.id === this.user.id)
+      },
     }
   }
 </script>

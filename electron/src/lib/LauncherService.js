@@ -28,8 +28,8 @@ const waitForProcess = (processName, maxTries = 20) => new Promise((resolve, rej
   check()
 })
 
-const focusGameWindow = () => {
-  // TODO: Reimplement focus using IPC
+const focusGameWindow = async () => {
+  await RandoIPCService.emit('focus_game_window')
 }
 
 export class LauncherService {

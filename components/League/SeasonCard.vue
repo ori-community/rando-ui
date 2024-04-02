@@ -4,10 +4,11 @@
 
     <div class="gradient-overlay"></div>
 
-    <v-icon v-if="joined" class="joined" small>mdi-star</v-icon>
-
-    <div v-if="mode === MODE_UPCOMING" class="card-tag px-2 blue darken-1">Upcoming</div>
-    <div v-else-if="mode === MODE_ACTIVE" class="card-tag px-2 green darken-2">Active</div>
+    <div class="card-tags">
+      <div v-if="mode === MODE_UPCOMING" class="px-2 blue darken-1">Upcoming</div>
+      <div v-else-if="mode === MODE_ACTIVE" class="px-2 green darken-2">Active</div>
+      <div v-if="joined" class="px-2 accent"><v-icon x-small>mdi-check</v-icon> Joined</div>
+    </div>
 
     <div class="card-content pa-4">
       <h3>{{ season.name }}</h3>
@@ -62,7 +63,7 @@
       currentGameNumber() {
         // return gameCount when season finished
         if (!this.season.currentGameId && !this.season.canJoin) { return this.season.gameCount }
-        
+
         const currentGame = this.season.games?.find((g) => g.id === this.season.currentGameId)
         return currentGame?.gameNumber ? currentGame?.gameNumber : 0
       },
@@ -120,11 +121,14 @@
       left: 0;
     }
 
-    .card-tag {
+    .card-tags {
       position: absolute;
       top: 0;
       right: 0;
       border-bottom-left-radius: 0.4em;
+      overflow: hidden;
+      display: flex;
+      font-size: 0.8em;
     }
   }
 </style>

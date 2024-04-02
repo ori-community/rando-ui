@@ -23,7 +23,7 @@
         <v-icon x-small>mdi-account-multiple-outline</v-icon>
         {{ season.memberships.length }} {{ season.memberships.length === 1 ? 'player' : 'players' }},
         <v-icon x-small>mdi-gamepad-variant-outline</v-icon>
-        {{ currentGameNumber }} / {{ season.gameCount }} games
+        {{ currentGameNumber }}/{{ season.gameCount }} games
       </div>
     </div>
   </v-card>

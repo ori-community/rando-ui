@@ -124,7 +124,7 @@
       showSeasonRules: false,
       memberHeaders: [
         { text: 'Rank', value: 'rank', width: '80px' },
-        { text: 'Member', value: 'user.name' },
+        { text: 'Player', value: 'user.name' },
         { text: 'Points', value: 'points', width: '30%' },
       ],
       gameHeaders: [

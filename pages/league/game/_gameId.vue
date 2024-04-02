@@ -69,7 +69,7 @@
       actionLoading: false,
       submissionHeaders: [
         { text: 'Rank', value: 'rankingData.rank' },
-        { text: 'Member', value: 'membership.user.name' },
+        { text: 'Player', value: 'membership.user.name' },
         { text: 'Time', value: 'rankingData.time' },
         { text: 'Points', value: 'rankingData.points' },
         { text: 'Discarded', value: 'rankingData.discarded' },

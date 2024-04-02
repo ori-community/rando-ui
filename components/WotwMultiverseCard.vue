@@ -56,6 +56,7 @@
     overflow: hidden;
     transition: transform 300ms;
     border: 1px solid rgba(255, 255, 255, 0.4);
+    will-change: transform;
 
     &:hover {
       transform: scale(1.02);

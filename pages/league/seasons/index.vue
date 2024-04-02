@@ -37,12 +37,17 @@
       </div>
     </template>
 
-    <template v-if="categorizedSeasons.past.length > 0">
+    <div v-if="categorizedSeasons.past.length > 0" class="past-seasons">
       <h2 class="mt-5 mb-2">Past Seasons</h2>
       <div class="seasons-container">
-        <league-season-card v-for="season in categorizedSeasons.past" :key="season.id" :season="season" />
+        <league-season-card
+          v-for="season in categorizedSeasons.past"
+          :key="season.id"
+          :season="season"
+          :joined="userIsMemberOfSeason(season)"
+        />
       </div>
-    </template>
+    </div>
 
     <v-dialog v-model="showLeagueInfo" max-width="800">
       <v-card class="pa-5">
@@ -127,5 +132,14 @@
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     grid-auto-rows: 1fr;
     gap: 1em;
+  }
+
+  .past-seasons {
+    opacity: 0.4;
+    transition: opacity 300ms;
+
+    &:hover {
+      opacity: 1.0;
+    }
   }
 </style>

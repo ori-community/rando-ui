@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "os": ["win32"],
-  "devDependencies": {
+  "dependencies": {
     "node-gyp": "^10.1.0"
   },
   "scripts": {

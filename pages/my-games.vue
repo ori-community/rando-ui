@@ -14,6 +14,9 @@
             />
           </div>
         </div>
+        <div v-if="multiversesByDate.length === 0" class="text-center">
+          You didn't play any games yet
+        </div>
       </template>
     </throttled-spinner>
   </v-container>

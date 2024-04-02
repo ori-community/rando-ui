@@ -7,7 +7,7 @@ import { BindingsService } from '~/electron/src/lib/BindingsService'
 import { uiIpc } from '~/electron/src/api'
 import { isProcessRunning } from '~/electron/src/lib/isProcessRunning'
 import { LocalTrackerService } from '@/lib/LocalTrackerService'
-import { getOS, Platform } from '~/assets/lib/os'
+import { getOS, isOS, Platform } from '~/assets/lib/os'
 import { WineService } from '@/lib/linux/WineService'
 
 
@@ -29,7 +29,9 @@ const waitForProcess = (processName, maxTries = 20) => new Promise((resolve, rej
 })
 
 const focusGameWindow = async () => {
-  await RandoIPCService.emit('focus_game_window')
+  if (isOS(Platform.Windows)) {
+    (await import('focus-ori')).focusOri()
+  }
 }
 
 export class LauncherService {
@@ -116,7 +118,7 @@ export class LauncherService {
     if (await this.isRandomizerRunning()) {
       try {
         await RandoIPCService.emit('reload')
-        focusGameWindow()
+        await focusGameWindow()
       } catch (e) {
         console.error(e)
         throw new Error('Could not load the seed in running game.\nPlease wait a few seconds if you closed the game just now.')
@@ -151,7 +153,7 @@ export class LauncherService {
           stdio: 'inherit',
         }).unref()
         await waitForProcess('oriwotw.exe', 60)
-        focusGameWindow()
+        await focusGameWindow()
       }
     }
   }

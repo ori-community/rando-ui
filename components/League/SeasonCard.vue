@@ -21,7 +21,9 @@
       </div>
       <div>
         <v-icon x-small>mdi-account-multiple-outline</v-icon>
-        {{ season.memberships.length }} {{ season.memberships.length === 1 ? 'player' : 'players' }}
+        {{ season.memberships.length }} {{ season.memberships.length === 1 ? 'player' : 'players' }},
+        <v-icon x-small>mdi-gamepad-variant-outline</v-icon>
+        {{ currentGameNumber }} / {{ season.gameCount }} games
       </div>
     </div>
   </v-card>
@@ -49,13 +51,22 @@
       joined: {
         type: Boolean,
         default: false,
-      }
+      },
     },
     data: () => ({
       MODE_DEFAULT,
       MODE_UPCOMING,
       MODE_ACTIVE,
     }),
+    computed: {
+      currentGameNumber() {
+        // return gameCount when season finished
+        if (!this.season.currentGameId && !this.season.canJoin) { return this.season.gameCount }
+        
+        const currentGame = this.season.games?.find((g) => g.id === this.season.currentGameId)
+        return currentGame?.gameNumber ? currentGame?.gameNumber : 0
+      },
+    },
   }
 </script>
 

@@ -7,7 +7,12 @@
     <div class="gradient-overlay"></div>
 
     <div class="card-content pa-4">
-      <div class="game-number">{{ game.gameNumber }}</div>
+      <div class="game-number-container">
+        <div>Game</div>
+        <div>
+          <span class="hashtag">#</span><span class="game-number">{{ game.gameNumber }}</span>
+        </div>
+      </div>
 
       <div class="spacer"></div>
 
@@ -111,9 +116,21 @@
       align-items: center;
       height: 100%;
 
-      .game-number {
-        font-size: 2em;
-        font-weight: 900;
+      .game-number-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        line-height: 1;
+
+        .hashtag {
+          font-size: 1.5em;
+          opacity: 0.75;
+        }
+
+        .game-number {
+          font-size: 2.5em;
+          font-weight: 900;
+        }
       }
 
       .spacer {

@@ -14,13 +14,7 @@
         <div class="mb-2">
           <v-btn text @click="showSeasonInfo = true"><v-icon left>mdi-information-outline</v-icon>Info</v-btn>
           <v-btn text @click="showSeasonRules = true"><v-icon left>mdi-book-open-outline</v-icon>Rules</v-btn>
-          <v-btn
-            v-if="!isJoined"
-            color="accent"
-            :loading="actionLoading"
-            :disabled="!canJoin"
-            @click="joinSeason"
-          >
+          <v-btn v-if="!isJoined" color="accent" :loading="actionLoading" :disabled="!canJoin" @click="joinSeason">
             <v-icon left>mdi-plus-circle-outline</v-icon>
             Join
           </v-btn>
@@ -44,9 +38,33 @@
           </v-card>
           <div>
             <div class="games-list">
-              <league-game-card v-if="currentGame !== null" :game="currentGame" :playable-until="leagueSeason.nextContinuationAt" />
-              <h3 v-if="pastGames.length > 0" class="text-center" :class="{'mt-3': currentGame !== null}">Past Games</h3>
-              <v-data-table disable-pagination hide-default-footer /> <!-- TODO -->
+              <league-game-card
+                v-if="currentGame !== null"
+                :game="currentGame"
+                :playable-until="leagueSeason.nextContinuationAt"
+              />
+              <h3 v-if="pastGames.length > 0" class="text-center" :class="{ 'mt-3': currentGame !== null }">
+                Past Games
+              </h3>
+              <v-data-table
+                :headers="gameHeaders"
+                :items="pastGames"
+                disable-pagination
+                hide-default-footer
+                must-sort
+                sort-by="gameNumber"
+                :no-data-text="gamesNoDataAvailableText"
+                @click:row="(game) => openGamePage(game.id)"
+              >
+                <template #item.gameNumber="{ item }">#{{ item.gameNumber }}</template>
+                <template #item.userMetadata.ownSubmission.rankingData.rank="{ item }">
+                  <place-badge
+                    v-if="item.userMetadata?.ownSubmission?.rankingData?.rank ?? null !== null"
+                    :size="40"
+                    :place="item.userMetadata.ownSubmission.rankingData.rank"
+                  />
+                </template>
+              </v-data-table>
             </div>
           </div>
         </div>
@@ -84,6 +102,16 @@
       displayedTab: null,
       showSeasonInfo: false,
       showSeasonRules: false,
+      gameHeaders: [
+        {
+          text: 'Game Number',
+          align: 'start',
+          value: 'gameNumber',
+        },
+        { text: 'Submissions', value: 'submissionCount' },
+        { text: 'Your Rank', value: 'userMetadata.ownSubmission.rankingData.rank' },
+        { text: 'Your Points', value: 'userMetadata.ownSubmission.rankingData.points' },
+      ],
     }),
     computed: {
       ...mapState('user', ['user']),
@@ -104,10 +132,16 @@
         return renderMarkdown(this.leagueSeason.longDescriptionMarkdown)
       },
       currentGame() {
-        return this.leagueSeason?.games?.find(g => g.isCurrent) ?? null
+        return this.leagueSeason?.games?.find((g) => g.isCurrent) ?? null
       },
       pastGames() {
-        return this.leagueSeason?.games?.filter(g => !g.isCurrent) ?? []
+        return this.leagueSeason?.games?.filter((g) => !g.isCurrent) ?? []
+      },
+      gamesNoDataAvailableText() {
+        if (this.leagueSeason?.games?.length > 0) {
+          return 'Waiting for first game to finish'
+        }
+        return 'Waiting for season to start'
       },
     },
     watch: {
@@ -137,6 +171,9 @@
 
         this.actionLoading = false
       },
+      async openGamePage(gameId) {
+        await this.$router.push({ name: 'league-game-gameId', params: { gameId } })
+      },
     },
   }
 </script>
@@ -152,7 +189,7 @@
     .background-image {
       width: 100%;
       height: 100%;
-      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.0) 100%);
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0) 100%);
     }
 
     .overlay {

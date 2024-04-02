@@ -49,9 +49,9 @@
                 </template>
                 <template #item.user.name="{ item }">
                   <discord-avatar :user="item.user" class="mr-1" />
-                  <v-tooltip bottom>
+                  <v-tooltip v-if="currentGameSubmissions?.some(s => s.membership.user.id === item.user.id)" open-delay="500" bottom>
                     <template #activator="{ on }">
-                      <v-icon v-if="memberSubmittedToCurrentGame(item.user)" small v-on="on">mdi-flag-checkered</v-icon>
+                      <v-icon small v-on="on">mdi-flag-checkered</v-icon>
                     </template>
                     Submitted to current game
                   </v-tooltip>
@@ -122,9 +122,6 @@
 </template>
 
 <script>
-  // TODO
-  // update lists when something changes
-
   import { mapGetters, mapState } from 'vuex'
   import { renderMarkdown } from '~/assets/lib/markdown'
 
@@ -214,10 +211,6 @@
       },
       async openGamePage(gameId) {
         await this.$router.push({ name: 'league-game-gameId', params: { gameId } })
-      },
-      memberSubmittedToCurrentGame(user) {
-        if (!this.currentGame || !this.currentGameSubmissions) return false
-        return this.currentGameSubmissions?.some((s) => s.membership.user.id === user.id)
       },
     },
   }

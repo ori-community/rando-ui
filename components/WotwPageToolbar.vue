@@ -8,27 +8,23 @@
         <v-icon left>mdi-dice-multiple</v-icon>
         Seed Generator
       </v-btn>
+      <v-btn
+        v-if="isLoggedIn"
+        key="my-games"
+        exact
+        x-large
+        depressed
+        text
+        :to="{ name: 'my-games' }"
+      >
+        <v-icon left>mdi-gamepad-variant-outline</v-icon>
+        My Games
+      </v-btn>
       <v-btn key="league" x-large depressed text to="/league/seasons">
         <v-icon left>mdi-trophy</v-icon>
         League
       </v-btn>
-      <!-- for testing -->
-      <v-btn v-if="isLoggedIn && isDeveloper" key="leagueControl" x-large depressed text to="/dev/league">
-        leagueControl
-      </v-btn>
       <template v-if="isElectron">
-        <v-btn
-            :disabled="currentMultiverseId == null"
-            key="game"
-            exact
-            x-large
-            depressed
-            text
-            :to="{ name: 'game-multiverseId', params: { multiverseId: currentMultiverseId } }"
-        >
-          <v-icon left>mdi-gamepad-variant-outline</v-icon>
-          Game
-        </v-btn>
         <v-btn key="stats" x-large depressed text to="/electron/stats">
           <v-icon left>mdi-chart-box-outline</v-icon>
             Stats

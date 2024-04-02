@@ -40,7 +40,12 @@
     <template v-if="categorizedSeasons.past.length > 0">
       <h2 class="mt-5 mb-2">Past Seasons</h2>
       <div class="seasons-container">
-        <league-season-card v-for="season in categorizedSeasons.past" :key="season.id" :season="season" />
+        <league-season-card
+          v-for="season in categorizedSeasons.past"
+          :key="season.id"
+          :season="season"
+          :joined="userIsMemberOfSeason(season)"
+        />
       </div>
     </template>
 

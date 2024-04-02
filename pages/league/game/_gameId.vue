@@ -26,21 +26,29 @@
           </v-btn>
           <v-card class="pt-5">
             <h2 class="text-center mb-5">Submissions</h2>
-            <v-data-table
-              :headers="submissionHeaders"
-              :items="sortedSubmissions"
-              disable-pagination
-              hide-default-footer
-              no-data-text="be the first to submit!"
-            >
-              <template #item.rankingData.rank="{ item }">
-                <place-badge v-if="item.rankingData?.rank ?? null !== null" :size="40" :place="item.rankingData.rank" />
-              </template>
-              <template #item.membership.user.name="{ item }">
-                <discord-avatar :user="item.membership.user" class="mr-1" />
-                {{ item.membership.user.name }}
-              </template>
-            </v-data-table>
+            <throttled-spinner>
+              <v-data-table
+                v-if="sortedSubmissions"
+                :headers="submissionHeaders"
+                :items="sortedSubmissions"
+                disable-pagination
+                hide-default-footer
+                disable-sort
+                no-data-text="be the first to submit!"
+              >
+                <template #item.rankingData.rank="{ item }">
+                  <place-badge
+                    v-if="item.rankingData?.rank ?? null !== null"
+                    :size="40"
+                    :place="item.rankingData.rank"
+                  />
+                </template>
+                <template #item.membership.user.name="{ item }">
+                  <discord-avatar :user="item.membership.user" class="mr-1" />
+                  {{ item.membership.user.name }}
+                </template>
+              </v-data-table>
+            </throttled-spinner>
           </v-card>
         </div>
       </div>
@@ -170,8 +178,4 @@
     margin: 0 auto;
   }
 
-  .submissions-grid {
-    display: grid;
-    grid-template-columns: 0.5fr 2fr 1fr 1fr 1fr;
-  }
 </style>

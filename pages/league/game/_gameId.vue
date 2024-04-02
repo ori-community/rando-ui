@@ -49,6 +49,7 @@
                   <discord-avatar :user="item.membership.user" class="mr-1" />
                   {{ item.membership.user.name }}
                 </template>
+                <template #item.rankingData.time="{item}">{{ formatTime(item.rankingData?.time) }}</template>
               </v-data-table>
             </throttled-spinner>
           </v-card>

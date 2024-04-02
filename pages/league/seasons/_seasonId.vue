@@ -24,11 +24,13 @@
             <throttled-spinner>
               <v-data-table
                 v-if="sortedMembers"
+                class="leaderboard"
                 :headers="memberHeaders"
                 :items="sortedMembers"
                 disable-pagination
                 hide-default-footer
                 disable-sort
+                :item-class="(item) => (item.user.id === user?.id ? 'row-highlighting' : '')"
               >
                 <template v-if="!(sortedMembers.length > 0) && canJoin" #no-data>
                   <img class="ori-image mt-5" src="~/assets/images/ori_lurk.png" /><br /><b>JOIN!</b>
@@ -51,6 +53,12 @@
                   {{ item.user.name }}
                 </template>
               </v-data-table>
+              <div class="text-center mt-3 mb-1">
+                <v-label>
+                  {{ leagueSeason.memberships.length }}
+                  {{ leagueSeason.memberships.length === 1 ? 'player' : 'players' }}
+                </v-label>
+              </div>
             </throttled-spinner>
           </v-card>
           <div class="games-list">
@@ -74,6 +82,7 @@
               hide-default-footer
               must-sort
               sort-by="gameNumber"
+              :item-class="() => 'cursor-pointer'"
               @click:row="(game) => openGamePage(game.id)"
             >
               <template #item.gameNumber="{ item }">#{{ item.gameNumber }}</template>
@@ -87,7 +96,6 @@
             </v-data-table>
           </div>
         </div>
-        <pre>{{ leagueSeason }}</pre>
       </div>
     </throttled-spinner>
     <v-dialog v-model="showSeasonInfo" max-width="800">
@@ -243,11 +251,34 @@
     }
   }
 
+  .leaderboard {
+    :deep(.row-highlighting) {
+      position: relative;
+
+      > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(255, 255, 255, 0.15);
+        z-index: 0;
+      }
+    }
+  }
+
   .games-list {
     display: flex;
     flex-direction: column;
     gap: 0.75em;
   }
+
   .ori-image {
     height: 2em;
   }

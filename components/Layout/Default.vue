@@ -185,6 +185,11 @@
     transition: 400ms;
     z-index: 1;
   }
+
+  .cursor-pointer {
+    cursor: pointer;
+  }
+
 </style>
 
 <style lang='scss' scoped>

@@ -29,12 +29,14 @@
             <throttled-spinner>
               <v-data-table
                 v-if="sortedSubmissions"
+                class="submissions"
                 :headers="submissionHeaders"
                 :items="sortedSubmissions"
                 disable-pagination
                 hide-default-footer
                 disable-sort
                 no-data-text="be the first to submit!"
+                :item-class="item => item.membership.user.id === user?.id ? 'row-highlighting' : ''"
               >
                 <template #item.rankingData.rank="{ item }">
                   <place-badge
@@ -176,6 +178,28 @@
   .submissions-container {
     max-width: 700px;
     margin: 0 auto;
+  }
+
+  .submissions {
+    :deep(.row-highlighting) {
+      position: relative;
+
+      > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(255, 255, 255, 0.15);
+        z-index: 0;
+      }
+    }
   }
 
 </style>

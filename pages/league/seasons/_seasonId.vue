@@ -24,15 +24,6 @@
             <v-icon left>mdi-plus-circle-outline</v-icon>
             Join
           </v-btn>
-          <v-btn
-            text
-            :loading="actionLoading"
-            :disabled="leagueSeason.currentGameId === null"
-            :to="{ name: 'league-game-gameId', params: { gameId: leagueSeason.currentGameId } }"
-          >
-            <v-icon left>mdi-gamepad-variant-outline</v-icon>
-            Current game
-          </v-btn>
         </div>
         <div class="tables-container">
           <v-card class="pa-5">

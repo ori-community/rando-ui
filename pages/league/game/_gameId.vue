@@ -43,6 +43,7 @@
                     v-if="item.rankingData?.rank ?? null !== null"
                     :size="40"
                     :place="item.rankingData.rank"
+                    :showNonProminentCircle="false"
                   />
                 </template>
                 <template #item.membership.user.name="{ item }">

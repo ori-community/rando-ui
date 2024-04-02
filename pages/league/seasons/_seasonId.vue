@@ -40,7 +40,12 @@
                 </template>
 
                 <template #item.rank="{ item }">
-                  <place-badge v-if="item.rank ?? null !== null" :size="40" :place="item.rank" />
+                  <place-badge
+                    v-if="item.rank ?? null !== null"
+                    :size="40"
+                    :place="item.rank"
+                    :showNonProminentCircle="false"
+                  />
                 </template>
                 <template #item.user.name="{ item }">
                   <discord-avatar :user="item.user" class="mr-1" />
@@ -91,6 +96,7 @@
                   v-if="item.userMetadata?.ownSubmission?.rankingData?.rank ?? null !== null"
                   :size="40"
                   :place="item.userMetadata.ownSubmission.rankingData.rank"
+                  :showNonProminentCircle="false"
                 />
               </template>
             </v-data-table>

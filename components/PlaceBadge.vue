@@ -25,6 +25,10 @@
         type: Number,
         default: 64,
       },
+      showNonProminentCircle:{
+        type: Boolean,
+        default: true,
+      },
     },
     computed: {
       icon() {
@@ -46,7 +50,10 @@
           case 3:
             return '#864b30'
           default:
-            return 'background lighten-1'
+            if(this.showNonProminentCircle){
+              return 'background lighten-1'
+            }
+            return 'transparent'
         }
       },
       calcFontSize (){

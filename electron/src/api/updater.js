@@ -21,7 +21,7 @@ export default {
       }
     }, 100))
 
-    app.on('will-quit', () => {
+    app.on('quit', () => {
       console.log('Spawning process: ', targetPath)
       spawn(`${targetPath}`, ['/SILENT'], {
         detached: true,

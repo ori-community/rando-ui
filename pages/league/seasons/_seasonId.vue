@@ -8,9 +8,8 @@
     </v-slide-y-transition>
 
     <throttled-spinner>
-      <div v-if="leagueSeason !== null">
+      <div class="season-container justify-center" v-if="leagueSeason !== null">
         <h1 class="text-center mt-12 mb-6">{{ leagueSeason.name }}</h1>
-
         <div class="mb-2">
           <v-btn text @click="showSeasonInfo = true"><v-icon left>mdi-information-outline</v-icon>Info</v-btn>
           <v-btn text @click="showSeasonRules = true"><v-icon left>mdi-book-open-outline</v-icon>Rules</v-btn>
@@ -20,55 +19,75 @@
           </v-btn>
         </div>
         <div class="tables-container">
-          <v-card class="pa-5">
+          <v-card class="pt-5">
             <h2 class="text-center mb-5">Leaderboard</h2>
-            <div class="leaderboard" :style="{ gridTemplateRows: `repeat(${sortedMembers.length + 1}, 1fr)` }">
-              <div>#</div>
-              <div>Member</div>
-              <div>Points</div>
-              <template v-for="member in sortedMembers">
-                <div :key="`${member.user.id}-rank`">{{ member.rank }}</div>
-                <div :key="`${member.user.id}-name`">
-                  <discord-avatar :user="member.user" class="mr-1" />{{ member.user.name }}
-                </div>
-                <div :key="`${member.user.id}-points`">{{ member.points }}</div>
-              </template>
-            </div>
-            <div v-if="!(sortedMembers.length > 0) && canJoin" class="mt-5">Be the first to <b>JOIN!</b></div>
-          </v-card>
-          <div>
-            <div class="games-list">
-              <league-game-card
-                v-if="currentGame !== null"
-                :game="currentGame"
-                :playable-until="leagueSeason.nextContinuationAt"
-              />
-              <h3 v-if="pastGames.length > 0" class="text-center" :class="{ 'mt-3': currentGame !== null }">
-                Past Games
-              </h3>
+            <throttled-spinner>
               <v-data-table
-                :headers="gameHeaders"
-                :items="pastGames"
+                v-if="sortedMembers"
+                :headers="memberHeaders"
+                :items="sortedMembers"
                 disable-pagination
                 hide-default-footer
-                must-sort
-                sort-by="gameNumber"
-                :no-data-text="gamesNoDataAvailableText"
-                @click:row="(game) => openGamePage(game.id)"
+                disable-sort
               >
-                <template #item.gameNumber="{ item }">#{{ item.gameNumber }}</template>
-                <template #item.userMetadata.ownSubmission.rankingData.rank="{ item }">
-                  <place-badge
-                    v-if="item.userMetadata?.ownSubmission?.rankingData?.rank ?? null !== null"
-                    :size="40"
-                    :place="item.userMetadata.ownSubmission.rankingData.rank"
-                  />
+                <template v-if="!(sortedMembers.length > 0) && canJoin" #no-data>
+                  <img class="ori-image mt-5" src="~/assets/images/ori_lurk.png" /><br /><b>JOIN!</b>
+                </template>
+                <template v-else #no-data
+                  ><img class="ori-image mt-5" src="~/assets/images/ori_think.png" /><br />No members
+                </template>
+
+                <template #item.rank="{ item }">
+                  <place-badge v-if="item.rank ?? null !== null" :size="40" :place="item.rank" />
+                </template>
+                <template #item.user.name="{ item }">
+                  <discord-avatar :user="item.user" class="mr-1" />
+                  <v-tooltip bottom>
+                    <template #activator="{ on }">
+                      <v-icon v-if="memberSubmittedToCurrentGame(item.user)" small v-on="on">mdi-flag-checkered</v-icon>
+                    </template>
+                    Submitted to current game
+                  </v-tooltip>
+                  {{ item.user.name }}
                 </template>
               </v-data-table>
-            </div>
+            </throttled-spinner>
+          </v-card>
+          <div class="games-list">
+            <league-game-card
+              v-if="currentGame !== null"
+              :game="currentGame"
+              :playable-until="leagueSeason.nextContinuationAt"
+            />
+            <h3
+              v-if="pastGames.length > 0 && leagueSeason.currentGameId"
+              class="text-center"
+              :class="{ 'mt-3': currentGame !== null }"
+            >
+              Past Games
+            </h3>
+            <v-data-table
+              v-if="pastGames.length > 0"
+              :headers="gameHeaders"
+              :items="pastGames"
+              disable-pagination
+              hide-default-footer
+              must-sort
+              sort-by="gameNumber"
+              @click:row="(game) => openGamePage(game.id)"
+            >
+              <template #item.gameNumber="{ item }">#{{ item.gameNumber }}</template>
+              <template #item.userMetadata.ownSubmission.rankingData.rank="{ item }">
+                <place-badge
+                  v-if="item.userMetadata?.ownSubmission?.rankingData?.rank ?? null !== null"
+                  :size="40"
+                  :place="item.userMetadata.ownSubmission.rankingData.rank"
+                />
+              </template>
+            </v-data-table>
           </div>
         </div>
-        <!-- <pre>{{ leagueSeason }}</pre> -->
+        <pre>{{ leagueSeason }}</pre>
       </div>
     </throttled-spinner>
     <v-dialog v-model="showSeasonInfo" max-width="800">
@@ -98,16 +117,18 @@
   export default {
     data: () => ({
       leagueSeason: null,
+      currentGameSubmissions: null,
       actionLoading: false,
       displayedTab: null,
       showSeasonInfo: false,
       showSeasonRules: false,
+      memberHeaders: [
+        { text: 'Rank', value: 'rank', width: '80px' },
+        { text: 'Member', value: 'user.name' },
+        { text: 'Points', value: 'points', width: '30%' },
+      ],
       gameHeaders: [
-        {
-          text: 'Game Number',
-          align: 'start',
-          value: 'gameNumber',
-        },
+        { text: 'Number', value: 'gameNumber' },
         { text: 'Submissions', value: 'submissionCount' },
         { text: 'Your Rank', value: 'userMetadata.ownSubmission.rankingData.rank' },
         { text: 'Your Points', value: 'userMetadata.ownSubmission.rankingData.points' },
@@ -137,12 +158,6 @@
       pastGames() {
         return this.leagueSeason?.games?.filter((g) => !g.isCurrent) ?? []
       },
-      gamesNoDataAvailableText() {
-        if (this.leagueSeason?.games?.length > 0) {
-          return 'Waiting for first game to finish'
-        }
-        return 'Waiting for season to start'
-      },
     },
     watch: {
       '$route.params.seasonId': {
@@ -156,6 +171,11 @@
       async loadSeason() {
         try {
           this.leagueSeason = await this.$axios.$get(`/league/seasons/${this.$route.params.seasonId}`)
+          if (this.leagueSeason.currentGameId) {
+            this.currentGameSubmissions = await this.$axios.$get(
+              `/league/games/${this.leagueSeason.currentGameId}/submissions`,
+            )
+          }
         } catch (e) {
           console.error(e)
         }
@@ -173,6 +193,10 @@
       },
       async openGamePage(gameId) {
         await this.$router.push({ name: 'league-game-gameId', params: { gameId } })
+      },
+      memberSubmittedToCurrentGame(user) {
+        if (!this.currentGame || !this.currentGameSubmissions) return false
+        return this.currentGameSubmissions?.some((s) => s.membership.user.id === user.id)
       },
     },
   }
@@ -201,26 +225,30 @@
     }
   }
 
+  .season-container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
   .tables-container {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    align-items: start;
+    grid-template-columns: 5fr 4fr;
     grid-auto-flow: column;
     gap: 1em;
 
-    @media (max-width: 900px) {
+    @media (max-width: 800px) {
       grid-template-columns: 1fr;
       grid-auto-flow: row;
     }
-  }
-
-  .leaderboard {
-    display: grid;
-    grid-template-columns: 0.5fr 5fr 1fr;
   }
 
   .games-list {
     display: flex;
     flex-direction: column;
     gap: 0.75em;
+  }
+  .ori-image {
+    height: 2em;
   }
 </style>

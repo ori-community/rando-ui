@@ -24,53 +24,31 @@
             <v-icon>mdi-arrow-left-thin</v-icon>
             Season
           </v-btn>
-          <v-card class="pa-5">
+          <v-card class="pt-5">
             <h2 class="text-center mb-5">Submissions</h2>
-            <div
-              v-if="sortedSubmissions?.length > 0"
-              class="submissions-grid"
-              :style="{ gridTemplateRows: `repeat(${sortedSubmissions?.length + 1}, 1fr)` }"
+            <v-data-table
+              :headers="submissionHeaders"
+              :items="sortedSubmissions"
+              disable-pagination
+              hide-default-footer
+              no-data-text="be the first to submit!"
             >
-              <div>#</div>
-              <div>Member</div>
-              <div>time</div>
-              <div>points</div>
-              <div>discarded</div>
-              <template v-for="submission in sortedSubmissions">
-                <div :key="`${submission.id}-rank`">
-                  <place-badge
-                    v-if="submission.rankingData !== null"
-                    :size="40"
-                    :place="!submission.rankingData.rank ? '' : submission.rankingData.rank"
-                  />
-                  <span v-else>?</span>
-                </div>
-                <div :key="`${submission.id}-name`">
-                  <discord-avatar :user="submission.membership.user" class="mr-1" />{{
-                    submission.membership.user.name
-                  }}
-                </div>
-                <div :key="`${submission.id}-time`">
-                  {{ submission.rankingData !== null ? formatTime(submission.rankingData.time) : '?' }}
-                </div>
-                <div :key="`${submission.id}-points`">{{ submission.rankingData?.points ?? '?' }}</div>
-                <div :key="`${submission.id}-discarded`">{{ submission.rankingData?.discarded ?? '?' }}</div>
+              <template #item.rankingData.rank="{ item }">
+                <place-badge v-if="item.rankingData?.rank ?? null !== null" :size="40" :place="item.rankingData.rank" />
               </template>
-            </div>
-            <div v-if="!(gameSubmissions?.length > 0) && canSubmit" class="mt-5">Be the first to submit!</div>
+              <template #item.membership.user.name="{ item }">
+                <discord-avatar :user="item.membership.user" class="mr-1" />
+                {{ item.membership.user.name }}
+              </template>
+            </v-data-table>
           </v-card>
         </div>
-        <pre>{{ leagueGame }}</pre>
-        <!-- <pre>{{ gameSubmissions }}</pre> -->
       </div>
     </throttled-spinner>
   </v-container>
 </template>
 
 <script>
-  // TODO:
-  // beautify grid
-
   import { mapGetters, mapState } from 'vuex'
   import { formatTime } from '~/assets/lib/formatTime'
   import { isElectron } from '~/assets/lib/isElectron'
@@ -79,8 +57,15 @@
     data: () => ({
       leagueSeason: null,
       leagueGame: null,
-      gameSubmissions: null,
+      gameSubmissions: [],
       actionLoading: false,
+      submissionHeaders: [
+        { text: 'Rank', value: 'rankingData.rank' },
+        { text: 'Member', value: 'membership.user.name' },
+        { text: 'Time', value: 'rankingData.time' },
+        { text: 'Points', value: 'rankingData.points' },
+        { text: 'Discarded', value: 'rankingData.discarded' },
+      ],
     }),
     computed: {
       ...mapState('user', ['user']),
@@ -91,38 +76,31 @@
         return this.leagueGame !== null && this.leagueGame.userMetadata.canSubmit
       },
       didSubmit() {
-        return this.gameSubmissions?.some((s) => s.membership.user.id === this.user.id)
+        return this.gameSubmissions?.some((s) => s.membership.user.id === this.user?.id)
       },
       multiverse() {
         return this.multiverses[this.leagueGame.multiverseId]
       },
       sortedSubmissions() {
-        if (!this.gameSubmissions) {
-          return []
-        }
-        if (this.didSubmit) {
-          return [...this.gameSubmissions].sort((a, b) => {
-            // Put submissions without rankingData to the bottom
-            const aRankOrder = a.rankingData?.rank ?? Number.MAX_VALUE
-            const bRankOrder = b.rankingData?.rank ?? Number.MAX_VALUE
+        return this.gameSubmissions.toSorted((a, b) => {
+          const aTime = a.rankingData?.time ?? Number.MAX_VALUE
+          const bTime = b.rankingData?.time ?? Number.MAX_VALUE
 
-            if (aRankOrder === bRankOrder) {
-              return a.membership.user.name.localeCompare(b.membership.user.name)
-            }
+          if (a.Time === bTime) {
+            return a.membership.user.name.localeCompare(b.membership.user.name)
+          }
 
-            return aRankOrder - bRankOrder
-          })
-        } else {
-          // order by username
-          return [...this.gameSubmissions].sort((a, b) => a.membership.user.name.localeCompare(b.membership.user.name))
-        }
+          return aTime - bTime
+        })
       },
       hasWorldWithCurrentUser() {
         if (!this.multiverse) {
           return false
         }
 
-        return this.multiverse.universes.some(u => u.worlds.some(w => w.memberships.find(m => m.user.id === this.user?.id)))
+        return this.multiverse.universes.some((u) =>
+          u.worlds.some((w) => w.memberships.find((m) => m.user.id === this.user?.id)),
+        )
       },
       launcherUrl() {
         return `ori-rando://league/game/${this.leagueGame.id}`

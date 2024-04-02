@@ -104,10 +104,10 @@
         return renderMarkdown(this.leagueSeason.longDescriptionMarkdown)
       },
       currentGame() {
-        return this.leagueSeason?.games?.find(g => g.isCurrent)
+        return this.leagueSeason?.games?.find(g => g.isCurrent) ?? null
       },
       pastGames() {
-        return this.leagueSeason?.games?.filter(g => !g.isCurrent)
+        return this.leagueSeason?.games?.filter(g => !g.isCurrent) ?? []
       },
     },
     watch: {

@@ -45,19 +45,29 @@
     </template>
 
     <v-dialog v-model="showLeagueInfo" max-width="800">
-      <v-card class="pa-5"> More info here; also rules. WIP. Pls help </v-card>
+      <v-card class="pa-5">
+        More info here; also rules. WIP. Pls help
+        <ul>
+          <li>What is League</li>
+          <li>What are Seasons</li>
+          <li>How/When to join a Season</li>
+          <li>How does the point system work</li>
+          <li>How does the point system work</li>
+          <li>How/When to join a game</li>
+          <li>How to submit a run</li>
+          <li>general rando rules (wiki?)</li>
+        </ul>
+      </v-card>
     </v-dialog>
   </v-container>
 </template>
 
 <script>
+
   // TODO:
-  // league description
   // general league ruleset
   // update list by seasons change (for example new season added, season ended, member joined)
 
-  // IDEA:
-  // total point counter
   import { mapGetters, mapState } from 'vuex'
 
   export default {

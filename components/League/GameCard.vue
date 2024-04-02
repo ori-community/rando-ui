@@ -21,14 +21,14 @@
           {{ game.submissionCount }}
           <v-icon small>mdi-flag-checkered</v-icon>
         </div>
-        <div v-if="game.userMetadata?.didSubmit">
+        <div v-if="game.userMetadata?.ownSubmission">
           played
           <v-icon small>mdi-check</v-icon>
         </div>
       </div>
     </div>
 
-    <div v-if="playableUntil !== null && !game.userMetadata?.didSubmit" class="timer pa-2">
+    <div v-if="playableUntil !== null && !game.userMetadata?.ownSubbmission" class="timer pa-2">
       <template v-if="countdownTimerText !== null">
         <span class="font-weight-bold">{{ countdownTimerText }}</span
         ><br />

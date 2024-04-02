@@ -14,6 +14,7 @@ module.exports = {
   rules: {
     'no-console': 'off',
     'vue/multi-word-component-names': 'off',
+    'vue/valid-v-slot': 'off',  
     'no-labels': ['error', { allowLoop: true }],
   },
 }

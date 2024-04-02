@@ -113,7 +113,7 @@
         )
       },
       launcherUrl() {
-        return `ori-rando://league/game/${this.leagueGame.id}`
+        return `ori-rando://league-game/${this.leagueGame.id}`
       },
     },
     watch: {

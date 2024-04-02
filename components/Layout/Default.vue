@@ -121,6 +121,15 @@
                   }
                   break
                 }
+                case 'league-game': {
+                  const gameId = url.pathname.match(/.*\/(?<gameId>\d*)$/)?.groups.gameId
+                  if (gameId) {
+                    await this.$router.push({ name: 'league-game-gameId', params: { gameId } })
+                  } else {
+                    console.warn('Could not read game ID from URL', url)
+                  }
+                  break
+                }
                 default:
                   console.warn('Could not handle URL', url)
               }

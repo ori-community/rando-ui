@@ -83,7 +83,7 @@ async function createWindow() {
       // We got a seed!
       uiIpc.queueSend('main.openSeed', lastArg)
     } else {
-      // Maybe an URL?
+      // Maybe a URL?
       try {
         const url = new URL(lastArg)
         if (url.protocol === 'ori-rando:') {

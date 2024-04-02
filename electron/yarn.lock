@@ -4904,7 +4904,7 @@ flatted@^3.2.9:
   integrity sha512-X8cqMLLie7KsNUDSdzeN8FYK9rEt4Dt67OsG/DNGnYTSDBG4uFAJFBnUeiV+zCVAvwFy56IjM9sH51jVaEhNxw==
 
 "focus-ori@file:./native/focus-ori":
-  version "1.0.0"
+  version "1.0.1"
   dependencies:
     node-gyp "^10.1.0"
 
@@ -9536,7 +9536,7 @@ yorkie@^2.0.0:
     normalize-path "^1.0.0"
     strip-indent "^2.0.0"
 
-zeromq@^6.0.0-beta.17:
+zeromq@^6.0.0-beta.19:
   version "6.0.0-beta.19"
   resolved "https://registry.yarnpkg.com/zeromq/-/zeromq-6.0.0-beta.19.tgz#b87d3638c2536d529218b241f1ca982a9b2a9b1a"
   integrity sha512-2eU6H7Z4r9LmTkseGdIfEqp0k3rJr5EpXQw2oC0bUqy3wpoj1M83IU/c3qHPXp0z8IklNMoVmVm130d3g2Xf3g==

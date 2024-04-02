@@ -525,8 +525,9 @@
       },
       isPlayer() {
         return (
-          this.multiverse?.universes.some((u) => u.worlds.some((w) => w.members.some((m) => m.id === this.user.id))) ??
-          false
+          this.multiverse?.universes.some(
+            (u) => u.worlds.some((w) => w.memberships.some((m) => m.user.id === this.user.id))
+          ) ?? false
         )
       },
       canLock() {

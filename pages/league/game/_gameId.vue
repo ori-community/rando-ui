@@ -186,7 +186,7 @@
         return this.leagueGame !== null && this.leagueGame.userMetadata?.canSubmit
       },
       ownSubmission() {
-        return this.gameSubmissions?.find((s) => s.membership.user.id === this.user?.id)
+        return this.gameSubmissions?.find((s) => s.membership.user.id === this.user?.id) ?? null
       },
       didSubmit() {
         return this.ownSubmission !== null

@@ -9,7 +9,17 @@
 
     <throttled-spinner>
       <div class="season-container justify-center" v-if="leagueSeason !== null">
-        <h1 class="text-center mt-12 mb-6">{{ leagueSeason.name }}</h1>
+        <div class="d-flex justify-center align-center mt-12 mb-6"> 
+          <h1 class="pl-12 text-center mx-6">{{ leagueSeason.name }}</h1>
+          <v-tooltip top open-delay="500">
+            <template #activator="{ on }">
+              <v-btn icon :disabled="seasonLinkCopied" v-on="on" @click="copySeasonLink">
+                <v-icon>{{ seasonLinkCopied ? 'mdi-clipboard-check-outline' : 'mdi-link' }}</v-icon>
+              </v-btn>
+            </template>
+            <span>Copy season link</span>
+          </v-tooltip>
+        </div>
         <div class="mb-2">
           <v-btn text @click="showSeasonInfo = true"><v-icon left>mdi-information-outline</v-icon>Info</v-btn>
           <v-btn text @click="showSeasonRules = true"><v-icon left>mdi-book-open-outline</v-icon>Rules</v-btn>
@@ -26,7 +36,7 @@
           </v-tooltip>
         </div>
         <div class="tables-container">
-          <v-card class="pt-5 overflow-x-auto">
+          <v-card ref="leaderboard" class="pt-5 overflow-x-auto">
             <h2 class="text-center mb-5">Leaderboard</h2>
             <throttled-spinner>
               <v-data-table
@@ -194,6 +204,7 @@
 <script>
   import { mapGetters, mapState } from 'vuex'
   import { renderMarkdown } from '~/assets/lib/markdown'
+  import { confettiFromElement } from '~/assets/lib/confettiFromElement'
 
   export default {
     data: () => ({
@@ -203,6 +214,7 @@
       displayedTab: null,
       showSeasonInfo: false,
       showSeasonRules: false,
+      seasonLinkCopied: false,
       refreshTimeoutId: null,
       gameHeaders: [
         { text: 'Number', value: 'gameNumber', align: 'center' },
@@ -302,11 +314,27 @@
         } catch (e) {
           console.error(e)
         }
+
+        setTimeout(() => {
+          confettiFromElement(this.$refs.leaderboard.$el, {
+            startVelocity: 30,
+          })
+        }, 75)
+
         this.showSeasonRules = false
         this.actionLoading = false
       },
       async openGamePage(gameId) {
         await this.$router.push({ name: 'league-game-gameId', params: { gameId } })
+      },
+      async copySeasonLink() {
+        const url = new URL(`/league/seasons/${this.leagueSeason.id}`, this.$paths.UI_BASE_URL)
+        await navigator.clipboard.writeText(url.toString())
+        this.seasonLinkCopied = true
+
+        setTimeout(() => {
+          this.seasonLinkCopied = false
+        }, 3000)
       },
     },
   }

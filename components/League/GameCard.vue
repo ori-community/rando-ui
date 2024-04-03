@@ -19,6 +19,7 @@
       <div class="d-flex flex-column align-end">
         <div>
           {{ game.submissionCount }}
+          <template v-if="memberCount">/ {{ memberCount }}</template>
           <v-icon small>mdi-flag-checkered</v-icon>
         </div>
         <div v-if="game.userMetadata?.ownSubmission">
@@ -52,6 +53,10 @@
         required: true,
       },
       playableUntil: {
+        type: Number,
+        default: null,
+      },
+      memberCount: {
         type: Number,
         default: null,
       },

@@ -75,6 +75,7 @@
               v-if="currentGame !== null"
               :game="currentGame"
               :playable-until="leagueSeason.nextContinuationAt"
+              :member-count="leagueSeason.memberships?.length"
             />
             <h3
               v-if="pastGames.length > 0 && leagueSeason.currentGameId"

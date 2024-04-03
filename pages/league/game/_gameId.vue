@@ -14,7 +14,7 @@
             </template>
             <span><kbd>Ctrl</kbd> + Click to close this window</span>
           </v-tooltip>
-          <v-btn v-else-if="!didSubmit && canSubmit" x-large color="accent" @click="launchGame()">
+          <v-btn v-else-if="!didSubmit && canSubmit" x-large color="accent" :loading="launching" @click="launchGame()">
             <img class="launch-icon" src="../../../assets/images/launch.png" alt="" />
             Launch
           </v-btn>
@@ -181,6 +181,7 @@
       ...mapState('user', ['user']),
       ...mapGetters('user', ['isLoggedIn']),
       ...mapState('multiverseState', ['multiverses']),
+      ...mapState('electron', ['launching']),
       isElectron,
       canSubmit() {
         return this.leagueGame !== null && this.leagueGame.userMetadata?.canSubmit

@@ -55,10 +55,20 @@
                   <template v-else>-</template>
                 </template>
                 <template #item.rankingData.points="{ item }">
-                  <template v-if="!leagueGame.isCurrent">
-                    {{ item.rankingData.points }}
-                  </template>
-                  <template v-else>-</template>
+                  <v-tooltip bottom :disabled="!item.rankingData?.discarded">
+                    <template #activator="{ on }">
+                      <div v-if="!leagueGame.isCurrent" v-on="on">
+                        <span :class="item.rankingData?.discared ? 'discarded' : ''">{{
+                          item.rankingData?.points
+                        }}</span>
+                      </div>
+                      <div v-else>-</div>
+                    </template>
+                    <span v-if="leagueSeason.discardWorstGamesCount > 1"
+                      >Player's {{ leagueSeason.discardWorstGamesCount }} worst races get discarded</span
+                    >
+                    <span v-else>Player's Worst race gets discarded</span>
+                  </v-tooltip>
                 </template>
 
                 <!-- no data -->
@@ -104,7 +114,6 @@
         { text: 'Player', value: 'membership.user.name' },
         { text: 'Time', value: 'rankingData.time', align: 'right' },
         { text: 'Points', value: 'rankingData.points', align: 'right' },
-        { text: 'Discarded', value: 'rankingData.discarded' },
       ],
     }),
     computed: {

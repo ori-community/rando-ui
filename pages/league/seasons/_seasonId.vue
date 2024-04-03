@@ -127,10 +127,20 @@
                   <div v-else>-</div>
                 </template>
                 <template #item.userMetadata.ownSubmission.rankingData.points="{ item }">
-                  <div v-if="item.userMetadata?.ownSubmission?.rankingData?.points >= 0">
-                    {{ item.userMetadata?.ownSubmission?.rankingData?.points }}
-                  </div>
-                  <div v-else>-</div>
+                  <v-tooltip bottom :disabled="!item.userMetadata?.ownSubmission?.rankingData?.discarded">
+                    <template #activator="{ on }">
+                      <div v-if="item.userMetadata?.ownSubmission?.rankingData?.points >= 0" v-on="on">
+                        <span :class="item.userMetadata?.ownSubmission?.rankingData?.discared ? 'discarded' : ''">{{
+                          item.userMetadata?.ownSubmission?.rankingData?.points
+                        }}</span>
+                      </div>
+                      <div v-else>-</div>
+                    </template>
+                    <span v-if="leagueSeason.discardWorstGamesCount > 1"
+                      >Your {{ leagueSeason.discardWorstGamesCount }} worst races get discarded</span
+                    >
+                    <span v-else>Your worst race gets discarded</span>
+                  </v-tooltip>
                 </template>
               </v-data-table>
             </v-card>
@@ -384,5 +394,9 @@
 
   .ori-image {
     height: 2em;
+  }
+  .discarded {
+    text-decoration: line-through;
+    opacity: 0.6;
   }
 </style>

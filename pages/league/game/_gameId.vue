@@ -43,7 +43,7 @@
                     v-if="item.rankingData?.rank ?? null !== null"
                     :size="40"
                     :place="item.rankingData.rank"
-                    :showNonProminentCircle="false"
+                    light-circle
                   />
                 </template>
                 <template #item.membership.user.name="{ item }">
@@ -198,7 +198,7 @@
         bottom: 0;
         left: 0;
         right: 0;
-        background-color: rgba(255, 255, 255, 0.1);
+        background: linear-gradient(to right, rgba(255, 255, 255, 0.0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.0) 100%);
         z-index: 0;
       }
     }

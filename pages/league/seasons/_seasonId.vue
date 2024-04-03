@@ -44,7 +44,7 @@
                     v-if="item.rank ?? null !== null"
                     :size="40"
                     :place="item.rank"
-                    :showNonProminentCircle="false"
+                    light-circle
                   />
                 </template>
                 <template #item.user.name="{ item }">
@@ -146,15 +146,15 @@
       showSeasonInfo: false,
       showSeasonRules: false,
       memberHeaders: [
-        { text: 'Rank', value: 'rank', align: 'center', width: '80px' },
+        { text: 'Rank', value: 'rank', align: 'center', width: 0 },
         { text: 'Player', value: 'user.name' },
         { text: 'Points', value: 'points', align: 'right' },
       ],
       gameHeaders: [
         { text: 'Number', value: 'gameNumber', align: 'center' },
-        { text: 'Submissions', value: 'submissionCount', align: 'right' },
-        { text: 'Your Rank', value: 'userMetadata.ownSubmission.rankingData.rank', align: 'center' },
-        { text: 'Your Points', value: 'userMetadata.ownSubmission.rankingData.points', align: 'right' },
+        { text: 'Submissions', value: 'submissionCount', align: 'left' },
+        { text: 'Your Rank', value: 'userMetadata.ownSubmission.rankingData.rank', align: 'left' },
+        { text: 'Your Points', value: 'userMetadata.ownSubmission.rankingData.points', align: 'left' },
       ],
     }),
     computed: {
@@ -285,7 +285,7 @@
         bottom: 0;
         left: 0;
         right: 0;
-        background-color: rgba(255, 255, 255, 0.1);
+        background: linear-gradient(to right, rgba(255, 255, 255, 0.0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.0) 100%);
         z-index: 0;
       }
     }

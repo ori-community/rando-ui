@@ -26,7 +26,7 @@
           </v-tooltip>
         </div>
         <div class="tables-container">
-          <v-card class="pt-5">
+          <v-card class="pt-5 overflow-x-auto">
             <h2 class="text-center mb-5">Leaderboard</h2>
             <throttled-spinner>
               <v-data-table
@@ -37,15 +37,18 @@
                 disable-pagination
                 hide-default-footer
                 disable-sort
+                mobile-breakpoint="0"
                 :item-class="(item) => (item.user.id === user?.id ? 'row-highlighting' : '')"
               >
                 <!-- items -->
                 <template #item.rank="{ item }">
-                  <place-badge v-if="item.rank ?? null !== null" :size="40" :place="item.rank" light-circle />
+                  <place-badge v-if="item.rank ?? false" :size="40" :place="item.rank" light-circle />
                 </template>
                 <template #item.user.name="{ item }">
-                  <discord-avatar :user="item.user" class="mr-1" />
-                  {{ item.user.name }}
+                  <div class="text-no-wrap">
+                    <discord-avatar :user="item.user" class="mr-1" />
+                    {{ item.user.name }}
+                  </div>
                 </template>
                 <template #item.currentGame.submitted="{ item }">
                   <v-tooltip
@@ -102,7 +105,7 @@
             >
               Past Games
             </h3>
-            <v-card v-if="pastGames.length > 0">
+            <v-card v-if="pastGames.length > 0" class="overflow-x-auto">
               <h2 v-if="!leagueSeason.currentGameId" class="text-center mt-5 mb-5">Games</h2>
               <v-data-table
                 class="past-games"
@@ -113,6 +116,7 @@
                 must-sort
                 sort-by="gameNumber"
                 :item-class="() => 'cursor-pointer'"
+                mobile-breakpoint="0"
                 @click:row="(game) => openGamePage(game.id)"
               >
                 <!-- items -->
@@ -122,7 +126,7 @@
                     v-if="item.userMetadata?.ownSubmission?.rankingData?.rank ?? null !== null"
                     :size="40"
                     :place="item.userMetadata.ownSubmission.rankingData.rank"
-                    :showNonProminentCircle="false"
+                    light-circle
                   />
                   <div v-else>-</div>
                 </template>

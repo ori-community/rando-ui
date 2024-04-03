@@ -35,6 +35,7 @@
                 disable-pagination
                 hide-default-footer
                 disable-sort
+                mobile-breakpoint="0"
                 :item-class="(item) => (item.membership.user.id === user?.id ? 'row-highlighting' : '')"
               >
                 <!-- Items -->
@@ -47,8 +48,10 @@
                   />
                 </template>
                 <template #item.membership.user.name="{ item }">
-                  <discord-avatar :user="item.membership.user" class="mr-1" />
-                  {{ item.membership.user.name }}
+                  <div class="text-no-wrap">
+                    <discord-avatar :user="item.membership.user" class="mr-1" />
+                    {{ item.membership.user.name }}
+                  </div>
                 </template>
                 <template #item.rankingData.time="{ item }">
                   <template v-if="item.rankingData?.time">{{ formatTime(item.rankingData?.time) }} </template>
@@ -109,12 +112,6 @@
       leagueGame: null,
       gameSubmissions: [],
       actionLoading: false,
-      submissionHeaders: [
-        { text: 'Rank', value: 'rankingData.rank', align: 'center' },
-        { text: 'Player', value: 'membership.user.name' },
-        { text: 'Time', value: 'rankingData.time', align: 'right' },
-        { text: 'Points', value: 'rankingData.points', align: 'right' },
-      ],
     }),
     computed: {
       ...mapState('user', ['user']),
@@ -153,6 +150,24 @@
       },
       launcherUrl() {
         return `ori-rando://league-game/${this.leagueGame.id}`
+      },
+      submissionHeaders() {
+        const headers = []
+
+        if (this.leagueGame?.isCurrent === false) {
+          headers.push({ text: 'Rank', value: 'rankingData.rank', align: 'center' })
+        }
+
+        headers.push(
+          { text: 'Player', value: 'membership.user.name' },
+          { text: 'Time', value: 'rankingData.time', align: 'right' },
+        )
+
+        if (this.leagueGame?.isCurrent === false) {
+          headers.push({ text: 'Points', value: 'rankingData.points', align: 'right' })
+        }
+
+        return headers
       },
     },
     watch: {

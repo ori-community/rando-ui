@@ -4,9 +4,13 @@
       <v-btn key="home" depressed exact text :to="`${isElectron ? `/electron` : `/`}`" x-large>
         <v-icon>mdi-home-outline</v-icon>
       </v-btn>
-      <v-btn key="seedgen" x-large depressed text to="/seedgen">
+      <v-btn class="hidden-sm-and-down" key="seedgen" x-large depressed text to="/seedgen">
         <v-icon left>mdi-dice-multiple</v-icon>
         Seed Generator
+      </v-btn>
+      <v-btn key="league" x-large depressed text to="/league/seasons">
+        <v-icon left>mdi-trophy</v-icon>
+        League
       </v-btn>
       <v-btn
         v-if="isLoggedIn"
@@ -19,10 +23,6 @@
       >
         <v-icon left>mdi-gamepad-variant-outline</v-icon>
         My Games
-      </v-btn>
-      <v-btn key="league" x-large depressed text to="/league/seasons">
-        <v-icon left>mdi-trophy</v-icon>
-        League
       </v-btn>
       <template v-if="isElectron">
         <v-btn key="stats" x-large depressed text to="/electron/stats">
@@ -86,7 +86,7 @@
       <div v-if="userLoaded" class="d-flex align-center">
         <template v-if="isLoggedIn">
           <div class="mr-4 user-info">
-            <div>{{ randomGreeting }}, {{ user.name }}!</div>
+            <div class="text-no-wrap">{{ randomGreeting }}, {{ user.name }}!</div>
           </div>
           <v-menu offset-y left nudge-bottom="6">
             <template #activator="{ on }">

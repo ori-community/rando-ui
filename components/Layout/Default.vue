@@ -2,7 +2,7 @@
   <v-app dark>
     <v-main class='main'>
       <div class="full-height d-flex flex-column">
-        <v-container v-if='!shouldHideToolbar'>
+        <v-container v-if='!shouldHideToolbar' class="overflow-x-auto">
           <wotw-page-toolbar />
         </v-container>
 

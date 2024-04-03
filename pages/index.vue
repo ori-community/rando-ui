@@ -2,8 +2,10 @@
   <v-container>
     <div class='text-center'>
 
-      <h1 class='mt-12 mb-4'>Ori and the Will of the Wisps</h1>
-      <h1 class='mb-16 randomizer'>Randomizer</h1>
+      <div class="mobile-scale">
+        <h1 class='mt-12'>Ori and the Will of the Wisps</h1>
+        <h1 class='mb-16 randomizer'>Randomizer</h1>
+      </div>
 
       <div class='mb-12'>
         <div class='text-left d-inline-block max-900'>
@@ -17,7 +19,7 @@
         </div>
       </div>
 
-      <div class='mb-4 d-flex gapped justify-center'>
+      <div class='mb-4 d-flex flex-wrap gapped justify-center'>
         <v-btn color='accent' x-large :loading='!latestRandoExeUrl' :href='latestRandoExeUrl'>
           <v-icon left>mdi-download</v-icon>
           Download
@@ -55,12 +57,25 @@
 </script>
 
 <style lang='scss' scoped>
+  @media (max-width: 768px) {
+    .mobile-scale {
+      font-size: 0.75em;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .mobile-scale {
+      font-size: 0.6em;
+    }
+  }
+
   h1 {
     filter: brightness(85%)
   }
 
   h1.randomizer {
-    transform: scale(2.5);
+    margin-top: -0.2em;
+    font-size: 5em;
   }
 
   .hover-transparency {

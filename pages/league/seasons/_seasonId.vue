@@ -168,6 +168,7 @@
       displayedTab: null,
       showSeasonInfo: false,
       showSeasonRules: false,
+      refreshTimeoutId: null,
       memberHeaders: [
         { text: 'Rank', value: 'rank', align: 'center', width: 0 },
         { text: 'Player', value: 'user.name' },
@@ -220,6 +221,11 @@
         },
       },
     },
+    beforeDestroy() {
+      if (this.refreshTimeoutId !== null) {
+        clearTimeout(this.refreshTimeoutId)
+      }
+    },
     methods: {
       async loadSeason() {
         try {
@@ -229,6 +235,14 @@
               `/league/games/${this.leagueSeason.currentGameId}/submissions`,
             )
           }
+
+          if (this.refreshTimeoutId !== null) {
+            clearTimeout(this.refreshTimeoutId)
+          }
+
+          this.refreshTimeoutId = setTimeout(() => {
+            this.loadSeason()
+          }, Math.max(10000, this.leagueSeason.nextContinuationAt - Date.now()))
         } catch (e) {
           console.error(e)
         }

@@ -6,7 +6,7 @@
           <wotw-page-toolbar />
         </v-container>
 
-        <v-snackbars :objects.sync='notifications'>
+        <v-snackbars class="notifications" :objects.sync='notifications'>
           <template #default='{message}'>
             <!-- eslint-disable-next-line vue/no-v-html -->
             <span class='notification-text' v-html="message"></span>
@@ -224,5 +224,9 @@
 
   .notification-text {
     white-space: pre-wrap;
+  }
+
+  .notifications {
+    z-index: 99999;
   }
 </style>

@@ -34,10 +34,12 @@
     </div>
 
     <div v-if="playableUntil !== null && !game.userMetadata?.ownSubbmission" class="timer pa-2">
-      <template v-if="countdownTimerText !== null">
-        <span class="font-weight-bold">{{ countdownTimerText }}</span
-        ><br />
+      <template v-if="typeof countdownTimerTextOrSecondsLeft === 'number'">
+        <span class="font-weight-bold">{{ formatTime(countdownTimerTextOrSecondsLeft, 0, true) }}</span><br />
         left to finish this game!
+      </template>
+      <template v-else-if="typeof countdownTimerTextOrSecondsLeft === 'string'">
+        {{ countdownTimerTextOrSecondsLeft }}
       </template>
       <template v-else> Finish this game until {{ formatDateEpoch(playableUntil, 'dd.MM.yyyy HH:mm') }} </template>
     </div>
@@ -70,7 +72,7 @@
       },
     },
     data: () => ({
-      countdownTimerText: null,
+      countdownTimerTextOrSecondsLeft: null,
       updateIntervalId: null,
     }),
     mounted() {
@@ -83,9 +85,10 @@
       }
     },
     methods: {
+      formatTime,
       updateTimerText() {
         if (!this.playableUntil) {
-          this.countdownTimerText = null
+          this.countdownTimerTextOrSecondsLeft = null
           return
         }
 
@@ -93,16 +96,16 @@
 
         // Only show countdown for <48h
         if (secondsLeft > 48 * 3600) {
-          this.countdownTimerText = null
+          this.countdownTimerTextOrSecondsLeft = null
           return
         }
 
         if (secondsLeft <= 0) {
-          this.countdownTimerText = 'Next game is coming any second...'
+          this.countdownTimerTextOrSecondsLeft = 'Next game is coming any second...'
           return
         }
 
-        this.countdownTimerText = formatTime(secondsLeft, 0, true)
+        this.countdownTimerTextOrSecondsLeft = secondsLeft
       },
     },
   }
@@ -138,7 +141,7 @@
       .game-number-container {
         display: flex;
         flex-direction: column;
-        align-items: left;
+        align-items: flex-start;
         line-height: 1;
 
         .hashtag {

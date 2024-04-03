@@ -4,7 +4,7 @@
       <v-btn key="home" depressed exact text :to="`${isElectron ? `/electron` : `/`}`" x-large>
         <v-icon>mdi-home-outline</v-icon>
       </v-btn>
-      <v-btn class="hidden-sm-and-down" key="seedgen" x-large depressed text to="/seedgen">
+      <v-btn key="seedgen" x-large depressed text to="/seedgen">
         <v-icon left>mdi-dice-multiple</v-icon>
         Seed Generator
       </v-btn>
@@ -25,9 +25,9 @@
         My Games
       </v-btn>
       <template v-if="isElectron">
-        <v-btn key="stats" x-large depressed text to="/electron/stats">
+        <v-btn v-if="randoIpcConnected" key="stats" x-large depressed text to="/electron/stats">
           <v-icon left>mdi-chart-box-outline</v-icon>
-            Stats
+          Stats
         </v-btn>
         <v-btn key="settings" x-large depressed text to="/electron/settings">
           <v-icon left>mdi-cog-outline</v-icon>
@@ -82,7 +82,7 @@
       </template>
     </v-scale-transition>
     <v-spacer />
-    <throttled-spinner>
+    <throttled-spinner no-margin>
       <div v-if="userLoaded" class="d-flex align-center">
         <template v-if="isLoggedIn">
           <div class="mr-4 user-info">
@@ -170,7 +170,7 @@
       ...mapGetters('user', ['isLoggedIn', 'isDeveloper']),
       ...mapState('user', ['user', 'userLoaded']),
       ...mapState('dev', ['devtoolsEnabled']),
-      ...mapState('electron', ['localTrackerRunning', 'settings', 'settingsLoaded']),
+      ...mapState('electron', ['localTrackerRunning', 'settings', 'settingsLoaded', 'randoIpcConnected']),
       isElectron,
       nicknameIsValid() {
         const trimmedNickname = this.currentNickname.trim()

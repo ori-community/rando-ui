@@ -13,10 +13,22 @@
         <div class="mb-2">
           <v-btn text @click="showSeasonInfo = true"><v-icon left>mdi-information-outline</v-icon>Info</v-btn>
           <v-btn text @click="showSeasonRules = true"><v-icon left>mdi-book-open-outline</v-icon>Rules</v-btn>
-          <v-btn v-if="!isJoined" color="accent" :loading="actionLoading" :disabled="!canJoin" @click="joinSeason">
-            <v-icon left>mdi-plus-circle-outline</v-icon>
-            Join
-          </v-btn>
+          <v-tooltip v-if="!isJoined" bottom :disabled="canJoin">
+            <template #activator="{ on }">
+              <span v-on="on">
+                <v-btn
+                  color="accent"
+                  :loading="actionLoading"
+                  :disabled="!canJoin"
+                  @click="joinSeason"
+                >
+                  <v-icon left>mdi-plus-circle-outline</v-icon>
+                  Join
+                </v-btn>
+              </span>
+            </template>
+            <span>{{ isLoggedIn ? `You can't join running seasons` : 'Log in to join'}}</span>
+          </v-tooltip>
         </div>
         <div class="tables-container">
           <v-card class="pt-5">
@@ -54,10 +66,7 @@
                 <!-- no data -->
                 <template #no-data>
                   <div class="mb-2 mt-5">
-                    <template v-if="!(sortedMembers.length > 0) && canJoin">
-                      <img class="ori-image" src="~/assets/images/ori_lurk.png" /><br /><b>JOIN!</b>
-                    </template>
-                    <template v-else>
+                    <template v-if="!(sortedMembers.length > 0)">
                       <img class="ori-image" src="~/assets/images/ori_think.png" /><br />no players
                     </template>
                   </div>
@@ -65,13 +74,21 @@
               </v-data-table>
 
               <!-- footer -->
-              <div v-if="leagueSeason.memberships.length > 0" class="text-center mt-3 mb-1">
-                <v-label>
-                  {{ leagueSeason.memberships.length }}
-                  {{ leagueSeason.memberships.length === 1 ? 'player' : 'players' }}
-                </v-label>
+              <div class="text-center">
+                <div v-if="leagueSeason.memberships.length > 0" class="mt-3 mb-1">
+                  <v-label>
+                    {{ leagueSeason.memberships.length }}
+                    {{ leagueSeason.memberships.length === 1 ? 'player' : 'players' }}
+                  </v-label>
+                </div>
               </div>
             </throttled-spinner>
+            <div class="call-to-join text-center mb-3 mt-5">
+              <template v-if="canJoin">
+                <v-label><b>JOIN!</b></v-label>
+                <img class="ori-image" src="~/assets/images/ori_lurk.png" />
+              </template>
+            </div>
           </v-card>
           <div class="games-list">
             <league-game-card
@@ -87,10 +104,9 @@
             >
               Past Games
             </h3>
-            <v-card>
+            <v-card v-if="pastGames.length > 0">
               <h2 v-if="!leagueSeason.currentGameId" class="text-center mt-5 mb-5">Games</h2>
               <v-data-table
-                v-if="pastGames.length > 0"
                 class="past-games"
                 :headers="gameHeaders"
                 :items="pastGames"
@@ -333,6 +349,12 @@
     display: flex;
     flex-direction: column;
     gap: 0.75em;
+  }
+
+  .call-to-join {
+    position: absolute;
+    top: 0;
+    right: 1em;
   }
 
   .ori-image {

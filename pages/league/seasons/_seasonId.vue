@@ -49,17 +49,17 @@
                 </template>
                 <template #item.user.name="{ item }">
                   <discord-avatar :user="item.user" class="mr-1" />
+                  {{ item.user.name }}
                   <v-tooltip
                     v-if="currentGameSubmissions?.some((s) => s.membership.user.id === item.user.id)"
                     open-delay="500"
                     bottom
                   >
                     <template #activator="{ on }">
-                      <v-icon small v-on="on">mdi-flag-checkered</v-icon>
+                      <v-icon small color="green lighten-2" v-on="on">mdi-flag-checkered</v-icon>
                     </template>
                     Submitted to current game
                   </v-tooltip>
-                  {{ item.user.name }}
                 </template>
               </v-data-table>
               <div v-if="leagueSeason.memberships.length > 0" class="text-center mt-3 mb-1">

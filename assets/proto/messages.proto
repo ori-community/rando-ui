@@ -17,7 +17,6 @@ message UserInfo {
   string name = 2;
   optional string avatarId = 3;
   bool isDeveloper = 6;
-  int32 points = 7;
 }
 
 message WorldMembershipInfo {
@@ -49,7 +48,6 @@ message RaceTeamMemberInfo {
 message RaceTeamInfo {
   int64 id = 1;
   repeated RaceTeamMemberInfo members = 2;
-  int32 points = 3;
   optional float finishedTime = 4;
 }
 

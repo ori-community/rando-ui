@@ -87,12 +87,6 @@
         <template v-if="isLoggedIn">
           <div class="mr-4 user-info">
             <div>{{ randomGreeting }}, {{ user.name }}!</div>
-            <v-tooltip bottom>
-              <template #activator="{on}">
-                <wotw-experience-points v-on="on">{{ user.points }}</wotw-experience-points>
-              </template>
-              Experience points earned by playing races
-            </v-tooltip>
           </div>
           <v-menu offset-y left nudge-bottom="6">
             <template #activator="{ on }">
@@ -288,10 +282,6 @@
   .user-info {
     line-height: 1.2;
     text-align: right;
-
-    .points {
-      font-size: 0.8em;
-    }
   }
 
   .page-toolbar {

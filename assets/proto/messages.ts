@@ -23,7 +23,6 @@ export interface UserInfo {
   name: string;
   avatarId?: string | undefined;
   isDeveloper: boolean;
-  points: number;
 }
 
 export interface WorldMembershipInfo {
@@ -444,7 +443,7 @@ export const BingoGoal = {
 messageTypeRegistry.set(BingoGoal.$type, BingoGoal);
 
 function createBaseUserInfo(): UserInfo {
-  return { $type: "RandoProto.UserInfo", id: "", name: "", avatarId: undefined, isDeveloper: false, points: 0 };
+  return { $type: "RandoProto.UserInfo", id: "", name: "", avatarId: undefined, isDeveloper: false };
 }
 
 export const UserInfo = {
@@ -462,9 +461,6 @@ export const UserInfo = {
     }
     if (message.isDeveloper !== false) {
       writer.uint32(48).bool(message.isDeveloper);
-    }
-    if (message.points !== 0) {
-      writer.uint32(56).int32(message.points);
     }
     return writer;
   },
@@ -504,13 +500,6 @@ export const UserInfo = {
 
           message.isDeveloper = reader.bool();
           continue;
-        case 7:
-          if (tag !== 56) {
-            break;
-          }
-
-          message.points = reader.int32();
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -527,7 +516,6 @@ export const UserInfo = {
       name: isSet(object.name) ? globalThis.String(object.name) : "",
       avatarId: isSet(object.avatarId) ? globalThis.String(object.avatarId) : undefined,
       isDeveloper: isSet(object.isDeveloper) ? globalThis.Boolean(object.isDeveloper) : false,
-      points: isSet(object.points) ? globalThis.Number(object.points) : 0,
     };
   },
 
@@ -545,9 +533,6 @@ export const UserInfo = {
     if (message.isDeveloper !== false) {
       obj.isDeveloper = message.isDeveloper;
     }
-    if (message.points !== 0) {
-      obj.points = Math.round(message.points);
-    }
     return obj;
   },
 
@@ -560,7 +545,6 @@ export const UserInfo = {
     message.name = object.name ?? "";
     message.avatarId = object.avatarId ?? undefined;
     message.isDeveloper = object.isDeveloper ?? false;
-    message.points = object.points ?? 0;
     return message;
   },
 };

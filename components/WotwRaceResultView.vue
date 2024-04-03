@@ -16,15 +16,12 @@
         >
           <div class="team-members">
             <div v-for="member in team.members" :key="member.user.id" class="team-member">
-              <wotw-player-view :user="member.user" with-points />
+              <wotw-player-view :user="member.user" />
               <div class="member-time">{{ member.finishedTime !== 0.0 ? formatTime(member.finishedTime) : 'DNF' }}</div>
             </div>
           </div>
 
           <div class="team-info mt-5">
-            <div>
-              <wotw-experience-points class="points">+{{ team.points }}</wotw-experience-points>
-            </div>
             <div v-if="team.members.length > 1" class="team-time">{{ team.finishedTime !== 0.0 ? formatTime(team.finishedTime) : 'DNF' }}</div>
           </div>
         </v-card>
@@ -107,10 +104,6 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
-
-        .points {
-          font-size: 1.2em;
-        }
 
         .team-time {
           text-align: right;

@@ -448,8 +448,10 @@
         }, 2000)
       },
       async downloadAndInstallUpdate() {
-        await this.$store.dispatch('electron/downloadAndInstallUpdate')
-        await this.$router.push({ path: '/electron' })
+        await Promise.all([
+          this.$router.push({ path: '/electron' }),
+          await this.$store.dispatch('electron/downloadAndInstallUpdate'),
+        ])
       },
     },
   }

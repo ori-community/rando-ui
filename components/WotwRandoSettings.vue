@@ -365,9 +365,11 @@
       },
     },
     mounted() {
+      document.addEventListener('keyup', this.onKeyUp)
       document.addEventListener('keydown', this.onKeyDown)
     },
     beforeDestroy() {
+      document.removeEventListener('keyup', this.onKeyUp)
       document.removeEventListener('keydown', this.onKeyDown)
     },
     methods: {
@@ -415,9 +417,22 @@
           this.settings['Paths.GameBinary'] = newPath
         }
       },
+      onKeyUp(event) {
+        if (event.key === 'Control') {
+          this.ctrlPressed = false
+        }
+      },
       onKeyDown(event) {
         if (this.settings !== null && !this.settings['Flags.Dev']) {
-          event.key === 'Control' ? this.debugStreak++ : (this.debugStreak = 0)
+          if (event.key === 'Control') {
+            if (!this.ctrlPressed) {
+              this.ctrlPressed = true
+              this.debugStreak++
+            }
+          } else {
+            this.debugStreak = 0
+          }
+
           if (this.debugStreak === 5) {
             this.enableDevTools()
           }

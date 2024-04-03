@@ -17,7 +17,7 @@ export function formatTime(totalSeconds, subSecondDigits = 1, omitMinutesIfZero 
 
   const secondsCharacterCount =
     subSecondDigits === 0
-      ? 2 // e.g. 12
+      ? (minutesVisible ? 2 : 1) // e.g. 12 or 6
       : (minutesVisible ? 3 : 2) + subSecondDigits // e.g. "02.4" for 2.4 seconds and 1 digit
 
   string += (hoursVisible ? `${hours.toFixed(0)}:` : '') +

@@ -225,8 +225,4 @@
   .notification-text {
     white-space: pre-wrap;
   }
-
-  :deep(.notifications) {
-    z-index: 99999;
-  }
 </style>

@@ -10,7 +10,10 @@
       <div class="game-number-container">
         <div>Game</div>
         <div>
-          <span class="hashtag">#</span><span class="game-number">{{ game.gameNumber }}</span>
+          <span class="hashtag">#</span><span class="game-number">{{ game.gameNumber }}</span
+          ><template v-if="gameCount"
+            ><span class="game-count"> / {{ gameCount }}</span>
+          </template>
         </div>
       </div>
 
@@ -52,6 +55,10 @@
         type: Object,
         required: true,
       },
+      gameCount: {
+        type: Number,
+        default: null,
+      },
       playableUntil: {
         type: Number,
         default: null,
@@ -90,7 +97,7 @@
         }
 
         if (secondsLeft <= 0) {
-          this.countdownTimerText = "Next game is coming any second..."
+          this.countdownTimerText = 'Next game is coming any second...'
           return
         }
 
@@ -130,7 +137,7 @@
       .game-number-container {
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: left;
         line-height: 1;
 
         .hashtag {
@@ -141,6 +148,12 @@
         .game-number {
           font-size: 2.5em;
           font-weight: 900;
+        }
+
+        .game-count {
+          font-size: 1.8em;
+          font-weight: 500;
+          opacity: 0.5;
         }
       }
 

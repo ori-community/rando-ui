@@ -91,6 +91,7 @@
             <league-game-card
               v-if="currentGame !== null"
               :game="currentGame"
+              :game-count="leagueSeason.gameCount"
               :playable-until="leagueSeason.nextContinuationAt"
               :member-count="leagueSeason.memberships?.length"
             />
@@ -211,7 +212,11 @@
           { text: 'Player', value: 'user.name' },
         ]
         if (this.currentGame) {
-          headers.push({ text: `Game #${this.currentGame.gameNumber}`, value: 'currentGame.submitted', align: 'center' })
+          headers.push({
+            text: `Game #${this.currentGame.gameNumber}`,
+            value: 'currentGame.submitted',
+            align: 'center',
+          })
         }
         headers.push({ text: 'Points', value: 'points', align: 'right' })
         return headers

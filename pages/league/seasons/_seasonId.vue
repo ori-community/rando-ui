@@ -16,7 +16,7 @@
           <v-tooltip v-if="!isJoined" bottom :disabled="canJoin">
             <template #activator="{ on }">
               <span v-on="on">
-                <v-btn color="accent" :loading="actionLoading" :disabled="!canJoin" @click="joinSeason">
+                <v-btn color="accent" :loading="actionLoading" :disabled="!canJoin" @click="showSeasonRules = true">
                   <v-icon left>mdi-plus-circle-outline</v-icon>
                   Join
                 </v-btn>
@@ -154,6 +154,7 @@
     </throttled-spinner>
     <v-dialog v-model="showSeasonInfo" max-width="800">
       <v-card class="pa-5">
+        <h2 class="text-center mb-3">Info</h2>
         <div v-if="leagueSeason">
           <div v-html="longDescriptionHtml"></div>
         </div>
@@ -161,8 +162,15 @@
     </v-dialog>
     <v-dialog v-model="showSeasonRules" max-width="800">
       <v-card class="pa-5">
+        <h2 class="text-center mb-3">Rules</h2>
         <div v-if="leagueSeason">
           <div v-html="rulesHtml"></div>
+        </div>
+        <div v-if="!isJoined && canJoin" class="justify-end dialog-buttons mt-3">
+          <v-btn color="accent" depressed @click="joinSeason">
+            <v-icon left>mdi-plus-circle-outline</v-icon>
+            Confirm and Join
+          </v-btn>
         </div>
       </v-card>
     </v-dialog>
@@ -280,7 +288,7 @@
         } catch (e) {
           console.error(e)
         }
-
+        this.showSeasonRules = false
         this.actionLoading = false
       },
       async openGamePage(gameId) {
@@ -399,8 +407,17 @@
   .ori-image {
     height: 2em;
   }
+
   .discarded {
     text-decoration: line-through;
     opacity: 0.6;
+  }
+
+  .dialog-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    flex-grow: 0;
+    justify-content: center;
+    gap: 0.4em;
   }
 </style>

@@ -136,7 +136,7 @@
           label="Video URL"
           :error-messages="errorMessage !== null ? [errorMessage] : []"
         />
-        <div class="justify-end buttons">
+        <div class="justify-end dialog-buttons">
           <v-btn :disabled="!videoUrlForSubmission" :loading="videoUrlSubmissionLoading" depressed color="accent" @click="submitVideoUrl(videoUrlForSubmission)">Submit</v-btn>
         </div>
       </v-card>
@@ -150,7 +150,7 @@
               <div class="mb-2">Are you sure, you want to remove your video?</div>
             </div>
           </v-row>
-          <v-row justify="end" class="buttons">
+          <v-row justify="end" class="dialog-buttons">
             <v-btn text :disabled="videoUrlSubmissionLoading" @click="removeVideoUrlConfirmationDialogOpen = false">No</v-btn>
             <v-btn depressed color="red" :loading="videoUrlSubmissionLoading" @click.native="submitVideoUrl(null)">Yes</v-btn>
           </v-row>
@@ -383,7 +383,7 @@
     display: block;
   }
 
-  .buttons {
+  .dialog-buttons {
     display: flex;
     flex-wrap: wrap;
     flex-grow: 0;

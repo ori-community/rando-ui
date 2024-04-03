@@ -44,7 +44,7 @@
                 <template #item.rank="{ item }">
                   <div class="d-flex">
                     <place-badge v-if="item.rank ?? false" :size="40" :place="item.rank" light-circle />
-                    <v-tooltip v-if="item.lastRankDelta !== null" right>
+                    <v-tooltip v-if="item.lastRankDelta !== null && leagueSeason.currentGameId !== null" right>
                       <template #activator="{ on }">
                         <v-icon v-if="item.lastRankDelta < 0" small color="green" v-on="on">mdi-arrow-up</v-icon>
                         <v-icon v-else-if="item.lastRankDelta > 0" small color="red" v-on="on">mdi-arrow-down</v-icon>

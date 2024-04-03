@@ -16,18 +16,13 @@
           <v-tooltip v-if="!isJoined" bottom :disabled="canJoin">
             <template #activator="{ on }">
               <span v-on="on">
-                <v-btn
-                  color="accent"
-                  :loading="actionLoading"
-                  :disabled="!canJoin"
-                  @click="joinSeason"
-                >
+                <v-btn color="accent" :loading="actionLoading" :disabled="!canJoin" @click="joinSeason">
                   <v-icon left>mdi-plus-circle-outline</v-icon>
                   Join
                 </v-btn>
               </span>
             </template>
-            <span>{{ isLoggedIn ? `You can't join running seasons` : 'Log in to join'}}</span>
+            <span>{{ isLoggedIn ? `You can't join running seasons` : 'Log in to join' }}</span>
           </v-tooltip>
         </div>
         <div class="tables-container">
@@ -51,6 +46,8 @@
                 <template #item.user.name="{ item }">
                   <discord-avatar :user="item.user" class="mr-1" />
                   {{ item.user.name }}
+                </template>
+                <template #item.currentGame.submitted="{ item }">
                   <v-tooltip
                     v-if="currentGameSubmissions?.some((s) => s.membership.user.id === item.user.id)"
                     open-delay="500"
@@ -117,6 +114,7 @@
                 :item-class="() => 'cursor-pointer'"
                 @click:row="(game) => openGamePage(game.id)"
               >
+                <!-- items -->
                 <template #item.gameNumber="{ item }">#{{ item.gameNumber }}</template>
                 <template #item.userMetadata.ownSubmission.rankingData.rank="{ item }">
                   <place-badge
@@ -169,11 +167,6 @@
       showSeasonInfo: false,
       showSeasonRules: false,
       refreshTimeoutId: null,
-      memberHeaders: [
-        { text: 'Rank', value: 'rank', align: 'center', width: 0 },
-        { text: 'Player', value: 'user.name' },
-        { text: 'Points', value: 'points', align: 'right' },
-      ],
       gameHeaders: [
         { text: 'Number', value: 'gameNumber', align: 'center' },
         { text: 'Submissions', value: 'submissionCount', align: 'left' },
@@ -211,6 +204,17 @@
       },
       pastGames() {
         return this.leagueSeason?.games?.filter((g) => !g.isCurrent) ?? []
+      },
+      memberHeaders() {
+        const headers = [
+          { text: 'Rank', value: 'rank', align: 'center', width: 0 },
+          { text: 'Player', value: 'user.name' },
+        ]
+        if (this.currentGame) {
+          headers.push({ text: `Game #${this.currentGame.gameNumber}`, value: 'currentGame.submitted', align: 'center' })
+        }
+        headers.push({ text: 'Points', value: 'points', align: 'right' })
+        return headers
       },
     },
     watch: {

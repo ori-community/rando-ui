@@ -15,7 +15,7 @@ export class WebSocketFactory {
           jwt: this.jwt,
           clientVersion: isElectron()
             ? await window.electronApi.invoke('updater.getVersion')
-            : '4.0.0-beta.10',
+            : '4.0.0-beta.13',
         }))
 
         resolve(ws)

@@ -49,7 +49,11 @@
                 </template>
                 <template #item.user.name="{ item }">
                   <discord-avatar :user="item.user" class="mr-1" />
-                  <v-tooltip v-if="currentGameSubmissions?.some(s => s.membership.user.id === item.user.id)" open-delay="500" bottom>
+                  <v-tooltip
+                    v-if="currentGameSubmissions?.some((s) => s.membership.user.id === item.user.id)"
+                    open-delay="500"
+                    bottom
+                  >
                     <template #activator="{ on }">
                       <v-icon small v-on="on">mdi-flag-checkered</v-icon>
                     </template>
@@ -58,7 +62,7 @@
                   {{ item.user.name }}
                 </template>
               </v-data-table>
-              <div class="text-center mt-3 mb-1">
+              <div v-if="leagueSeason.memberships.length > 0" class="text-center mt-3 mb-1">
                 <v-label>
                   {{ leagueSeason.memberships.length }}
                   {{ leagueSeason.memberships.length === 1 ? 'player' : 'players' }}
@@ -81,6 +85,7 @@
             </h3>
             <v-data-table
               v-if="pastGames.length > 0"
+              class="past-games"
               :headers="gameHeaders"
               :items="pastGames"
               disable-pagination
@@ -134,15 +139,15 @@
       showSeasonInfo: false,
       showSeasonRules: false,
       memberHeaders: [
-        { text: 'Rank', value: 'rank', width: '80px' },
+        { text: 'Rank', value: 'rank', align: 'center', width: '80px' },
         { text: 'Player', value: 'user.name' },
-        { text: 'Points', value: 'points', width: '30%' },
+        { text: 'Points', value: 'points', align: 'right' },
       ],
       gameHeaders: [
-        { text: 'Number', value: 'gameNumber' },
-        { text: 'Submissions', value: 'submissionCount' },
-        { text: 'Your Rank', value: 'userMetadata.ownSubmission.rankingData.rank' },
-        { text: 'Your Points', value: 'userMetadata.ownSubmission.rankingData.points' },
+        { text: 'Number', value: 'gameNumber', align: 'center' },
+        { text: 'Submissions', value: 'submissionCount', align: 'right' },
+        { text: 'Your Rank', value: 'userMetadata.ownSubmission.rankingData.rank', align: 'center' },
+        { text: 'Your Points', value: 'userMetadata.ownSubmission.rankingData.points', align: 'right' },
       ],
     }),
     computed: {
@@ -240,14 +245,14 @@
   }
 
   .season-container {
-    max-width: 1000px;
+    max-width: 1100px;
     margin: 0 auto;
   }
 
   .tables-container {
     display: grid;
     align-items: start;
-    grid-template-columns: 5fr 4fr;
+    grid-template-columns: 6fr 5fr;
     grid-auto-flow: column;
     gap: 1em;
 
@@ -275,6 +280,32 @@
         right: 0;
         background-color: rgba(255, 255, 255, 0.1);
         z-index: 0;
+      }
+    }
+
+    :deep(tr) {
+      th:first-of-type,
+      td:first-of-type {
+        padding-left: 3em;
+      }
+
+      th:last-of-type,
+      td:last-of-type {
+        padding-right: 3em;
+      }
+    }
+  }
+
+  .past-games {
+    :deep(tr) {
+      th:first-of-type,
+      td:first-of-type {
+        padding-left: 2cqb;
+      }
+
+      th:last-of-type,
+      td:last-of-type {
+        padding-right: 2em;
       }
     }
   }

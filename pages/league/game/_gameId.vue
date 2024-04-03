@@ -36,7 +36,7 @@
                 hide-default-footer
                 disable-sort
                 no-data-text="be the first to submit!"
-                :item-class="item => item.membership.user.id === user?.id ? 'row-highlighting' : ''"
+                :item-class="(item) => (item.membership.user.id === user?.id ? 'row-highlighting' : '')"
               >
                 <template #item.rankingData.rank="{ item }">
                   <place-badge
@@ -50,7 +50,7 @@
                   <discord-avatar :user="item.membership.user" class="mr-1" />
                   {{ item.membership.user.name }}
                 </template>
-                <template #item.rankingData.time="{item}">{{ formatTime(item.rankingData?.time) }}</template>
+                <template #item.rankingData.time="{ item }"> {{ formatTime(item.rankingData?.time) }} </template>
               </v-data-table>
             </throttled-spinner>
           </v-card>
@@ -72,10 +72,10 @@
       gameSubmissions: [],
       actionLoading: false,
       submissionHeaders: [
-        { text: 'Rank', value: 'rankingData.rank' },
+        { text: 'Rank', value: 'rankingData.rank', align: 'center' },
         { text: 'Player', value: 'membership.user.name' },
-        { text: 'Time', value: 'rankingData.time' },
-        { text: 'Points', value: 'rankingData.points' },
+        { text: 'Time', value: 'rankingData.time', align: 'right' },
+        { text: 'Points', value: 'rankingData.points', align: 'right' },
         { text: 'Discarded', value: 'rankingData.discarded' },
       ],
     }),
@@ -178,7 +178,7 @@
   }
 
   .submissions-container {
-    max-width: 700px;
+    max-width: 650px;
     margin: 0 auto;
   }
 
@@ -198,10 +198,21 @@
         bottom: 0;
         left: 0;
         right: 0;
-        background-color: rgba(255, 255, 255, 0.10);
+        background-color: rgba(255, 255, 255, 0.1);
         z-index: 0;
       }
     }
-  }
 
+    :deep(tr) {
+      th:first-of-type,
+      td:first-of-type {
+        padding-left: 3em;
+      }
+
+      th:last-of-type,
+      td:last-of-type {
+        padding-right: 3em;
+      }
+    }
+  }
 </style>

@@ -103,6 +103,13 @@
                   :place="item.userMetadata.ownSubmission.rankingData.rank"
                   :showNonProminentCircle="false"
                 />
+                <div v-else>-</div>
+              </template>
+              <template #item.userMetadata.ownSubmission.rankingData.points="{ item }">
+                <div v-if="item.userMetadata?.ownSubmission?.rankingData?.points >= 0">
+                  {{ item.userMetadata?.ownSubmission?.rankingData?.points }}
+                </div>
+                <div v-else>-</div>
               </template>
             </v-data-table>
           </div>

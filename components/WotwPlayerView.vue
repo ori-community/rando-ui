@@ -4,7 +4,6 @@
     <div>
       <div class="name-and-points">
         {{ user.name }}
-        <wotw-experience-points v-if="withPoints" class="points">{{ user.points }}</wotw-experience-points>
         <copyable-info v-if="devtoolsEnabled" :value="user.id" />
       </div>
       <slot />
@@ -21,10 +20,6 @@
       user: {
         type: Object,
         required: true,
-      },
-      withPoints: {
-        type: Boolean,
-        default: false,
       },
       connected: {
         type: Boolean,
@@ -53,10 +48,6 @@
     .name-and-points {
       display: flex;
       gap: 0.5em;
-
-      .points {
-        font-size: 0.8em;
-      }
     }
   }
 </style>

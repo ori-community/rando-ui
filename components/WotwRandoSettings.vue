@@ -439,11 +439,6 @@
         }
       },
       async resetLocalTrackerPosition() {
-        this.settings['LocalTracker.X'] = 0
-        this.settings['LocalTracker.Y'] = 0
-        this.settings['LocalTracker.Width'] = 700
-        this.settings['LocalTracker.Height'] = 405
-
         await window.electronApi.invoke('localTracker.resetWindowRect')
 
         this.localTrackerPositionReset = true
@@ -453,8 +448,10 @@
         }, 2000)
       },
       async downloadAndInstallUpdate() {
-        await this.$store.dispatch('electron/downloadAndInstallUpdate')
-        await this.$router.push({ path: '/electron' })
+        await Promise.all([
+          this.$router.push({ path: '/electron' }),
+          await this.$store.dispatch('electron/downloadAndInstallUpdate'),
+        ])
       },
     },
   }

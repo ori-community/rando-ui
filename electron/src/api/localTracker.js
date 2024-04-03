@@ -22,14 +22,11 @@ export default {
     return LocalTrackerWebSocketService.remoteTrackerEndpointId
   },
   async resetWindowRect() {
-    await SettingsService.transaction(settings => {
-      const rect = LocalTrackerService.getInitialWindowRect()
-      settings['LocalTracker.X'] = rect.x
-      settings['LocalTracker.Y'] = rect.y
-      settings['LocalTracker.Width'] = rect.width
-      settings['LocalTracker.Height'] = rect.height
-      return settings
-    })
+    const rect = LocalTrackerService.getInitialWindowRect()
+    await SettingsService.setSetting('LocalTracker.X', rect.x)
+    await SettingsService.setSetting('LocalTracker.Y', rect.y)
+    await SettingsService.setSetting('LocalTracker.Width', rect.width)
+    await SettingsService.setSetting('LocalTracker.Height', rect.height)
 
     LocalTrackerService.resetWindowRect()
   }

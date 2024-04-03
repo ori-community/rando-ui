@@ -32,12 +32,12 @@
             <v-spacer />
             <template v-if="didSubmit">
               <v-btn v-if="!ownSubmittionHasVideoUrl" text @click="showVideoSubmission = true">
-                <v-icon left>mdi-video</v-icon>
-                Submit Video
+                <v-icon left>mdi-video-outline</v-icon>
+                Attach my Video
               </v-btn>
               <v-btn v-else text @click="removeVideoUrlConfirmationDialogOpen = true">
                 <v-icon left>mdi-video-off-outline</v-icon>
-                Remove Video
+                Remove my Video
               </v-btn>
             </template>
           </div>
@@ -57,7 +57,7 @@
                 <!-- Items -->
                 <template #item.rankingData.rank="{ item }">
                   <place-badge
-                    v-if="item.rankingData?.rank ?? null !== null"
+                    v-if="item.rankingData?.rank ?? false"
                     :size="40"
                     :place="item.rankingData.rank"
                     light-circle
@@ -88,8 +88,11 @@
                   </v-tooltip>
                 </template>
                 <template #item.rankingData.videoUrl="{ item }">
-                  <v-btn icon v-if="item.rankingData?.videoUrl" @click="openVideo(item.rankingData.videoUrl)">
+                  <v-btn v-if="item.rankingData?.videoUrl" icon @click="openVideo(item.rankingData.videoUrl)">
                     <v-icon>mdi-video-outline</v-icon>
+                  </v-btn>
+                  <v-btn v-else-if="item.membership.user.id === user?.id" icon @click="showVideoSubmission = true">
+                    <v-icon>mdi-plus</v-icon>
                   </v-btn>
                 </template>
 
@@ -107,10 +110,10 @@
 
               <!-- footer -->
               <div v-if="leagueGame.isCurrent && !didSubmit && gameSubmissions.length > 0" class="text-center mt-3">
-                <v-label>
+                <div>
                   <template v-if="canSubmit">Submit to see the times form other players</template>
                   <template v-else>Results will be visible once game has been closed</template>
-                </v-label>
+                </div>
               </div>
             </throttled-spinner>
           </v-card>
@@ -127,23 +130,29 @@
           Currently, only videos on YouTube and Twitch are supported. If you want to use another video platform, let us
           know!
         </p>
-        <v-text-field class="mb-4" v-model="videoUrlForSubmittion" label="Video URL" hide-details />
+        <v-text-field
+          v-model="videoUrlForSubmission"
+          class="mb-4"
+          label="Video URL"
+          :error-messages="errorMessage !== null ? [errorMessage] : []"
+        />
         <div class="justify-end buttons">
-          <v-btn :disabled="!videoUrlForSubmittion" color="accent" @click="submitVideoUrl(videoUrlForSubmittion)">Submit</v-btn>
+          <v-btn :disabled="!videoUrlForSubmission" :loading="videoUrlSubmissionLoading" depressed color="accent" @click="submitVideoUrl(videoUrlForSubmission)">Submit</v-btn>
         </div>
       </v-card>
     </v-dialog>
+
     <v-dialog v-model="removeVideoUrlConfirmationDialogOpen" width="unset" max-width="600">
       <v-card class="pa-5">
         <v-col>
           <v-row>
             <div class="mb-4 confirmation-dialog-info">
-              <v-label class="mb-2">Are you sure, you want to remove your video?</v-label>
+              <div class="mb-2">Are you sure, you want to remove your video?</div>
             </div>
           </v-row>
           <v-row justify="end" class="buttons">
-            <v-btn text @click="removeVideoUrlConfirmationDialogOpen = false">No</v-btn>
-            <v-btn depressed color="accent" @click.native="submitVideoUrl(null)">Yes</v-btn>
+            <v-btn text :disabled="videoUrlSubmissionLoading" @click="removeVideoUrlConfirmationDialogOpen = false">No</v-btn>
+            <v-btn depressed color="red" :loading="videoUrlSubmissionLoading" @click.native="submitVideoUrl(null)">Yes</v-btn>
           </v-row>
         </v-col>
       </v-card>
@@ -155,7 +164,6 @@
   import { mapGetters, mapState } from 'vuex'
   import { formatTime } from '~/assets/lib/formatTime'
   import { isElectron } from '~/assets/lib/isElectron'
-  import { EventBus } from '~/assets/lib/EventBus'
 
   export default {
     data: () => ({
@@ -164,8 +172,10 @@
       gameSubmissions: [],
       actionLoading: false,
       showVideoSubmission: false,
-      videoUrlForSubmittion: null,
+      videoUrlForSubmission: null,
+      videoUrlSubmissionLoading: false,
       removeVideoUrlConfirmationDialogOpen: false,
+      errorMessage: null,
     }),
     computed: {
       ...mapState('user', ['user']),
@@ -276,31 +286,25 @@
       },
       async submitVideoUrl(videoUrl = null) {
         const submissionId = this.ownSubmission?.id
+
         if (!submissionId) {
-          EventBus.$emit('notification', {
-            message: 'Own submission not found.',
-            color: 'error',
-          })
-          console.error('Own submission not found')
           return
         }
 
-        try {
+        this.videoUrlSubmissionLoading = true
 
+        try {
           await this.$axios.$post(`/league/submissions/${submissionId}/video-url`, { videoUrl })
           this.gameSubmissions = await this.$axios.$get(`/league/games/${this.$route.params.gameId}/submissions`)
           this.showVideoSubmission = false
           this.removeVideoUrlConfirmationDialogOpen = false
-
+          this.errorMessage = null
         } catch (e) {
-
-          EventBus.$emit('notification', {
-            message: String(e.response.data),
-            color: 'error',
-          })
+          this.errorMessage = e.response?.data ?? 'Unknown Error'
           console.error(e)
-
         }
+
+        this.videoUrlSubmissionLoading = false
       },
       openVideo(videoUrl) {
         if (this.isElectron) {

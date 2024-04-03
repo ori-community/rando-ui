@@ -240,9 +240,11 @@
             clearTimeout(this.refreshTimeoutId)
           }
 
-          this.refreshTimeoutId = setTimeout(() => {
-            this.loadSeason()
-          }, Math.max(10000, this.leagueSeason.nextContinuationAt - Date.now()))
+          if (this.leagueSeason.currentGame !== null || this.leagueSeason.nextContinuationAt > Date.now()) {
+            this.refreshTimeoutId = setTimeout(() => {
+              this.loadSeason()
+            }, Math.max(10000, this.leagueSeason.nextContinuationAt - Date.now()))
+          }
         } catch (e) {
           console.error(e)
         }

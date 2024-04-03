@@ -7,6 +7,7 @@
     <div class="gradient-overlay"></div>
 
     <div class="card-content pa-4">
+      <img class="background-image" src="~/assets/images/ori_running.png" />
       <div class="game-number-container">
         <div>Game</div>
         <div>
@@ -159,6 +160,20 @@
 
       .spacer {
         flex-grow: 1;
+      }
+
+      .background-image {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        opacity: 0.75;
+        transform: scale(1.8);
       }
     }
 

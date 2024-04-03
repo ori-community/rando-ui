@@ -42,7 +42,21 @@
               >
                 <!-- items -->
                 <template #item.rank="{ item }">
-                  <place-badge v-if="item.rank ?? false" :size="40" :place="item.rank" light-circle />
+                  <div class="d-flex">
+                    <place-badge v-if="item.rank ?? false" :size="40" :place="item.rank" light-circle />
+                    <v-tooltip v-if="item.lastRankDelta !== null" right>
+                      <template #activator="{ on }">
+                        <v-icon v-if="item.lastRankDelta < 0" small color="green" v-on="on">mdi-arrow-up</v-icon>
+                        <v-icon v-else-if="item.lastRankDelta > 0" small color="red" v-on="on">mdi-arrow-down</v-icon>
+                      </template>
+                      <span>
+                        {{ Math.abs(item.lastRankDelta) }} rank{{ Math.abs(item.lastRankDelta) !== 1 ? 's' : '' }}
+                        <span v-if="item.lastRankDelta > 0" class="red--text">down</span>
+                        <span v-else class="green--text">up</span>
+                        since last game
+                      </span>
+                    </v-tooltip>
+                  </div>
                 </template>
                 <template #item.user.name="{ item }">
                   <div class="text-no-wrap">

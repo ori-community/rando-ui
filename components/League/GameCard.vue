@@ -89,6 +89,11 @@
           return
         }
 
+        if (secondsLeft <= 0) {
+          this.countdownTimerText = "Next game is coming any second..."
+          return
+        }
+
         this.countdownTimerText = formatTime(secondsLeft, 0, true)
       },
     },

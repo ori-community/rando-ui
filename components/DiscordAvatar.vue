@@ -14,8 +14,6 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex'
-
   export default {
     name: 'DiscordAvatar',
     props: {
@@ -35,9 +33,8 @@
       },
     },
     computed: {
-      ...mapGetters('user', ['isLoggedIn']),
       discordAvatarUrl() {
-        if (!this.isLoggedIn || !this.user.avatarId) {
+        if (!this.user.avatarId) {
           return null
         }
 

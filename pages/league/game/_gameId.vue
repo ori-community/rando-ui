@@ -20,10 +20,27 @@
           </v-btn>
         </div>
         <div class="submissions-container mt-7">
-          <v-btn class="mb-1" text :to="{ name: 'league-seasons-seasonId', params: { seasonId: leagueGame.seasonId } }">
-            <v-icon>mdi-arrow-left-thin</v-icon>
-            Season
-          </v-btn>
+          <div class="d-flex">
+            <v-btn
+              class="mb-1"
+              text
+              :to="{ name: 'league-seasons-seasonId', params: { seasonId: leagueGame.seasonId } }"
+            >
+              <v-icon>mdi-arrow-left-thin</v-icon>
+              Season
+            </v-btn>
+            <v-spacer />
+            <template v-if="didSubmit">
+              <v-btn v-if="!ownSubmittionHasVideoUrl" text @click="showVideoSubmission = true">
+                <v-icon left>mdi-video</v-icon>
+                Submit Video
+              </v-btn>
+              <v-btn v-else text @click="removeVideoUrlConfirmationDialogOpen = true">
+                <v-icon left>mdi-video-off-outline</v-icon>
+                Remove Video
+              </v-btn>
+            </template>
+          </div>
           <v-card class="pt-5">
             <h2 class="text-center mb-5">Submissions</h2>
             <throttled-spinner>
@@ -35,7 +52,6 @@
                 disable-pagination
                 hide-default-footer
                 disable-sort
-                mobile-breakpoint="0"
                 :item-class="(item) => (item.membership.user.id === user?.id ? 'row-highlighting' : '')"
               >
                 <!-- Items -->
@@ -48,10 +64,8 @@
                   />
                 </template>
                 <template #item.membership.user.name="{ item }">
-                  <div class="text-no-wrap">
-                    <discord-avatar :user="item.membership.user" class="mr-1" />
-                    {{ item.membership.user.name }}
-                  </div>
+                  <discord-avatar :user="item.membership.user" class="mr-1" />
+                  {{ item.membership.user.name }}
                 </template>
                 <template #item.rankingData.time="{ item }">
                   <template v-if="item.rankingData?.time">{{ formatTime(item.rankingData?.time) }} </template>
@@ -70,8 +84,13 @@
                     <span v-if="leagueSeason.discardWorstGamesCount > 1"
                       >Player's {{ leagueSeason.discardWorstGamesCount }} worst races get discarded</span
                     >
-                    <span v-else>Player's Worst race gets discarded</span>
+                    <span v-else>Player's worst race gets discarded</span>
                   </v-tooltip>
+                </template>
+                <template #item.rankingData.videoUrl="{ item }">
+                  <v-btn icon v-if="item.rankingData?.videoUrl" @click="openVideo(item.rankingData.videoUrl)">
+                    <v-icon>mdi-video-outline</v-icon>
+                  </v-btn>
                 </template>
 
                 <!-- no data -->
@@ -98,6 +117,37 @@
         </div>
       </div>
     </throttled-spinner>
+
+    <!-- submit video -->
+    <v-dialog v-model="showVideoSubmission" max-width="600">
+      <v-card class="pa-5">
+        <h2 class="mb-3">Submit video of your run</h2>
+        <p>
+          You can attach a video of your run for other finished players to watch.<br />
+          Currently, only videos on YouTube and Twitch are supported. If you want to use another video platform, let us
+          know!
+        </p>
+        <v-text-field class="mb-4" v-model="videoUrlForSubmittion" label="Video URL" hide-details />
+        <div class="justify-end buttons">
+          <v-btn :disabled="!videoUrlForSubmittion" color="accent" @click="submitVideoUrl(videoUrlForSubmittion)">Submit</v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="removeVideoUrlConfirmationDialogOpen" width="unset" max-width="600">
+      <v-card class="pa-5">
+        <v-col>
+          <v-row>
+            <div class="mb-4 confirmation-dialog-info">
+              <v-label class="mb-2">Are you sure, you want to remove your video?</v-label>
+            </div>
+          </v-row>
+          <v-row justify="end" class="buttons">
+            <v-btn text @click="removeVideoUrlConfirmationDialogOpen = false">No</v-btn>
+            <v-btn depressed color="accent" @click.native="submitVideoUrl(null)">Yes</v-btn>
+          </v-row>
+        </v-col>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -105,6 +155,7 @@
   import { mapGetters, mapState } from 'vuex'
   import { formatTime } from '~/assets/lib/formatTime'
   import { isElectron } from '~/assets/lib/isElectron'
+  import { EventBus } from '~/assets/lib/EventBus'
 
   export default {
     data: () => ({
@@ -112,6 +163,9 @@
       leagueGame: null,
       gameSubmissions: [],
       actionLoading: false,
+      showVideoSubmission: false,
+      videoUrlForSubmittion: null,
+      removeVideoUrlConfirmationDialogOpen: false,
     }),
     computed: {
       ...mapState('user', ['user']),
@@ -121,8 +175,11 @@
       canSubmit() {
         return this.leagueGame !== null && this.leagueGame.userMetadata?.canSubmit
       },
+      ownSubmission() {
+        return this.gameSubmissions?.find((s) => s.membership.user.id === this.user?.id)
+      },
       didSubmit() {
-        return this.gameSubmissions?.some((s) => s.membership.user.id === this.user?.id)
+        return this.ownSubmission !== null
       },
       multiverse() {
         return this.multiverses[this.leagueGame.multiverseId]
@@ -167,8 +224,13 @@
           headers.push({ text: 'Points', value: 'rankingData.points', align: 'right' })
         }
 
+        headers.push({ text: 'Video', value: 'rankingData.videoUrl', align: 'center', width: 0 })
+
         return headers
       },
+      ownSubmittionHasVideoUrl(){
+        return this.ownSubmission?.rankingData?.videoUrl !== null
+      }
     },
     watch: {
       '$route.params.gameId': {
@@ -210,6 +272,41 @@
           setTimeout(() => {
             window.close()
           }, 500)
+        }
+      },
+      async submitVideoUrl(videoUrl = null) {
+        const submissionId = this.ownSubmission?.id
+        if (!submissionId) {
+          EventBus.$emit('notification', {
+            message: 'Own submission not found.',
+            color: 'error',
+          })
+          console.error('Own submission not found')
+          return
+        }
+
+        try {
+
+          await this.$axios.$post(`/league/submissions/${submissionId}/video-url`, { videoUrl })
+          this.gameSubmissions = await this.$axios.$get(`/league/games/${this.$route.params.gameId}/submissions`)
+          this.showVideoSubmission = false
+          this.removeVideoUrlConfirmationDialogOpen = false
+
+        } catch (e) {
+
+          EventBus.$emit('notification', {
+            message: String(e.response.data),
+            color: 'error',
+          })
+          console.error(e)
+
+        }
+      },
+      openVideo(videoUrl) {
+        if (this.isElectron) {
+          window.electronApi.invoke('launcher.openUrl', { url: videoUrl })
+        } else {
+          window.open(videoUrl)
         }
       },
     },
@@ -275,5 +372,17 @@
 
   .ori-image {
     height: 2em;
+  }
+
+  .confirmation-dialog-info label {
+    display: block;
+  }
+
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    flex-grow: 0;
+    justify-content: center;
+    gap: 0.4em;
   }
 </style>

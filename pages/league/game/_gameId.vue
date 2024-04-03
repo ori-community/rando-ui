@@ -35,9 +35,9 @@
                 disable-pagination
                 hide-default-footer
                 disable-sort
-                no-data-text="be the first to submit!"
                 :item-class="(item) => (item.membership.user.id === user?.id ? 'row-highlighting' : '')"
               >
+                <!-- Items -->
                 <template #item.rankingData.rank="{ item }">
                   <place-badge
                     v-if="item.rankingData?.rank ?? null !== null"
@@ -50,8 +50,36 @@
                   <discord-avatar :user="item.membership.user" class="mr-1" />
                   {{ item.membership.user.name }}
                 </template>
-                <template #item.rankingData.time="{ item }"> {{ formatTime(item.rankingData?.time) }} </template>
+                <template #item.rankingData.time="{ item }">
+                  <template v-if="item.rankingData?.time">{{ formatTime(item.rankingData?.time) }} </template>
+                  <template v-else>-</template>
+                </template>
+                <template #item.rankingData.points="{ item }">
+                  <template v-if="!leagueGame.isCurrent">
+                    {{ item.rankingData.points }}
+                  </template>
+                  <template v-else>-</template>
+                </template>
+
+                <!-- no data -->
+                <template #no-data>
+                  <template v-if="canSubmit">Be the first to submit!</template>
+                  <template v-else-if="leagueGame.isCurrent">No submittions available yet</template>
+                  <template v-else>
+                    <div class="mb-2 mt-5">
+                      <img class="ori-image" src="~/assets/images/ori_thumb.png" /><br /><b>no submittions</b>
+                    </div>
+                  </template>
+                </template>
               </v-data-table>
+
+              <!-- footer -->
+              <div v-if="leagueGame.isCurrent && !didSubmit && gameSubmissions.length > 0" class="text-center mt-3">
+                <v-label>
+                  <template v-if="canSubmit">Submit to see the times form other players</template>
+                  <template v-else>Results will be visible once game has been closed</template>
+                </v-label>
+              </div>
             </throttled-spinner>
           </v-card>
         </div>
@@ -85,7 +113,7 @@
       ...mapState('multiverseState', ['multiverses']),
       isElectron,
       canSubmit() {
-        return this.leagueGame !== null && this.leagueGame.userMetadata.canSubmit
+        return this.leagueGame !== null && this.leagueGame.userMetadata?.canSubmit
       },
       didSubmit() {
         return this.gameSubmissions?.some((s) => s.membership.user.id === this.user?.id)
@@ -198,7 +226,12 @@
         bottom: 0;
         left: 0;
         right: 0;
-        background: linear-gradient(to right, rgba(255, 255, 255, 0.0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.0) 100%);
+        background: linear-gradient(
+          to right,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 0.1) 50%,
+          rgba(255, 255, 255, 0) 100%
+        );
         z-index: 0;
       }
     }
@@ -214,5 +247,9 @@
         padding-right: 3em;
       }
     }
+  }
+
+  .ori-image {
+    height: 2em;
   }
 </style>

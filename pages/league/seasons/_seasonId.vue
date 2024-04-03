@@ -32,20 +32,9 @@
                 disable-sort
                 :item-class="(item) => (item.user.id === user?.id ? 'row-highlighting' : '')"
               >
-                <template v-if="!(sortedMembers.length > 0) && canJoin" #no-data>
-                  <img class="ori-image mt-5" src="~/assets/images/ori_lurk.png" /><br /><b>JOIN!</b>
-                </template>
-                <template v-else #no-data
-                  ><img class="ori-image mt-5" src="~/assets/images/ori_think.png" /><br />No members
-                </template>
-
+                <!-- items -->
                 <template #item.rank="{ item }">
-                  <place-badge
-                    v-if="item.rank ?? null !== null"
-                    :size="40"
-                    :place="item.rank"
-                    light-circle
-                  />
+                  <place-badge v-if="item.rank ?? null !== null" :size="40" :place="item.rank" light-circle />
                 </template>
                 <template #item.user.name="{ item }">
                   <discord-avatar :user="item.user" class="mr-1" />
@@ -61,7 +50,21 @@
                     Submitted to current game
                   </v-tooltip>
                 </template>
+
+                <!-- no data -->
+                <template #no-data>
+                  <div class="mb-2 mt-5">
+                    <template v-if="!(sortedMembers.length > 0) && canJoin">
+                      <img class="ori-image" src="~/assets/images/ori_lurk.png" /><br /><b>JOIN!</b>
+                    </template>
+                    <template v-else>
+                      <img class="ori-image" src="~/assets/images/ori_think.png" /><br />no players
+                    </template>
+                  </div>
+                </template>
               </v-data-table>
+
+              <!-- footer -->
               <div v-if="leagueSeason.memberships.length > 0" class="text-center mt-3 mb-1">
                 <v-label>
                   {{ leagueSeason.memberships.length }}
@@ -84,35 +87,38 @@
             >
               Past Games
             </h3>
-            <v-data-table
-              v-if="pastGames.length > 0"
-              class="past-games"
-              :headers="gameHeaders"
-              :items="pastGames"
-              disable-pagination
-              hide-default-footer
-              must-sort
-              sort-by="gameNumber"
-              :item-class="() => 'cursor-pointer'"
-              @click:row="(game) => openGamePage(game.id)"
-            >
-              <template #item.gameNumber="{ item }">#{{ item.gameNumber }}</template>
-              <template #item.userMetadata.ownSubmission.rankingData.rank="{ item }">
-                <place-badge
-                  v-if="item.userMetadata?.ownSubmission?.rankingData?.rank ?? null !== null"
-                  :size="40"
-                  :place="item.userMetadata.ownSubmission.rankingData.rank"
-                  :showNonProminentCircle="false"
-                />
-                <div v-else>-</div>
-              </template>
-              <template #item.userMetadata.ownSubmission.rankingData.points="{ item }">
-                <div v-if="item.userMetadata?.ownSubmission?.rankingData?.points >= 0">
-                  {{ item.userMetadata?.ownSubmission?.rankingData?.points }}
-                </div>
-                <div v-else>-</div>
-              </template>
-            </v-data-table>
+            <v-card>
+              <h2 v-if="!leagueSeason.currentGameId" class="text-center mt-5 mb-5">Games</h2>
+              <v-data-table
+                v-if="pastGames.length > 0"
+                class="past-games"
+                :headers="gameHeaders"
+                :items="pastGames"
+                disable-pagination
+                hide-default-footer
+                must-sort
+                sort-by="gameNumber"
+                :item-class="() => 'cursor-pointer'"
+                @click:row="(game) => openGamePage(game.id)"
+              >
+                <template #item.gameNumber="{ item }">#{{ item.gameNumber }}</template>
+                <template #item.userMetadata.ownSubmission.rankingData.rank="{ item }">
+                  <place-badge
+                    v-if="item.userMetadata?.ownSubmission?.rankingData?.rank ?? null !== null"
+                    :size="40"
+                    :place="item.userMetadata.ownSubmission.rankingData.rank"
+                    :showNonProminentCircle="false"
+                  />
+                  <div v-else>-</div>
+                </template>
+                <template #item.userMetadata.ownSubmission.rankingData.points="{ item }">
+                  <div v-if="item.userMetadata?.ownSubmission?.rankingData?.points >= 0">
+                    {{ item.userMetadata?.ownSubmission?.rankingData?.points }}
+                  </div>
+                  <div v-else>-</div>
+                </template>
+              </v-data-table>
+            </v-card>
           </div>
         </div>
       </div>
@@ -286,7 +292,12 @@
         bottom: 0;
         left: 0;
         right: 0;
-        background: linear-gradient(to right, rgba(255, 255, 255, 0.0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.0) 100%);
+        background: linear-gradient(
+          to right,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 0.1) 50%,
+          rgba(255, 255, 255, 0) 100%
+        );
         z-index: 0;
       }
     }

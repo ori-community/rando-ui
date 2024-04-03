@@ -226,7 +226,7 @@
     white-space: pre-wrap;
   }
 
-  .notifications {
+  :deep(.notifications) {
     z-index: 99999;
   }
 </style>

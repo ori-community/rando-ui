@@ -1,23 +1,15 @@
 <template>
   <v-container>
-    <h1 class="text-center mt-12 mb-12">Randomizer League</h1>
-    <div>
-      Small league introduction<br />
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-      magna aliqua. Cursus mattis molestie a iaculis. Viverra justo nec ultrices dui. Sagittis purus sit amet volutpat
-      consequat mauris nunc. Nulla aliquet enim tortor at auctor. Nibh tellus molestie nunc non. Libero enim sed
-      faucibus turpis. Eget arcu dictum varius duis at consectetur lorem donec massa. Cursus vitae congue mauris rhoncus
-      aenean vel elit. Elementum pulvinar etiam non quam lacus suspendisse faucibus interdum. Vitae congue mauris
-      rhoncus aenean vel elit scelerisque mauris. Mi proin sed libero enim. Etiam non quam lacus suspendisse faucibus
-      interdum posuere lorem ipsum. Auctor elit sed vulputate mi sit.
+    <h1 class="text-center mt-12 mb-2">Randomizer League</h1>
+    <div class="text-center mb-12">
+      <v-btn text large outlined @click="showLeagueInfo = true">
+        <v-icon left>mdi-information-outline</v-icon>
+        FAQ / Help
+      </v-btn>
     </div>
-    <v-btn class="mb-3" small text outlined @click="showLeagueInfo = true">
-      <v-icon left>mdi-information-outline</v-icon>
-      More Info
-    </v-btn>
 
     <template v-if="categorizedSeasons.active.length > 0 || categorizedSeasons.upcoming.length > 0">
-      <h2 class="mt-5 mb-2">Active & Upcoming</h2>
+      <h2 class="mt-5 mb-2">Active & Upcoming Seasons</h2>
 
       <div class="seasons-container">
         <league-season-card
@@ -49,20 +41,87 @@
       </div>
     </div>
 
-    <v-dialog v-model="showLeagueInfo" max-width="800">
-      <v-card class="pa-5">
-        More info here; also rules. WIP. Pls help
-        <ul>
-          <li>What is League</li>
-          <li>What are Seasons</li>
-          <li>How/When to join a Season</li>
-          <li>How does the point system work</li>
-          <li>How does the point system work</li>
-          <li>How/When to join a game</li>
-          <li>How to submit a run</li>
-          <li>general rando rules (wiki?)</li>
-        </ul>
-      </v-card>
+    <v-dialog v-model="showLeagueInfo" max-width="800" content-class="elevation-0">
+      <v-expansion-panels popout multiple mandatory>
+        <v-expansion-panel>
+          <v-expansion-panel-header class="font-weight-bold title">
+            What is the Randomizer League?
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            The Randomizer League is a new game mode for the Ori and the Will of the Wisps Randomizer which
+            allows multiple players to compete against each other asynchronously. All players play the same
+            seeds but don't have to do so at the same time. Instead, each player can complete each game in
+            a given time frame.
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+        <v-expansion-panel>
+          <v-expansion-panel-header class="font-weight-bold title">
+            What are Seasons?
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            Each season is a set of games which player can compete in. Every season has its own leaderboard
+            and games of a season are counted towards the player's ranking on the leaderboard of that season.
+            There can be multiple seasons in parallel. This allows for different seasons with unique seed settings,
+            for example different difficulty levels.
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+        <v-expansion-panel>
+          <v-expansion-panel-header class="font-weight-bold title">
+            How can I play games in the Randomizer League?
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            To play games in the Randomizer League, you need to first pick an upcoming season and join it.
+            Joining seasons is possible until the first game of that season is finished. While it is possible
+            to play without being a member in the Ori Runs Discord server, it is heavily advised to be part
+            of it to receive pings and reminders for your joined seasons as well as being added to spoiler
+            discussion channels after you finished a game.<br>
+            Once the season started, games will be created automatically in fixed intervals. You can then
+            play these games whenever you want until they expire and the next game is created or the season is
+            over.
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+        <v-expansion-panel>
+          <v-expansion-panel-header class="font-weight-bold title">
+            How are points calculated?
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            After a game is finished, players who submitted a run are awarded two types of points:
+
+            <ul class="mb-2">
+              <li>
+                <span class="font-italic">Base Points</span><br>
+                Base Points are awarded to all players who submitted a run, regardless of their time.
+              </li>
+              <li>
+                <span class="font-italic">Speed Points</span><br>
+                Speed Points are awarded to players depending on their run time in relation to the fastest player.
+              </li>
+            </ul>
+
+            <h3>Example:</h3>
+            The season in this example uses <span class="text-decoration-underline">10 Base Points</span>,
+            <span class="text-decoration-underline">190 Speed Points</span> and a
+            <span class="text-decoration-underline">Speed Factor of 2.0</span>. The fastest player has a time of
+            <span class="text-decoration-underline">01:00:00</span>.<br>
+            If you finish with a time of 01:30:00, you are awarded 105 points in total:
+
+            <ul>
+              <li>10 Base Points for finishing</li>
+              <li>95 Speed Points for speed (fastest time = all Speed Points, fastest time * Speed Factor = no Speed Points, 190 * 0.5 = 95)</li>
+            </ul>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+        <v-expansion-panel>
+          <v-expansion-panel-header class="font-weight-bold title">
+            How do I submit a run?
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            The Randomizer League is deeply integrated into the Randomizer itself. Submission and basic validation
+            of games is done automatically. If you want to submit a recording of your run alongside the submitted time,
+            you can do so after finishing your run on the game page.
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
     </v-dialog>
   </v-container>
 </template>

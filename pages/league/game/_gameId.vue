@@ -51,6 +51,7 @@
                 :items="sortedSubmissions"
                 disable-pagination
                 hide-default-footer
+                mobile-breakpoint="0"
                 disable-sort
                 :item-class="(item) => (item.membership.user.id === user?.id ? 'row-highlighting' : '')"
               >

@@ -9,7 +9,7 @@
 
     <throttled-spinner>
       <div class="season-container justify-center" v-if="leagueSeason !== null">
-        <div class="d-flex justify-center align-center mt-12 mb-6"> 
+        <div class="d-flex justify-center align-center mt-12 mb-6">
           <h1 class="pl-12 text-center mx-6">{{ leagueSeason.name }}</h1>
           <v-tooltip top open-delay="500">
             <template #activator="{ on }">
@@ -100,16 +100,18 @@
               <!-- footer -->
               <div class="text-center">
                 <div v-if="leagueSeason.memberships.length > 0" class="mt-3 mb-1">
-                  <v-label>
+                  <div class="background--text text--lighten-5">
                     {{ leagueSeason.memberships.length }}
                     {{ leagueSeason.memberships.length === 1 ? 'player' : 'players' }}
-                  </v-label>
+                  </div>
                 </div>
               </div>
             </throttled-spinner>
             <div class="call-to-join text-center mb-3 mt-5">
               <template v-if="canJoin">
-                <v-label><b>JOIN!</b></v-label>
+                <div class="background--text text--lighten-5">
+                  <b>JOIN!</b>
+                </div>
                 <img class="ori-image" src="~/assets/images/ori_lurk.png" />
               </template>
             </div>
@@ -170,6 +172,12 @@
                     <span v-else>Your worst race gets discarded</span>
                   </v-tooltip>
                 </template>
+                <template #item.userMetadata.ownSubmission.rankingData.time="{ item }">
+                  <template v-if="item.userMetadata?.ownSubmission?.rankingData?.time"
+                    >{{ formatTime(item.userMetadata?.ownSubmission?.rankingData?.time) }}
+                  </template>
+                  <template v-else>-</template>
+                </template>
               </v-data-table>
             </v-card>
           </div>
@@ -204,6 +212,7 @@
 <script>
   import { mapGetters, mapState } from 'vuex'
   import { renderMarkdown } from '~/assets/lib/markdown'
+  import { formatTime } from '~/assets/lib/formatTime'
   import { confettiFromElement } from '~/assets/lib/confettiFromElement'
 
   export default {
@@ -218,9 +227,9 @@
       refreshTimeoutId: null,
       gameHeaders: [
         { text: 'Number', value: 'gameNumber', align: 'center' },
-        { text: 'Submissions', value: 'submissionCount', align: 'left' },
         { text: 'Your Rank', value: 'userMetadata.ownSubmission.rankingData.rank', align: 'left' },
         { text: 'Your Points', value: 'userMetadata.ownSubmission.rankingData.points', align: 'left' },
+        { text: 'Your Time', value: 'userMetadata.ownSubmission.rankingData.time', align: 'right' },
       ],
     }),
     computed: {
@@ -284,6 +293,7 @@
       }
     },
     methods: {
+      formatTime,
       async loadSeason() {
         try {
           this.leagueSeason = await this.$axios.$get(`/league/seasons/${this.$route.params.seasonId}`)

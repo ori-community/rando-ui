@@ -73,12 +73,16 @@ const getDefaultKeyboardBindings = () => ({
     { keys: [307, 53], respects_modifiers: true },
   ],
   ServerReconnect: [
-    { keys: [308, 108], respects_modifiers: true },
-    { keys: [307, 108], respects_modifiers: true },
+    { keys: [308, 114], respects_modifiers: true },
+    { keys: [307, 114], respects_modifiers: true },
   ],
   ReloadSeed: [
     { keys: [308, 286], respects_modifiers: true },
     { keys: [307, 286], respects_modifiers: true },
+  ],
+  ShowFlags: [
+    { keys: [308, 102], respects_modifiers: true },
+    { keys: [307, 102], respects_modifiers: true },
   ],
   ShowLastPickup: [
     { keys: [308, 116], respects_modifiers: true },

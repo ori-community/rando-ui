@@ -39,7 +39,7 @@ export const actions = {
         }
       }
     } catch (e) {
-      console.error(e)
+      console.warn(e)
       commit('setUser', null)
     }
   },

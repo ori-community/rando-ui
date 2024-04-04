@@ -202,7 +202,7 @@
           const aTime = a.rankingData?.time ?? Number.MAX_VALUE
           const bTime = b.rankingData?.time ?? Number.MAX_VALUE
 
-          if (a.Time === bTime) {
+          if (aTime === bTime) {
             return a.membership.user.name.localeCompare(b.membership.user.name)
           }
 

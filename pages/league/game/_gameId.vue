@@ -20,9 +20,8 @@
           </v-btn>
         </div>
         <div class="submissions-container mt-7">
-          <div class="d-flex">
+          <div class="d-flex mb-1">
             <v-btn
-              class="mb-1"
               text
               :to="{ name: 'league-seasons-seasonId', params: { seasonId: leagueGame.seasonId } }"
             >

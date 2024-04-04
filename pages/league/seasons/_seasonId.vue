@@ -21,6 +21,10 @@
           </v-tooltip>
         </div>
         <div class="mb-2">
+          <v-btn text exact to="/league/seasons">
+            <v-icon>mdi-arrow-left-thin</v-icon>
+            Seasons
+          </v-btn>
           <v-btn text @click="showSeasonInfo = true"><v-icon left>mdi-information-outline</v-icon>Info</v-btn>
           <v-btn text @click="showSeasonRules = true"><v-icon left>mdi-book-open-outline</v-icon>Rules</v-btn>
           <v-tooltip v-if="!isJoined" bottom :disabled="canJoin">

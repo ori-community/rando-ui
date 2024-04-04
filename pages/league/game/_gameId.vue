@@ -65,8 +65,10 @@
                   />
                 </template>
                 <template #item.membership.user.name="{ item }">
-                  <discord-avatar :user="item.membership.user" class="mr-1" />
-                  {{ item.membership.user.name }}
+                  <div class="text-no-wrap">
+                    <discord-avatar :user="item.membership.user" class="mr-1" />
+                    {{ item.membership.user.name }}
+                  </div>
                 </template>
                 <template #item.rankingData.time="{ item }">
                   <template v-if="item.rankingData?.time">{{ formatTime(item.rankingData?.time) }} </template>

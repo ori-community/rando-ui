@@ -12,15 +12,7 @@
         <v-icon left>mdi-trophy</v-icon>
         League
       </v-btn>
-      <v-btn
-        v-if="isLoggedIn"
-        key="my-games"
-        exact
-        x-large
-        depressed
-        text
-        :to="{ name: 'my-games' }"
-      >
+      <v-btn v-if="isLoggedIn" key="my-games" exact x-large depressed text :to="{ name: 'my-games' }">
         <v-icon left>mdi-gamepad-variant-outline</v-icon>
         My Games
       </v-btn>
@@ -33,7 +25,7 @@
           <v-icon left>mdi-cog-outline</v-icon>
           Settings
         </v-btn>
-        <v-menu key="electron-menu" offset-y :close-on-content-click="!remoteTrackerUrlCopying">
+        <v-menu key="electron-menu" offset-y>
           <template #activator="{ on, attrs }">
             <v-btn icon v-bind="attrs" v-on="on">
               <v-icon>mdi-dots-vertical</v-icon>
@@ -45,22 +37,14 @@
               Tracker
             </v-list-item>
             <v-list-item
-              :disabled="!localTrackerRunning || !isLoggedIn || remoteTrackerUrlCopying || remoteTrackerUrlCopied"
+              :disabled="!localTrackerRunning || !isLoggedIn"
               x-large
               depressed
               text
-              @click="exposeTracker"
+              @click="showRemoteTrackerDialog = true"
             >
-              <v-icon
-                left
-                :disabled="!localTrackerRunning || !isLoggedIn || remoteTrackerUrlCopying || remoteTrackerUrlCopied"
-              >
-                <template v-if="remoteTrackerUrlCopied"> mdi-check </template>
-                <template v-else> mdi-leak </template>
-              </v-icon>
-              <template v-if="remoteTrackerUrlCopying"> Generating URL... </template>
-              <template v-else-if="remoteTrackerUrlCopied"> URL copied </template>
-              <template v-else> Create Remote Tracker </template>
+              <v-icon left :disabled="!localTrackerRunning || !isLoggedIn"> mdi-leak </v-icon>
+              Create Web Tracker
             </v-list-item>
             <v-list-item x-large depressed text @click="openChatControl">
               <v-icon left>mdi-message-flash-outline</v-icon>
@@ -149,6 +133,35 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="showRemoteTrackerDialog" max-width="500px">
+      <v-card>
+        <v-card-title>Create Web Tracker</v-card-title>
+        <v-card-text>
+          <div class="mb-6">
+            <v-checkbox
+              v-model="remoteTrackerSettings.remote"
+              label="For Remote Access"
+              messages="Create tracker to share with others. Not needed if streaming it yourself."
+            />
+            <v-checkbox v-model="remoteTrackerSettings.timer" label="Show Timer" messages="Show the run timer." />
+            <v-checkbox
+              v-model="remoteTrackerSettings.willowHearts"
+              label="Show Willow Hearts"
+              messages="Shows the amount of destroyed willow hearts."
+            />
+            <v-checkbox
+              :disabled="!remoteTrackerSettings.willowHearts"
+              v-model="remoteTrackerSettings.hideHeartsUntilFirstHeart"
+              label="Hide counter until first heart is destroyed"
+              messages="Only shows the amount of willow hearts when at least one heart is destroyed."
+            />
+          </div>
+          <div class="d-flex justify-end">
+            <v-btn color="accent" depressed :loading="remoteTrackerUrlCopying" @click="exposeTracker">Create Link</v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -165,6 +178,13 @@
       nicknameDialogLoading: false,
       remoteTrackerUrlCopying: false,
       remoteTrackerUrlCopied: false,
+      showRemoteTrackerDialog: false,
+      remoteTrackerSettings: {
+        remote: true,
+        timer: true,
+        willowHearts: true,
+        hideHeartsUntilFirstHeart: true,
+      },
     }),
     computed: {
       ...mapGetters('user', ['isLoggedIn', 'isDeveloper']),
@@ -179,9 +199,9 @@
       currentMultiverseId() {
         return this.user?.currentMultiverseId ?? null
       },
-      randomGreeting(){
-        const greetings = ["Hi", "Hello", "Hey", "Hiya", "Yo", "Ahoy", "Howdy", "oriHi"]
-        return greetings[(Math.floor(Math.random() * greetings.length))]
+      randomGreeting() {
+        const greetings = ['Hi', 'Hello', 'Hey', 'Hiya', 'Yo', 'Ahoy', 'Howdy', 'oriHi']
+        return greetings[Math.floor(Math.random() * greetings.length)]
       },
     },
     methods: {
@@ -238,29 +258,52 @@
         this.changeNicknameDialogIsOpen = false
       },
       async exposeTracker() {
+
         this.remoteTrackerUrlCopying = true
 
-        const sourceUrl = await window.electronApi.invoke('localTracker.expose', {
-          baseUrl: this.$paths.WS_BASE_URL,
-          jwt: this.$store.state.auth.jwt,
-        })
+        const args = {}
+        
+        // remote
+        if (this.remoteTrackerSettings.remote) {
+          const remoteId = await window.electronApi.invoke('localTracker.expose', {
+            baseUrl: this.$paths.WS_BASE_URL,
+            jwt: this.$store.state.auth.jwt,
+          })
+          args.source = remoteId
+        }
+
+        // timer
+        if(this.remoteTrackerSettings.timer){
+          args.timer = 'true'
+        }
+
+        // willow hearts
+        if(this.remoteTrackerSettings.willowHearts){
+          args.hearts= 'true'
+          
+          // hide willow hearts until first is destroyed
+          if(this.remoteTrackerSettings.hideHeartsUntilFirstHeart){
+            args.hideHeartsUntilFirst= 'true'
+          }
+        }
 
         const targetRoute = this.$router.resolve({
           name: 'tracker',
-          query: {
-            source: sourceUrl,
-          },
+          query: args
         })
 
         const url = new URL(targetRoute.href.replace('#/', ''), this.$paths.UI_BASE_URL)
+
         await window.navigator.clipboard.writeText(url.toString())
-
         this.remoteTrackerUrlCopying = false
-        this.remoteTrackerUrlCopied = true
+        this.showRemoteTrackerDialog = false
 
-        setTimeout(() => {
-          this.remoteTrackerUrlCopied = false
-        }, 4000)
+        EventBus.$emit('notification', {
+          message: `Copied to clipboard`,
+          color: 'success darken-3',
+          timeout: 1000,
+        })
+
       },
       openLocalTrackerWindow() {
         window.electronApi.invoke('localTracker.openWindow')

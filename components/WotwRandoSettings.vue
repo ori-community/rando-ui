@@ -191,19 +191,19 @@
         <v-checkbox
           v-model="settings['LocalTracker.Transparent']"
           label="Transparent Window"
-          messages="Make the Item Tracker transparent."
+          messages="Make the Item Tracker transparent"
         />
 
         <v-checkbox
           v-model="settings['LocalTracker.IgnoreMouse']"
           label="Ignore mouse"
-          messages="This is helpful if you want to show the tracker above the game. Note that you cannot move/resize the tracker with this option enabled."
+          messages="This is helpful if you want to show the tracker above the game. Note that you cannot move/resize the tracker with this option enabled"
         />
 
         <v-checkbox
           v-model="settings['LocalTracker.ShowWillowHearts']"
           label="Show Willow Hearts"
-          messages="Shows the amount of destroyed willow hearts."
+          messages="Shows the amount of destroyed willow hearts"
         />
 
         <v-expand-transition>

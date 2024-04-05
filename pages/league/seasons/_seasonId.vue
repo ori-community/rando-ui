@@ -209,7 +209,7 @@
       <v-card class="pa-5">
         <h2 class="text-center mb-3">Info</h2>
         <div v-if="leagueSeason">
-          <div v-html="longDescriptionHtml"></div>
+          <div class="dialog-html" v-html="longDescriptionHtml"></div>
         </div>
       </v-card>
     </v-dialog>
@@ -217,7 +217,7 @@
       <v-card class="pa-5">
         <h2 class="text-center mb-3">Rules</h2>
         <div v-if="leagueSeason">
-          <div v-html="rulesHtml"></div>
+          <div class="dialog-html" v-html="rulesHtml"></div>
         </div>
         <div v-if="!isJoined && canJoin" class="justify-end dialog-buttons mt-3">
           <v-btn color="accent" depressed @click="joinSeason">
@@ -538,5 +538,18 @@
     flex-grow: 0;
     justify-content: center;
     gap: 0.4em;
+  }
+
+  :deep(.dialog-html) {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      &:not(:first-child) {
+        margin-top: 1em;
+      }
+    }
   }
 </style>

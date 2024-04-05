@@ -121,8 +121,25 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             The Randomizer League is deeply integrated into the Randomizer itself. Submission and basic validation
-            of games is done automatically. If you want to submit a recording of your run alongside the submitted time,
-            you can do so after finishing your run on the game page.
+            of games is done automatically. If you want to submit a video recording of your run alongside the submitted
+            time, you can do so after finishing your run on the game page.
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+        <v-expansion-panel>
+          <v-expansion-panel-header class="font-weight-bold title">
+            Can I make my own custom seasons?
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            Season suggestions are appreciated! Just hit the Randomizer developers up with the Seed and season settings
+            you want to play with and they'll figure something out with you.
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+        <v-expansion-panel>
+          <v-expansion-panel-header class="font-weight-bold title">
+            What happens if I'm caught cheating?
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            You will be banned from playing any League games temporarily or permanently.
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>

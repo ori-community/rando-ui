@@ -24,11 +24,11 @@
         <div>
           {{ game.submissionCount }}
           <template v-if="memberCount">/ {{ memberCount }}</template>
-          <v-icon small>mdi-flag-checkered</v-icon>
+          <v-icon :color="game.userMetadata?.ownSubmission ? 'green' : ''" small>mdi-flag-checkered</v-icon>
         </div>
         <div v-if="game.userMetadata?.ownSubmission">
-          played
-          <v-icon small>mdi-check</v-icon>
+          {{ formatTime(game.userMetadata.ownSubmission.rankingData.time) }}
+          <v-icon small>mdi-timer-outline</v-icon>
         </div>
       </div>
     </div>
@@ -101,7 +101,7 @@
         }
 
         if (secondsLeft <= 0) {
-          this.countdownTimerTextOrSecondsLeft = 'Next game is coming any second...'
+          this.countdownTimerTextOrSecondsLeft = 'Season will continue any second...'
           return
         }
 

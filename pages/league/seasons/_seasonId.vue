@@ -27,7 +27,7 @@
           </v-btn>
           <v-btn text @click="showSeasonInfo = true"><v-icon left>mdi-information-outline</v-icon>Info</v-btn>
           <v-btn text @click="showSeasonRules = true"><v-icon left>mdi-book-open-outline</v-icon>Rules</v-btn>
-          <v-tooltip v-if="!isJoined" bottom :disabled="canJoin">
+          <v-tooltip v-if="!isJoined && !seasonEnded" bottom :disabled="canJoin">
             <template #activator="{ on }">
               <div class="join-button-container" v-on="on">
                 <div class="ori-lurk-container">
@@ -260,6 +260,9 @@
       },
       canJoin() {
         return this.leagueSeason !== null && this.leagueSeason.canJoin && this.isLoggedIn && !this.isJoined
+      },
+      seasonEnded(){
+        return this.leagueSeason !== null && this.leagueSeason.currentGameId === null && this.leagueSeason.games?.length > 0
       },
       sortedMembers() {
         return (

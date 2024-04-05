@@ -74,21 +74,21 @@
                 <div class="d-flex flex-wrap stats-container mb-1">
                   <wotw-stats-singlestat-view
                     label="Time"
-                    :text="formatTime(stats.save.area_stats[zone.id]?.in_game_time_spent ?? 0)"
+                    :text="formatTime(stats.save.area_stats?.[zone.id]?.in_game_time_spent ?? 0)"
                   />
-                  <wotw-stats-singlestat-view label="Deaths" :text="stats.save.area_stats[zone.id]?.deaths ?? 0" />
+                  <wotw-stats-singlestat-view label="Deaths" :text="stats.save.area_stats?.[zone.id]?.deaths ?? 0" />
                   <wotw-stats-singlestat-view
                     label="PPM"
                     :text="
                       calculatePPM(
-                        stats.checkpoint.pickups_per_area[zone.id] ?? 0,
-                        stats.save.area_stats[zone.id]?.in_game_time_spent ?? 0,
+                        stats.checkpoint.pickups_per_area?.[zone.id] ?? 0,
+                        stats.save.area_stats?.[zone.id]?.in_game_time_spent ?? 0,
                       )
                     "
                   />
                   <wotw-stats-singlestat-view
-                    :progress="(stats.checkpoint.pickups_per_area[zone.id] ?? 0) / (pickupCounts.areas[zone.id] || 1)"
-                    :text="`${stats.checkpoint.pickups_per_area[zone.id] ?? 0} / ${pickupCounts.areas[zone.id]}`"
+                    :progress="(stats.checkpoint.pickups_per_area?.[zone.id] ?? 0) / (pickupCounts.areas?.[zone.id] || 1)"
+                    :text="`${stats.checkpoint.pickups_per_area?.[zone.id] ?? 0} / ${pickupCounts.areas?.[zone.id] ?? '?'}`"
                     label="Pickups"
                     :progress-size="20"
                   />
@@ -129,6 +129,7 @@
       const refreshStats = async () => {
         try {
           this.stats = await window.electronApi.invoke('stats.get_timer_stats')
+
           this.pickupCounts = await window.electronApi.invoke('stats.get_pickup_counts')
 
           this.statsLive = true

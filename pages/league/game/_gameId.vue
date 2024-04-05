@@ -113,7 +113,7 @@
               <!-- footer -->
               <div v-if="leagueGame.isCurrent && !didSubmit && gameSubmissions.length > 0" class="text-center mt-3">
                 <div class="background--text text--lighten-5">
-                  <template v-if="canSubmit">Submit to see the times form other players</template>
+                  <template v-if="canSubmit">Submit to see the times from other players</template>
                   <template v-else>Results will be visible once game has been closed</template>
                 </div>
               </div>

@@ -1,13 +1,12 @@
 <template>
   <div class="single-game-stats">
-    <div class="d-flex pb-1">
-      <v-spacer />
+    <div class="text-center mb-1">
       <v-btn
         small
         :disabled="!statsLoadedOnce || screenshotCopied"
         :loading="screenshotLoading"
-        @click="screenshotAndCopy($refs.statsContainer)"
         text
+        @click="screenshotAndCopy($refs.statsContainer)"
       >
         <v-icon left>{{ screenshotCopied ? 'mdi-check' : 'mdi-content-copy' }}</v-icon>
         {{ screenshotCopied ? 'Copied' : 'Copy screenshot' }}

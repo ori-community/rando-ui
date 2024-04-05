@@ -41,7 +41,7 @@
       <template v-else-if="typeof countdownTimerTextOrSecondsLeft === 'string'">
         {{ countdownTimerTextOrSecondsLeft }}
       </template>
-      <template v-else> Finish this game until {{ formatDateEpoch(playableUntil, 'dd.MM.yyyy HH:mm') }} </template>
+      <template v-else> Finish this game until {{ formatDateEpoch(playableUntil, 'P p') }} </template>
     </div>
   </v-card>
 </template>

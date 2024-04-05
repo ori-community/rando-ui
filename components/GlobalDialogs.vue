@@ -49,6 +49,12 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model='showStatsDialog' max-width='1100' scrollable>
+      <v-card class="pt-3">
+        <wotw-stats-single-game-stat-view />
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -76,7 +82,15 @@
         get() {
           return this.$store.state.electron.showUpdateAvailableDialog
         },
-      }
+      },
+      showStatsDialog: {
+        set(value) {
+          this.$store.commit('electron/setShowStatsDialog', value)
+        },
+        get() {
+          return this.$store.state.electron.showStatsDialog
+        },
+      },
     },
     methods: {
       async downloadAndInstallUpdate() {

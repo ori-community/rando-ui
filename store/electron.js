@@ -15,6 +15,7 @@ export const state = () => ({
   newGameSeedSource: null,
   currentSupportBundleName: null,
   showUpdateAvailableDialog: false,
+  showStatsDialog: false,
   localTrackerRunning: false,
   randoIpcConnected: false,
 })
@@ -95,6 +96,9 @@ export const mutations = {
   },
   setShowUpdateAvailableDialog(state, value) {
     state.showUpdateAvailableDialog = value
+  },
+  setShowStatsDialog(state, value) {
+    state.showStatsDialog = value
   },
   setUpdateDownloadProgress(state, value) {
     state.updateDownloadProgress = value

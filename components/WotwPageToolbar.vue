@@ -17,7 +17,7 @@
         My Games
       </v-btn>
       <template v-if="isElectron">
-        <v-btn v-if="randoIpcConnected" key="stats" x-large depressed text to="/electron/stats">
+        <v-btn v-if="randoIpcConnected" key="stats" x-large depressed text @click="showStats">
           <v-icon left>mdi-chart-box-outline</v-icon>
           Stats
         </v-btn>
@@ -262,7 +262,7 @@
         this.remoteTrackerUrlCopying = true
 
         const args = {}
-        
+
         // remote
         if (this.remoteTrackerSettings.remote) {
           const remoteId = await window.electronApi.invoke('localTracker.expose', {
@@ -280,7 +280,7 @@
         // willow hearts
         if(this.remoteTrackerSettings.willowHearts){
           args.hearts= 'true'
-          
+
           // hide willow hearts until first is destroyed
           if(this.remoteTrackerSettings.hideHeartsUntilFirstHeart){
             args.hideHeartsUntilFirst= 'true'
@@ -316,6 +316,9 @@
       },
       openRandoDevtools() {
         window.electronApi.invoke('devtools.open')
+      },
+      showStats() {
+        this.$store.commit('electron/setShowStatsDialog', true)
       },
     },
   }

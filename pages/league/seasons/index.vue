@@ -1,6 +1,10 @@
 <template>
   <v-container>
     <h1 class="text-center mt-12 mb-2">Randomizer League</h1>
+    <div class="mb-12 text-center">
+      Welcome to the Randomizer League.<br>
+      Pick a season and start gaming!
+    </div>
     <div class="text-center mb-12">
       <v-btn text large outlined @click="showLeagueInfo = true">
         <v-icon left>mdi-information-outline</v-icon>

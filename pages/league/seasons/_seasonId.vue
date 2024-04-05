@@ -40,8 +40,8 @@
           </v-tooltip>
         </div>
         <div class="tables-container">
-          <v-card ref="leaderboard" class="pt-5 overflow-x-auto">
-            <h2 class="text-center mb-5">Leaderboard</h2>
+          <v-card ref="leaderboard" class="overflow-x-auto">
+            <h2 class="text-center mt-5 mb-5">Leaderboard</h2>
             <throttled-spinner>
               <v-data-table
                 v-if="sortedMembers"
@@ -111,7 +111,7 @@
                 </div>
               </div>
             </throttled-spinner>
-            <div class="call-to-join text-center mb-3 mt-5">
+            <div class="call-to-join text-center">
               <template v-if="canJoin">
                 <div class="background--text text--lighten-5">
                   <b>JOIN!</b>
@@ -121,6 +121,23 @@
             </div>
           </v-card>
           <div class="games-list">
+            <v-card
+              v-if="leagueSeason?.nextContinuationAt && !(leagueSeason.games.length > 0)"
+              class="season-start-container text-center pa-5"
+            >
+              <div class="background-overlay"></div>
+              <div class="gradient-overlay"></div>
+              <div class="starting-date-content">
+                <div>Starting at</div>
+                <span class="starting-date">
+                  {{ formatDateEpoch(leagueSeason?.nextContinuationAt, 'P p') }}
+                </span>
+                <div>
+                  <template v-if="isJoined">Be prepared!</template>
+                  <template v-else>Join the hype!</template>
+                </div>
+              </div>
+            </v-card>
             <league-game-card
               v-if="currentGame !== null"
               :game="currentGame"
@@ -216,10 +233,12 @@
 <script>
   import { mapGetters, mapState } from 'vuex'
   import { renderMarkdown } from '~/assets/lib/markdown'
+  import { formatsDates } from '~/assets/lib/formatsDates'
   import { formatTime } from '~/assets/lib/formatTime'
   import { confettiFromElement } from '~/assets/lib/confettiFromElement'
 
   export default {
+    mixins: [formatsDates],
     data: () => ({
       leagueSeason: null,
       currentGameSubmissions: null,
@@ -452,12 +471,56 @@
     display: flex;
     flex-direction: column;
     gap: 0.75em;
+
+    .season-start-container {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background-color: transparent;
+
+      .background-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--v-background-lighten1);
+        opacity: 0.6;
+      }
+
+      .gradient-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 2;
+        pointer-events: none;
+        background: linear-gradient(
+          45deg,
+          rgba(0, 0, 0, 0.6) 0%,
+          rgba(0, 0, 0, 0.05) 40%,
+          rgba(0, 0, 0, 0.05) 60%,
+          rgba(0, 0, 0, 0.6) 100%
+        );
+      }
+
+      .starting-date-content {
+        position: relative;
+        z-index: 1;
+
+        .starting-date {
+          font-size: 2em;
+          font-weight: 600;
+        }
+      }
+    }
   }
 
   .call-to-join {
     position: absolute;
-    top: 0;
-    right: 1em;
+    top: 0.5em;
+    right: 0.75em;
   }
 
   .ori-image {

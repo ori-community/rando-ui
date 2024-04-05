@@ -176,7 +176,7 @@
                   <v-tooltip bottom :disabled="!item.userMetadata?.ownSubmission?.rankingData?.discarded">
                     <template #activator="{ on }">
                       <div v-if="item.userMetadata?.ownSubmission?.rankingData?.points >= 0" v-on="on">
-                        <span :class="item.userMetadata?.ownSubmission?.rankingData?.discared ? 'discarded' : ''">{{
+                        <span :class="item.userMetadata?.ownSubmission?.rankingData?.discarded ? 'red--text text-decoration-line-through' : ''">{{
                           item.userMetadata?.ownSubmission?.rankingData?.points
                         }}</span>
                       </div>
@@ -570,11 +570,6 @@
 
   .ori-image {
     height: 2em;
-  }
-
-  .discarded {
-    text-decoration: line-through;
-    opacity: 0.6;
   }
 
   .dialog-buttons {

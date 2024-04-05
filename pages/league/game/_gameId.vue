@@ -77,7 +77,7 @@
                   <v-tooltip bottom :disabled="!item.rankingData?.discarded">
                     <template #activator="{ on }">
                       <div v-if="!leagueGame.isCurrent" v-on="on">
-                        <span :class="item.rankingData?.discared ? 'discarded' : ''">{{
+                        <span :class="item.rankingData?.discarded ? 'red--text text-decoration-line-through' : ''">{{
                           item.rankingData?.points
                         }}</span>
                       </div>
@@ -140,6 +140,7 @@
         />
         <div class="justify-end dialog-buttons">
           <v-btn :disabled="!videoUrlForSubmission" :loading="videoUrlSubmissionLoading" depressed color="accent" @click="submitVideoUrl(videoUrlForSubmission)">Submit</v-btn>
+          >
         </div>
       </v-card>
     </v-dialog>

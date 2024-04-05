@@ -15,7 +15,8 @@
           </div>
         </div>
         <div v-if="multiversesByDate.length === 0" class="text-center">
-          You didn't play any games yet
+          <img class="ori-image" src="~/assets/images/ori_thumb.png" />
+          <div>You didn't play any games yet</div>
         </div>
       </template>
     </throttled-spinner>
@@ -65,5 +66,8 @@
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     grid-auto-rows: 1fr;
     gap: 1em;
+  }
+  .ori-image {
+    height: 3em;
   }
 </style>

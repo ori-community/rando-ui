@@ -18,7 +18,7 @@
 
       <div v-if="mode === MODE_UPCOMING">
         <v-icon x-small>mdi-clock-outline</v-icon> starts at
-        {{ formatDateEpoch(season.nextContinuationAt, 'dd.MM.yyyy HH:mm') }}
+        {{ formatDateEpoch(season.nextContinuationAt, 'P p') }}
       </div>
       <div>
         <v-icon x-small>mdi-account-multiple-outline</v-icon>

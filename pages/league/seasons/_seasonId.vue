@@ -29,12 +29,15 @@
           <v-btn text @click="showSeasonRules = true"><v-icon left>mdi-book-open-outline</v-icon>Rules</v-btn>
           <v-tooltip v-if="!isJoined" bottom :disabled="canJoin">
             <template #activator="{ on }">
-              <span v-on="on">
+              <div class="join-button-container" v-on="on">
+                <div class="ori-lurk-container">
+                  <img class="ori-lurk" :class="{lurking: joinButtonLurking}" src="~/assets/images/ori_lurk.png" />
+                </div>
                 <v-btn color="accent" :loading="actionLoading" :disabled="!canJoin" @click="showSeasonRules = true">
                   <v-icon left>mdi-plus-circle-outline</v-icon>
                   Join
                 </v-btn>
-              </span>
+              </div>
             </template>
             <span>{{ isLoggedIn ? `You can't join running seasons` : 'Log in to join' }}</span>
           </v-tooltip>
@@ -111,14 +114,6 @@
                 </div>
               </div>
             </throttled-spinner>
-            <div class="call-to-join text-center">
-              <template v-if="canJoin">
-                <div class="background--text text--lighten-5">
-                  <b>JOIN!</b>
-                </div>
-                <img class="ori-image" src="~/assets/images/ori_lurk.png" />
-              </template>
-            </div>
           </v-card>
           <div class="games-list">
             <v-card
@@ -248,6 +243,8 @@
       showSeasonRules: false,
       seasonLinkCopied: false,
       refreshTimeoutId: null,
+      lurkTimeoutId: null,
+      joinButtonLurking: false,
       gameHeaders: [
         { text: 'Number', value: 'gameNumber', align: 'center' },
         { text: 'Your Rank', value: 'userMetadata.ownSubmission.rankingData.rank', align: 'left' },
@@ -309,14 +306,40 @@
           this.loadSeason()
         },
       },
+      canJoin: {
+        immediate: true,
+        handler(value) {
+          if (!value) {
+            this.joinButtonLurking = false
+          }
+        },
+      }
+    },
+    mounted() {
+      this.lurkAfterRandomTime()
     },
     beforeDestroy() {
       if (this.refreshTimeoutId !== null) {
         clearTimeout(this.refreshTimeoutId)
       }
+
+      if (this.lurkTimeoutId !== null) {
+        clearInterval(this.lurkTimeoutId)
+      }
     },
     methods: {
       formatTime,
+      lurkAfterRandomTime() {
+        this.lurkTimeoutId = setTimeout(() => {
+          if (this.joinButtonLurking) {
+            this.joinButtonLurking = false
+          } else if (this.canJoin) {
+            this.joinButtonLurking = true
+          }
+
+          this.lurkAfterRandomTime()
+        }, 2000 + Math.random() * 10000)
+      },
       async loadSeason() {
         try {
           this.leagueSeason = await this.$axios.$get(`/league/seasons/${this.$route.params.seasonId}`)
@@ -517,10 +540,32 @@
     }
   }
 
-  .call-to-join {
+  .join-button-container {
+    position: relative;
+    display: inline-block;
+  }
+
+  .ori-lurk-container {
+    display: block;
     position: absolute;
-    top: 0.5em;
-    right: 0.75em;
+    top: -3rem;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    overflow: hidden;
+  }
+
+  .ori-lurk {
+    margin: 0 auto;
+    left: 50%;
+    height: 3rem;
+    position: absolute;
+    transform: translateY(100%) translateX(-50%) scale(0.9);
+    transition: transform 300ms;
+
+    &.lurking {
+      transform: translateY(5%) translateX(-50%);
+    }
   }
 
   .ori-image {

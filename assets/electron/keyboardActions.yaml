@@ -16,8 +16,14 @@ Binding4:
 Binding5:
   displayName: Binding5
   composable: true
-Reload:
-  displayName: Reload
+ServerReconnect:
+  displayName: ServerReconnect
+  composable: true
+ReloadSeed:
+  displayName: ReloadSeed
+  composable: true
+ShowFlags:
+  displayName: ShowFlags
   composable: true
 ShowLastPickup:
   displayName: ShowLastPickup

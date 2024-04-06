@@ -117,7 +117,7 @@ export class LauncherService {
 
     if (await this.isRandomizerRunning()) {
       try {
-        await RandoIPCService.emit('reread_seed_source')
+        await RandoIPCService.emit('load_new_game_source')
         await focusGameWindow()
       } catch (e) {
         console.error(e)
@@ -166,7 +166,7 @@ export class LauncherService {
 
     if (await this.isRandomizerRunning()) {
       try {
-        await RandoIPCService.emit('reread_seed_source')
+        await RandoIPCService.emit('load_new_game_source')
       } catch (e) {
         console.error(e)
         throw new Error('Could not load the seed in running game.\nPlease wait a few seconds if you closed the game just now.')

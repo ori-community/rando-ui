@@ -173,19 +173,29 @@
                   <div v-else>-</div>
                 </template>
                 <template #item.userMetadata.ownSubmission.rankingData.points="{ item }">
-                  <v-tooltip bottom :disabled="!item.userMetadata?.ownSubmission?.rankingData?.discarded">
-                    <template #activator="{ on }">
-                      <div v-if="item.userMetadata?.ownSubmission?.rankingData?.points >= 0" v-on="on">
-                        <span :class="item.userMetadata?.ownSubmission?.rankingData?.discarded ? 'red--text text-decoration-line-through' : ''">{{
-                          item.userMetadata?.ownSubmission?.rankingData?.points
-                        }}</span>
-                      </div>
-                    </template>
-                    <span v-if="leagueSeason.discardWorstGamesCount > 1"
-                      >Your {{ leagueSeason.discardWorstGamesCount }} worst races get discarded</span
-                    >
-                    <span v-else>Your worst race gets discarded</span>
-                  </v-tooltip>
+                  <template v-if="item.userMetadata?.ownSubmission?.rankingData?.points >= 0">
+                    <v-tooltip bottom :disabled="!item.userMetadata?.ownSubmission?.rankingData?.discarded">
+                      <template #activator="{ on }">
+                        <span
+                          v-on="on"
+                          :class="
+                            item.userMetadata?.ownSubmission?.rankingData?.discarded
+                              ? 'red--text text-decoration-line-through'
+                              : ''
+                          "
+                        >
+                          {{ item.userMetadata?.ownSubmission?.rankingData?.points }}
+                        </span>
+                      </template>
+                      <span v-if="leagueSeason.discardWorstGamesCount > 1">
+                        Your {{ leagueSeason.discardWorstGamesCount }} worst races get discarded
+                      </span>
+                      <span v-else>Your worst race gets discarded</span>
+                    </v-tooltip>
+                  </template>
+                  <template v-else>
+                    <div>-</div>
+                  </template>
                 </template>
                 <template #item.userMetadata.ownSubmission.rankingData.time="{ item }">
                   <template v-if="item.userMetadata?.ownSubmission?.rankingData?.time"
@@ -315,7 +325,7 @@
             this.joinButtonLurking = false
           }
         },
-      }
+      },
     },
     mounted() {
       this.lurkAfterRandomTime()

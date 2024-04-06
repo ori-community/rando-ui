@@ -74,20 +74,20 @@
                   <template v-else>-</template>
                 </template>
                 <template #item.rankingData.points="{ item }">
+                  <template v-if="!leagueGame.isCurrent">
                   <v-tooltip bottom :disabled="!item.rankingData?.discarded">
                     <template #activator="{ on }">
-                      <div v-if="!leagueGame.isCurrent" v-on="on">
-                        <span :class="item.rankingData?.discarded ? 'red--text text-decoration-line-through' : ''">{{
+                        <span v-on="on" :class="item.rankingData?.discarded ? 'red--text text-decoration-line-through' : ''">{{
                           item.rankingData?.points
                         }}</span>
-                      </div>
-                      <div v-else>-</div>
                     </template>
                     <span v-if="leagueSeason.discardWorstGamesCount > 1"
                       >Player's {{ leagueSeason.discardWorstGamesCount }} worst races get discarded</span
-                    >
-                    <span v-else>Player's worst race gets discarded</span>
-                  </v-tooltip>
+                      >
+                      <span v-else>Player's worst race gets discarded</span>
+                    </v-tooltip>
+                  </template>
+                    <template v-else><div>-</div></template>
                 </template>
                 <template #item.rankingData.videoUrl="{ item }">
                   <v-btn v-if="item.rankingData?.videoUrl" icon @click="openVideo(item.rankingData.videoUrl)">

@@ -180,7 +180,6 @@
                           item.userMetadata?.ownSubmission?.rankingData?.points
                         }}</span>
                       </div>
-                      <div v-else>-</div>
                     </template>
                     <span v-if="leagueSeason.discardWorstGamesCount > 1"
                       >Your {{ leagueSeason.discardWorstGamesCount }} worst races get discarded</span

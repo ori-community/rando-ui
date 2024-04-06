@@ -219,7 +219,7 @@
         return `${window.location.origin}${relativeUrl}`
       },
       async login(event) {
-        this.$store.commit('auth/setRedirectPath', window.location.pathname + window.location.search)
+        this.$store.commit('auth/setRedirectPath', this.$route.fullPath)
 
         if (isElectron()) {
           try {

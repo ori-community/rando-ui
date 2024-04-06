@@ -37,13 +37,13 @@
               Tracker
             </v-list-item>
             <v-list-item
-              :disabled="!localTrackerRunning || !isLoggedIn"
+              :disabled="!localTrackerRunning"
               x-large
               depressed
               text
-              @click="showRemoteTrackerDialog = true"
+              @click="remoteTrackerSettings.remote = isLoggedIn; showRemoteTrackerDialog = true"
             >
-              <v-icon left :disabled="!localTrackerRunning || !isLoggedIn"> mdi-leak </v-icon>
+              <v-icon left :disabled="!localTrackerRunning"> mdi-leak </v-icon>
               Create Web Tracker
             </v-list-item>
             <v-list-item x-large depressed text @click="openChatControl">
@@ -138,11 +138,19 @@
         <v-card-title>Create Web Tracker</v-card-title>
         <v-card-text>
           <div class="mb-6">
-            <v-checkbox
-              v-model="remoteTrackerSettings.remote"
-              label="For Remote Access"
-              messages="Create tracker to share with others. Not needed if streaming it yourself."
-            />
+            <v-tooltip bottom open-delay="300" :disabled="isLoggedIn">
+              <template #activator="{ on }">
+                <div v-on="on">
+                  <v-checkbox
+                    :disabled="!isLoggedIn"
+                    v-model="remoteTrackerSettings.remote"
+                    label="For Remote Access"
+                    messages="Create tracker to share with others. Not needed if streaming it yourself."
+                  />
+                </div>
+              </template>
+              <span>Log in to create remote tracker</span>
+            </v-tooltip>
             <v-checkbox v-model="remoteTrackerSettings.timer" label="Show Timer" messages="Show the run timer." />
             <v-checkbox
               v-model="remoteTrackerSettings.willowHearts"
@@ -157,7 +165,9 @@
             />
           </div>
           <div class="d-flex justify-end">
-            <v-btn color="accent" depressed :loading="remoteTrackerUrlCopying" @click="exposeTracker">Create Link</v-btn>
+            <v-btn color="accent" depressed :loading="remoteTrackerUrlCopying" @click="exposeTracker"
+              >Create Link</v-btn
+            >
           </div>
         </v-card-text>
       </v-card>
@@ -258,7 +268,6 @@
         this.changeNicknameDialogIsOpen = false
       },
       async exposeTracker() {
-
         this.remoteTrackerUrlCopying = true
 
         const args = {}
@@ -273,23 +282,23 @@
         }
 
         // timer
-        if(this.remoteTrackerSettings.timer){
+        if (this.remoteTrackerSettings.timer) {
           args.timer = 'true'
         }
 
         // willow hearts
-        if(this.remoteTrackerSettings.willowHearts){
-          args.hearts= 'true'
+        if (this.remoteTrackerSettings.willowHearts) {
+          args.hearts = 'true'
 
           // hide willow hearts until first is destroyed
-          if(this.remoteTrackerSettings.hideHeartsUntilFirstHeart){
-            args.hideHeartsUntilFirst= 'true'
+          if (this.remoteTrackerSettings.hideHeartsUntilFirstHeart) {
+            args.hideHeartsUntilFirst = 'true'
           }
         }
 
         const targetRoute = this.$router.resolve({
           name: 'tracker',
-          query: args
+          query: args,
         })
 
         const url = new URL(targetRoute.href.replace('#/', ''), this.$paths.UI_BASE_URL)
@@ -303,7 +312,6 @@
           color: 'success darken-3',
           timeout: 1000,
         })
-
       },
       openLocalTrackerWindow() {
         window.electronApi.invoke('localTracker.openWindow')

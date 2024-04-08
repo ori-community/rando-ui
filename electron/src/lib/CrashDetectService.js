@@ -78,7 +78,7 @@ export class CrashDetectService {
 
     // Collect logs and Git revisions
     const logFiles = [
-      'inject_log.csv',
+      'modloader_log.csv',
       'controller_bindings.json',
       'LAST_VERSION',
       'VERSION',

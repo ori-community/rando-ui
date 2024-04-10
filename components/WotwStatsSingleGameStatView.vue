@@ -127,12 +127,17 @@
     mounted() {
       const refreshStats = async () => {
         try {
-          this.stats = await window.electronApi.invoke('stats.get_timer_stats')
+          const stats = await window.electronApi.invoke('stats.get_timer_stats')
+          const pickupCounts = await window.electronApi.invoke('stats.get_pickup_counts')
 
-          this.pickupCounts = await window.electronApi.invoke('stats.get_pickup_counts')
+          this.stats = stats
 
-          this.statsLive = true
-          this.statsLoadedOnce = true
+          if ((pickupCounts.areas ?? null) !== null) {
+            this.pickupCounts = pickupCounts
+
+            this.statsLive = true
+            this.statsLoadedOnce = true
+          }
         } catch (e) {
           console.error(e)
           this.statsLive = false

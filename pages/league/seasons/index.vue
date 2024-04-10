@@ -45,8 +45,8 @@
       </div>
     </div>
 
-    <v-dialog v-model="showLeagueInfo" max-width="800" content-class="elevation-0">
-      <v-expansion-panels popout multiple :value="[0]">
+    <v-dialog v-model="showLeagueInfo" max-width="800" content-class="elevation-0 pr-2">
+      <v-expansion-panels multiple :value="[0]">
         <v-expansion-panel>
           <v-expansion-panel-header class="font-weight-bold title">
             What is the Randomizer League?

@@ -140,7 +140,6 @@
         />
         <div class="justify-end dialog-buttons">
           <v-btn :disabled="!videoUrlForSubmission" :loading="videoUrlSubmissionLoading" depressed color="accent" @click="submitVideoUrl(videoUrlForSubmission)">Submit</v-btn>
-          >
         </div>
       </v-card>
     </v-dialog>

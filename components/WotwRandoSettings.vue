@@ -386,6 +386,14 @@
       },
       disableDevTools() {
         this.settings['Flags.Dev'] = false
+        this.$nextTick(() => {
+          this.settings['Flags.WaitForDebugger'] = false
+          this.settings['Paths.Host'] = 'wotw.orirando.com'
+          this.settings['Paths.UdpPort'] = 31415
+          this.settings['Flags.UpdateToPrereleaseVersions'] = false
+          this.settings['Flags.DisableDebugControls'] = true
+          this.settings['Flags.Insecure'] = false
+        })
       },
       hostChanged() {
         this.$nextTick(() => {

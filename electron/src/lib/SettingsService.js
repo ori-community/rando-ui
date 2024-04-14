@@ -196,13 +196,18 @@ export class SettingsService {
           settings['Paths.Host'] = 'wotw.orirando.com'
           settings['Paths.UdpPort'] = 31415
           settings['Flags.Dev'] = false
+          settings['Flags.WaitForDebugger'] = false
           settings['Flags.UpdateToPrereleaseVersions'] = false
+          settings['Flags.DisableDebugControls'] = true
+          settings['Flags.Insecure'] = false
           console.log(`SettingsService: Switching to stable server`)
         } else if (!lastIsPrerelease && currentIsPrerelease) {
           settings['Paths.Host'] = 'dev.wotw.orirando.com'
           settings['Paths.UdpPort'] = 31416
           settings['Flags.Dev'] = true
           settings['Flags.UpdateToPrereleaseVersions'] = true
+          settings['Flags.DisableDebugControls'] = false
+          settings['Flags.Insecure'] = false
           console.log(`SettingsService: Switching to dev server`)
         }
 

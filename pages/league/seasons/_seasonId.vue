@@ -329,6 +329,10 @@
     },
     mounted() {
       this.lurkAfterRandomTime()
+
+      window.electronApi.on('league.runSubmitted', () => {
+        this.loadSeason()
+      })
     },
     beforeDestroy() {
       if (this.refreshTimeoutId !== null) {

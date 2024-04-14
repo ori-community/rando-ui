@@ -183,6 +183,10 @@ export class RandoIPCService {
         TASService.reportTimelineLoaded(request.payload?.tas_config ?? null)
         break
       }
+      case 'league.run_submitted': {
+        uiIpc.queueSend('league.runSubmitted')
+        break
+      }
     }
   }
 

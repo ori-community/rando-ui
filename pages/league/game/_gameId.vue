@@ -30,7 +30,7 @@
             </v-btn>
             <v-spacer />
             <template v-if="didSubmit">
-              <v-btn v-if="!ownSubmittionHasVideoUrl" text @click="showVideoSubmission = true">
+              <v-btn v-if="!ownSubmissionHasVideoUrl" text @click="showVideoSubmission = true">
                 <v-icon left>mdi-video-outline</v-icon>
                 Attach my Video
               </v-btn>
@@ -241,7 +241,7 @@
 
         return headers
       },
-      ownSubmittionHasVideoUrl(){
+      ownSubmissionHasVideoUrl(){
         return this.ownSubmission?.rankingData?.videoUrl !== null
       }
     },
@@ -252,6 +252,11 @@
           this.loadGame()
         },
       },
+    },
+    mounted() {
+      window.electronApi.on('league.runSubmitted', () => {
+        this.loadGame()
+      })
     },
     methods: {
       formatTime,

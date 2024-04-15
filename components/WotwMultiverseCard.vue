@@ -14,7 +14,7 @@
       </div>
 
       <div v-if="multiverseMetadata.hasBingoBoard" class="ml-2">
-        <v-tooltip v-for="user in multiverseMetadata.members" :key="user.id" bottom open-delay="250">
+        <v-tooltip bottom open-delay="250">
           <template #activator="{on}">
             <v-icon large v-on="on">mdi-grid</v-icon>
           </template>

@@ -59,7 +59,6 @@ export interface RaceTeamInfo {
   $type: "RandoProto.RaceTeamInfo";
   id: number;
   members: RaceTeamMemberInfo[];
-  points: number;
   finishedTime?: number | undefined;
 }
 
@@ -252,8 +251,8 @@ export interface NormalGameHandlerState {
   $type: "RandoProto.NormalGameHandlerState";
   raceStartingAt?: number | undefined;
   finishedTime?: number | undefined;
-  playerInGameTimes: { [key: string]: number };
-  playerFinishedTimes: { [key: string]: number };
+  playerInGameTimes: { [key: number]: number };
+  playerFinishedTimes: { [key: number]: number };
   worldFinishedTimes: { [key: number]: number };
   universeFinishedTimes: { [key: number]: number };
   raceModeEnabled: boolean;
@@ -262,13 +261,13 @@ export interface NormalGameHandlerState {
 
 export interface NormalGameHandlerState_PlayerInGameTimesEntry {
   $type: "RandoProto.NormalGameHandlerState.PlayerInGameTimesEntry";
-  key: string;
+  key: number;
   value: number;
 }
 
 export interface NormalGameHandlerState_PlayerFinishedTimesEntry {
   $type: "RandoProto.NormalGameHandlerState.PlayerFinishedTimesEntry";
-  key: string;
+  key: number;
   value: number;
 }
 
@@ -960,7 +959,7 @@ export const RaceTeamMemberInfo = {
 messageTypeRegistry.set(RaceTeamMemberInfo.$type, RaceTeamMemberInfo);
 
 function createBaseRaceTeamInfo(): RaceTeamInfo {
-  return { $type: "RandoProto.RaceTeamInfo", id: 0, members: [], points: 0, finishedTime: undefined };
+  return { $type: "RandoProto.RaceTeamInfo", id: 0, members: [], finishedTime: undefined };
 }
 
 export const RaceTeamInfo = {
@@ -972,9 +971,6 @@ export const RaceTeamInfo = {
     }
     for (const v of message.members) {
       RaceTeamMemberInfo.encode(v!, writer.uint32(18).fork()).ldelim();
-    }
-    if (message.points !== 0) {
-      writer.uint32(24).int32(message.points);
     }
     if (message.finishedTime !== undefined) {
       writer.uint32(37).float(message.finishedTime);
@@ -1003,13 +999,6 @@ export const RaceTeamInfo = {
 
           message.members.push(RaceTeamMemberInfo.decode(reader, reader.uint32()));
           continue;
-        case 3:
-          if (tag !== 24) {
-            break;
-          }
-
-          message.points = reader.int32();
-          continue;
         case 4:
           if (tag !== 37) {
             break;
@@ -1033,7 +1022,6 @@ export const RaceTeamInfo = {
       members: globalThis.Array.isArray(object?.members)
         ? object.members.map((e: any) => RaceTeamMemberInfo.fromJSON(e))
         : [],
-      points: isSet(object.points) ? globalThis.Number(object.points) : 0,
       finishedTime: isSet(object.finishedTime) ? globalThis.Number(object.finishedTime) : undefined,
     };
   },
@@ -1045,9 +1033,6 @@ export const RaceTeamInfo = {
     }
     if (message.members?.length) {
       obj.members = message.members.map((e) => RaceTeamMemberInfo.toJSON(e));
-    }
-    if (message.points !== 0) {
-      obj.points = Math.round(message.points);
     }
     if (message.finishedTime !== undefined) {
       obj.finishedTime = message.finishedTime;
@@ -1062,7 +1047,6 @@ export const RaceTeamInfo = {
     const message = createBaseRaceTeamInfo();
     message.id = object.id ?? 0;
     message.members = object.members?.map((e) => RaceTeamMemberInfo.fromPartial(e)) || [];
-    message.points = object.points ?? 0;
     message.finishedTime = object.finishedTime ?? undefined;
     return message;
   },
@@ -3217,14 +3201,14 @@ export const NormalGameHandlerState = {
       raceStartingAt: isSet(object.raceStartingAt) ? globalThis.Number(object.raceStartingAt) : undefined,
       finishedTime: isSet(object.finishedTime) ? globalThis.Number(object.finishedTime) : undefined,
       playerInGameTimes: isObject(object.playerInGameTimes)
-        ? Object.entries(object.playerInGameTimes).reduce<{ [key: string]: number }>((acc, [key, value]) => {
-          acc[key] = Number(value);
+        ? Object.entries(object.playerInGameTimes).reduce<{ [key: number]: number }>((acc, [key, value]) => {
+          acc[globalThis.Number(key)] = Number(value);
           return acc;
         }, {})
         : {},
       playerFinishedTimes: isObject(object.playerFinishedTimes)
-        ? Object.entries(object.playerFinishedTimes).reduce<{ [key: string]: number }>((acc, [key, value]) => {
-          acc[key] = Number(value);
+        ? Object.entries(object.playerFinishedTimes).reduce<{ [key: number]: number }>((acc, [key, value]) => {
+          acc[globalThis.Number(key)] = Number(value);
           return acc;
         }, {})
         : {},
@@ -3305,19 +3289,19 @@ export const NormalGameHandlerState = {
     const message = createBaseNormalGameHandlerState();
     message.raceStartingAt = object.raceStartingAt ?? undefined;
     message.finishedTime = object.finishedTime ?? undefined;
-    message.playerInGameTimes = Object.entries(object.playerInGameTimes ?? {}).reduce<{ [key: string]: number }>(
+    message.playerInGameTimes = Object.entries(object.playerInGameTimes ?? {}).reduce<{ [key: number]: number }>(
       (acc, [key, value]) => {
         if (value !== undefined) {
-          acc[key] = globalThis.Number(value);
+          acc[globalThis.Number(key)] = globalThis.Number(value);
         }
         return acc;
       },
       {},
     );
-    message.playerFinishedTimes = Object.entries(object.playerFinishedTimes ?? {}).reduce<{ [key: string]: number }>(
+    message.playerFinishedTimes = Object.entries(object.playerFinishedTimes ?? {}).reduce<{ [key: number]: number }>(
       (acc, [key, value]) => {
         if (value !== undefined) {
-          acc[key] = globalThis.Number(value);
+          acc[globalThis.Number(key)] = globalThis.Number(value);
         }
         return acc;
       },
@@ -3349,15 +3333,15 @@ export const NormalGameHandlerState = {
 messageTypeRegistry.set(NormalGameHandlerState.$type, NormalGameHandlerState);
 
 function createBaseNormalGameHandlerState_PlayerInGameTimesEntry(): NormalGameHandlerState_PlayerInGameTimesEntry {
-  return { $type: "RandoProto.NormalGameHandlerState.PlayerInGameTimesEntry", key: "", value: 0 };
+  return { $type: "RandoProto.NormalGameHandlerState.PlayerInGameTimesEntry", key: 0, value: 0 };
 }
 
 export const NormalGameHandlerState_PlayerInGameTimesEntry = {
   $type: "RandoProto.NormalGameHandlerState.PlayerInGameTimesEntry" as const,
 
   encode(message: NormalGameHandlerState_PlayerInGameTimesEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.key !== "") {
-      writer.uint32(10).string(message.key);
+    if (message.key !== 0) {
+      writer.uint32(8).int64(message.key);
     }
     if (message.value !== 0) {
       writer.uint32(21).float(message.value);
@@ -3373,11 +3357,11 @@ export const NormalGameHandlerState_PlayerInGameTimesEntry = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          if (tag !== 10) {
+          if (tag !== 8) {
             break;
           }
 
-          message.key = reader.string();
+          message.key = longToNumber(reader.int64() as Long);
           continue;
         case 2:
           if (tag !== 21) {
@@ -3398,15 +3382,15 @@ export const NormalGameHandlerState_PlayerInGameTimesEntry = {
   fromJSON(object: any): NormalGameHandlerState_PlayerInGameTimesEntry {
     return {
       $type: NormalGameHandlerState_PlayerInGameTimesEntry.$type,
-      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      key: isSet(object.key) ? globalThis.Number(object.key) : 0,
       value: isSet(object.value) ? globalThis.Number(object.value) : 0,
     };
   },
 
   toJSON(message: NormalGameHandlerState_PlayerInGameTimesEntry): unknown {
     const obj: any = {};
-    if (message.key !== "") {
-      obj.key = message.key;
+    if (message.key !== 0) {
+      obj.key = Math.round(message.key);
     }
     if (message.value !== 0) {
       obj.value = message.value;
@@ -3423,7 +3407,7 @@ export const NormalGameHandlerState_PlayerInGameTimesEntry = {
     object: I,
   ): NormalGameHandlerState_PlayerInGameTimesEntry {
     const message = createBaseNormalGameHandlerState_PlayerInGameTimesEntry();
-    message.key = object.key ?? "";
+    message.key = object.key ?? 0;
     message.value = object.value ?? 0;
     return message;
   },
@@ -3435,7 +3419,7 @@ messageTypeRegistry.set(
 );
 
 function createBaseNormalGameHandlerState_PlayerFinishedTimesEntry(): NormalGameHandlerState_PlayerFinishedTimesEntry {
-  return { $type: "RandoProto.NormalGameHandlerState.PlayerFinishedTimesEntry", key: "", value: 0 };
+  return { $type: "RandoProto.NormalGameHandlerState.PlayerFinishedTimesEntry", key: 0, value: 0 };
 }
 
 export const NormalGameHandlerState_PlayerFinishedTimesEntry = {
@@ -3445,8 +3429,8 @@ export const NormalGameHandlerState_PlayerFinishedTimesEntry = {
     message: NormalGameHandlerState_PlayerFinishedTimesEntry,
     writer: _m0.Writer = _m0.Writer.create(),
   ): _m0.Writer {
-    if (message.key !== "") {
-      writer.uint32(10).string(message.key);
+    if (message.key !== 0) {
+      writer.uint32(8).int64(message.key);
     }
     if (message.value !== 0) {
       writer.uint32(21).float(message.value);
@@ -3462,11 +3446,11 @@ export const NormalGameHandlerState_PlayerFinishedTimesEntry = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          if (tag !== 10) {
+          if (tag !== 8) {
             break;
           }
 
-          message.key = reader.string();
+          message.key = longToNumber(reader.int64() as Long);
           continue;
         case 2:
           if (tag !== 21) {
@@ -3487,15 +3471,15 @@ export const NormalGameHandlerState_PlayerFinishedTimesEntry = {
   fromJSON(object: any): NormalGameHandlerState_PlayerFinishedTimesEntry {
     return {
       $type: NormalGameHandlerState_PlayerFinishedTimesEntry.$type,
-      key: isSet(object.key) ? globalThis.String(object.key) : "",
+      key: isSet(object.key) ? globalThis.Number(object.key) : 0,
       value: isSet(object.value) ? globalThis.Number(object.value) : 0,
     };
   },
 
   toJSON(message: NormalGameHandlerState_PlayerFinishedTimesEntry): unknown {
     const obj: any = {};
-    if (message.key !== "") {
-      obj.key = message.key;
+    if (message.key !== 0) {
+      obj.key = Math.round(message.key);
     }
     if (message.value !== 0) {
       obj.value = message.value;
@@ -3512,7 +3496,7 @@ export const NormalGameHandlerState_PlayerFinishedTimesEntry = {
     object: I,
   ): NormalGameHandlerState_PlayerFinishedTimesEntry {
     const message = createBaseNormalGameHandlerState_PlayerFinishedTimesEntry();
-    message.key = object.key ?? "";
+    message.key = object.key ?? 0;
     message.value = object.value ?? 0;
     return message;
   },

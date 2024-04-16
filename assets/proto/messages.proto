@@ -185,8 +185,8 @@ message TrackerTimerStateUpdate { // 105
 message NormalGameHandlerState {
   optional int64 raceStartingAt = 1;
   optional float finishedTime = 2;
-  map<string, float> playerInGameTimes = 3;
-  map<string, float> playerFinishedTimes = 4;
+  map<int64, float> playerInGameTimes = 3;
+  map<int64, float> playerFinishedTimes = 4;
   map<int64, float> worldFinishedTimes = 5;
   map<int64, float> universeFinishedTimes = 6;
   bool raceModeEnabled = 7;

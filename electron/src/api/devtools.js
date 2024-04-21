@@ -17,4 +17,12 @@ export default {
   async setGameObjectActive(event, path, instanceId, active) {
     return await RandoIPCService.emit('set_game_object_active', { path, instance_id: instanceId, value: active })
   },
+
+  enableSendingAllUberStateUpdates() {
+    RandoIPCService.shouldSendAllUberStateUpdates = true
+  },
+
+  disableSendingAllUberStateUpdates() {
+    RandoIPCService.shouldSendAllUberStateUpdates = false
+  },
 }

@@ -4,11 +4,13 @@
       <v-tab>Hierarchy</v-tab>
       <v-tab>Areas.wotw map</v-tab>
       <v-tab>TAS</v-tab>
+      <v-tab>Uber State Log</v-tab>
     </v-tabs>
 
     <WotwDevtoolsTabHierarchy v-if="tab === 0" />
     <WotwDevtoolsTabAreasWotwMap v-else-if="tab === 1" />
     <WotwDevtoolsTabTAS v-else-if="tab === 2" />
+    <WotwDevtoolsTabUberStateLog v-else-if="tab === 3" />
   </div>
 </template>
 

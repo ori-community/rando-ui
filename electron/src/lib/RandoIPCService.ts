@@ -33,10 +33,6 @@ interface QueuedRequest {
 const outgoingRequestHandlers: { [requestId: number]: { resolve?: (arg?: any) => any; promise?: Promise<any> } } = {}
 const outgoingRequestQueue: QueuedRequest[] = []
 
-const notifyUberStateChangedThrottled: (state: number, group: number, value: number) => void = throttle((state: number, group: number, value: number) => {
-  uiIpc.queueSend('game.uberStateChanged', { state, group, value })
-}, 500)
-
 const makeRequest = (method: string, payload: any): Request => ({
   type: 'request',
   method,
@@ -55,6 +51,8 @@ const events = {
 }
 
 export class RandoIPCService {
+  static shouldSendAllUberStateUpdates = false
+
   static get events() {
     return events
   }
@@ -145,9 +143,13 @@ export class RandoIPCService {
         break
       }
       case 'notify_on_uber_state_changed': {
-        const { group, state, value } = request.payload
+        const { group, state, value, previous_value } = request.payload
         if (group === 34543 && state === 11226 && value) {
           uiIpc.queueSend('game.gameFinished')
+        }
+
+        if (RandoIPCService.shouldSendAllUberStateUpdates) {
+          uiIpc.queueSend('game.uberStateChanged', {group, state, value, previousValue: previous_value})
         }
 
         LocalTrackerWebSocketService.reportUberState({ group, state, value })

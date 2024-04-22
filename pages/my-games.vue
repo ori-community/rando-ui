@@ -32,6 +32,11 @@
     data: () => ({
       multiverses: null,
     }),
+    head() {
+      return {
+        title: 'My Games',
+      }
+    },
     computed: {
       multiversesByDate() {
         const multiversesByDate = {}

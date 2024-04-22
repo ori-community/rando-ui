@@ -156,6 +156,11 @@
       leagueSeasons: [],
       showLeagueInfo: false,
     }),
+    head() {
+      return {
+        title: 'League',
+      }
+    },
     computed: {
       ...mapState('user', ['user']),
       ...mapGetters('user', ['isLoggedIn', 'isDeveloper']),

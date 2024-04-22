@@ -435,6 +435,11 @@
         debugEventName: '',
       },
     }),
+    head() {
+      return {
+        title: `Game ${this.multiverseId}`,
+      }
+    },
     computed: {
       ...mapGetters('user', ['isLoggedIn']),
       ...mapState('user', ['user', 'userLoaded']),

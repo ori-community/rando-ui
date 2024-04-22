@@ -262,6 +262,11 @@
         { text: 'Your Time', value: 'userMetadata.ownSubmission.rankingData.time', align: 'right' },
       ],
     }),
+    head() {
+      return {
+        title: this.leagueSeason?.name ? `${this.leagueSeason?.name} - League` : 'League',
+      }
+    },
     computed: {
       ...mapState('user', ['user']),
       ...mapGetters('user', ['isLoggedIn']),

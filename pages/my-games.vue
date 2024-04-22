@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1 class="text-center mt-6 mb-12">My Games</h1>
+    <h1 class="text-center mt-12 mb-6">My Games</h1>
 
     <throttled-spinner>
       <template v-if="multiverses !== null">

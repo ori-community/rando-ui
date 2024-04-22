@@ -148,11 +148,6 @@
 </template>
 
 <script>
-
-  // TODO:
-  // general league ruleset
-  // update list by seasons change (for example new season added, season ended, member joined)
-
   import { mapGetters, mapState } from 'vuex'
 
   export default {

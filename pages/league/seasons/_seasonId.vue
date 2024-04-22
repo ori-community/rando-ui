@@ -236,6 +236,7 @@
 
 <script>
   import { mapGetters, mapState } from 'vuex'
+  import { isElectron } from '~/assets/lib/isElectron'
   import { renderMarkdown } from '~/assets/lib/markdown'
   import { formatsDates } from '~/assets/lib/formatsDates'
   import { formatTime } from '~/assets/lib/formatTime'
@@ -264,6 +265,7 @@
     computed: {
       ...mapState('user', ['user']),
       ...mapGetters('user', ['isLoggedIn']),
+      isElectron,
       isJoined() {
         return this.leagueSeason !== null && this.leagueSeason.memberships.some((m) => m.user.id === this.user?.id)
       },
@@ -330,9 +332,11 @@
     mounted() {
       this.lurkAfterRandomTime()
 
-      window.electronApi.on('league.runSubmitted', () => {
-        this.loadSeason()
-      })
+      if (this.isElectron) {
+        window.electronApi.on('league.runSubmitted', () => {
+          this.loadSeason()
+        })
+      }
     },
     beforeDestroy() {
       if (this.refreshTimeoutId !== null) {

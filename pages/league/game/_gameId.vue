@@ -179,6 +179,11 @@
       removeVideoUrlConfirmationDialogOpen: false,
       errorMessage: null,
     }),
+    head() {
+      return {
+        title: this.leagueGame?.gameNumber && this.leagueSeason?.name ?  `Game ${this.leagueGame.gameNumber} - ${this.leagueSeason.name} - League` : 'Game - League',
+      }
+    },
     computed: {
       ...mapState('user', ['user']),
       ...mapGetters('user', ['isLoggedIn']),
@@ -254,9 +259,11 @@
       },
     },
     mounted() {
-      window.electronApi.on('league.runSubmitted', () => {
-        this.loadGame()
-      })
+      if (this.isElectron) {
+        window.electronApi.on('league.runSubmitted', () => {
+          this.loadGame()
+        })
+      }
     },
     methods: {
       formatTime,

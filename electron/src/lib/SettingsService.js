@@ -52,6 +52,7 @@ const getDefaultSettings = () => {
       AlwaysShowKeystoneDoors: false,
       SelectInLogicFilterByDefault: true,
       Insecure: false,
+      EnableMinimap: false,
     },
     Values: {
       MapIconTransparency: 0.25,

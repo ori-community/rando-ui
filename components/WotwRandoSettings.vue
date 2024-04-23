@@ -38,6 +38,11 @@
           label="Disable World Map"
           messages="Disables the world map that opens when zooming out"
         />
+        <v-checkbox
+          v-model="settings['Flags.EnableMinimap']"
+          label="Enable Minimap"
+          messages="Display an in-game minimap overlay"
+        />
       </div>
       <div class="mb-8">
         <h3>Miscellaneous</h3>

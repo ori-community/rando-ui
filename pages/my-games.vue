@@ -4,17 +4,17 @@
 
     <throttled-spinner>
       <template v-if="multiverses !== null">
-        <div v-for="[date, multiversesOnDate] of multiversesByDate" :key="date">
+        <div v-for="[date, multiversesInPeriod] of multiversesByPeriod" :key="date">
           <h2 class="mt-10 mb-3">{{ date }}</h2>
           <div class="games-container">
             <wotw-multiverse-card
-              v-for="multiverseMetadata in multiversesOnDate"
+              v-for="multiverseMetadata in multiversesInPeriod"
               :key="multiverseMetadata.id"
               :multiverse-metadata="multiverseMetadata"
             />
           </div>
         </div>
-        <div v-if="multiversesByDate.length === 0" class="text-center">
+        <div v-if="multiversesByPeriod.length === 0" class="text-center">
           <img class="ori-image" src="~/assets/images/ori_thumb.png" />
           <div>You didn't play any games yet</div>
         </div>
@@ -25,7 +25,6 @@
 
 <script>
   import { formatsDates } from '~/assets/lib/formatsDates'
-  import { hasOwnProperty } from '~/assets/lib/hasOwnProperty'
 
   export default {
     mixins: [formatsDates],
@@ -38,20 +37,56 @@
       }
     },
     computed: {
-      multiversesByDate() {
-        const multiversesByDate = {}
+      multiversesByPeriod() {
 
-        for (const multiverse of this.multiverses) {
-          const dateString = this.formatDateRelative(multiverse.createdAt)
+        const periodGroups = {}
+        const today = new Date()
+        const yesterday = new Date()
+        yesterday.setDate(today.getDate() - 1)
+        const thisWeekStart = new Date()
+        thisWeekStart.setDate(today.getDate() - today.getDay())
+        const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1)
 
-          if (!hasOwnProperty(multiversesByDate, dateString)) {
-            multiversesByDate[dateString] = []
+        // function to create period-group if missing
+        const addToGroup = function (obj, period) {
+          if (!periodGroups[period]) {
+            periodGroups[period] = []
           }
-
-          multiversesByDate[dateString].push(multiverse)
+          periodGroups[period].push(obj)
         }
 
-        return Object.entries(multiversesByDate).sort((a, b) => b[1][0].createdAt - a[1][0].createdAt)
+        const sortedMultiverses = [...this.multiverses].sort((a, b) => b.createdAt - a.createdAt)
+        
+        sortedMultiverses.forEach((multiverse) => {
+          const date = new Date(multiverse.createdAt)
+
+          // assing multiverses by date to groups
+          switch (true) {
+            case date.toDateString() === today.toDateString():
+              addToGroup(multiverse, 'Today')
+              break
+            case date.toDateString() === yesterday.toDateString():
+              addToGroup(multiverse, 'Yesterday')
+              break
+            case date >= thisWeekStart:
+              addToGroup(multiverse, 'This Week')
+              break
+            case date >= thisMonthStart && date < thisWeekStart:
+              addToGroup(multiverse, 'Last Week')
+              break
+            case date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth():
+              addToGroup(multiverse, 'This Month')
+              break
+            case date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth() - 1:
+              addToGroup(multiverse, 'Last Month')
+              break
+            default:
+              addToGroup(multiverse, date.getFullYear)
+              break
+          }
+        })
+        console.log(periodGroups)
+        return Object.entries(periodGroups)
       },
     },
     mounted() {

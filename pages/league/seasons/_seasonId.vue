@@ -573,6 +573,7 @@
   .ori-lurk-container {
     display: block;
     position: absolute;
+    pointer-events: none;
     top: -3rem;
     left: 0;
     right: 0;

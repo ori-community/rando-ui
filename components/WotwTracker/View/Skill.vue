@@ -82,9 +82,9 @@
     .tree {
       z-index: 0;
       position: absolute;
-      top: 55%;
+      top: 62%;
       left: 66%;
-      width: 30%;
+      width: 35%;
       transform-origin: bottom center;
       transform: scale(0);
       transition: transform 300ms;

@@ -1,0 +1,25 @@
+{
+  "name": "ori-rando-launcher-ui",
+  "private": true,
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "build": "bun --bun nuxt build",
+    "dev": "bun --bun nuxt dev",
+    "generate": "bun --bun nuxt generate",
+    "preview": "bun --bun nuxt preview",
+    "postinstall": "bun --bun nuxt prepare"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "^1.2.0",
+    "@nuxt/eslint": "^0.3.10",
+    "nuxt": "^3.8.2",
+    "typescript": "^5.4.5",
+    "vite-plugin-vuetify": "^2.0.3",
+    "vue": "^3.4.26",
+    "vue-router": "^4.3.2",
+    "vuetify": "^3.5.17"
+  },
+  "dependencies": {
+    "@mdi/font": "^7.4.47"
+  }
+}

@@ -46,9 +46,11 @@
         const yesterday = new Date()
         yesterday.setDate(today.getDate() - 1)
         const thisWeekStart = new Date()
-        thisWeekStart.setDate(today.getDate() - today.getDay())
+        thisWeekStart.setDate(today.getDate() - today.getDay() + 1)
+        thisWeekStart.setHours(0, 0, 0, 0)
         const lastWeekStart = new Date()
-        lastWeekStart.setDate(thisWeekStart.getDate() -7)
+        lastWeekStart.setDate(today.getDate() - today.getDay() + 1 - 7)
+        lastWeekStart.setHours(0, 0, 0, 0)
         const thisMonthStart = new Date(today.getFullYear(), today.getMonth(), 1)
         const lastMonthStart = new Date(today.getFullYear(), today.getMonth() -1, 1)
 

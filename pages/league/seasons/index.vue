@@ -76,7 +76,13 @@
           <v-expansion-panel-content>
             To play games in the Randomizer League, you need to first pick an upcoming season and join it.
             Joining seasons is possible until the first game of that season is finished. While it is possible
-            to play without being a member in the Ori Runs Discord server, it is heavily advised to be part
+            to play without being a member in the
+            <template v-if="isElectron">
+              <a @click="openDiscordLeagueChannel">Ori Runs Discord server</a>
+            </template>
+            <template v-else>
+              <a :href="leagueDiscordChannelUrl" target="_blank" >Ori Runs Discord server</a>
+            </template>, it is heavily advised to be part
             of it to receive pings and reminders for your joined seasons as well as being added to spoiler
             discussion channels after you finished a game.<br>
             Once the season started, games will be created automatically in fixed intervals. You can then
@@ -149,12 +155,14 @@
 
 <script>
   import { mapGetters, mapState } from 'vuex'
+  import { isElectron } from '~/assets/lib/isElectron'
 
   export default {
     data: () => ({
       seasonsLoading: false,
       leagueSeasons: [],
       showLeagueInfo: false,
+      leagueDiscordChannelUrl: 'https://discord.gg/kXuZSAuxZt'
     }),
     head() {
       return {
@@ -162,6 +170,7 @@
       }
     },
     computed: {
+      isElectron,
       ...mapState('user', ['user']),
       ...mapGetters('user', ['isLoggedIn', 'isDeveloper']),
       categorizedSeasons() {
@@ -201,6 +210,9 @@
       },
       userIsMemberOfSeason(season) {
         return season.memberships?.some((m) => m.user.id === this.user?.id)
+      },
+      openDiscordLeagueChannel(){
+        window.electronApi.invoke('launcher.openUrl', { url: this.leagueDiscordChannelUrl, })
       },
     },
   }

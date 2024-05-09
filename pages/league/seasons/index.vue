@@ -2,7 +2,7 @@
   <v-container>
     <h1 class="text-center mt-12 mb-2">Randomizer League</h1>
     <div class="mb-12 text-center">
-      Welcome to the Randomizer League.<br>
+      Welcome to the Randomizer League.<br />
       Pick a season and start gaming!
     </div>
     <div class="text-center mb-12">
@@ -22,6 +22,7 @@
           :season="season"
           mode="active"
           :joined="userIsMemberOfSeason(season)"
+          :submission-pending="userHasSubmissionPending(season)"
         />
         <league-season-card
           v-for="season in categorizedSeasons.upcoming"
@@ -29,6 +30,7 @@
           :season="season"
           mode="upcoming"
           :joined="userIsMemberOfSeason(season)"
+          :submission-pending="userHasSubmissionPending(season)"
         />
       </div>
     </template>
@@ -52,21 +54,18 @@
             What is the Randomizer League?
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            The Randomizer League is a new game mode for the Ori and the Will of the Wisps Randomizer which
-            allows multiple players to compete against each other asynchronously. All players play the same
-            seeds but don't have to do so at the same time. Instead, each player can complete each game in
-            a given time frame.
+            The Randomizer League is a new game mode for the Ori and the Will of the Wisps Randomizer which allows
+            multiple players to compete against each other asynchronously. All players play the same seeds but don't
+            have to do so at the same time. Instead, each player can complete each game in a given time frame.
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel>
-          <v-expansion-panel-header class="font-weight-bold title">
-            What are Seasons?
-          </v-expansion-panel-header>
+          <v-expansion-panel-header class="font-weight-bold title"> What are Seasons? </v-expansion-panel-header>
           <v-expansion-panel-content>
-            Each season is a set of games which player can compete in. Every season has its own leaderboard
-            and games of a season are counted towards the player's ranking on the leaderboard of that season.
-            There can be multiple seasons in parallel. This allows for different seasons with unique seed settings,
-            for example different difficulty levels.
+            Each season is a set of games which player can compete in. Every season has its own leaderboard and games of
+            a season are counted towards the player's ranking on the leaderboard of that season. There can be multiple
+            seasons in parallel. This allows for different seasons with unique seed settings, for example different
+            difficulty levels.
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel>
@@ -74,20 +73,17 @@
             How can I play games in the Randomizer League?
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            To play games in the Randomizer League, you need to first pick an upcoming season and join it.
-            Joining seasons is possible until the first game of that season is finished. While it is possible
-            to play without being a member in the
+            To play games in the Randomizer League, you need to first pick an upcoming season and join it. Joining
+            seasons is possible until the first game of that season is finished. While it is possible to play without
+            being a member in the
             <template v-if="isElectron">
               <a @click="openDiscordLeagueChannel">Ori Runs Discord server</a>
             </template>
-            <template v-else>
-              <a :href="leagueDiscordChannelUrl" target="_blank" >Ori Runs Discord server</a>
-            </template>, it is heavily advised to be part
-            of it to receive pings and reminders for your joined seasons as well as being added to spoiler
-            discussion channels after you finished a game.<br>
-            Once the season started, games will be created automatically in fixed intervals. You can then
-            play these games whenever you want until they expire and the next game is created or the season is
-            over.
+            <template v-else> <a :href="leagueDiscordChannelUrl" target="_blank">Ori Runs Discord server</a> </template
+            >, it is heavily advised to be part of it to receive pings and reminders for your joined seasons as well as
+            being added to spoiler discussion channels after you finished a game.<br />
+            Once the season started, games will be created automatically in fixed intervals. You can then play these
+            games whenever you want until they expire and the next game is created or the season is over.
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel>
@@ -99,11 +95,11 @@
 
             <ul class="mb-2">
               <li>
-                <span class="font-italic">Base Points</span><br>
+                <span class="font-italic">Base Points</span><br />
                 Base Points are awarded to all players who submitted a run, regardless of their time.
               </li>
               <li>
-                <span class="font-italic">Speed Points</span><br>
+                <span class="font-italic">Speed Points</span><br />
                 Speed Points are awarded to players depending on their run time in relation to the fastest player.
               </li>
             </ul>
@@ -112,22 +108,23 @@
             The season in this example uses <span class="text-decoration-underline">10 Base Points</span>,
             <span class="text-decoration-underline">190 Speed Points</span> and a
             <span class="text-decoration-underline">Speed Factor of 2.0</span>. The fastest player has a time of
-            <span class="text-decoration-underline">01:00:00</span>.<br>
+            <span class="text-decoration-underline">01:00:00</span>.<br />
             If you finish with a time of 01:30:00, you are awarded 105 points in total:
 
             <ul>
               <li>10 Base Points for finishing</li>
-              <li>95 Speed Points for speed (fastest time = all Speed Points, fastest time * Speed Factor = no Speed Points, 190 * 0.5 = 95)</li>
+              <li>
+                95 Speed Points for speed (fastest time = all Speed Points, fastest time * Speed Factor = no Speed
+                Points, 190 * 0.5 = 95)
+              </li>
             </ul>
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel>
-          <v-expansion-panel-header class="font-weight-bold title">
-            How do I submit a run?
-          </v-expansion-panel-header>
+          <v-expansion-panel-header class="font-weight-bold title"> How do I submit a run? </v-expansion-panel-header>
           <v-expansion-panel-content>
-            The Randomizer League is deeply integrated into the Randomizer itself. Submission and basic validation
-            of games is done automatically. If you want to submit a video recording of your run alongside the submitted
+            The Randomizer League is deeply integrated into the Randomizer itself. Submission and basic validation of
+            games is done automatically. If you want to submit a video recording of your run alongside the submitted
             time, you can do so after finishing your run on the game page.
           </v-expansion-panel-content>
         </v-expansion-panel>
@@ -162,7 +159,7 @@
       seasonsLoading: false,
       leagueSeasons: [],
       showLeagueInfo: false,
-      leagueDiscordChannelUrl: 'https://discord.gg/kXuZSAuxZt'
+      leagueDiscordChannelUrl: 'https://discord.gg/kXuZSAuxZt',
     }),
     head() {
       return {
@@ -211,8 +208,28 @@
       userIsMemberOfSeason(season) {
         return season.memberships?.some((m) => m.user.id === this.user?.id)
       },
-      openDiscordLeagueChannel(){
-        window.electronApi.invoke('launcher.openUrl', { url: this.leagueDiscordChannelUrl, })
+      userHasSubmissionPending(season) {
+
+        const pending = { isPending: false, attention: false }
+
+        if (!this.isLoggedIn || !season.currentGameId) {
+          return pending
+        }
+
+        // pending if own submission not available
+        const currentGame = season.games?.find((g) => g.id === season.currentGameId)
+        pending.isPending = currentGame.userMetadata?.ownSubmission === null
+
+        // attention if less than 48h left
+        if (pending.isPending){
+          const secondsLeft = (season.nextContinuationAt - Date.now()) / 1000
+          pending.attention = secondsLeft < 48 * 3600
+        }
+
+        return pending
+      },
+      openDiscordLeagueChannel() {
+        window.electronApi.invoke('launcher.openUrl', { url: this.leagueDiscordChannelUrl })
       },
     },
   }
@@ -231,7 +248,7 @@
     transition: opacity 300ms;
 
     &:hover {
-      opacity: 1.0;
+      opacity: 1;
     }
   }
 </style>

@@ -7,11 +7,15 @@
     <div class="card-tags">
       <div v-if="mode === MODE_UPCOMING" class="px-2 blue darken-1">Upcoming</div>
       <div v-else-if="mode === MODE_ACTIVE" class="px-2 green darken-2">Active</div>
-      <div v-if="joined" class="px-2 accent"><v-icon x-small>mdi-check</v-icon> Joined</div>
+      <div v-if="submissionPending?.isPending" class="px-2 card-tag-pending">Pending</div>
+      <div v-else-if="joined" class="px-2 accent"><v-icon x-small>mdi-check</v-icon> Joined</div>
     </div>
 
     <div class="card-content pa-4">
-      <h3>{{ season.name }}</h3>
+      <h3>
+        {{ season.name }}
+        <v-icon class="pending-attention" v-if="submissionPending.attention">mdi-alert-rhombus-outline</v-icon>
+      </h3>
       <div>{{ season.shortDescription }}</div>
 
       <div class="spacer"></div>
@@ -53,6 +57,10 @@
         type: Boolean,
         default: false,
       },
+      submissionPending: {
+        type: Object,
+        default: null,
+      },
     },
     data: () => ({
       MODE_DEFAULT,
@@ -62,7 +70,9 @@
     computed: {
       currentGameNumber() {
         // return gameCount when season finished
-        if (!this.season.currentGameId && !this.season.canJoin) { return this.season.gameCount }
+        if (!this.season.currentGameId && !this.season.canJoin) {
+          return this.season.gameCount
+        }
 
         const currentGame = this.season.games?.find((g) => g.id === this.season.currentGameId)
         return currentGame?.gameNumber ? currentGame?.gameNumber : 0
@@ -130,6 +140,26 @@
       overflow: hidden;
       display: flex;
       font-size: 0.8em;
+    }
+
+    .card-tag-pending {
+      background: #c52020;
+    }
+    .pending-attention {
+      animation: submittionAttention 1s forwards infinite;
+    }
+    @keyframes submittionAttention {
+      0% {
+        transform: scale(0.7);
+      }
+
+      70% {
+        transform: scale(1);
+      }
+
+      100% {
+        transform: scale(0.7);
+      }
     }
   }
 </style>

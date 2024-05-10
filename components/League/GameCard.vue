@@ -7,11 +7,16 @@
       :class="{ accent: isPending }"
       :to="{ name: 'league-game-gameId', params: { gameId: game.id } }"
     >
-      <div class="gradient-overlay" :class="{extreme: !!season?.backgroundImageUrl}"></div>
+      <div class="gradient-overlay" :class="{ extreme: !!season?.backgroundImageUrl }"></div>
+      <img
+        v-if="!!season?.backgroundImageUrl"
+        class="background-image behind"
+        alt=""
+        :src="season.backgroundImageUrl"
+      />
 
       <div class="card-content pa-4">
-        <img v-if="!!season?.backgroundImageUrl" class="background-image behind" alt="" :src="season.backgroundImageUrl" />
-        <img v-else class="background-image" alt="" src="~/assets/images/ori_running.png" />
+        <img v-if="!season?.backgroundImageUrl" class="background-image" alt="" src="~/assets/images/ori_running.png" />
 
         <div class="game-number-container">
           <div>{{ season !== null ? season.name : 'Game' }}</div>
@@ -40,7 +45,8 @@
 
       <div v-if="playableUntil !== null && !game.userMetadata?.ownSubmission" class="timer pa-2">
         <template v-if="typeof countdownTimerTextOrSecondsLeft === 'number'">
-          <span class="font-weight-bold">{{ formatTime(countdownTimerTextOrSecondsLeft, 0, true) }}</span><br />
+          <span class="font-weight-bold">{{ formatTime(countdownTimerTextOrSecondsLeft, 0, true) }}</span
+          ><br />
           left to finish this game!
         </template>
         <template v-else-if="typeof countdownTimerTextOrSecondsLeft === 'string'">
@@ -88,7 +94,7 @@
     computed: {
       isPending() {
         return this.game.isCurrent && this.game.userMetadata?.canSubmit
-      }
+      },
     },
     mounted() {
       this.updateIntervalId = setInterval(() => this.updateTimerText(), 1000)
@@ -186,6 +192,24 @@
         background: linear-gradient(to right, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0) 100%);
       }
     }
+    .background-image {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      object-fit: cover;
+      width: 100%;
+      height: 100%;
+      opacity: 1;
+      &:not(.behind) {
+        transform: scale(1.8);
+      }
+      &.behind {
+        z-index: -1;
+      }
+    }
 
     .card-content {
       position: relative;
@@ -217,24 +241,6 @@
 
       .spacer {
         flex-grow: 1;
-      }
-
-      .background-image {
-        display: block;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        object-fit: cover;
-        width: 100%;
-        height: 100%;
-        opacity: 1;
-        transform: scale(1.8);
-
-        &.behind {
-          z-index: -1;
-        }
       }
     }
 

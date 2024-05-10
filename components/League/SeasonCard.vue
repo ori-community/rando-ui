@@ -6,7 +6,6 @@
 
     <div class="card-tags">
       <div v-if="mode === MODE_UPCOMING" class="px-2 blue darken-1">Upcoming</div>
-<!--      <div v-else-if="mode === MODE_ACTIVE" class="px-2 green darken-2">Active</div>-->
       <div v-else-if="joined" class="px-2 accent"><v-icon x-small>mdi-check</v-icon> Joined</div>
     </div>
 
@@ -136,26 +135,6 @@
       overflow: hidden;
       display: flex;
       font-size: 0.8em;
-    }
-
-    .card-tag-pending {
-      background: #c52020;
-    }
-    .pending-attention {
-      animation: submittionAttention 1s forwards infinite;
-    }
-    @keyframes submittionAttention {
-      0% {
-        transform: scale(0.7);
-      }
-
-      70% {
-        transform: scale(1);
-      }
-
-      100% {
-        transform: scale(0.7);
-      }
     }
   }
 </style>

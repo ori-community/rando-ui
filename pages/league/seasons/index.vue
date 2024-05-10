@@ -12,6 +12,22 @@
       </v-btn>
     </div>
 
+    <template v-if="pendingGames.length > 0">
+      <h2 class="mt-5 mb-2">Your pending games</h2>
+
+      <div class="seasons-container">
+        <league-game-card
+          v-for="pendingGame in pendingGames"
+          :key="pendingGame.game.id"
+          :game="pendingGame.game"
+          :season="pendingGame.season"
+          :game-count="pendingGame.season.gameCount"
+          :playable-until="pendingGame.season.nextContinuationAt"
+          :member-count="pendingGame.season.memberships?.length"
+        />
+      </div>
+    </template>
+
     <template v-if="categorizedSeasons.active.length > 0 || categorizedSeasons.upcoming.length > 0">
       <h2 class="mt-5 mb-2">Active & Upcoming Seasons</h2>
 
@@ -22,7 +38,6 @@
           :season="season"
           mode="active"
           :joined="userIsMemberOfSeason(season)"
-          :submission-pending="userHasSubmissionPending(season)"
         />
         <league-season-card
           v-for="season in categorizedSeasons.upcoming"
@@ -30,7 +45,6 @@
           :season="season"
           mode="upcoming"
           :joined="userIsMemberOfSeason(season)"
-          :submission-pending="userHasSubmissionPending(season)"
         />
       </div>
     </template>
@@ -158,6 +172,7 @@
     data: () => ({
       seasonsLoading: false,
       leagueSeasons: [],
+      pendingGames: [],
       showLeagueInfo: false,
       leagueDiscordChannelUrl: 'https://discord.gg/kXuZSAuxZt',
     }),
@@ -199,6 +214,15 @@
 
         try {
           this.leagueSeasons = await this.$axios.$get('/league/seasons')
+
+          this.pendingGames = this.leagueSeasons.flatMap(season => {
+            const currentGame = season.games.find(g => g.id === season.currentGameId)
+            if (currentGame?.userMetadata?.ownSubmission === null) {
+              return [{game: currentGame, season}]
+            }
+
+            return []
+          })
         } catch (e) {
           console.error(e)
         }
@@ -207,26 +231,6 @@
       },
       userIsMemberOfSeason(season) {
         return season.memberships?.some((m) => m.user.id === this.user?.id)
-      },
-      userHasSubmissionPending(season) {
-
-        const pending = { isPending: false, attention: false }
-
-        if (!this.isLoggedIn || !season.currentGameId) {
-          return pending
-        }
-
-        // pending if own submission not available
-        const currentGame = season.games?.find((g) => g.id === season.currentGameId)
-        pending.isPending = currentGame.userMetadata?.ownSubmission === null
-
-        // attention if less than 48h left
-        if (pending.isPending){
-          const secondsLeft = (season.nextContinuationAt - Date.now()) / 1000
-          pending.attention = secondsLeft < 48 * 3600
-        }
-
-        return pending
       },
       openDiscordLeagueChannel() {
         window.electronApi.invoke('launcher.openUrl', { url: this.leagueDiscordChannelUrl })

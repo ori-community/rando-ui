@@ -6,16 +6,12 @@
 
     <div class="card-tags">
       <div v-if="mode === MODE_UPCOMING" class="px-2 blue darken-1">Upcoming</div>
-      <div v-else-if="mode === MODE_ACTIVE" class="px-2 green darken-2">Active</div>
-      <div v-if="submissionPending?.isPending" class="px-2 card-tag-pending">Pending</div>
+<!--      <div v-else-if="mode === MODE_ACTIVE" class="px-2 green darken-2">Active</div>-->
       <div v-else-if="joined" class="px-2 accent"><v-icon x-small>mdi-check</v-icon> Joined</div>
     </div>
 
     <div class="card-content pa-4">
-      <h3>
-        {{ season.name }}
-        <v-icon class="pending-attention" v-if="submissionPending.attention">mdi-alert-rhombus-outline</v-icon>
-      </h3>
+      <h3>{{ season.name }}</h3>
       <div>{{ season.shortDescription }}</div>
 
       <div class="spacer"></div>

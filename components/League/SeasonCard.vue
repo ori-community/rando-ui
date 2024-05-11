@@ -81,7 +81,7 @@
     position: relative;
     overflow: hidden;
     transition: transform 300ms;
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     will-change: transform;
 
     &:hover {

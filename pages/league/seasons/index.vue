@@ -11,9 +11,9 @@
         FAQ / Help
       </v-btn>
     </div>
-
+    
     <template v-if="pendingGames.length > 0">
-      <h2 class="mt-5 mb-2">Your pending games</h2>
+      <h2 class="mt-5 mb-2">Your Pending Games</h2>
 
       <div class="seasons-container">
         <league-game-card
@@ -29,7 +29,11 @@
     </template>
 
     <template v-if="categorizedSeasons.active.length > 0 || categorizedSeasons.upcoming.length > 0">
-      <h2 class="mt-5 mb-2">Active & Upcoming Seasons</h2>
+      <h2 class="mt-5 mb-2">
+        <template v-if="categorizedSeasons.active.length > 0 && categorizedSeasons.upcoming.length > 0">Active & Upcoming Seasons</template>
+        <template v-else-if="categorizedSeasons.active.length > 0">Active Seasons</template>
+        <template v-else>Upcoming Seasons</template>
+      </h2>
 
       <div class="seasons-container">
         <league-season-card

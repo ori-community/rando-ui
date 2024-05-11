@@ -1,6 +1,6 @@
 <template>
   <div class="card-container">
-    <div v-if="isPending" class="card-flash accent"></div>
+    <div v-if="isPending" class="accent" :class="attentionActive ? 'card-flash' : ''"></div>
 
     <v-card
       class="game-card"
@@ -90,6 +90,7 @@
     data: () => ({
       countdownTimerTextOrSecondsLeft: null,
       updateIntervalId: null,
+      attentionActive: false,
     }),
     computed: {
       isPending() {
@@ -97,8 +98,8 @@
       },
     },
     mounted() {
-      this.updateIntervalId = setInterval(() => this.updateTimerText(), 1000)
-      this.updateTimerText()
+      this.updateIntervalId = setInterval(() => this.updateTimer(), 1000)
+      this.updateTimer()
     },
     beforeDestroy() {
       if (this.updateIntervalId !== null) {
@@ -107,27 +108,32 @@
     },
     methods: {
       formatTime,
-      updateTimerText() {
+      updateTimer() {
         if (!this.playableUntil) {
           this.countdownTimerTextOrSecondsLeft = null
+          this.attentionActive = false
           return
         }
-
+        
         const secondsLeft = (this.playableUntil - Date.now()) / 1000
-
+        
         // Only show countdown for <48h
         if (secondsLeft > 48 * 3600) {
           this.countdownTimerTextOrSecondsLeft = null
+          this.attentionActive = false
           return
         }
+        
+        this.attentionActive = true
 
         if (secondsLeft <= 0) {
           this.countdownTimerTextOrSecondsLeft = 'Season will continue any second...'
           return
         }
-
+        
         this.countdownTimerTextOrSecondsLeft = secondsLeft
       },
+
     },
   }
 </script>

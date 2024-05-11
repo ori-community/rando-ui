@@ -43,7 +43,7 @@
         </div>
       </div>
 
-      <div v-if="playableUntil !== null && !game.userMetadata?.ownSubmission" class="timer pa-2">
+      <div v-if="playableUntil !== null" class="timer pa-2">
         <template v-if="typeof countdownTimerTextOrSecondsLeft === 'number'">
           <span class="font-weight-bold">{{ formatTime(countdownTimerTextOrSecondsLeft, 0, true) }}</span
           ><br />

@@ -45,14 +45,16 @@
 
       <div v-if="playableUntil !== null" class="timer pa-2">
         <template v-if="typeof countdownTimerTextOrSecondsLeft === 'number'">
-          <span class="font-weight-bold">{{ formatTime(countdownTimerTextOrSecondsLeft, 0, true) }}</span
-          ><br />
-          left to finish this game!
+          Time left to finish this game<br />
+          <span class="font-weight-bold">{{ formatTime(countdownTimerTextOrSecondsLeft, 0, true) }}</span>
         </template>
         <template v-else-if="typeof countdownTimerTextOrSecondsLeft === 'string'">
-          {{ countdownTimerTextOrSecondsLeft }}
+          {{ countdownTimerTextOrSecondDsLeft }}
         </template>
-        <template v-else> Finish this game until {{ formatDateEpoch(playableUntil, 'P p') }} </template>
+        <template v-else>
+          Finish this game until <br />
+          <span class="font-weight-bold">{{ formatDateEpoch(playableUntil, 'P p') }}</span>
+        </template>
       </div>
     </v-card>
   </div>

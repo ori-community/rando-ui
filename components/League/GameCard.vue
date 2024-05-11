@@ -1,6 +1,6 @@
 <template>
   <div class="card-container">
-    <div v-if="isPending" class="accent" :class="attentionActive ? 'card-flash' : ''"></div>
+    <div v-if="isPending" class="accent" :class="{ 'card-flash': attentionActive }"></div>
 
     <v-card
       class="game-card"
@@ -177,6 +177,9 @@
       border-radius: 0.4em;
       animation: flash 1s forwards infinite;
       z-index: -2;
+      @media (prefers-reduced-motion) {
+        animation: none
+      }
     }
   }
 

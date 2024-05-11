@@ -3,7 +3,7 @@
     <v-window vertical :value="state">
       <v-window-item value="select_base_preset" active-class="active-window-item">
         <template v-if="universeSettings.worldSettings.length > 0">
-          <h2 class="mb-3">Copy settings from an existing world</h2>
+          <h2 class="mb-3">Copy Settings from an Existing World</h2>
 
           <div class="mb-5">
             <v-btn
@@ -26,7 +26,7 @@
             singleWorldPresets?.length > 0 || (universeSettings.worldSettings.length === 0 && customPresets?.length > 0)
           "
         >
-          <h2 class="mb-3">Select a custom preset</h2>
+          <h2 class="mb-3">Select a Custom Preset</h2>
           <wotw-seedgen-custom-preset-select
             class="mb-3"
             :custom-presets="customPresets"
@@ -36,7 +36,7 @@
           />
         </div>
 
-        <h2 class="mb-3">Select a base preset</h2>
+        <h2 class="mb-3">Select a Base Preset</h2>
 
         <v-card
           v-for="(preset, presetId) in basePresets"

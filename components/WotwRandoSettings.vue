@@ -63,7 +63,7 @@
         />
         <v-checkbox
           v-model="settings['Flags.SelectInLogicFilterByDefault']"
-          label="Start with In Logic filter"
+          label="Start with In Logic Filter"
           messages="Select the In Logic map filter by default instead of the All filter"
         />
         <v-checkbox
@@ -84,7 +84,7 @@
         />
       </div>
       <div class="mb-8">
-        <h3>Launch settings</h3>
+        <h3>Launch Settings</h3>
         <template v-if="isWindows">
           <div class="mt-3">
             <v-label>Game Distribution Service</v-label>
@@ -158,7 +158,7 @@
         />
         <v-checkbox
           v-model="settings['Flags.InvertSwim']"
-          label="Invert swim speeds"
+          label="Invert Swim Speeds"
           messages="Swim fast by default. Hold jump to swim slower instead"
         />
         <v-checkbox
@@ -189,7 +189,7 @@
 
         <v-checkbox
           v-model="settings['LocalTracker.AlwaysOnTop']"
-          label="Always on top"
+          label="Always on Top"
           messages="Show the Item Tracker on top of other windows"
         />
 
@@ -201,7 +201,7 @@
 
         <v-checkbox
           v-model="settings['LocalTracker.IgnoreMouse']"
-          label="Ignore mouse"
+          label="Ignore Mouse"
           messages="This is helpful if you want to show the tracker above the game. Note that you cannot move/resize the tracker with this option enabled"
         />
 
@@ -282,7 +282,7 @@
           ></v-combobox>
           <v-checkbox
             v-model="useSecureConnection"
-            label="Use Secure connection"
+            label="Use Secure Connection"
             messages="Connect to the Server using HTTPS and WSS instead of HTTP and WS"
           />
           <v-btn depressed color="accent" class="mt-5" @click="disableDevTools"> Disable Developer Tools </v-btn>

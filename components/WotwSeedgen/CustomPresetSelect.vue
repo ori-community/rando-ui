@@ -49,7 +49,7 @@
         </v-list-item>
         <v-list-item @click="copyToClipboard(contextMenuCustomPresetIndex)">
           <v-icon left>mdi-clipboard-arrow-up-outline</v-icon>
-          Copy to clipboard
+          Copy to Clipboard
         </v-list-item>
       </v-list>
     </v-menu>

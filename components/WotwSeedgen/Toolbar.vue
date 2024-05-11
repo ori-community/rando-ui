@@ -61,7 +61,7 @@
         </v-list-item>
         <v-list-item :disabled="disabled" @click="$emit('save-world-as-custom-preset', worldMenuWorldIndex)">
           <v-icon left>mdi-content-save-outline</v-icon>
-          Save as custom preset
+          Save as Custom Preset
         </v-list-item>
       </v-list>
     </v-menu>

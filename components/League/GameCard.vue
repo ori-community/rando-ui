@@ -21,9 +21,9 @@
         <div class="game-number-container">
           <div>{{ season !== null ? season.name : 'Game' }}</div>
           <div>
-            <span class="hashtag">#</span><span class="game-number">{{ game.gameNumber }}</span
-            ><template v-if="gameCount"
-              ><span class="game-count"> / {{ gameCount }}</span>
+            <span class="hashtag">#</span><span class="game-number">{{ game.gameNumber }}</span>
+            <template v-if="gameCount">
+              <span class="game-count"> / {{ gameCount }}</span>
             </template>
           </div>
         </div>
@@ -45,14 +45,14 @@
 
       <div v-if="playableUntil !== null" class="timer pa-2">
         <template v-if="typeof countdownTimerTextOrSecondsLeft === 'number'">
-          Time left to finish this game<br />
+          {{ isPending ? 'Time left to finish this game' : 'Next game in' }}<br />
           <span class="font-weight-bold">{{ formatTime(countdownTimerTextOrSecondsLeft, 0, true) }}</span>
         </template>
         <template v-else-if="typeof countdownTimerTextOrSecondsLeft === 'string'">
           {{ countdownTimerTextOrSecondDsLeft }}
         </template>
         <template v-else>
-          Finish this game until <br />
+          {{ isPending ? 'Finish this game until' : 'Next game at' }}<br />
           <span class="font-weight-bold">{{ formatDateEpoch(playableUntil, 'P p') }}</span>
         </template>
       </div>
@@ -116,23 +116,23 @@
           this.attentionActive = false
           return
         }
-        
+
         const secondsLeft = (this.playableUntil - Date.now()) / 1000
-        
+
         // Only show countdown for <48h
         if (secondsLeft > 48 * 3600) {
           this.countdownTimerTextOrSecondsLeft = null
           this.attentionActive = false
           return
         }
-        
+
         this.attentionActive = true
 
         if (secondsLeft <= 0) {
           this.countdownTimerTextOrSecondsLeft = 'Season will continue any second...'
           return
         }
-        
+
         this.countdownTimerTextOrSecondsLeft = secondsLeft
       },
 

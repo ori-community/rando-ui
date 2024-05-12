@@ -11,7 +11,7 @@
         FAQ / Help
       </v-btn>
     </div>
-    
+
     <template v-if="pendingGames.length > 0">
       <h2 class="mt-5 mb-2">Your Pending Games</h2>
 
@@ -220,6 +220,10 @@
           this.leagueSeasons = await this.$axios.$get('/league/seasons')
 
           this.pendingGames = this.leagueSeasons.flatMap(season => {
+            if (!this.userIsMemberOfSeason(season)) {
+              return []
+            }
+
             const currentGame = season.games.find(g => g.id === season.currentGameId)
             if (currentGame?.userMetadata?.ownSubmission === null) {
               return [{game: currentGame, season}]

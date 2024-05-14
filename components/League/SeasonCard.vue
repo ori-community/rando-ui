@@ -6,7 +6,7 @@
 
     <div class="card-tags">
       <div v-if="mode === MODE_UPCOMING" class="px-2 blue darken-1">Upcoming</div>
-      <div v-else-if="joined" class="px-2 accent"><v-icon x-small>mdi-check</v-icon> Joined</div>
+      <div v-if="joined" class="px-2 accent"><v-icon x-small>mdi-check</v-icon> Joined</div>
     </div>
 
     <div class="card-content pa-4">

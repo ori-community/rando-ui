@@ -27,11 +27,22 @@
           </v-btn>
           <v-btn text @click="showSeasonInfo = true"><v-icon left>mdi-information-outline</v-icon>Info</v-btn>
           <v-btn text @click="showSeasonRules = true"><v-icon left>mdi-book-open-outline</v-icon>Rules</v-btn>
+          <v-tooltip bottom open-delay="300">
+            <template #activator="{ on }">
+              <div class="top-row-button" v-on="on">
+                <v-btn text :disabled="!isLoggedIn" :loading="trainingSeedLoading" @click="createTrainingSeed">
+                  <v-icon left>mdi-dice-multiple</v-icon>
+                  Training
+                </v-btn>
+              </div>
+            </template>
+            <span>{{ isLoggedIn ? 'Create a practice game' : 'Log in to create a practice game' }}</span>
+          </v-tooltip>
           <v-tooltip v-if="!isJoined && !seasonEnded" bottom :disabled="canJoin">
             <template #activator="{ on }">
-              <div class="join-button-container" v-on="on">
+              <div class="top-row-button" v-on="on">
                 <div class="ori-lurk-container">
-                  <img class="ori-lurk" :class="{lurking: joinButtonLurking}" src="~/assets/images/ori_lurk.png" />
+                  <img class="ori-lurk" :class="{ lurking: joinButtonLurking }" src="~/assets/images/ori_lurk.png" />
                 </div>
                 <v-btn color="accent" :loading="actionLoading" :disabled="!canJoin" @click="showSeasonRules = true">
                   <v-icon left>mdi-plus-circle-outline</v-icon>
@@ -255,6 +266,7 @@
       refreshTimeoutId: null,
       lurkTimeoutId: null,
       joinButtonLurking: false,
+      trainingSeedLoading: false,
       gameHeaders: [
         { text: 'Number', value: 'gameNumber', align: 'center' },
         { text: 'Your Rank', value: 'userMetadata.ownSubmission.rankingData.rank', align: 'left' },
@@ -277,8 +289,10 @@
       canJoin() {
         return this.leagueSeason !== null && this.leagueSeason.canJoin && this.isLoggedIn && !this.isJoined
       },
-      seasonEnded(){
-        return this.leagueSeason !== null && this.leagueSeason.currentGameId === null && this.leagueSeason.games?.length > 0
+      seasonEnded() {
+        return (
+          this.leagueSeason !== null && this.leagueSeason.currentGameId === null && this.leagueSeason.games?.length > 0
+        )
       },
       sortedMembers() {
         return (
@@ -416,6 +430,17 @@
         setTimeout(() => {
           this.seasonLinkCopied = false
         }, 3000)
+      },
+      async createTrainingSeed() {
+        this.trainingSeedLoading = true
+
+        const response = await this.$axios.$post(`/league/seasons/${this.leagueSeason.id}/training-seed`)
+        const multiverseId = await this.$axios.$post('/multiverses', {
+          seedId: response.result.seedId,
+        })
+        await this.$router.push({ name: 'game-multiverseId', params: { multiverseId } })
+
+        this.trainingSeedLoading = false
       },
     },
   }
@@ -565,7 +590,7 @@
     }
   }
 
-  .join-button-container {
+  .top-row-button {
     position: relative;
     display: inline-block;
   }

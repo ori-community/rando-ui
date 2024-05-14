@@ -54,8 +54,8 @@
           </v-tooltip>
         </div>
         <div class="tables-container">
-          <v-card ref="leaderboard" class="overflow-x-auto">
-            <h2 class="text-center mt-5 mb-5">Leaderboard</h2>
+          <v-card class="overflow-x-auto">
+            <h2 ref="leaderboardTitle" class="text-center mt-5 mb-5">Leaderboard</h2>
             <throttled-spinner>
               <v-data-table
                 v-if="sortedMembers"
@@ -411,7 +411,7 @@
         }
 
         setTimeout(() => {
-          confettiFromElement(this.$refs.leaderboard.$el, {
+          confettiFromElement(this.$refs.leaderboardTitle, {
             startVelocity: 30,
           })
         }, 75)

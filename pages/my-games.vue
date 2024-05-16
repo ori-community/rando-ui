@@ -16,7 +16,7 @@
         </div>
         <div v-if="multiversesByPeriod.length === 0" class="text-center">
           <img class="ori-image" src="~/assets/images/ori_thumb.png" />
-          <div>You didn't play any games yet</div>
+          <div>You haven't played any online games yet</div>
         </div>
       </template>
     </throttled-spinner>

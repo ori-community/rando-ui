@@ -45,7 +45,10 @@ export class SeedgenResponse {
 export class UISeedGenerator extends AxiosAPI {
   async generateSeed(universePreset) {
     const data = await this.axios.$post('/seeds', universePreset)
+    return this.getSeedgenResponse(data)
+  }
 
+  getSeedgenResponse(data) {
     if (data.warnings && data.warnings.includes('WARN')) {
       EventBus.$emit('notification', {
         message: data.warnings,

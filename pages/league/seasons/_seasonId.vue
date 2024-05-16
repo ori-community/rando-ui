@@ -27,11 +27,11 @@
           </v-btn>
           <v-btn text @click="showSeasonInfo = true"><v-icon left>mdi-information-outline</v-icon>Info</v-btn>
           <v-btn text @click="showSeasonRules = true"><v-icon left>mdi-book-open-outline</v-icon>Rules</v-btn>
-          <v-tooltip bottom open-delay="300">
+          <v-tooltip v-if="isElectron" bottom open-delay="300">
             <template #activator="{ on }">
               <div class="top-row-button" v-on="on">
-                <v-btn text :disabled="!isLoggedIn" :loading="trainingSeedLoading" @click="createTrainingSeed">
-                  <v-icon left>mdi-dice-multiple</v-icon>
+                <v-btn text :disabled="!isLoggedIn" @click="trainingSeedDialogOpen = true">
+                  <v-icon left>mdi-dumbbell</v-icon>
                   Training
                 </v-btn>
               </div>
@@ -242,6 +242,27 @@
         </div>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="trainingSeedDialogOpen" :permanent="trainingSeedLoading" width="unset" max-width="600">
+      <v-card class="pa-5">
+        <h2 class="mb-3">Training</h2>
+        <p>
+          Here you can play training seeds for practising this league season. These seeds are rolled with the same
+          settings as the actual league seeds. Playing them does not affect your points or ranking.
+        </p>
+        <div class="dialog-buttons mt-8 mb-2">
+          <v-btn
+            x-large
+            depressed
+            color="accent"
+            :loading="trainingSeedLoading"
+            @click.native="launchTrainingSeed"
+            ref="trainingSeedLaunchButton"
+          >
+            <img class="launch-icon" src="../../../assets/images/launch.png" alt="" />Launch</v-btn
+          >
+        </div>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -252,6 +273,7 @@
   import { formatsDates } from '~/assets/lib/formatsDates'
   import { formatTime } from '~/assets/lib/formatTime'
   import { confettiFromElement } from '~/assets/lib/confettiFromElement'
+  import { UISeedGenerator } from '~/assets/lib/api/UISeedGenerator'
 
   export default {
     mixins: [formatsDates],
@@ -266,6 +288,7 @@
       refreshTimeoutId: null,
       lurkTimeoutId: null,
       joinButtonLurking: false,
+      trainingSeedDialogOpen: false,
       trainingSeedLoading: false,
       gameHeaders: [
         { text: 'Number', value: 'gameNumber', align: 'center' },
@@ -431,16 +454,30 @@
           this.seasonLinkCopied = false
         }, 3000)
       },
-      async createTrainingSeed() {
+      async launchTrainingSeed() {
         this.trainingSeedLoading = true
 
+        const uiSeedGenerator = new UISeedGenerator(this.$axios)
         const response = await this.$axios.$post(`/league/seasons/${this.leagueSeason.id}/training-seed`)
-        const multiverseId = await this.$axios.$post('/multiverses', {
-          seedId: response.result.seedId,
-        })
-        await this.$router.push({ name: 'game-multiverseId', params: { multiverseId } })
 
+        const seedgenResponse = uiSeedGenerator.getSeedgenResponse(response)
+
+        await seedgenResponse.electronApi.downloadSeed({
+          setTo: true,
+        })
+        await this.$store.dispatch('electron/launch')
+
+        // postponed until multiverse games can be "offline" or seasons are online
+        // const multiverseId = await this.$axios.$post('/multiverses', {
+        //   seedId: response.result.seedId,
+        // })
+        // await this.$router.push({ name: 'game-multiverseId', params: { multiverseId } })
+
+        confettiFromElement(this.$refs.trainingSeedLaunchButton.$el, {
+          startVelocity: 30,
+        })
         this.trainingSeedLoading = false
+        this.trainingSeedDialogOpen = false
       },
     },
   }
@@ -642,5 +679,12 @@
         margin-top: 1em;
       }
     }
+  }
+
+  .launch-icon {
+    height: 2.25em;
+    width: auto;
+    margin-right: 0.5em;
+    margin-left: -0.5em;
   }
 </style>

@@ -101,7 +101,8 @@
             >, it is heavily advised to be part of it to receive pings and reminders for your joined seasons as well as
             being added to spoiler discussion channels after you finished a game.<br />
             Once the season started, games will be created automatically in fixed intervals. You can then play these
-            games whenever you want until they expire and the next game is created or the season is over.
+            games whenever you want until they expire and the next game is created or the season is over.<br />
+            You can also play training seeds to practice or try out the settings of a season.
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel>

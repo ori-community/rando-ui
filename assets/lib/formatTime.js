@@ -13,7 +13,7 @@ export function formatTime(totalSeconds, subSecondDigits = 1, omitMinutesIfZero 
   const seconds = Math.trunc(totalSeconds % 60 * Math.pow(10, subSecondDigits)) / Math.pow(10, subSecondDigits)
 
   const hoursVisible = hours > 0
-  const minutesVisible = minutes > 0 || !omitMinutesIfZero
+  const minutesVisible = hoursVisible || minutes > 0 || !omitMinutesIfZero
 
   const secondsCharacterCount =
     subSecondDigits === 0

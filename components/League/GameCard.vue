@@ -46,7 +46,7 @@
       <div v-if="playableUntil !== null" class="timer d-flex flex-column pa-2">
         <template v-if="typeof countdownTimerTextOrSecondsLeft === 'number'">
           {{ isPending ? 'Time left to finish this game' : 'Next game in' }}<br />
-          <span class="font-weight-bold">{{ formatTime(countdownTimerTextOrSecondsLeft, 0) }}</span>
+          <span class="font-weight-bold">{{ formatTime(countdownTimerTextOrSecondsLeft, 0, true) }}</span>
         </template>
         <template v-else-if="typeof countdownTimerTextOrSecondsLeft === 'string'">
           {{ countdownTimerTextOrSecondsLeft }}

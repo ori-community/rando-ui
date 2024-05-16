@@ -49,7 +49,8 @@
 			"label": "Run UI (Launcher/Windows)",
 			"options": {
 				"env": {
-					"PLATFORM": "win32"
+					"PLATFORM": "win32",
+					"IS_ELECTRON": "true"
 				}
 			},
 			"command": "yarn dev",
@@ -60,7 +61,8 @@
 			"label": "Run UI (Launcher/Linux)",
 			"options": {
 				"env": {
-					"PLATFORM": "linux"
+					"PLATFORM": "linux",
+					"IS_ELECTRON": "true"
 				}
 			},
 			"command": "yarn dev",

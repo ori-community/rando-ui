@@ -96,7 +96,7 @@
             messages="Select the game distribution service depending on which version of the game you have"
           >
             <v-radio label="Steam" :value="false" />
-            <v-radio label="Windows Store" :value="true" />
+            <v-radio label="Microsoft Store" :value="true" />
           </v-radio-group>
 
           <v-text-field

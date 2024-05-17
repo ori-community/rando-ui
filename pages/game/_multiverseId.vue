@@ -42,7 +42,7 @@
                   <img
                     class="launch-icon"
                     :class="{ disabled: !ownWorld }"
-                    src="../../assets/images/launch.png"
+                    src="@/assets/images/launch.png"
                     alt=""
                   />
                   Launch

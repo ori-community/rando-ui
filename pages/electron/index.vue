@@ -87,7 +87,7 @@
             :loading="launching"
             @click="launch()"
           >
-            <img class="launch-icon" src="../../assets/images/launch.png" alt="" />
+            <img class="launch-icon" src="@/assets/images/launch.png" alt="" />
             Launch
           </v-btn>
           <v-card v-if="newGameSeedSource !== null" class="pa-2 text-center top-border-radius-0 current-seed-path">

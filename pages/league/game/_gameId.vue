@@ -15,7 +15,7 @@
             <span><kbd>Ctrl</kbd> + Click to close this window</span>
           </v-tooltip>
           <v-btn v-else-if="!didSubmit && canSubmit" x-large color="accent" :loading="launching" @click="launchGame()">
-            <img class="launch-icon" src="../../../assets/images/launch.png" alt="" />
+            <img class="launch-icon" src="@/assets/images/launch.png" alt="" />
             Launch
           </v-btn>
         </div>

@@ -258,7 +258,7 @@
             @click.native="launchTrainingSeed"
             ref="trainingSeedLaunchButton"
           >
-            <img class="launch-icon" src="../../../assets/images/launch.png" alt="" />Launch</v-btn
+            <img class="launch-icon" src="@/assets/images/launch.png" alt="" />Launch</v-btn
           >
         </div>
       </v-card>

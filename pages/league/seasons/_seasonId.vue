@@ -54,7 +54,9 @@
           </v-tooltip>
         </div>
         <div class="tables-container">
-          <v-card class="overflow-x-auto">
+
+          <!-- LEADERBOARD -->
+          <v-card class="overflow-x-auto leaderboard-container">
             <h2 ref="leaderboardTitle" class="text-center mt-5 mb-5">Leaderboard</h2>
             <throttled-spinner>
               <v-data-table
@@ -126,35 +128,44 @@
               </div>
             </throttled-spinner>
           </v-card>
-          <div class="games-list">
-            <v-card
-              v-if="leagueSeason?.nextContinuationAt && !(leagueSeason.games.length > 0)"
-              class="season-start-container text-center pa-5"
-            >
-              <div class="background-overlay"></div>
-              <div class="gradient-overlay"></div>
-              <div class="starting-date-content">
-                <div>Starting at</div>
-                <span class="starting-date">
-                  {{ formatDateEpoch(leagueSeason?.nextContinuationAt, 'P p') }}
-                </span>
-                <div>
-                  <template v-if="isJoined">Be prepared!</template>
-                  <template v-else>Join the hype!</template>
-                </div>
+
+          <!-- SEASON START -->
+          <v-card
+            v-if="leagueSeason?.nextContinuationAt && !(leagueSeason.games.length > 0)"
+            class="season-start-container text-center pa-5"
+            style="grid-row: 1"
+          >
+            <div class="background-overlay"></div>
+            <div class="gradient-overlay"></div>
+            <div class="starting-date-content">
+              <div>Starting at</div>
+              <span class="starting-date">
+                {{ formatDateEpoch(leagueSeason?.nextContinuationAt, 'P p') }}
+              </span>
+              <div>
+                <template v-if="isJoined">Be prepared!</template>
+                <template v-else>Join the hype!</template>
               </div>
-            </v-card>
-            <league-game-card
-              v-if="currentGame !== null"
-              :game="currentGame"
-              :game-count="leagueSeason.gameCount"
-              :playable-until="leagueSeason.nextContinuationAt"
-              :member-count="leagueSeason.memberships?.length"
-            />
+            </div>
+          </v-card>
+
+          <!-- CURRENT GAME -->
+          <league-game-card
+            v-if="currentGame !== null"
+            style="grid-row: 1"
+            :game="currentGame"
+            :game-count="leagueSeason.gameCount"
+            :playable-until="leagueSeason.nextContinuationAt"
+            :member-count="leagueSeason.memberships?.length"
+          />
+
+          <!-- PAST GAMES -->
+          <div class="games-list">
             <h3
               v-if="pastGames.length > 0 && leagueSeason.currentGameId"
               class="text-center"
               :class="{ 'mt-3': currentGame !== null }"
+              style="grid-row: 2"
             >
               Past Games
             </h3>
@@ -515,8 +526,13 @@
     display: grid;
     align-items: start;
     grid-template-columns: 6fr 5fr;
+    grid-auto-rows: auto max-content;
     grid-auto-flow: column;
     gap: 1em;
+
+    .leaderboard-container {
+      grid-row: span 2;
+    }
 
     @media (max-width: 800px) {
       grid-template-columns: 1fr;

@@ -206,13 +206,14 @@
     .background-image {
       display: block;
       position: absolute;
+      margin: auto;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
       object-fit: cover;
-      width: 100%;
-      height: 100%;
+      width: 13em;
+      height: 13em;
       opacity: 1;
       &:not(.behind) {
         transform: scale(1.8);

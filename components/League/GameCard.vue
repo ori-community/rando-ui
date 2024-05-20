@@ -16,7 +16,7 @@
       />
 
       <div class="card-content pa-4">
-        <img v-if="!season?.backgroundImageUrl" class="background-image" alt="" src="~/assets/images/ori_running.png" />
+        <img v-if="!season?.backgroundImageUrl" class="background-image ori-running" alt="" src="~/assets/images/ori_running.png" />
 
         <div class="game-number-container">
           <div>{{ season !== null ? season.name : 'Game' }}</div>
@@ -212,14 +212,18 @@
       right: 0;
       bottom: 0;
       object-fit: cover;
-      width: 13em;
-      height: 13em;
+      width: 100%;
+      height: 100%;
       opacity: 1;
       &:not(.behind) {
         transform: scale(1.8);
       }
       &.behind {
         z-index: -1;
+      }
+      &.ori-running{
+        width:13em;
+        height: 13em;
       }
     }
 

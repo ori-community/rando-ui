@@ -43,6 +43,17 @@
           label="Enable Minimap"
           messages="Display an in-game minimap overlay"
         />
+        <v-slider
+          v-model="settings['Values.MapPanSpeed']"
+          class="mt-3"
+          min="0.5"
+          max="5"
+          step="0.1"
+          ticks
+          thumb-label
+          label="Map Pan Speed"
+          messages="Sets how fast the map pans on controller or keyboard"
+        />
       </div>
       <div class="mb-8">
         <h3>Miscellaneous</h3>

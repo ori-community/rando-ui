@@ -57,6 +57,7 @@ const getDefaultSettings = () => {
     Values: {
       MapIconTransparency: 0.25,
       CameraShakeIntensity: 1.0,
+      MapPanSpeed: 1.0,
     },
     LocalTracker: {
       X: localTrackerInitialWindowRect.x,

@@ -123,20 +123,9 @@
               </li>
             </ul>
 
-            <h3>Example:</h3>
-            The season in this example uses <span class="text-decoration-underline">10 Base Points</span>,
-            <span class="text-decoration-underline">190 Speed Points</span> and a
-            <span class="text-decoration-underline">Speed Factor of 2.0</span>. The fastest player has a time of
-            <span class="text-decoration-underline">01:00:00</span>.<br />
-            If you finish with a time of 01:30:00, you are awarded 105 points in total:
-
-            <ul>
-              <li>10 Base Points for finishing</li>
-              <li>
-                95 Speed Points for speed (fastest time = all Speed Points, fastest time * Speed Factor = no Speed
-                Points, 190 * 0.5 = 95)
-              </li>
-            </ul>
+            The fastest time gets full Speed Points, fastest time * Speed Factor gets no Speed Points.
+            Times that are in between these two will get points based on where in the range the final
+            time was. The distribution of points is not necessarily linear.
           </v-expansion-panel-content>
         </v-expansion-panel>
         <v-expansion-panel>

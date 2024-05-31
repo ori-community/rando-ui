@@ -5,16 +5,19 @@
         <v-icon>mdi-home-outline</v-icon>
       </v-btn>
       <v-btn key="seedgen" x-large depressed text to="/seedgen">
-        <v-icon left>mdi-dice-multiple</v-icon>
-        Seed Generator
+        <v-icon class="main-button-icon">mdi-dice-multiple</v-icon>
+        <v-icon class="main-button-icon-left" left>mdi-dice-multiple</v-icon>
+        <span class="main-button-text"> Seed Generator </span>
       </v-btn>
       <v-btn key="league" x-large depressed text to="/league/seasons">
-        <v-icon left>mdi-trophy</v-icon>
-        League
+        <v-icon class="main-button-icon">mdi-trophy</v-icon>
+        <v-icon class="main-button-icon-left" left>mdi-trophy</v-icon>
+        <span class="main-button-text"> League </span>
       </v-btn>
       <v-btn v-if="isLoggedIn" key="my-games" exact x-large depressed text :to="{ name: 'my-games' }">
-        <v-icon left>mdi-gamepad-variant-outline</v-icon>
-        My Games
+        <v-icon class="main-button-icon">mdi-gamepad-variant-outline</v-icon>
+        <v-icon class="main-button-icon-left" left>mdi-gamepad-variant-outline</v-icon>
+        <span class="main-button-text"> My Games </span>
       </v-btn>
       <template v-if="isElectron">
         <v-btn v-if="randoIpcConnected" key="stats" x-large depressed text @click="showStats">
@@ -41,7 +44,10 @@
               x-large
               depressed
               text
-              @click="remoteTrackerSettings.remote = isLoggedIn; showRemoteTrackerDialog = true"
+              @click="
+                remoteTrackerSettings.remote = isLoggedIn
+                showRemoteTrackerDialog = true
+              "
             >
               <v-icon left :disabled="!localTrackerRunning"> mdi-leak </v-icon>
               Create Web Tracker
@@ -345,5 +351,24 @@
   .flex-gap {
     display: flex;
     gap: 0.2em;
+  }
+
+  .main-button-icon {
+    display: none;
+  }
+  .main-button-icon-left {
+    display: inherit;
+  }
+
+  @media (max-width: 1100px) {
+    .main-button-text {
+      display: none;
+    }
+    .main-button-icon {
+      display: inherit;
+    }
+    .main-button-icon-left {
+      display: none;
+    }
   }
 </style>

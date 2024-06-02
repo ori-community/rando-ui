@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <h1 class="text-center mt-12 mb-2">Randomizer League</h1>
-    <div class="mb-12 text-center">
+    <div class="mb-6 text-center">
       Welcome to the Randomizer League.<br />
       Pick a season and start gaming!
     </div>
@@ -12,58 +12,64 @@
       </v-btn>
     </div>
 
-    <template v-if="pendingGames.length > 0">
-      <h2 class="mt-5 mb-2">Your Pending Games</h2>
+    <throttled-spinner>
+      <div v-if="pendingGames.length > 0" class="pt-2">
+        <h2 class="mb-2">Your Pending Games</h2>
 
-      <div class="seasons-container">
-        <league-game-card
-          v-for="pendingGame in pendingGames"
-          :key="pendingGame.game.id"
-          :game="pendingGame.game"
-          :season="pendingGame.season"
-          :game-count="pendingGame.season.gameCount"
-          :playable-until="pendingGame.season.nextContinuationAt"
-          :member-count="pendingGame.season.memberships?.length"
-        />
+        <div class="seasons-container">
+          <league-game-card
+            v-for="pendingGame in pendingGames"
+            :key="pendingGame.game.id"
+            :game="pendingGame.game"
+            :season="pendingGame.season"
+            :game-count="pendingGame.season.gameCount"
+            :playable-until="pendingGame.season.nextContinuationAt"
+            :member-count="pendingGame.season.memberships?.length"
+          />
+        </div>
       </div>
-    </template>
+    </throttled-spinner>
 
-    <template v-if="categorizedSeasons.active.length > 0 || categorizedSeasons.upcoming.length > 0">
-      <h2 class="mt-5 mb-2">
-        <template v-if="categorizedSeasons.active.length > 0 && categorizedSeasons.upcoming.length > 0">Active & Upcoming Seasons</template>
-        <template v-else-if="categorizedSeasons.active.length > 0">Active Seasons</template>
-        <template v-else>Upcoming Seasons</template>
-      </h2>
+    <throttled-spinner>
+      <div v-if="!seasonsLoading" class="pt-6">
+        <div v-if="categorizedSeasons.active.length > 0 || categorizedSeasons.upcoming.length > 0">
+          <h2 class="mb-2">
+            <template v-if="categorizedSeasons.active.length > 0 && categorizedSeasons.upcoming.length > 0">Active & Upcoming Seasons</template>
+            <template v-else-if="categorizedSeasons.active.length > 0">Active Seasons</template>
+            <template v-else>Upcoming Seasons</template>
+          </h2>
 
-      <div class="seasons-container">
-        <league-season-card
-          v-for="season in categorizedSeasons.active"
-          :key="season.id"
-          :season="season"
-          mode="active"
-          :joined="userIsMemberOfSeason(season)"
-        />
-        <league-season-card
-          v-for="season in categorizedSeasons.upcoming"
-          :key="season.id"
-          :season="season"
-          mode="upcoming"
-          :joined="userIsMemberOfSeason(season)"
-        />
+          <div class="seasons-container">
+            <league-season-card
+              v-for="season in categorizedSeasons.active"
+              :key="season.id"
+              :season="season"
+              mode="active"
+              :joined="userIsMemberOfSeason(season)"
+            />
+            <league-season-card
+              v-for="season in categorizedSeasons.upcoming"
+              :key="season.id"
+              :season="season"
+              mode="upcoming"
+              :joined="userIsMemberOfSeason(season)"
+            />
+          </div>
+        </div>
+
+        <div v-if="categorizedSeasons.past.length > 0" class="past-seasons">
+          <h2 class="mt-5 mb-2">Past Seasons</h2>
+          <div class="seasons-container">
+            <league-season-card
+              v-for="season in categorizedSeasons.past"
+              :key="season.id"
+              :season="season"
+              :joined="userIsMemberOfSeason(season)"
+            />
+          </div>
+        </div>
       </div>
-    </template>
-
-    <div v-if="categorizedSeasons.past.length > 0" class="past-seasons">
-      <h2 class="mt-5 mb-2">Past Seasons</h2>
-      <div class="seasons-container">
-        <league-season-card
-          v-for="season in categorizedSeasons.past"
-          :key="season.id"
-          :season="season"
-          :joined="userIsMemberOfSeason(season)"
-        />
-      </div>
-    </div>
+    </throttled-spinner>
 
     <v-dialog v-model="showLeagueInfo" max-width="800" content-class="elevation-0 pr-2">
       <v-expansion-panels multiple :value="[0]">
@@ -207,13 +213,9 @@
         this.seasonsLoading = true
 
         try {
-          this.leagueSeasons = await this.$axios.$get('/league/seasons')
+          const pendingSeasons = await this.$axios.$get('/league/seasons/pending')
 
-          this.pendingGames = this.leagueSeasons.flatMap(season => {
-            if (!this.userIsMemberOfSeason(season)) {
-              return []
-            }
-
+          this.pendingGames = pendingSeasons.flatMap(season => {
             const currentGame = season.games.find(g => g.id === season.currentGameId)
             if (currentGame?.userMetadata?.ownSubmission === null) {
               return [{game: currentGame, season}]
@@ -221,6 +223,8 @@
 
             return []
           })
+
+          this.leagueSeasons = await this.$axios.$get('/league/seasons')
         } catch (e) {
           console.error(e)
         }

@@ -1,5 +1,5 @@
 <template>
-  <v-card class="season-card" :to="{ name: 'league-seasons-seasonId', params: { seasonId: season.id } }">
+  <v-card class="season-card" :flat="flat" :to="{ name: 'league-seasons-seasonId', params: { seasonId: season.id } }">
     <img v-if="!!season.backgroundImageUrl" class="background-image" alt="" :src="season.backgroundImageUrl" />
 
     <div class="gradient-overlay"></div>
@@ -49,6 +49,10 @@
         default: MODE_DEFAULT,
       },
       joined: {
+        type: Boolean,
+        default: false,
+      },
+      flat: {
         type: Boolean,
         default: false,
       },

@@ -13,16 +13,29 @@
         </template>
         <template v-else>
           <v-scroll-x-transition>
-            <v-card v-if="!!motd" class="mb-6 motd" color="background lighten-2">
-              <v-card-text class="motd-text">
-                <div v-html="motd" />
-              </v-card-text>
-              <img class="motd-ori" alt="" src="~/assets/images/ori_lurk.png" />
-            </v-card>
+            <div v-if="upcomingLeagueSeasons !== null && upcomingLeagueSeasons.length > 0" class="mb-6 upcoming-seasons" color="background lighten-2">
+              <div>
+                <h2 class="d-inline-block mb-3">Upcoming League Seasons</h2>
+                <nuxt-link class="pl-3 pt-2 learn-more text-decoration-none" to="/league/seasons">Learn more</nuxt-link>
+              </div>
+
+              <div class="seasons-container">
+                <league-season-card
+                  v-for="season in upcomingLeagueSeasons"
+                  :key="season.id"
+                  :season="season"
+                  mode="upcoming"
+                  flat
+                  :joined="season.memberships?.some((m) => m.user.id === user?.id)"
+                />
+              </div>
+
+              <v-divider class="mt-6" />
+            </div>
           </v-scroll-x-transition>
 
           <v-scroll-x-transition>
-            <div v-if="!!motd && !!visibleReleases">
+            <div v-if="upcomingLeagueSeasons !== null && !!visibleReleases">
               <v-card v-for="release in visibleReleases" :key="release.id" class="release mb-2">
                 <v-card-title class="d-block">
                   Version {{ release.name }}
@@ -153,7 +166,6 @@
 
 <script>
   import { mapGetters, mapMutations, mapState } from 'vuex'
-  import { parse } from 'date-fns'
   import { formatsDates } from '~/assets/lib/formatsDates'
   import { getOS, isOS, Platform } from '~/assets/lib/os'
 
@@ -161,8 +173,8 @@
     name: 'Index',
     mixins: [formatsDates],
     data: () => ({
-      motd: '',
       supportBundleLoading: false,
+      upcomingLeagueSeasons: null,
     }),
     head: () => ({
       title: 'Home',
@@ -187,28 +199,6 @@
       ...mapGetters('electron', ['updateAvailable', 'newGameSeedSourceDisplayString', 'isNewVersion']),
       ...mapGetters('version', ['latestVisibleVersion', 'visibleReleases']),
     },
-    watch: {
-      currentVersion: {
-        immediate: true,
-        // eslint-disable-next-line
-        async handler(version) {
-          if (version) {
-            this.motd = (
-              await this.$axios.$get(`${process.env.UPDATE_PROXY_URL}/motd/wotw`, {
-                params: {
-                  version,
-                },
-              })
-            )
-              .motd
-              .replaceAll(/#(\d+:\d+)#/g, (_substring, utcTime) => {
-                const time = parse(`${utcTime}+00`, 'HH:mmx', new Date())
-                return this.formatDateObject(time, 'p')
-              })
-          }
-        },
-      },
-    },
     async mounted() {
       // We might already have a seed path from launching...
       if (this.newGameSeedSource === null) {
@@ -216,6 +206,13 @@
           'electron/setNewGameSeedSource',
           await window.electronApi.invoke('launcher.getNewGameSeedSource'),
         )
+      }
+
+      try {
+        this.upcomingLeagueSeasons = await this.$axios.$get('/league/seasons/upcoming')
+      } catch (e) {
+        this.upcomingLeagueSeasons = []
+        console.error(e)
       }
     },
     methods: {
@@ -297,23 +294,8 @@
     }
   }
 
-  .motd {
+  .upcoming-seasons {
     position: relative;
-
-    .motd-text {
-      padding-right: 64px;
-    }
-
-    .motd-ori {
-      height: 64px;
-      width: 64px;
-      position: absolute;
-      opacity: 0.5;
-      pointer-events: none;
-      transform: translateY(8%);
-      bottom: 0;
-      right: 0;
-    }
   }
 
   .top-border-radius-0 {
@@ -373,5 +355,23 @@
         transform: translateX(0);
       }
     }
+  }
+
+  .upcoming-seasons {
+    .learn-more {
+      opacity: 0.5;
+      transition: opacity 200ms;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  .seasons-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-auto-rows: 1fr;
+    gap: 0.75em;
   }
 </style>

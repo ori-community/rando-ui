@@ -8,7 +8,7 @@
       :to="{ name: 'league-game-gameId', params: { gameId: game.id } }"
     >
       <div class="gradient-overlay" :class="{ extreme: !!season?.backgroundImageUrl }"></div>
-      <img
+      <v-img
         v-if="!!season?.backgroundImageUrl"
         class="background-image behind"
         alt=""

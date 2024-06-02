@@ -1,6 +1,6 @@
 <template>
   <v-card class="season-card" :flat="flat" :to="{ name: 'league-seasons-seasonId', params: { seasonId: season.id } }">
-    <img v-if="!!season.backgroundImageUrl" class="background-image" alt="" :src="season.backgroundImageUrl" />
+    <v-img v-if="!!season.backgroundImageUrl" class="background-image" alt="" :src="season.backgroundImageUrl" />
 
     <div class="gradient-overlay"></div>
 

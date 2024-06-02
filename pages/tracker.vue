@@ -229,6 +229,7 @@
                 this.inGameTime = packet.inGameTime
                 this.asyncLoadingTime = packet.asyncLoadingTime
                 this.timerShouldRun = packet.timerShouldRun
+                this.receivedPacket = true
                 break
               case ResetTracker.$type:
                 this.trackedValues = {}

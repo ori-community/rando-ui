@@ -26,7 +26,7 @@
                   :season="season"
                   mode="upcoming"
                   flat
-                  :joined="season.memberships?.some((m) => m.user.id === user?.id)"
+                  :joined-tag="season.memberships?.some((m) => m.user.id === user?.id)"
                 />
               </div>
 

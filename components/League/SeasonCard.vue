@@ -5,8 +5,8 @@
     <div class="gradient-overlay"></div>
 
     <div class="card-tags">
-      <div v-if="mode === MODE_UPCOMING" class="px-2 blue darken-1">Upcoming</div>
-      <div v-if="joined" class="px-2 accent"><v-icon x-small>mdi-check</v-icon> Joined</div>
+      <div v-if="upcomingTag" class="px-2 blue darken-1">Upcoming</div>
+      <div v-if="joinedTag" class="px-2 accent"><v-icon x-small>mdi-check</v-icon> Joined</div>
     </div>
 
     <div class="card-content pa-4">
@@ -48,7 +48,11 @@
         type: String,
         default: MODE_DEFAULT,
       },
-      joined: {
+      joinedTag: {
+        type: Boolean,
+        default: false,
+      },
+      upcomingTag: {
         type: Boolean,
         default: false,
       },

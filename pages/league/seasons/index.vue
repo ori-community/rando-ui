@@ -47,14 +47,15 @@
               :key="season.id"
               :season="season"
               mode="active"
-              :joined="userIsMemberOfSeason(season)"
+              :joined-tag="userIsMemberOfSeason(season)"
             />
             <league-season-card
               v-for="season in categorizedSeasons.upcoming"
               :key="season.id"
               :season="season"
               mode="upcoming"
-              :joined="userIsMemberOfSeason(season)"
+              upcoming-tag
+              :joined-tag="userIsMemberOfSeason(season)"
             />
           </div>
         </div>
@@ -66,7 +67,7 @@
               v-for="season in categorizedSeasons.past"
               :key="season.id"
               :season="season"
-              :joined="userIsMemberOfSeason(season)"
+              :joined-tag="userIsMemberOfSeason(season)"
             />
           </div>
         </div>

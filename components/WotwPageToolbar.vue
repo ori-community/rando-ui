@@ -52,10 +52,12 @@
               <v-icon left :disabled="!localTrackerRunning"> mdi-leak </v-icon>
               Create Web Tracker
             </v-list-item>
-            <v-list-item x-large depressed text @click="openChatControl">
+            <!--
+            <v-list-item x-large depressed disabled text @click="openChatControl">
               <v-icon left>mdi-message-flash-outline</v-icon>
               Chat Control
             </v-list-item>
+            -->
             <v-list-item
               v-if="settingsLoaded && settings['Flags.Dev']"
               exact

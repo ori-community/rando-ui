@@ -207,32 +207,38 @@
         return value
       },
     },
+    watch: {
+      isLoggedIn: {
+        immediate: true,
+        async handler(isLoggedIn) {
+          if (isLoggedIn) {
+            try {
+              const pendingSeasons = await this.$axios.$get('/league/seasons/pending')
+
+              this.pendingGames = pendingSeasons.flatMap(season => {
+                const currentGame = season.games.find(g => g.id === season.currentGameId)
+                if (currentGame?.userMetadata?.ownSubmission === null) {
+                  return [{game: currentGame, season}]
+                }
+
+                return []
+              })
+            } catch (e) {
+              this.pendingGames = []
+              console.error(e)
+            }
+          } else {
+            this.pendingGames = []
+          }
+        },
+      }
+    },
     mounted() {
       this.loadSeasons()
     },
     methods: {
       async loadSeasons() {
         this.seasonsLoading = true
-
-        if (this.isLoggedIn) {
-          try {
-            const pendingSeasons = await this.$axios.$get('/league/seasons/pending')
-
-            this.pendingGames = pendingSeasons.flatMap(season => {
-              const currentGame = season.games.find(g => g.id === season.currentGameId)
-              if (currentGame?.userMetadata?.ownSubmission === null) {
-                return [{game: currentGame, season}]
-              }
-
-              return []
-            })
-          } catch (e) {
-            this.pendingGames = []
-            console.error(e)
-          }
-        } else {
-          this.pendingGames = []
-        }
 
         try {
           this.leagueSeasons = await this.$axios.$get('/league/seasons')

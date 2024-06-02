@@ -13,19 +13,21 @@
     </div>
 
     <throttled-spinner>
-      <div v-if="pendingGames.length > 0" class="pt-2">
-        <h2 class="mb-2">Your Pending Games</h2>
+      <div v-if="pendingGames !== null">
+        <div v-if="pendingGames.length > 0" class="pt-2">
+          <h2 class="mb-2">Your Pending Games</h2>
 
-        <div class="seasons-container">
-          <league-game-card
-            v-for="pendingGame in pendingGames"
-            :key="pendingGame.game.id"
-            :game="pendingGame.game"
-            :season="pendingGame.season"
-            :game-count="pendingGame.season.gameCount"
-            :playable-until="pendingGame.season.nextContinuationAt"
-            :member-count="pendingGame.season.memberships?.length"
-          />
+          <div class="seasons-container">
+            <league-game-card
+              v-for="pendingGame in pendingGames"
+              :key="pendingGame.game.id"
+              :game="pendingGame.game"
+              :season="pendingGame.season"
+              :game-count="pendingGame.season.gameCount"
+              :playable-until="pendingGame.season.nextContinuationAt"
+              :member-count="pendingGame.season.memberships?.length"
+            />
+          </div>
         </div>
       </div>
     </throttled-spinner>
@@ -172,7 +174,7 @@
     data: () => ({
       seasonsLoading: false,
       leagueSeasons: [],
-      pendingGames: [],
+      pendingGames: null,
       showLeagueInfo: false,
       leagueDiscordChannelUrl: 'https://discord.gg/kXuZSAuxZt',
     }),
@@ -212,18 +214,27 @@
       async loadSeasons() {
         this.seasonsLoading = true
 
+        if (this.isLoggedIn) {
+          try {
+            const pendingSeasons = await this.$axios.$get('/league/seasons/pending')
+
+            this.pendingGames = pendingSeasons.flatMap(season => {
+              const currentGame = season.games.find(g => g.id === season.currentGameId)
+              if (currentGame?.userMetadata?.ownSubmission === null) {
+                return [{game: currentGame, season}]
+              }
+
+              return []
+            })
+          } catch (e) {
+            this.pendingGames = []
+            console.error(e)
+          }
+        } else {
+          this.pendingGames = []
+        }
+
         try {
-          const pendingSeasons = await this.$axios.$get('/league/seasons/pending')
-
-          this.pendingGames = pendingSeasons.flatMap(season => {
-            const currentGame = season.games.find(g => g.id === season.currentGameId)
-            if (currentGame?.userMetadata?.ownSubmission === null) {
-              return [{game: currentGame, season}]
-            }
-
-            return []
-          })
-
           this.leagueSeasons = await this.$axios.$get('/league/seasons')
         } catch (e) {
           console.error(e)

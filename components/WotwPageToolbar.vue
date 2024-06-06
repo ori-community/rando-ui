@@ -10,9 +10,13 @@
         <span class="main-button-text"> Seed Generator </span>
       </v-btn>
       <v-btn key="league" x-large depressed text to="/league/seasons">
-        <v-icon class="main-button-icon">mdi-trophy</v-icon>
-        <v-icon class="main-button-icon-left" left>mdi-trophy</v-icon>
-        <span class="main-button-text"> League </span>
+        <v-badge :value="pendingGamesCount > 0" class="d-flex" :content="pendingGamesCount" color="red">
+          <v-icon class="main-button-icon">mdi-trophy</v-icon>
+          <v-icon class="main-button-icon-left" left>mdi-trophy</v-icon>
+          <span class="main-button-text">
+            League
+          </span>
+        </v-badge>
       </v-btn>
       <v-btn v-if="isLoggedIn" key="my-games" exact x-large depressed text :to="{ name: 'my-games' }">
         <v-icon class="main-button-icon">mdi-gamepad-variant-outline</v-icon>
@@ -203,10 +207,12 @@
         willowHearts: true,
         hideHeartsUntilFirstHeart: true,
       },
+      updatedPendingLeagueGamesOnce: false,
     }),
     computed: {
       ...mapGetters('user', ['isLoggedIn', 'isDeveloper']),
       ...mapState('user', ['user', 'userLoaded']),
+      ...mapGetters('league', ['pendingGamesCount']),
       ...mapState('dev', ['devtoolsEnabled']),
       ...mapState('electron', ['localTrackerRunning', 'settings', 'settingsLoaded', 'randoIpcConnected']),
       isElectron,
@@ -220,6 +226,21 @@
       randomGreeting() {
         const greetings = ['Hi', 'Hello', 'Hey', 'Hiya', 'Yo', 'Ahoy', 'Howdy', 'oriHi']
         return greetings[Math.floor(Math.random() * greetings.length)]
+      },
+    },
+    watch: {
+      isLoggedIn: {
+        immediate: true,
+        async handler(value) {
+          if (value) {
+            if (!this.updatedPendingLeagueGamesOnce) {
+              this.updatedPendingLeagueGamesOnce = true
+              await this.$store.dispatch('league/updatePendingGames')
+            }
+          } else {
+            this.updatedPendingLeagueGamesOnce = false
+          }
+        },
       },
     },
     methods: {

@@ -175,7 +175,6 @@
     data: () => ({
       seasonsLoading: false,
       leagueSeasons: [],
-      pendingGames: null,
       showLeagueInfo: false,
       leagueDiscordChannelUrl: 'https://discord.gg/kXuZSAuxZt',
     }),
@@ -187,6 +186,7 @@
     computed: {
       isElectron,
       ...mapState('user', ['user']),
+      ...mapState('league', ['pendingGames']),
       ...mapGetters('user', ['isLoggedIn', 'isDeveloper']),
       categorizedSeasons() {
         const value = {
@@ -211,26 +211,8 @@
     watch: {
       isLoggedIn: {
         immediate: true,
-        async handler(isLoggedIn) {
-          if (isLoggedIn) {
-            try {
-              const pendingSeasons = await this.$axios.$get('/league/seasons/pending')
-
-              this.pendingGames = pendingSeasons.flatMap(season => {
-                const currentGame = season.games.find(g => g.id === season.currentGameId)
-                if (currentGame?.userMetadata?.ownSubmission === null) {
-                  return [{game: currentGame, season}]
-                }
-
-                return []
-              })
-            } catch (e) {
-              this.pendingGames = []
-              console.error(e)
-            }
-          } else {
-            this.pendingGames = []
-          }
+        async handler() {
+          await this.$store.dispatch('league/updatePendingGames')
         },
       }
     },

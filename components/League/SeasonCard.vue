@@ -2,6 +2,10 @@
   <v-card class="season-card" :flat="flat" :to="{ name: 'league-seasons-seasonId', params: { seasonId: season.id } }">
     <v-img v-if="!!season.backgroundImageUrl" class="background-image" alt="" :src="season.backgroundImageUrl" />
 
+    <div v-if="joinedOverlay" class="joined-overlay">
+      <v-icon size="96">mdi-check</v-icon>
+    </div>
+
     <div class="gradient-overlay"></div>
 
     <div class="card-tags">
@@ -48,6 +52,10 @@
         type: String,
         default: MODE_DEFAULT,
       },
+      joinedOverlay: {
+        type: Boolean,
+        default: false,
+      },
       joinedTag: {
         type: Boolean,
         default: false,
@@ -92,8 +100,34 @@
     border: 1px solid rgba(255, 255, 255, 0.08);
     will-change: transform;
 
+    .joined-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: black;
+      z-index: 5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0.6;
+      pointer-events: none;
+      transition: opacity 300ms;
+      mix-blend-mode: multiply;
+      backdrop-filter: brightness(5) saturate(6) blur(10px);
+
+      > * {
+        opacity: 1;
+      }
+    }
+
     &:hover {
       transform: scale(1.02);
+
+      .joined-overlay {
+        opacity: 0;
+      }
     }
 
     .background-image {

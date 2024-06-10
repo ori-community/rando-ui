@@ -262,6 +262,7 @@
       if (this.isElectron) {
         window.electronApi.on('league.runSubmitted', () => {
           this.loadGame()
+          this.$store.dispatch('league/updatePendingGames')
         })
       }
     },

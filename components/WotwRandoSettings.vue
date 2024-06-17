@@ -182,6 +182,11 @@
           label="Disable Autoaim"
           messages="Disables Autoaiming for Spike, Bow and Shuriken"
         />
+        <v-checkbox
+          v-model="settings['Flags.NativeControllerSupportEnabled']"
+          label="Enable Native Controller Support"
+          messages="Enables native support for many non-Xbox controllers. Disable this if you have issues."
+        />
       </div>
       <div class="mb-8">
         <h3>Tracker</h3>

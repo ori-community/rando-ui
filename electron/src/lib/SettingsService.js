@@ -53,6 +53,7 @@ const getDefaultSettings = () => {
       SelectInLogicFilterByDefault: true,
       Insecure: false,
       EnableMinimap: false,
+      NativeControllerSupportEnabled: true,
     },
     Values: {
       MapIconTransparency: 0.25,

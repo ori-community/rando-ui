@@ -8,7 +8,7 @@ import { uiIpc } from '~/electron/src/api'
 import { isProcessRunning } from '~/electron/src/lib/isProcessRunning'
 import { LocalTrackerService } from '@/lib/LocalTrackerService'
 import { getOS, isOS, Platform } from '~/assets/lib/os'
-import { WineService } from '@/lib/linux/WineService'
+import { BottlesService } from '@/lib/linux/BottlesService'
 
 
 const waitForProcess = (processName, maxTries = 20) => new Promise((resolve, reject) => {
@@ -173,10 +173,9 @@ export class LauncherService {
       }
 
     } else {
-      await WineService.checkEnvironment()
-      await WineService.checkAndPreparePrefix()
-      await WineService.launchGameAndDetach()
-      await WineService.launchInjector()
+      await BottlesService.checkEnvironment()
+      const bottleName = await BottlesService.getPreparedBottleName()
+      await BottlesService.launchGameAndDetach(bottleName)
     }
   }
 }

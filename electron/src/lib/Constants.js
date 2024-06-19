@@ -10,4 +10,3 @@ export const SETTINGS_PATH = path.resolve(RANDOMIZER_BASE_PATH, './settings.json
 export const NEW_GAME_SEED_SOURCE_FILE = path.resolve(RANDOMIZER_BASE_PATH, './.newgameseedsource')
 export const LAST_VERSION_FILE = path.resolve(RANDOMIZER_BASE_PATH, './LAST_VERSION')
 export const AUTH_BASE_PATH = path.resolve(RANDOMIZER_BASE_PATH, './auth')
-export const DXVK_CACHE_DIR = path.resolve(LAUNCHER_WORKING_DIR, './dxvk-cache')

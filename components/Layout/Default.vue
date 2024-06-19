@@ -76,6 +76,13 @@
             })
           })
 
+          window.electronApi.on('main.notification', (_event, e) => {
+            EventBus.$emit('notification', {
+              message: String(e),
+              color: 'accent',
+            })
+          })
+
           window.electronApi.on('main.openSeed', (_event, seedFile) => {
             this.$store.dispatch('electron/launch', {
               newGameSeedSource: `file:${seedFile}`,

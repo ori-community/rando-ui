@@ -47,7 +47,6 @@ export class BottlesService {
 
     const newBottleName = 'Ori and the Will of the Wisps Randomizer'
 
-    await execa('flatpak', ['override', '--user', 'com.usebottles.bottles', `--filesystem=${fs.realpathSync('.')}`])
     await execa('flatpak', ['run', '--command=bottles-cli', 'com.usebottles.bottles', '-j', 'new', '--bottle-name', newBottleName, '--environment', 'gaming'])
     await execa('flatpak', ['run', '--command=bottles-cli', 'com.usebottles.bottles', '-j', 'edit', '-b', newBottleName, '--env-var', 'RANDO_LAUNCHER_CREATED=TRUE'])
     await execa('flatpak', ['run', '--command=bottles-cli', 'com.usebottles.bottles', '-j', 'edit', '-b', newBottleName, '--env-var', 'WINEDLLOVERRIDES=winhttp.dll=n,b'])
@@ -61,7 +60,12 @@ export class BottlesService {
   }
 
   static async launchGameAndDetach(bottleName: string) {
-    execa('flatpak', ['run', '--command=bottles-cli', 'com.usebottles.bottles', '-j', 'run', '-b', bottleName, '-e', fs.realpathSync(await this.getGameBinaryPath()), '--', '-m', fs.realpathSync(RANDOMIZER_BASE_PATH)], {
+    const gameBinaryPath = await this.getGameBinaryPath()
+
+    await execa('flatpak', ['override', '--user', 'com.usebottles.bottles', `--filesystem=${fs.realpathSync('.')}`])
+    await execa('flatpak', ['override', '--user', 'com.usebottles.bottles', `--filesystem=${fs.realpathSync(path.dirname(gameBinaryPath))}`])
+
+    execa('flatpak', ['run', '--command=bottles-cli', 'com.usebottles.bottles', '-j', 'run', '-b', bottleName, '-e', fs.realpathSync(gameBinaryPath), '--', '-m', fs.realpathSync(RANDOMIZER_BASE_PATH)], {
       detached: true,
       stdio: 'ignore',
     }).unref()

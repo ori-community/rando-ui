@@ -28,7 +28,6 @@
       </div>
 
       <div class="mb-4 d-flex flex-wrap gapped justify-center">
-
         <v-menu offset-y>
           <template #activator='{on, attrs}'>
             <v-btn color="accent" x-large :loading="!latestRandoWindowsUrl || !latestRandoLinuxUrl" v-bind='attrs' v-on='on'>
@@ -51,7 +50,6 @@
           <v-icon left>mdi-dice-multiple</v-icon>
           Generate a seed
         </v-btn>
-        <wotw-new-game-menu x-large outlined />
         <v-btn x-large outlined text href="https://wiki.orirando.com">
           <v-icon left>mdi-book-outline</v-icon>
           Wiki

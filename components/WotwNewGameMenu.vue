@@ -106,13 +106,6 @@
                 },
               })
               break
-            case 'infection':
-              multiverseId = await this.$axios.$post('/multiverses', {
-                infectionConfig: {
-                  playerRevealIntervalIncreasePerSeeker: 10,
-                },
-              })
-              break
             default:
               throw new Error(`Invalid game type: ${type}`)
           }

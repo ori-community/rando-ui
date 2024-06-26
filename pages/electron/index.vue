@@ -107,10 +107,6 @@
             {{ newGameSeedSourceDisplayString }}
           </v-card>
 
-          <div class="text-center mt-5">
-            <wotw-new-game-menu block />
-          </div>
-
           <v-btn text block class="mt-3" @click="openWiki">
             <v-icon left>mdi-book-outline</v-icon>
             Read the Wiki

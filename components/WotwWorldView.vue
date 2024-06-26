@@ -31,7 +31,7 @@
             <span v-if="hasMultiplePlayers && hasOwnProperty(playerFinishedTimes, membership.id)" class="finished-time" :class="{forfeited: playerFinishedTimes[membership.id] === 0.0}" title="Finished time">{{
               playerFinishedTimes[membership.id] !== 0.0 ? formatTime(playerFinishedTimes[membership.id]) : 'DNF'
             }}</span>
-            <span v-else-if="raceStartingAt > 0 && hasOwnProperty(playerInGameTimes, membership.id)" class="loading-time" title="Loading time">{{
+            <span v-else-if="raceStartingAt > 0 && hasOwnProperty(playerInGameTimes, membership.id) && !hasOwnProperty(playerFinishedTimes, membership.id)" class="loading-time" title="Loading time">{{
               formatTime(playerInGameTimes[membership.id] - (now() - raceStartingAt) / 1000.0, 1, false, true)
             }}</span>
           </div>

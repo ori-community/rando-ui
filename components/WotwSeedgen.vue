@@ -298,7 +298,7 @@
          *
          * - Launch: If one world and Electron
          * - Download: If one world and Web
-         * - Play Co-op: If one world and logged in
+         * - Play Online: If one world and logged in
          * - Play Multiworld: If 2+ worlds and logged in
          * - Play Bingo: Any world count and logged in. Ask for board size, lockout, discovery and full clear/lines/CanvasRenderingContext2DSettings
          */
@@ -350,11 +350,11 @@
           }
 
           actions.push({
-            id: 'play_coop',
-            label: 'Play Co-op',
+            id: 'play_online',
+            label: 'Play Online',
             icon: 'mdi-account-multiple-outline',
             hint: this.isLoggedIn
-              ? 'Play online co-op with friends.\nAll items are shared.\nYou can optionally race other teams.'
+              ? 'Play online co-op with and/or race against friends.\nAll items are shared in a Universe.'
               : 'You must be logged in to play online games.',
             disabled: !this.isLoggedIn,
             handler: async () => {

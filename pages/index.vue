@@ -28,10 +28,25 @@
       </div>
 
       <div class="mb-4 d-flex flex-wrap gapped justify-center">
-        <v-btn color="accent" x-large :loading="!latestRandoExeUrl" :href="latestRandoExeUrl">
-          <v-icon left>mdi-download</v-icon>
-          Download
-        </v-btn>
+
+        <v-menu offset-y>
+          <template #activator='{on, attrs}'>
+            <v-btn color="accent" x-large :loading="!latestRandoWindowsUrl || !latestRandoLinuxUrl" v-bind='attrs' v-on='on'>
+              <v-icon left>mdi-download</v-icon>
+              Download
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item :disabled="!latestRandoWindowsUrl" :href="latestRandoWindowsUrl">
+              <v-icon left>$si-windows</v-icon>
+              Windows Installer (.exe)
+            </v-list-item>
+            <v-list-item :disabled="!latestRandoLinuxUrl" :href="latestRandoLinuxUrl">
+              <v-icon left>$si-linux</v-icon>
+              Linux Package (.tar.gz)
+            </v-list-item>
+          </v-list>
+        </v-menu>
         <v-btn outlined x-large text to="/seedgen">
           <v-icon left>mdi-dice-multiple</v-icon>
           Generate a seed
@@ -51,15 +66,18 @@
 
   export default {
     name: 'Index',
-    data: () => ({
-      latestRandoExeUrl: '',
-    }),
+    components: {},
     computed: {
-      ...mapGetters('version', ['latestAvailableReleaseExe']),
+      ...mapGetters('version', ['latestAvailableReleaseWindowsDownload', 'latestAvailableReleaseLinuxDownload']),
+      latestRandoWindowsUrl() {
+        return this.latestAvailableReleaseWindowsDownload?.browser_download_url
+      },
+      latestRandoLinuxUrl() {
+        return this.latestAvailableReleaseLinuxDownload?.browser_download_url
+      },
     },
     async mounted() {
       await this.$store.dispatch('version/updateAvailableReleases')
-      this.latestRandoExeUrl = this.latestAvailableReleaseExe?.browser_download_url
     },
   }
 </script>

@@ -165,7 +165,7 @@ export const actions = {
       let resolvedUrl = url
 
       if (!resolvedUrl) {
-        const release = rootGetters['version/latestAvailableReleaseExe']
+        const release = rootGetters['version/latestAvailableReleaseWindowsDownload']
         resolvedUrl = release.browser_download_url
         commit('setUpdateReleaseName', rootGetters['version/latestVisibleVersion'])
       } else {

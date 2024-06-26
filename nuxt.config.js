@@ -92,7 +92,9 @@ export default {
     icons: {
       iconfont: 'mdi',
       values: {
-        'si-discord': simpleIcons.siDiscord.path
+        'si-discord': simpleIcons.siDiscord.path,
+        'si-windows': simpleIcons.siWindows10.path,
+        'si-linux': simpleIcons.siLinux.path,
       }
     },
     theme: {

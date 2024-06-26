@@ -18,8 +18,11 @@ export const getters = {
       ? state.availableReleases[0]
       : null
   },
-  latestAvailableReleaseExe(_state, getters){
+  latestAvailableReleaseWindowsDownload(_state, getters){
     return getters.latestVisibleRelease?.assets.find((a) => a.name === 'WotwRandoSetup.exe')
+  },
+  latestAvailableReleaseLinuxDownload(_state, getters){
+    return getters.latestVisibleRelease?.assets.find((a) => a.name === 'WotwRando.tar.gz')
   },
   latestAvailableVersion(_state, getters) {
     return getters.latestAvailableRelease?.name

@@ -10,7 +10,7 @@
         <span class="main-button-text"> Seed Generator </span>
       </v-btn>
       <v-btn key="league" x-large depressed text to="/league/seasons">
-        <v-badge :value="pendingGamesCount > 0" class="d-flex" :content="pendingGamesCount" color="red">
+        <v-badge :value="pendingGamesCount > 0" class="d-flex" :content="pendingGamesCount" color="deep-purple">
           <v-icon class="main-button-icon">mdi-trophy</v-icon>
           <v-icon class="main-button-icon-left" left>mdi-trophy</v-icon>
           <span class="main-button-text">

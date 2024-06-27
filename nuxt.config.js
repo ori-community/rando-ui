@@ -47,6 +47,7 @@ export default {
   css: [
     '@mdi/font/css/materialdesignicons.css',
     '@fontsource/nunito-sans/index.css',
+    '@fontsource/nunito-sans/300.css',
     '@fontsource/nunito-sans/700.css',
     '@fontsource/nunito-sans/900.css',
   ],

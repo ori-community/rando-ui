@@ -107,6 +107,14 @@
             {{ newGameSeedSourceDisplayString }}
           </v-card>
 
+          <v-card class="mt-6 pa-4 text-center did-you-know" ripple @click="rerollDidYouKnow">
+            <h4 class="font-weight-regular mb-1 text-h6">
+              Did you know?
+            </h4>
+            <div v-html="randomDidYouKnowHtml"></div>
+            <img class="ori-think" src="@/assets/images/ori_think.png" alt="Ori Think" />
+          </v-card>
+
           <v-btn text block class="mt-3" @click="openWiki">
             <v-icon left>mdi-book-outline</v-icon>
             Read the Wiki
@@ -164,6 +172,7 @@
   import { mapGetters, mapMutations, mapState } from 'vuex'
   import { formatsDates } from '~/assets/lib/formatsDates'
   import { getOS, isOS, Platform } from '~/assets/lib/os'
+  import { getRandomDidYouKnowHtml } from '~/assets/lib/didYouKnow'
 
   export default {
     name: 'Index',
@@ -171,6 +180,7 @@
     data: () => ({
       supportBundleLoading: false,
       upcomingLeagueSeasons: null,
+      randomDidYouKnowHtml: getRandomDidYouKnowHtml(),
     }),
     head: () => ({
       title: 'Home',
@@ -269,6 +279,9 @@
 
         this.supportBundleLoading = false
       },
+      rerollDidYouKnow() {
+        this.randomDidYouKnowHtml = getRandomDidYouKnowHtml()
+      },
     },
   }
 </script>
@@ -320,6 +333,47 @@
     position: sticky;
     top: 1em;
   }
+
+  .upcoming-seasons {
+    .learn-more {
+      opacity: 0.5;
+      transition: opacity 200ms;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  .seasons-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-auto-rows: 1fr;
+    gap: 0.75em;
+  }
+
+  .did-you-know {
+    font-weight: 300;
+    font-size: 1.1em;
+
+    .ori-think {
+      height: 2em;
+      position: absolute;
+      pointer-events: none;
+      opacity: 0.5;
+      bottom: 0;
+      right: 0;
+    }
+
+    :deep(strong) {
+      font-weight: 700;
+      color: var(--v-accent-lighten5)
+    }
+
+    :deep(p) {
+      margin-bottom: 0;
+    }
+  }
 </style>
 
 <style lang="scss">
@@ -351,23 +405,5 @@
         transform: translateX(0);
       }
     }
-  }
-
-  .upcoming-seasons {
-    .learn-more {
-      opacity: 0.5;
-      transition: opacity 200ms;
-
-      &:hover {
-        opacity: 1;
-      }
-    }
-  }
-
-  .seasons-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    grid-auto-rows: 1fr;
-    gap: 0.75em;
   }
 </style>

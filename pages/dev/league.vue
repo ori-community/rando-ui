@@ -44,6 +44,13 @@
         Force Continue
       </v-btn>
     </div>
+    <div class="mb-6">
+      <h2>Recalculate all Leaderboards</h2>
+
+      <v-btn color="accent" @click="recalculateLeaderboards">
+        Recalculate
+      </v-btn>
+    </div>
   </v-container>
 </template>
 
@@ -82,6 +89,15 @@
         try {
           await this.$axios.$post(`/dev/league/season/${this.forceContinueId}/continue`)
           alert("Successfully continued season")
+        } catch (e) {
+          alert(e)
+          console.error(e)
+        }
+      },
+      async recalculateLeaderboards() {
+        try {
+          await this.$axios.$post(`/dev/league/season/recalculate-points`)
+          alert("Successfully recalculated all leaderboards")
         } catch (e) {
           alert(e)
           console.error(e)

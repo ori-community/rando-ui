@@ -20,8 +20,8 @@
     <div v-if="discardWorstGamesCount > 1" class="text-center max-width-300">
       {{ discardWorstGamesCount }} worst races get discarded over time.
       <template v-if="rankingMultiplier > 0">
-        Only {{ discardPercentage }} of this game currently counts
-        towards the leaderboard ranking.
+        Only {{ discardPercentage }} of points from this game currently
+        count towards the leaderboard ranking.
       </template>
       <template v-else>
         This game does not count towards the leaderboard.

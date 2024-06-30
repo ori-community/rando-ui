@@ -196,24 +196,10 @@
                 </template>
                 <template #item.userMetadata.ownSubmission.rankingData.points="{ item }">
                   <template v-if="item.userMetadata?.ownSubmission?.rankingData?.points >= 0">
-                    <v-tooltip bottom :disabled="!item.userMetadata?.ownSubmission?.rankingData?.discarded">
-                      <template #activator="{ on }">
-                        <span
-                          v-on="on"
-                          :class="
-                            item.userMetadata?.ownSubmission?.rankingData?.discarded
-                              ? 'red--text text-decoration-line-through'
-                              : ''
-                          "
-                        >
-                          {{ item.userMetadata?.ownSubmission?.rankingData?.points }}
-                        </span>
-                      </template>
-                      <span v-if="leagueSeason.discardWorstGamesCount > 1">
-                        Your {{ leagueSeason.discardWorstGamesCount }} worst races get discarded
-                      </span>
-                      <span v-else>Your worst race gets discarded</span>
-                    </v-tooltip>
+                    <league-points-view
+                      :ranking-data="item.userMetadata?.ownSubmission?.rankingData"
+                      :discard-worst-games-count="leagueSeason.discardWorstGamesCount"
+                    />
                   </template>
                   <template v-else>
                     <div>-</div>

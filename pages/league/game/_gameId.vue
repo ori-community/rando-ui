@@ -75,19 +75,14 @@
                 </template>
                 <template #item.rankingData.points="{ item }">
                   <template v-if="!leagueGame.isCurrent">
-                  <v-tooltip bottom :disabled="!item.rankingData?.discarded">
-                    <template #activator="{ on }">
-                        <span v-on="on" :class="item.rankingData?.discarded ? 'red--text text-decoration-line-through' : ''">{{
-                          item.rankingData?.points
-                        }}</span>
-                    </template>
-                    <span v-if="leagueSeason.discardWorstGamesCount > 1"
-                      >Player's {{ leagueSeason.discardWorstGamesCount }} worst races get discarded</span
-                      >
-                      <span v-else>Player's worst race gets discarded</span>
-                    </v-tooltip>
+                    <league-points-view
+                      :ranking-data="item.rankingData"
+                      :discard-worst-games-count="leagueSeason.discardWorstGamesCount"
+                    />
                   </template>
-                    <template v-else><div>-</div></template>
+                  <template v-else>
+                    <div>-</div>
+                  </template>
                 </template>
                 <template #item.rankingData.videoUrl="{ item }">
                   <v-btn v-if="item.rankingData?.videoUrl" icon @click="openVideo(item.rankingData.videoUrl)">
@@ -181,7 +176,9 @@
     }),
     head() {
       return {
-        title: this.leagueGame?.gameNumber && this.leagueSeason?.name ?  `Game ${this.leagueGame.gameNumber} - ${this.leagueSeason.name} - League` : 'Game - League',
+        title: this.leagueGame?.gameNumber && this.leagueSeason?.name
+          ? `Game ${this.leagueGame.gameNumber} - ${this.leagueSeason.name} - League` :
+          'Game - League',
       }
     },
     computed: {

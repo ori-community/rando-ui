@@ -1,10 +1,10 @@
 <template>
-  <v-tooltip bottom open-delay="200" :disabled="!isDiscardedAtLeastPartially">
+  <v-tooltip bottom open-delay="200" :disabled="!isDiscarded">
     <template #activator="{ on }">
       <span
         class="no-wrap"
         :class="{
-          'grey--text': isDiscardedAtLeastPartially && !isDiscardedFully,
+          'grey--text': isDiscarded && !isDiscardedFully,
           'red--text text-decoration-line-through': isDiscardedFully,
         }"
         v-on="on"
@@ -12,16 +12,20 @@
         <span>
           {{ rankingData?.points }}
         </span>
-        <span v-if="isDiscardedAtLeastPartially && !isDiscardedFully" class="percentage">
+        <span v-if="isDiscarded && !isDiscardedFully" class="percentage">
           ({{ discardPercentage }})
         </span>
       </span>
     </template>
     <div v-if="discardWorstGamesCount > 1" class="text-center max-width-300">
       {{ discardWorstGamesCount }} worst races get discarded over time.
-      <template v-if="rankingMultiplier > 0">
-        Only {{ discardPercentage }} of points from this game currently
+      <template v-if="rankingMultiplier > 0.0">
+        {{ discardPercentage }} of points from this game currently
         count towards the leaderboard ranking.
+        <template v-if="rankingMultiplier > 1.0">
+          This game offsets other games that deviated
+          from your average.
+        </template>
       </template>
       <template v-else>
         This game does not count towards the leaderboard.
@@ -47,8 +51,8 @@
       rankingMultiplier() {
         return this.rankingData?.rankingMultiplier ?? 1.0
       },
-      isDiscardedAtLeastPartially() {
-        return this.rankingMultiplier < 1.0
+      isDiscarded() {
+        return this.rankingMultiplier !== 1.0
       },
       isDiscardedFully() {
         return this.rankingMultiplier === 0.0

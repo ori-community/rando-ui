@@ -31,7 +31,7 @@
         This game does not count towards the leaderboard.
       </template>
     </div>
-    <span v-else>Worst race gets discarded</span>
+    <span v-else>Worst game gets discarded over time</span>
   </v-tooltip>
 </template>
 

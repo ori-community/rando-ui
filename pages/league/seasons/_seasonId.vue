@@ -106,6 +106,20 @@
                     Submitted to current game
                   </v-tooltip>
                 </template>
+                <template #item.points="{ item }">
+                  <v-tooltip left open-delay="500" :disabled="item.rankingCompensationPoints === 0">
+                    <template #activator="{ on }">
+                      <span :class="{'compensating-points': item.rankingCompensationPoints > 0}" v-on="on">
+                        {{ item.points }}
+                      </span>
+                    </template>
+                    <div class="text-right">
+                      Includes {{ item.rankingCompensationPoints }} {{ item.rankingCompensationPoints === 1 ? 'point' : 'points' }} to compensate<br>
+                      missed or unusually bad games. These points<br>
+                      disappear over time until the end of the season.
+                    </div>
+                  </v-tooltip>
+                </template>
 
                 <!-- no data -->
                 <template #no-data>
@@ -688,5 +702,14 @@
     width: auto;
     margin-right: 0.5em;
     margin-left: -0.5em;
+  }
+
+  .compensating-points {
+    &::before {
+      content: '℮';
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    cursor: help;
   }
 </style>

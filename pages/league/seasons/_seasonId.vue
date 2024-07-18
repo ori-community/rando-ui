@@ -710,6 +710,7 @@
       color: rgba(255, 255, 255, 0.5);
     }
 
+    white-space: nowrap;
     cursor: help;
   }
 </style>

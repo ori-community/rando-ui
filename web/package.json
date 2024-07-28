@@ -22,7 +22,9 @@
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "@ori-rando/launcher": "link:@ori-rando/launcher",
+    "@pinia/nuxt": "^0.5.2",
     "@trpc/client": "^10.45.2",
+    "axios": "^1.7.2",
     "electron-trpc": "^0.6.1"
   }
 }

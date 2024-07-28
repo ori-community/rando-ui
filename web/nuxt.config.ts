@@ -4,9 +4,11 @@ import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: false,
+
   build: {
     transpile: ['vuetify'],
   },
+
   modules: [
     '@nuxt/eslint',
     (_options, nuxt) => {
@@ -15,6 +17,7 @@ export default defineNuxtConfig({
       })
     },
   ],
+
   vite: {
     vue: {
       template: {
@@ -22,4 +25,6 @@ export default defineNuxtConfig({
       },
     },
   },
+
+  compatibilityDate: '2024-07-28',
 })

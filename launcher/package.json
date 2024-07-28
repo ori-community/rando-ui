@@ -1,5 +1,5 @@
 {
-  "name": "ori-rando-launcher-app",
+  "name": "@ori-rando/launcher",
   "productName": "Ori and the Will of the Wisps Randomizer",
   "version": "1.0.0",
   "description": "Randomizer for the computer game Ori and the Will of the Wisps",
@@ -23,17 +23,21 @@
     "@electron/fuses": "^1.8.0",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
-    "electron": "30.0.1",
+    "electron": "31.3.0",
     "eslint": "^8.0.1",
     "eslint-plugin-import": "^2.25.0",
-    "ts-node": "^10.0.0",
-    "typescript": "~4.5.4",
-    "vite": "^5.0.12"
+    "ts-node": "^10.9.2",
+    "typescript": "~5.5.4",
+    "vite": "^5.3.5"
   },
   "keywords": [],
   "author": {
     "name": "Timo Schwarzer",
     "email": "timo@schwarzer.dev"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "electron-trpc": "^0.6.1",
+    "zod": "^3.23.8"
+  }
 }

@@ -23,7 +23,9 @@
             On the <a href="https://discord.com/invite/SUS57PWWnA">Speedrunning Discord</a> you can also find other Ori
             rando enjoyers to play with or against.
           </div>
-          <div class="text-center mt-6 text-join">Join the oriHype!</div>
+          <div class="text-center mt-6">
+            <img class="ori-hype" src="@/assets/images/ori_hype.png" alt="oriHype" />
+          </div>
         </div>
       </div>
 
@@ -111,9 +113,10 @@
     }
   }
 
-  .text-join {
-    font-size: 1.2em;
+  .ori-hype {
+    max-width: 50px;
   }
+
   .gapped {
     gap: 0.4em;
   }

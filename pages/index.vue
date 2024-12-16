@@ -1,5 +1,10 @@
 <template>
   <v-container>
+    <div class="background-video-wrapper">
+      <video class="background-video" muted autoplay playsinline loop src="/background.mp4" />
+      <div class="overlay"></div>
+    </div>
+
     <div class="text-center">
       <div class="mobile-scale">
         <h1 class="mt-12">Ori and the Will of the Wisps</h1>
@@ -123,5 +128,27 @@
 
   .max-900 {
     max-width: 900px;
+  }
+
+  .background-video-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: -10;
+
+    .background-video {
+      width: 100%;
+      height: 100%;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
   }
 </style>

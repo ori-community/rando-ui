@@ -220,10 +220,10 @@
                   </template>
                 </template>
                 <template #item.userMetadata.ownSubmission.rankingData.time="{ item }">
-                  <template v-if="item.userMetadata?.ownSubmission?.rankingData?.time"
-                    >{{ formatTime(item.userMetadata?.ownSubmission?.rankingData?.time) }}
-                  </template>
-                  <template v-else>-</template>
+                  <league-time-view
+                    :time="item.userMetadata?.ownSubmission?.rankingData?.time"
+                    :original-time="item.userMetadata?.ownSubmission?.rankingData?.originalTime"
+                  />
                 </template>
               </v-data-table>
             </v-card>

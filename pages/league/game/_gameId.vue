@@ -70,8 +70,7 @@
                   </div>
                 </template>
                 <template #item.rankingData.time="{ item }">
-                  <template v-if="item.rankingData?.time">{{ formatTime(item.rankingData?.time) }} </template>
-                  <template v-else>-</template>
+                  <league-time-view :time="item.rankingData?.time" :original-time="item.rankingData?.originalTime" />
                 </template>
                 <template #item.rankingData.points="{ item }">
                   <template v-if="!leagueGame.isCurrent">

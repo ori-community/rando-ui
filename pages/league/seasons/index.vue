@@ -201,7 +201,7 @@
           } else if (season.currentGameId !== null) {
             value.active.push(season)
           } else {
-            value.past.push(season)
+            value.past.unshift(season)
           }
         }
 

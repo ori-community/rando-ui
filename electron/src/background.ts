@@ -81,7 +81,7 @@ async function createWindow() {
 
     if (lastArg.endsWith('.wotwr') && fs.existsSync(lastArg)) {
       // We got a seed!
-      uiIpc.queueSend('main.openSeed', lastArg)
+      uiIpc.queueSend('main.openSeed', fs.realpathSync(lastArg))
     } else {
       // Maybe a URL?
       try {

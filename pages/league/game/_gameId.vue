@@ -161,6 +161,19 @@
         </v-col>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="developerModeWarningOpen" max-width="500">
+      <v-card class="pa-5">
+        <h3 class="mb-2">Developer Mode Enabled</h3>
+        <div class="mb-5">You are unable to launch League Games while Developer Mode is enabled!</div>
+        <div class="justify-center dialog-buttons">
+          <v-btn x-large color="accent" :loading="launching" @click="disableDevModeAndLaunchGame()">
+            <img class="launch-icon" src="@/assets/images/launch.png" alt="" />
+            Disable Dev Mode and Launch
+          </v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -168,7 +181,6 @@
   import { mapGetters, mapState } from 'vuex'
   import { formatTime } from '~/assets/lib/formatTime'
   import { isElectron } from '~/assets/lib/isElectron'
-  import { EventBus } from '~/assets/lib/EventBus'
 
   export default {
     data: () => ({
@@ -181,6 +193,7 @@
       videoUrlSubmissionLoading: false,
       removeVideoUrlConfirmationDialogOpen: false,
       errorMessage: null,
+      developerModeWarningOpen: false,
     }),
     head() {
       return {
@@ -285,10 +298,7 @@
       },
       async launchGame() {
         if (this.settings['Flags.Dev']) {
-          EventBus.$emit('notification', {
-            message: `Unable to launch League Game. Disable Developer Mode`,
-            color: 'warning',
-          })
+          this.developerModeWarningOpen = true
           return
         }
 
@@ -304,6 +314,11 @@
         this.$store.dispatch('electron/launch', {
           newGameSeedSource: `server:${this.leagueGame.multiverseId}`,
         })
+      },
+      async disableDevModeAndLaunchGame() {
+        this.developerModeWarningOpen = false
+        await window.electronApi.invoke('settings.setSetting', { key: 'Flags.Dev', value: false })
+        await this.launchGame()
       },
       openInLauncher(event) {
         window.open(this.launcherUrl, '_self')

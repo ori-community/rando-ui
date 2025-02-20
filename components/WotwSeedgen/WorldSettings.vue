@@ -18,12 +18,14 @@
           item-value="id"
           item-text="name"
           :prepend-icon="availableSpawns.find((s) => s.id === model.spawn).icon ?? 'mdi-map-marker-outline'"
+          hide-details
         >
           <template #item="{ item }">
             <v-icon left>{{ item.icon ?? 'mdi-map-marker-outline' }}</v-icon>
             <span>{{ item.name }}</span>
           </template>
         </v-select>
+        <v-checkbox v-model="model.randomizeDoors" label="Randomize Doors" />
       </v-col>
       <v-col cols="12" md="6">
         <v-select
@@ -195,6 +197,7 @@
         this.model.difficulty =
           this.availableDifficulties[Math.floor(Math.random() * this.availableDifficulties.length)].id
         this.model.hard = Math.random() >= 0.75
+        this.model.randomizeDoors = Math.random() >= 0.5
 
         this.model.tricks = []
         for (const trick of this.availableTricks) {

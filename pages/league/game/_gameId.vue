@@ -21,10 +21,7 @@
         </div>
         <div class="submissions-container mt-7">
           <div class="d-flex mb-1">
-            <v-btn
-              text
-              :to="{ name: 'league-seasons-seasonId', params: { seasonId: leagueGame.seasonId } }"
-            >
+            <v-btn text :to="{ name: 'league-seasons-seasonId', params: { seasonId: leagueGame.seasonId } }">
               <v-icon>mdi-arrow-left-thin</v-icon>
               Season
             </v-btn>
@@ -133,7 +130,14 @@
           :error-messages="errorMessage !== null ? [errorMessage] : []"
         />
         <div class="justify-end dialog-buttons">
-          <v-btn :disabled="!videoUrlForSubmission" :loading="videoUrlSubmissionLoading" depressed color="accent" @click="submitVideoUrl(videoUrlForSubmission)">Submit</v-btn>
+          <v-btn
+            :disabled="!videoUrlForSubmission"
+            :loading="videoUrlSubmissionLoading"
+            depressed
+            color="accent"
+            @click="submitVideoUrl(videoUrlForSubmission)"
+            >Submit</v-btn
+          >
         </div>
       </v-card>
     </v-dialog>
@@ -147,8 +151,12 @@
             </div>
           </v-row>
           <v-row justify="end" class="dialog-buttons">
-            <v-btn text :disabled="videoUrlSubmissionLoading" @click="removeVideoUrlConfirmationDialogOpen = false">No</v-btn>
-            <v-btn depressed color="red" :loading="videoUrlSubmissionLoading" @click.native="submitVideoUrl(null)">Yes</v-btn>
+            <v-btn text :disabled="videoUrlSubmissionLoading" @click="removeVideoUrlConfirmationDialogOpen = false"
+              >No</v-btn
+            >
+            <v-btn depressed color="red" :loading="videoUrlSubmissionLoading" @click.native="submitVideoUrl(null)"
+              >Yes</v-btn
+            >
           </v-row>
         </v-col>
       </v-card>
@@ -160,6 +168,7 @@
   import { mapGetters, mapState } from 'vuex'
   import { formatTime } from '~/assets/lib/formatTime'
   import { isElectron } from '~/assets/lib/isElectron'
+  import { EventBus } from '~/assets/lib/EventBus'
 
   export default {
     data: () => ({
@@ -175,16 +184,17 @@
     }),
     head() {
       return {
-        title: this.leagueGame?.gameNumber && this.leagueSeason?.name
-          ? `Game ${this.leagueGame.gameNumber} - ${this.leagueSeason.name} - League` :
-          'Game - League',
+        title:
+          this.leagueGame?.gameNumber && this.leagueSeason?.name
+            ? `Game ${this.leagueGame.gameNumber} - ${this.leagueSeason.name} - League`
+            : 'Game - League',
       }
     },
     computed: {
       ...mapState('user', ['user']),
       ...mapGetters('user', ['isLoggedIn']),
       ...mapState('multiverseState', ['multiverses']),
-      ...mapState('electron', ['launching']),
+      ...mapState('electron', ['launching', 'settings']),
       isElectron,
       canSubmit() {
         return this.leagueGame !== null && this.leagueGame.userMetadata?.canSubmit
@@ -242,9 +252,9 @@
 
         return headers
       },
-      ownSubmissionHasVideoUrl(){
+      ownSubmissionHasVideoUrl() {
         return this.ownSubmission?.rankingData?.videoUrl !== null
-      }
+      },
     },
     watch: {
       '$route.params.gameId': {
@@ -274,6 +284,14 @@
         }
       },
       async launchGame() {
+        if (this.settings['Flags.Dev']) {
+          EventBus.$emit('notification', {
+            message: `Unable to launch League Game. Disable Developer Mode`,
+            color: 'warning',
+          })
+          return
+        }
+
         await this.$store.dispatch('multiverseState/fetchMultiverse', this.leagueGame.multiverseId)
 
         // create world if it doesn't exist

@@ -28,7 +28,7 @@
             On the <a href="https://discord.com/invite/SUS57PWWnA">Speedrunning Discord</a> you can also find other Ori
             rando enjoyers to play with or against.
           </div>
-          <div class="d-flex justify-center align-center flex gapped mt-6">
+          <div ref="oriHype" class="d-flex justify-center align-center flex gapped mt-6">
             <div class="text-join">Join the oriHype!</div>
             <img class="ori-hype" src="@/assets/images/ori_hype.png" alt="oriHype" />
           </div>
@@ -49,11 +49,11 @@
             </div>
           </template>
           <v-list>
-            <v-list-item :disabled="!latestRandoWindowsUrl" :href="latestRandoWindowsUrl">
+            <v-list-item :disabled="!latestRandoWindowsUrl" @click="downloadRando(latestRandoWindowsUrl)">
               <v-icon left>$si-windows</v-icon>
               Windows Installer (.exe)
             </v-list-item>
-            <v-list-item :disabled="!latestRandoLinuxUrl" :href="latestRandoLinuxUrl">
+            <v-list-item :disabled="!latestRandoLinuxUrl" @click="downloadRando(latestRandoLinuxUrl)">
               <v-icon left>$si-linux</v-icon>
               Linux Package (.tar.gz)
             </v-list-item>
@@ -74,6 +74,7 @@
 
 <script>
   import { mapGetters } from 'vuex'
+  import { confettiFromElement } from '~/assets/lib/confettiFromElement'
 
   export default {
     name: 'Index',
@@ -102,6 +103,13 @@
 
           this.lurkAfterRandomTime()
         }, 2000 + Math.random() * 10000)
+      },
+      downloadRando(url) {
+        window.open(url, '_self')
+        confettiFromElement(this.$refs.oriHype, {
+          disableForReducedMotion: true,
+          zIndex: 100000,
+        })
       },
     },
   }

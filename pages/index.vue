@@ -38,16 +38,15 @@
       <div class="mb-4 d-flex flex-wrap gapped justify-center">
         <v-menu offset-y>
           <template #activator="{ on, attrs }">
-            <v-btn
-              color="accent"
-              x-large
-              :loading="!latestRandoWindowsUrl || !latestRandoLinuxUrl"
-              v-bind="attrs"
-              v-on="on"
-            >
-              <v-icon left>mdi-download</v-icon>
-              Download
-            </v-btn>
+            <div style="position: relative" v-on="on">
+              <div class="ori-lurk-container">
+                <img class="ori-lurk" :class="{ lurking: buttonLurking }" src="@/assets/images/ori_lurk.png" />
+              </div>
+              <v-btn color="accent" x-large :loading="!latestRandoWindowsUrl || !latestRandoLinuxUrl" v-bind="attrs">
+                <v-icon left>mdi-download</v-icon>
+                Download
+              </v-btn>
+            </div>
           </template>
           <v-list>
             <v-list-item :disabled="!latestRandoWindowsUrl" :href="latestRandoWindowsUrl">
@@ -79,6 +78,10 @@
   export default {
     name: 'Index',
     components: {},
+    data: () => ({
+      lurkTimeoutId: null,
+      buttonLurking: false,
+    }),
     computed: {
       ...mapGetters('version', ['latestAvailableReleaseWindowsDownload', 'latestAvailableReleaseLinuxDownload']),
       latestRandoWindowsUrl() {
@@ -89,7 +92,17 @@
       },
     },
     async mounted() {
+      this.lurkAfterRandomTime()
       await this.$store.dispatch('version/updateAvailableReleases')
+    },
+    methods: {
+      lurkAfterRandomTime() {
+        this.lurkTimeoutId = setTimeout(() => {
+          this.buttonLurking = !this.buttonLurking
+
+          this.lurkAfterRandomTime()
+        }, 2000 + Math.random() * 10000)
+      },
     },
   }
 </script>
@@ -139,6 +152,30 @@
 
   .max-900 {
     max-width: 900px;
+  }
+
+  .ori-lurk-container {
+    display: block;
+    position: absolute;
+    pointer-events: none;
+    top: -3rem;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    overflow: hidden;
+  }
+
+  .ori-lurk {
+    margin: 0 auto;
+    left: 50%;
+    height: 3rem;
+    position: absolute;
+    transform: translateY(100%) translateX(-50%) scale(0.9);
+    transition: transform 300ms;
+
+    &.lurking {
+      transform: translateY(5%) translateX(-50%);
+    }
   }
 
   .background-video-wrapper {

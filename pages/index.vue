@@ -28,7 +28,8 @@
             On the <a href="https://discord.com/invite/SUS57PWWnA">Speedrunning Discord</a> you can also find other Ori
             rando enjoyers to play with or against.
           </div>
-          <div class="text-center mt-6">
+          <div class="d-flex justify-center align-center flex gapped mt-6">
+            <div class="text-join">Join the oriHype!</div>
             <img class="ori-hype" src="@/assets/images/ori_hype.png" alt="oriHype" />
           </div>
         </div>
@@ -36,8 +37,14 @@
 
       <div class="mb-4 d-flex flex-wrap gapped justify-center">
         <v-menu offset-y>
-          <template #activator='{on, attrs}'>
-            <v-btn color="accent" x-large :loading="!latestRandoWindowsUrl || !latestRandoLinuxUrl" v-bind='attrs' v-on='on'>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              color="accent"
+              x-large
+              :loading="!latestRandoWindowsUrl || !latestRandoLinuxUrl"
+              v-bind="attrs"
+              v-on="on"
+            >
               <v-icon left>mdi-download</v-icon>
               Download
             </v-btn>
@@ -116,6 +123,10 @@
     &:hover {
       opacity: 1;
     }
+  }
+
+  .text-join {
+    font-size: 1.3em;
   }
 
   .ori-hype {

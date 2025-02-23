@@ -317,7 +317,8 @@ export default {
           parentName: null,
           stroke: color,
           initialStroke: color,
-          dash: connection.unidirectional ? [10, 4] : [1, 0],
+          lineCap: 'round',
+          dash: connection.unidirectional ? [8, 4] : [1, 0],
           strokeWidth,
           initialStrokeWidth: strokeWidth,
           hitStrokeWidth: strokeWidth * 2,
@@ -378,6 +379,7 @@ export default {
           strokeWidth: connection.strokeWidth,
           initialStrokeWidth: connection.strokeWidth,
           hitStrokeWidth: connection.hitStrokeWidth,
+          lineCap: 'round',
         })
         this.currentDisplayIndex += 1
       }

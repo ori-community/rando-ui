@@ -18,11 +18,13 @@ export const state = () => ({
   showStatsDialog: false,
   localTrackerRunning: false,
   randoIpcConnected: false,
+  showTraceMap: false,
+  traceMapSource: null,
 })
 
 export const getters = {
   isDifferentThanCurrentVersion(state, _getters, _rootState, rootGetters) {
-    return version => {
+    return (version) => {
       if (state.currentVersion === '' || state.currentVersion === 'develop') {
         return false
       }
@@ -35,7 +37,7 @@ export const getters = {
     }
   },
   isNewVersion(state, getters, _rootState) {
-    return version => {
+    return (version) => {
       if (!getters.isDifferentThanCurrentVersion(version)) {
         return false
       }
@@ -124,6 +126,12 @@ export const mutations = {
   setRandoIpcConnected(state, value) {
     state.randoIpcConnected = value
   },
+  setShowTraceMap(state, value) {
+    state.showTraceMap = value
+  },
+  setTraceMapSource(state, value) {
+    state.traceMapSource = value
+  },
 }
 
 let checkForUpdatesOncePromise = null
@@ -137,7 +145,6 @@ export const actions = {
     try {
       commit('setCurrentVersion', await window.electronApi.invoke('updater.getVersion'))
       dispatch('version/updateAvailableReleases', null, { root: true })
-
     } catch (e) {
       commit('setOfflineMode', true)
       console.error(e)

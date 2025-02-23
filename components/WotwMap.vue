@@ -5,11 +5,17 @@
         {{ customLoadingText }}
       </template>
       <template v-else>
-        Loading map: {{ Math.round(loadingProgressValue / loadingProgressMax * 100.0) }}%...
+        Loading map: {{ Math.round((loadingProgressValue / loadingProgressMax) * 100.0) }}%...
       </template>
     </v-snackbar>
     <div ref="timelineStageContainer" class="stage-container fill-height">
-      <k-stage ref="stage" :config="stageConfig" @wheel="onStageWheel" @mouseMove="e => emitMousePosition('mousemove', e)" @click="e => emitMousePosition('click', e)">
+      <k-stage
+        ref="stage"
+        :config="stageConfig"
+        @wheel="onStageWheel"
+        @mouseMove="(e) => emitMousePosition('mousemove', e)"
+        @click="(e) => emitMousePosition('click', e)"
+      >
         <k-layer ref="layer">
           <k-image v-for="(tile, index) in mapTiles" :key="index" :config="tile" />
         </k-layer>
@@ -20,6 +26,8 @@
 </template>
 
 <script>
+  import Konva from 'konva'
+
   export default {
     name: 'WotwMap',
     props: {
@@ -59,6 +67,18 @@
       }),
       stage() {
         return this.$refs.stage.getStage()
+      },
+      mapArea() {
+        const width = this.constants.tileSize * this.constants.tilesX * this.constants.tileScale
+        const height = -this.constants.tileSize * this.constants.tilesY * this.constants.tileScale
+        return {
+          x: this.constants.mapOffsetX,
+          y: this.constants.mapOffsetY,
+          width,
+          height,
+          centerX: this.constants.mapOffsetX + width / 2,
+          centerY: this.constants.mapOffsetY + height / 2,
+        }
       },
     },
     mounted() {
@@ -140,6 +160,82 @@
         }
 
         stage.position(newPos)
+      },
+      centerOn(targetX, targetY, targetScale = null) {
+        const stage = this.stage
+
+        const { width, height } = stage.size()
+
+        const newScale = targetScale ?? stage.scaleX()
+        const scaledTargetX = targetX * newScale
+        const scaledTargetY = targetY * -newScale
+
+        const newX = -scaledTargetX + width / 2
+        const newY = -scaledTargetY + height / 2
+
+        stage.to({
+          x: newX,
+          y: newY,
+          scaleX: newScale,
+          scaleY: -newScale,
+          duration: 0.7,
+          easing: Konva.Easings.EaseOut,
+        })
+      },
+      zoomOn(points) {
+        if (points.length === 0) {
+          return
+        }
+        if (points.length === 1) {
+          this.centerOn(points[0].x, points[0].y)
+          return
+        }
+
+        const stage = this.stage
+        let minX = Infinity
+        let minY = Infinity
+        let maxX = -Infinity
+        let maxY = -Infinity
+
+        for (const point of points) {
+          if (point.x < minX) {
+            minX = point.x
+          }
+          if (point.y < minY) {
+            minY = point.y
+          }
+          if (point.x > maxX) {
+            maxX = point.x
+          }
+          if (point.y > maxY) {
+            maxY = point.y
+          }
+        }
+
+        const newWidth = maxX - minX
+        const newHeight = maxY - minY
+
+        if (newWidth === 0 || newHeight === 0) {
+          this.centerOn(points[0].x, points[0].y)
+          return
+        }
+
+        const centerX = minX + newWidth / 2
+        const centerY = minY + newHeight / 2
+
+        const { width, height } = stage.size()
+
+        const scaleX = width / newWidth
+        const scaleY = height / newHeight
+        const minScale = Math.min(scaleX, scaleY) * 0.98
+
+        this.centerOn(centerX, centerY, minScale)
+      },
+      zoomToFit() {
+        this.zoomOn([
+          { x: this.constants.mapOffsetX, y: this.constants.mapOffsetY },
+          { x: this.constants.mapOffsetX + this.mapArea.width, y: this.constants.mapOffsetY + this.mapArea.height },
+        ])
       },
     },
   }

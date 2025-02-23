@@ -21,10 +21,7 @@
         </div>
         <div class="submissions-container mt-7">
           <div class="d-flex mb-1">
-            <v-btn
-              text
-              :to="{ name: 'league-seasons-seasonId', params: { seasonId: leagueGame.seasonId } }"
-            >
+            <v-btn text :to="{ name: 'league-seasons-seasonId', params: { seasonId: leagueGame.seasonId } }">
               <v-icon>mdi-arrow-left-thin</v-icon>
               Season
             </v-btn>
@@ -84,6 +81,11 @@
                     <div>-</div>
                   </template>
                 </template>
+                <template #item.traceMap="{ item }">
+                  <v-btn v-if="item.hasSaveFile" icon @click="openTraceMap(item)">
+                    <v-icon small>mdi-map</v-icon>
+                  </v-btn>
+                </template>
                 <template #item.rankingData.videoUrl="{ item }">
                   <v-btn v-if="item.rankingData?.videoUrl" icon @click="openVideo(item.rankingData.videoUrl)">
                     <v-icon>mdi-video-outline</v-icon>
@@ -134,7 +136,14 @@
           :error-messages="errorMessage !== null ? [errorMessage] : []"
         />
         <div class="justify-end dialog-buttons">
-          <v-btn :disabled="!videoUrlForSubmission" :loading="videoUrlSubmissionLoading" depressed color="accent" @click="submitVideoUrl(videoUrlForSubmission)">Submit</v-btn>
+          <v-btn
+            :disabled="!videoUrlForSubmission"
+            :loading="videoUrlSubmissionLoading"
+            depressed
+            color="accent"
+            @click="submitVideoUrl(videoUrlForSubmission)"
+            >Submit</v-btn
+          >
         </div>
       </v-card>
     </v-dialog>
@@ -148,8 +157,12 @@
             </div>
           </v-row>
           <v-row justify="end" class="dialog-buttons">
-            <v-btn text :disabled="videoUrlSubmissionLoading" @click="removeVideoUrlConfirmationDialogOpen = false">No</v-btn>
-            <v-btn depressed color="red" :loading="videoUrlSubmissionLoading" @click.native="submitVideoUrl(null)">Yes</v-btn>
+            <v-btn text :disabled="videoUrlSubmissionLoading" @click="removeVideoUrlConfirmationDialogOpen = false"
+              >No</v-btn
+            >
+            <v-btn depressed color="red" :loading="videoUrlSubmissionLoading" @click.native="submitVideoUrl(null)"
+              >Yes</v-btn
+            >
           </v-row>
         </v-col>
       </v-card>
@@ -176,9 +189,10 @@
     }),
     head() {
       return {
-        title: this.leagueGame?.gameNumber && this.leagueSeason?.name
-          ? `Game ${this.leagueGame.gameNumber} - ${this.leagueSeason.name} - League` :
-          'Game - League',
+        title:
+          this.leagueGame?.gameNumber && this.leagueSeason?.name
+            ? `Game ${this.leagueGame.gameNumber} - ${this.leagueSeason.name} - League`
+            : 'Game - League',
       }
     },
     computed: {
@@ -239,13 +253,16 @@
           headers.push({ text: 'Points', value: 'rankingData.points', align: 'right' })
         }
 
-        headers.push({ text: 'Video', value: 'rankingData.videoUrl', align: 'center', width: 0 })
+        headers.push(
+          { text: 'Route', value: 'traceMap', align: 'center', width: 0 },
+          { text: 'Video', value: 'rankingData.videoUrl', align: 'center', width: 0 },
+        )
 
         return headers
       },
-      ownSubmissionHasVideoUrl(){
+      ownSubmissionHasVideoUrl() {
         return this.ownSubmission?.rankingData?.videoUrl !== null
-      }
+      },
     },
     watch: {
       '$route.params.gameId': {
@@ -318,6 +335,16 @@
         }
 
         this.videoUrlSubmissionLoading = false
+      },
+      openTraceMap(submission) {
+        this.$store.commit('electron/setTraceMapSource', {
+          multiverseId: this.leagueGame.multiverseId,
+          gameType: 'league',
+          leagueGameId: this.leagueGame.id,
+          submissionId: submission.id,
+          user: submission.membership.user,
+        })
+        this.$store.commit('electron/setShowTraceMap', true)
       },
       openVideo(videoUrl) {
         if (this.isElectron) {

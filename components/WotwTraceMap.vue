@@ -531,7 +531,7 @@
         }
 
         player.timeline = []
-        const pickups = JSON.parse(player.stats.collectedPickups)
+        const pickups = player.stats.collectedPickups
         if (pickups) {
           Object.entries(pickups).forEach(([pickup, inGameTime]) => {
             const locationEntry = this.locations.find((entry) => entry.node === pickup)
@@ -552,7 +552,7 @@
           })
         }
 
-        const teleports = JSON.parse(player.stats.teleports)
+        const teleports = player.stats.teleports
         let teleportIndex = 0
         if (teleports) {
           teleports.forEach((teleport) => {

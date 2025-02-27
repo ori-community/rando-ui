@@ -198,7 +198,7 @@
       locations: [],
       players: [],
       sliderValue: 0,
-      opacityFilterActive: true,
+      opacityFilterActive: false,
       selectedPickup: null,
       teleporterSelected: false,
       hoveringOverElement: false,

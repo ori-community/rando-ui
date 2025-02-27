@@ -80,6 +80,11 @@
                     <div>-</div>
                   </template>
                 </template>
+                <template #item.traceMap="{ item }">
+                  <v-btn v-if="item.hasSaveFile" icon @click="openTraceMap(item)">
+                    <v-icon small>mdi-map</v-icon>
+                  </v-btn>
+                </template>
                 <template #item.rankingData.videoUrl="{ item }">
                   <v-btn v-if="item.rankingData?.videoUrl" icon @click="openVideo(item.rankingData.videoUrl)">
                     <v-icon>mdi-video-outline</v-icon>
@@ -261,7 +266,10 @@
           headers.push({ text: 'Points', value: 'rankingData.points', align: 'right' })
         }
 
-        headers.push({ text: 'Video', value: 'rankingData.videoUrl', align: 'center', width: 0 })
+        headers.push(
+          { text: 'Route', value: 'traceMap', align: 'center', width: 0 },
+          { text: 'Video', value: 'rankingData.videoUrl', align: 'center', width: 0 },
+        )
 
         return headers
       },
@@ -350,6 +358,16 @@
         }
 
         this.videoUrlSubmissionLoading = false
+      },
+      openTraceMap(submission) {
+        this.$store.commit('electron/setTraceMapSource', {
+          multiverseId: this.leagueGame.multiverseId,
+          gameType: 'league',
+          leagueGameId: this.leagueGame.id,
+          submissionId: submission.id,
+          user: submission.membership.user,
+        })
+        this.$store.commit('electron/setShowTraceMap', true)
       },
       openVideo(videoUrl) {
         if (this.isElectron) {

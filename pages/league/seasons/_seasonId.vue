@@ -120,7 +120,6 @@
                     </div>
                   </v-tooltip>
                 </template>
-
                 <!-- no data -->
                 <template #no-data>
                   <div class="mb-2 mt-5">

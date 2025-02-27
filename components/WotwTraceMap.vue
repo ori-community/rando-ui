@@ -188,6 +188,7 @@
 <script>
   import { mapState } from 'vuex'
   import { getDistance } from 'vuetify/src/components/VSparkline/helpers/math'
+  import { parse as parseCsv } from 'csv-parse'
   import { formatTime } from '~/assets/lib/formatTime'
 
   export default {
@@ -582,25 +583,22 @@
         player.color = null
       },
       processLocData(locationData) {
-        const lines = locationData.trim().split('\n')
-        const headers = lines[0].split(',')
-
-        return lines.slice(1).map((line) => {
-          const values = line.split(',')
-          const entry = headers.reduce((obj, header, index) => {
-            obj[header.trim()] = values[index]?.trim() || null
-            return obj
-          }, {})
-          return {
-            node: entry.NodeIdentifier,
-            location: {
-              x: parseFloat(entry.X),
-              y: parseFloat(entry.Y),
-            },
-            zone: entry.Zone,
-            collectedBy: [],
+        const lines = []
+        const parser = parseCsv(locationData, { columns: true, trim: true })
+        parser.on('readable', function () {
+          let record
+          while ((record = parser.read()) !== null) {
+            lines.push({
+              node: record.NodeIdentifier,
+              location: {
+                x: parseFloat(record.X),
+                y: parseFloat(record.Y),
+              },
+              zone: record.Zone,
+            })
           }
         })
+        return lines
       },
       getFocusFactor(collectionTime) {
         const timePast = this.sliderValue - collectionTime

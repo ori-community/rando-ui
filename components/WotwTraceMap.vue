@@ -187,9 +187,14 @@
 
 <script>
   import { mapState } from 'vuex'
-  import { getDistance } from 'vuetify/src/components/VSparkline/helpers/math'
   import { parse as parseCsv } from 'csv-parse'
   import { formatTime } from '~/assets/lib/formatTime'
+
+  function getDistance (p1, p2) {
+    return Math.sqrt(
+      Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2)
+    )
+  }
 
   export default {
     name: 'WotwTraceMap',

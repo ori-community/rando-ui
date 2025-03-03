@@ -1958,10 +1958,10 @@
   dependencies:
     "@octokit/openapi-types" "^12.11.0"
 
-"@ori-rando/wotw-seedgen-wasm-ui@^0.6.0-beta.2":
-  version "0.6.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@ori-rando/wotw-seedgen-wasm-ui/-/wotw-seedgen-wasm-ui-0.6.0-beta.2.tgz#94ba97b5d4e1a90a9f360f48ba5dd478f647e055"
-  integrity sha512-yKWB/Z17axpiu4H2FyybrSkIGC25bK4daAke1Kl+60W17x8jbmLs1rAfJ8TSoYbmDSeIkIlrf0+ogAx9yEuKuw==
+"@ori-rando/wotw-seedgen-wasm-ui@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@ori-rando/wotw-seedgen-wasm-ui/-/wotw-seedgen-wasm-ui-0.6.0.tgz#943477624bfea2c1c81ec5cbb1e614f5d2127a8c"
+  integrity sha512-pEpLAaGwGV/Zgij6zM+7yMdLG2twsejgpJvcqgtem6AfxIQln8F/3wSQYLRMHZMh/5+onWbxn13NxcB90OhwVg==
 
 "@pkgr/utils@^2.3.1":
   version "2.3.1"

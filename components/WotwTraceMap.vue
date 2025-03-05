@@ -1,6 +1,6 @@
 <template>
   <div>
-    <wotw-map ref="map" @click="mapClicked" class="map">
+    <wotw-map ref="map" class="map" @click="mapClicked">
       <k-layer>
         <k-line v-if="teleportIndicatorLine" :config="teleportIndicatorLine" />
         <div v-if="deathImage">
@@ -71,10 +71,10 @@
           <div v-on="on">
             <v-btn
               v-model="opacityFilterActive"
-              @click="opacityFilterActive = !opacityFilterActive"
               icon
               large
               :disabled="maxInGameTime === 0"
+              @click="opacityFilterActive = !opacityFilterActive"
             >
               <v-icon>mdi-circle-opacity</v-icon>
             </v-btn>
@@ -677,7 +677,7 @@
 
 <style lang="scss" scoped>
   .map {
-    position: absolute;
+    position: absolute !important;
     margin: 0;
     padding: 0;
     left: 0;

@@ -18,6 +18,17 @@
             <img class="launch-icon" src="@/assets/images/launch.png" alt="" />
             Launch
           </v-btn>
+          <v-btn
+            v-else-if="!leagueGame.isCurrent"
+            x-large
+            color="accent"
+            :loading="launching"
+            v-on="on"
+            @click="replayGame()"
+          >
+            <img class="launch-icon" src="@/assets/images/launch.png" alt="" />
+            Play for Fun
+          </v-btn>
         </div>
         <div class="submissions-container mt-7">
           <div class="d-flex mb-1">
@@ -186,6 +197,7 @@
   import { mapGetters, mapState } from 'vuex'
   import { formatTime } from '~/assets/lib/formatTime'
   import { isElectron } from '~/assets/lib/isElectron'
+  import { EventBus } from '~/assets/lib/EventBus'
 
   export default {
     data: () => ({
@@ -305,7 +317,7 @@
         }
       },
       async launchGame() {
-        if (this.settings['Flags.Dev']) {
+        if (this.settings['Flags.Dev'] && !this.user.isDeveloper) {
           this.developerModeWarningOpen = true
           return
         }
@@ -322,6 +334,31 @@
         this.$store.dispatch('electron/launch', {
           newGameSeedSource: `server:${this.leagueGame.multiverseId}`,
         })
+      },
+      async replayGame() {
+        const multiverse = await this.$axios.$get(`/multiverses/${this.leagueGame.multiverseId}`)
+        if (!multiverse.seedId) {
+          EventBus.$emit('notification', {
+            message: 'An error occured while trying to download the seed',
+            color: 'error',
+          })
+          return
+        }
+        const seed = await this.$axios.$get(`/seeds/${multiverse.seedId}`)
+
+        const url = `${this.$axios.defaults.baseURL}/world-seeds/${seed.worldSeedIds[0]}/file`
+        const fileName = `${seed.worldSeedIds}.wotwr`
+
+        try {
+          await window.electronApi.invoke('launcher.downloadSeedFromUrl', {
+            url,
+            fileName,
+          })
+
+          await this.$store.dispatch('electron/launch')
+        } catch (e) {
+          console.error(e)
+        }
       },
       async disableDevModeAndLaunchGame() {
         this.developerModeWarningOpen = false

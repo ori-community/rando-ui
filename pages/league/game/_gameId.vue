@@ -265,11 +265,11 @@
         if (this.leagueGame?.isCurrent === false) {
           headers.push({ text: 'Points', value: 'rankingData.points', align: 'right' })
         }
+        if (this.isElectron) {
+          headers.push({ text: 'Route', value: 'traceMap', align: 'center', width: 0 })
+        }
 
-        headers.push(
-          { text: 'Route', value: 'traceMap', align: 'center', width: 0 },
-          { text: 'Video', value: 'rankingData.videoUrl', align: 'center', width: 0 },
-        )
+        headers.push({ text: 'Video', value: 'rankingData.videoUrl', align: 'center', width: 0 })
 
         return headers
       },

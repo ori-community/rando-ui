@@ -74,6 +74,11 @@ export const getters = {
       return `Online Game ${state.newGameSeedSource.substring(7)}`
     }
 
+    if (state.newGameSeedSource.startsWith('archipelago:')) {
+      const sourceParts = state.newGameSeedSource.substring(12).split("|")
+      return `AP ${sourceParts[0].split('//')[1]} ${sourceParts[2]}`
+    }
+
     return state.newGameSeedSource
   },
 }

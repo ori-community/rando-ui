@@ -56,6 +56,15 @@
               <v-icon left :disabled="!localTrackerRunning"> mdi-leak </v-icon>
               Create Web Tracker
             </v-list-item>
+            <v-list-item
+              x-large
+              depressed
+              text
+              @click="showArchipelagoDialog = true"
+            >
+              <v-icon left :disabled="!localTrackerRunning">mdi-hub</v-icon>
+              Play Archipelago
+            </v-list-item>
             <!--
             <v-list-item x-large depressed disabled text @click="openChatControl">
               <v-icon left>mdi-message-flash-outline</v-icon>
@@ -184,6 +193,50 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="showArchipelagoDialog" max-width="500px">
+      <v-card>
+        <v-card-title>Play Archipelago</v-card-title>
+        <v-card-text>
+          <div class="mb-2">
+            <v-text-field
+              v-model="archipelagoSettings.host"
+              label="Host"
+              placeholder="e.g. archipelago.gg:12345"
+            />
+          </div>
+          <div class="mb-2">
+            <v-text-field
+              v-model="archipelagoSettings.slotName"
+              label="Player/Slot name"
+              placeholder="e.g. Kii"
+            />
+          </div>
+          <div class="mb-2">
+            <v-text-field
+              v-model="archipelagoSettings.password"
+              label="Password (optional)"
+              type="password"
+            />
+          </div>
+          <div class="mb-2">
+            <v-checkbox
+              v-model="archipelagoSettings.useSecureConnection"
+              label="Use Secure Connection"
+              messages="Usually enabled when playing on public servers"
+            />
+          </div>
+          <div class="d-flex justify-end">
+            <v-btn
+              :disabled="!archipelagoSettingsValid"
+              color="accent"
+              depressed
+              :loading="launching"
+              @click="launchArchipelago"
+            >Launch</v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -201,11 +254,18 @@
       remoteTrackerUrlCopying: false,
       remoteTrackerUrlCopied: false,
       showRemoteTrackerDialog: false,
+      showArchipelagoDialog: false,
       remoteTrackerSettings: {
         remote: true,
         timer: true,
         willowHearts: true,
         hideHeartsUntilFirstHeart: true,
+      },
+      archipelagoSettings: {
+        host: '',
+        slotName: '',
+        password: '',
+        useSecureConnection: true,
       },
       updatedPendingLeagueGamesOnce: false,
     }),
@@ -214,7 +274,7 @@
       ...mapState('user', ['user', 'userLoaded']),
       ...mapGetters('league', ['pendingGamesCount']),
       ...mapState('dev', ['devtoolsEnabled']),
-      ...mapState('electron', ['localTrackerRunning', 'settings', 'settingsLoaded', 'randoIpcConnected']),
+      ...mapState('electron', ['localTrackerRunning', 'settings', 'settingsLoaded', 'randoIpcConnected', 'launching']),
       isElectron,
       nicknameIsValid() {
         const trimmedNickname = this.currentNickname.trim()
@@ -226,6 +286,9 @@
       randomGreeting() {
         const greetings = ['Hi', 'Hello', 'Hey', 'Hiya', 'Yo', 'Ahoy', 'Howdy', 'oriHi']
         return greetings[Math.floor(Math.random() * greetings.length)]
+      },
+      archipelagoSettingsValid() {
+        return !(!this.archipelagoSettings.host || !this.archipelagoSettings.slotName);
       },
     },
     watch: {
@@ -356,6 +419,11 @@
       },
       showStats() {
         this.$store.commit('electron/setShowStatsDialog', true)
+      },
+      async launchArchipelago() {
+        const protocol = this.archipelagoSettings.useSecureConnection ? 'wss' : 'ws'
+        await window.electronApi.invoke('launcher.setNewGameSeedSource', `archipelago:${protocol}://${this.archipelagoSettings.host}|${this.archipelagoSettings.slotName}|${this.archipelagoSettings.password}`)
+        await this.$store.dispatch('electron/launch')
       },
     },
   }

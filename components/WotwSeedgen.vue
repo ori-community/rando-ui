@@ -15,6 +15,7 @@
         @copy-world="createNewWorldFromExistingWorld"
         @save-world-as-custom-preset="customPresetCreateFromWorld"
         @import-custom-preset="customPresetImportDialogOpen = true"
+        @copy-current-settings-to-clipboard="copyCurrentSettingsToClipboard"
       />
 
       <div class="mb-12">
@@ -820,6 +821,20 @@
         }
 
         this.$refs.presetUploadInput.value = ''
+      },
+      async copyCurrentSettingsToClipboard() {
+        const preset = {
+          name: 'Current Settings',
+          description: 'These are the currently selected settings',
+          multiverseSettings: this.getMultiverseSettings(),
+        }
+
+        await window.navigator.clipboard.writeText(JSON.stringify(preset, null, 2))
+        EventBus.$emit('notification', {
+          message: `Copied to clipboard`,
+          color: 'success darken-3',
+          timeout: 1000,
+        })
       },
     },
   }

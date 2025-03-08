@@ -68,7 +68,26 @@
 
     <v-tooltip bottom open-delay="300">
       <template #activator="{ on }">
-        <v-btn icon @click="$emit('start-over')" class="ml-2" :disabled="disabled || universePreset.worldSettings.length === 0" v-on="on">
+        <v-btn
+          icon
+          v-on="on"
+          :disabled="!(universePreset.worldSettings.length > 0)"
+          @click="$emit('copy-current-settings-to-clipboard')"
+          ><v-icon>mdi-clipboard-outline</v-icon></v-btn
+        >
+      </template>
+      <span>Copy current Settings to Clipboard</span>
+    </v-tooltip>
+
+    <v-tooltip bottom open-delay="300">
+      <template #activator="{ on }">
+        <v-btn
+          icon
+          @click="$emit('start-over')"
+          class="ml-2"
+          :disabled="disabled || universePreset.worldSettings.length === 0"
+          v-on="on"
+        >
           <v-icon>mdi-restart</v-icon>
         </v-btn>
       </template>

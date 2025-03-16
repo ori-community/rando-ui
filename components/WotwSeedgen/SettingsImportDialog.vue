@@ -113,6 +113,7 @@
           return
         }
 
+        this.settingsText = ''
         this.$emit('import-settings', settingsToImport)
       },
       importSetError(message) {

@@ -14,6 +14,7 @@
         @delete-world="deleteWorld"
         @copy-world="createNewWorldFromExistingWorld"
         @save-world-as-custom-preset="customPresetCreateFromWorld"
+        @copy-world-settings-to-clipboard="copySettingsToClipboard"
         @import-custom-preset="customPresetImportDialogOpen = true"
         @copy-current-settings-to-clipboard="copySettingsToClipboard"
         @past-settings="settingsImportDialogOpen = true"

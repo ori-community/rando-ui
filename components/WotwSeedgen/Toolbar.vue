@@ -63,6 +63,10 @@
           <v-icon left>mdi-content-save-outline</v-icon>
           Save as Custom Preset
         </v-list-item>
+        <v-list-item :disabled="disabled" @click="$emit('copy-world-settings-to-clipboard', worldMenuWorldIndex)">
+          <v-icon left>mdi-content-copy</v-icon>
+          Copy Settings To Clipboard
+        </v-list-item>
       </v-list>
     </v-menu>
 

@@ -15,7 +15,8 @@
         @copy-world="createNewWorldFromExistingWorld"
         @save-world-as-custom-preset="customPresetCreateFromWorld"
         @import-custom-preset="customPresetImportDialogOpen = true"
-        @copy-current-settings-to-clipboard="copyCurrentSettingsToClipboard"
+        @copy-current-settings-to-clipboard="copySettingsToClipboard"
+        @past-settings="settingsImportDialogOpen = true"
       />
 
       <div class="mb-12">
@@ -180,47 +181,20 @@
 
     <!-- custom preset import -->
     <v-dialog v-model="customPresetImportDialogOpen" fullscreen>
-      <v-card class="d-flex flex-column">
-        <div class="pt-5 px-5 pb-2">
-          <h3>Import Custom Preset</h3>
-        </div>
+      <Wotw-Seedgen-Settings-Import-Dialog
+        title="Import Custom Preset"
+        @import-settings="importCustomPreset"
+        @canceled="customPresetImportDialogOpen = false"
+      />
+    </v-dialog>
 
-        <textarea
-          v-model="customPresetImportText"
-          no-resize
-          autofocus
-          clearable
-          class="custom-header-import-textarea flex-grow-1 pa-5"
-          placeholder="Paste your custom preset here..."
-        ></textarea>
-
-        <div class="d-flex pa-5 buttons custom-preset-import-button-area">
-          <input ref="presetUploadInput" type="file" accept=".txt" hidden @change="readCustomPresetFromFile" />
-          <v-btn type="file" color="accent" depressed @click="selectFileForCustomPresetImport">Open from file</v-btn>
-
-          <v-alert v-if="customPresetImportShowError" dense type="error">{{
-            customPresetImportErrorMessageText
-          }}</v-alert>
-          <div>
-            <v-btn
-              depressed
-              text
-              @click="
-                customPresetImportDialogOpen = false
-                customPresetImportText = ''
-              "
-              >Cancel</v-btn
-            >
-            <v-btn
-              color="accent"
-              :disabled="!customPresetImportText"
-              depressed
-              @click="importCustomPreset(customPresetImportText)"
-              >Import</v-btn
-            >
-          </div>
-        </div>
-      </v-card>
+    <!--  paste settings  -->
+    <v-dialog v-model="settingsImportDialogOpen" fullscreen>
+      <Wotw-Seedgen-Settings-Import-Dialog
+        title="Paste Settings"
+        @import-settings="pasteSettings"
+        @canceled="settingsImportDialogOpen = false"
+      />
     </v-dialog>
   </throttled-spinner>
 </template>
@@ -281,11 +255,9 @@
       customPresetImportText: '',
       customPresetSaveWorldIndex: null,
       customPresetConfirmationDialogOpen: false,
-      customPresetImportShowError: false,
-      customPresetImportErrorMessageText: '',
-      customPresetImportErrorMessageTimeout: null,
       customPresetNameMaxLength: 50,
       customPresetDescriptionMaxLength: 200,
+      settingsImportDialogOpen: false,
     }),
     computed: {
       isElectron,
@@ -753,80 +725,21 @@
         this.currentCustomPreset = cloneDeep(this.customPresets[index])
       },
 
-      importCustomPreset(jsonString) {
-        try {
-          this.currentCustomPreset = JSON.parse(jsonString)
-        } catch (e) {
-          this.importCustomPresetShowError(String(e))
-          return
-        }
-
-        if (!this.currentCustomPreset.name) {
-          this.importCustomPresetShowError('Name has to be set')
-          return
-        }
-
-        if (!this.currentCustomPreset.multiverseSettings) {
-          this.importCustomPresetShowError('Configuration cannot be empty')
-          return
-        }
-
-        if (this.currentCustomPreset.name.length > this.customPresetNameMaxLength) {
-          this.importCustomPresetShowError(
-            `Name of custom header is too long (${this.currentCustomPreset.name.length}/${this.customPresetNameMaxLength})`,
-          )
-          return
-        }
-
-        if (this.currentCustomPreset.description?.length > this.customPresetDescriptionMaxLength) {
-          this.importCustomPresetShowError(
-            `Description of custom header is too long (${this.currentCustomPreset.description.length}/${this.customPresetDescriptionMaxLength})`,
-          )
-          return
-        }
-
-        this.saveCustomPreset()
+      importCustomPreset(presetSettings) {
         this.customPresetImportDialogOpen = false
-      },
-      importCustomPresetShowError(message) {
-        if (this.customPresetImportErrorMessageTimeout !== null) {
-          clearTimeout(this.customPresetImportErrorMessageTimeout)
+        try {
+          this.currentCustomPreset = presetSettings
+          this.saveCustomPreset()
+        } catch (e) {
+          console.error(e)
+          EventBus.$emit('main.error', e)
         }
-
-        this.customPresetImportErrorMessageText = message
-        this.customPresetImportShowError = true
-
-        this.customPresetImportErrorMessageTimeout = setTimeout(() => {
-          this.customPresetImportShowError = false
-        }, 5000)
       },
-      selectFileForCustomPresetImport() {
-        this.$refs.presetUploadInput.click()
-      },
-      readCustomPresetFromFile(event) {
-        const [file] = event.target.files
-        const reader = new FileReader()
-
-        reader.addEventListener(
-          'load',
-          () => {
-            // this will then display a text file
-            this.customPresetImportText = reader.result
-          },
-          false,
-        )
-
-        if (file) {
-          reader.readAsText(file)
-        }
-
-        this.$refs.presetUploadInput.value = ''
-      },
-      async copyCurrentSettingsToClipboard() {
+      async copySettingsToClipboard(index = null) {
         const preset = {
           name: 'Current Settings',
           description: 'These are the currently selected settings',
-          multiverseSettings: this.getMultiverseSettings(),
+          multiverseSettings: this.getMultiverseSettings(index),
         }
 
         await window.navigator.clipboard.writeText(JSON.stringify(preset, null, 2))
@@ -835,6 +748,13 @@
           color: 'success darken-3',
           timeout: 1000,
         })
+      },
+      pasteSettings(seedSettings) {
+        this.setMultiverseSettings(
+          seedSettings.multiverseSettings,
+          seedSettings.multiverseSettings.universeSettings.worldSettings.length > 1,
+        )
+        this.settingsImportDialogOpen = false
       },
     },
   }
@@ -860,20 +780,5 @@
   }
   .confirmation-dialog-info label {
     display: block;
-  }
-
-  .custom-header-import-textarea {
-    background-color: rgba(255, 255, 255, 0.1);
-    width: 100%;
-    min-height: 100%;
-    border: none;
-    outline: none;
-    resize: none;
-    color: white;
-    font-family: 'Fira Code', 'Consolas', monospace;
-  }
-  .custom-preset-import-button-area {
-    min-height: 100px;
-    justify-content: space-between;
   }
 </style>

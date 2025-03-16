@@ -33,22 +33,6 @@
       Multiworld
     </v-btn>
 
-    <v-spacer />
-
-    <!-- custom presets -->
-    <v-menu offset-y left close-on-content-click>
-      <template #activator="{ on, attrs }">
-        <v-btn text v-bind="attrs" class="ml-2" v-on="on">Custom Presets</v-btn>
-      </template>
-      <v-list>
-        <v-list-item :disabled="loadCustomPresetDisabled" @click="$emit('load-custom-preset')"> Load </v-list-item>
-        <v-list-item :disabled="!(universePreset.worldSettings.length > 0)" @click="$emit('save-as-custom-preset')">
-          Save
-        </v-list-item>
-        <v-list-item @click="$emit('import-custom-preset')"> Import </v-list-item>
-      </v-list>
-    </v-menu>
-
     <v-menu v-model="worldMenuOpen" :position-x="worldMenuX" :position-y="worldMenuY" absolute offset-y>
       <v-list>
         <v-list-item :disabled="disabled" @click="$emit('copy-world', worldMenuWorldIndex)">
@@ -70,40 +54,57 @@
       </v-list>
     </v-menu>
 
-    <v-tooltip bottom open-delay="300">
-      <template #activator="{ on }">
-        <v-btn
-          icon
-          v-on="on"
-          :disabled="!(universePreset.worldSettings.length > 0)"
-          @click="$emit('copy-current-settings-to-clipboard')"
-          ><v-icon>mdi-content-copy</v-icon></v-btn
-        >
-      </template>
-      <span>Copy current Settings to Clipboard</span>
-    </v-tooltip>
+    <v-spacer />
 
-    <v-tooltip bottom open-delay="300">
-      <template #activator="{ on }">
-        <v-btn icon v-on="on" @click="$emit('past-settings')"><v-icon>mdi-clipboard-outline</v-icon></v-btn>
-      </template>
-      <span>Paste Settings</span>
-    </v-tooltip>
+    <!-- custom presets -->
+    <div class="right-container">
+      <v-menu offset-y left close-on-content-click>
+        <template #activator="{ on, attrs }">
+          <v-btn text v-bind="attrs" class="ml-2" v-on="on">Custom Presets</v-btn>
+        </template>
+        <v-list>
+          <v-list-item :disabled="loadCustomPresetDisabled" @click="$emit('load-custom-preset')"> Load </v-list-item>
+          <v-list-item :disabled="!(universePreset.worldSettings.length > 0)" @click="$emit('save-as-custom-preset')">
+            Save
+          </v-list-item>
+          <v-list-item @click="$emit('import-custom-preset')"> Import </v-list-item>
+        </v-list>
+      </v-menu>
 
-    <v-tooltip bottom open-delay="300">
-      <template #activator="{ on }">
-        <v-btn
-          icon
-          @click="$emit('start-over')"
-          class="ml-2"
-          :disabled="disabled || universePreset.worldSettings.length === 0"
-          v-on="on"
-        >
-          <v-icon>mdi-restart</v-icon>
-        </v-btn>
-      </template>
-      <span>Start over</span>
-    </v-tooltip>
+      <v-tooltip bottom open-delay="300">
+        <template #activator="{ on }">
+          <v-btn
+            icon
+            v-on="on"
+            :disabled="!(universePreset.worldSettings.length > 0)"
+            @click="$emit('copy-current-settings-to-clipboard')"
+            ><v-icon>mdi-content-copy</v-icon></v-btn
+          >
+        </template>
+        <span>Copy current Settings to Clipboard</span>
+      </v-tooltip>
+
+      <v-tooltip bottom open-delay="300">
+        <template #activator="{ on }">
+          <v-btn icon v-on="on" @click="$emit('past-settings')"><v-icon>mdi-clipboard-outline</v-icon></v-btn>
+        </template>
+        <span>Paste Settings</span>
+      </v-tooltip>
+
+      <v-tooltip bottom open-delay="300">
+        <template #activator="{ on }">
+          <v-btn
+            icon
+            @click="$emit('start-over')"
+            :disabled="disabled || universePreset.worldSettings.length === 0"
+            v-on="on"
+          >
+            <v-icon>mdi-restart</v-icon>
+          </v-btn>
+        </template>
+        <span>Start over</span>
+      </v-tooltip>
+    </div>
   </div>
 </template>
 
@@ -157,4 +158,10 @@
   }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+  .right-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3em;
+  }
+</style>

@@ -1,6 +1,6 @@
 <template>
   <v-btn small @click="copyToClipboard()" icon>
-    <v-icon>{{ isCopied ? 'mdi-clipboard-check-outline' : 'mdi-clipboard-outline' }}</v-icon>
+    <v-icon>{{ isCopied ? 'mdi-clipboard-check-outline' : 'mdi-content-copy' }}</v-icon>
   </v-btn>
 </template>
 

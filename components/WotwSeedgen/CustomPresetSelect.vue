@@ -48,7 +48,7 @@
           Delete
         </v-list-item>
         <v-list-item @click="copyToClipboard(contextMenuCustomPresetIndex)">
-          <v-icon left>mdi-clipboard-arrow-up-outline</v-icon>
+          <v-icon left>mdi-content-copy</v-icon>
           Copy to Clipboard
         </v-list-item>
       </v-list>

@@ -17,7 +17,7 @@
             <v-data-table :items="changes" :headers="headersChanges" dense>
               <template v-slot:item.actions="{ item }">
                 <v-icon class="me-1" small @click="addToWatchlist(item.group, item.state)"> mdi-eye-outline </v-icon>
-                <v-icon small @click="copyToClipboard(item)"> mdi-clipboard-outline </v-icon>
+                <v-icon small @click="copyToClipboard(item)"> mdi-content-copy </v-icon>
               </template>
             </v-data-table>
           </v-card>
@@ -33,7 +33,7 @@
             <v-data-table :items="watchlist" :headers="headersWatchlist" dense>
               <template v-slot:item.actions="{ item }">
                 <v-icon class="me-1" small @click="removeFromWatchlist(item)"> mdi-delete </v-icon>
-                <v-icon small @click="copyToClipboard(item)"> mdi-clipboard-outline </v-icon>
+                <v-icon small @click="copyToClipboard(item)"> mdi-content-copy </v-icon>
               </template>
             </v-data-table>
           </v-card>
@@ -152,7 +152,6 @@
 </script>
 
 <style lang="scss" scoped>
-
   .tables-container {
     display: grid;
     align-items: start;

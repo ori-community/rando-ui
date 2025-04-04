@@ -195,7 +195,7 @@
     </v-dialog>
     <v-dialog v-model="showArchipelagoDialog" max-width="500px">
       <v-card>
-        <v-card-title>Play Archipelago</v-card-title>
+        <v-card-title>Play Archipelago (Beta)</v-card-title>
         <v-card-text>
           <div class="mb-2">
             <v-text-field

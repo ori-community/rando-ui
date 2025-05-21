@@ -66,13 +66,13 @@ CoyoteHammerJump:
   description: Preserving Coyote Jump momentum with Hammer
 WallHammerJump:
   name: Wall Hammer Jump
-  desciption: Preserving a wall jump momentum with Hammer
+  desciption: Preserving Wall Jump momentum with Hammer
 GroundedHammerJump:
   name: Grounded Hammer Jump
-  description: Preserving a regular jump momentum with Hammer
+  description: Preserving regular Jump momentum with Hammer
 ExtendedHammer:
   name: Extended Hammer
-  description: Extending upwards momentum by alternating Hammer swings
+  description: Extending upwards momentum by swinging Hammer in alternating directions
 SpearJump:
   name: Spear Jump
   description: Storing a grounded jump into the air with Spear

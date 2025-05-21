@@ -40,9 +40,6 @@ WaveDash:
 GrenadeJump:
   name: Grenade Jump
   description: Preserving jump momentum with Grenade
-HammerJump:
-  name: Hammer Jump
-  description: Preserving Double Jump momentum with Hammer
 SwordJump:
   name: Sword Jump
   description: Preserving Double Jump momentum with Sword
@@ -58,9 +55,24 @@ PauseHover:
 GlideJump:
   name: Glide Jump
   description: Storing a grounded jump into the air with Glide
+AerialHammerJump:
+  name: Aerial Hammer Jump
+  description: Preserving Double Jump momentum with Hammer
 GlideHammerJump:
   name: Glide Hammer Jump
   description: Preserving Glide Jump momentum with Hammer
+CoyoteHammerJump:
+  name: Coyote Hammer Jump
+  description: Preserving Coyote Jump momentum with Hammer
+WallHammerJump:
+  name: Wall Hammer Jump
+  desciption: Preserving Wall Jump momentum with Hammer
+GroundedHammerJump:
+  name: Grounded Hammer Jump
+  description: Preserving regular Jump momentum with Hammer
+ExtendedHammer:
+  name: Extended Hammer
+  description: Extending upwards momentum by swinging Hammer in alternating directions
 SpearJump:
   name: Spear Jump
   description: Storing a grounded jump into the air with Spear

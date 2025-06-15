@@ -3,8 +3,15 @@ import path from "path"
 import {createIPCHandler} from "electron-trpc/main"
 import {appRouter} from "./api/api"
 import {events} from "./api/routers/timer"
+import {getUserDataPath} from "./paths"
+import fs from "fs"
 
 const createWindow = async () => {
+  // Create user data directory
+  if (!fs.existsSync(getUserDataPath())) {
+    await fs.promises.mkdir(getUserDataPath(), {recursive: true})
+  }
+
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 800,

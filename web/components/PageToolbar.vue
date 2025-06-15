@@ -7,6 +7,7 @@
 <script lang="ts" setup>
   const isElectron = useIsElectron()
   const electronApi = isElectron ? useElectronApi() : null
+  const authStore = useAuthStore()
 
   async function login() {
     if (!electronApi) {
@@ -16,7 +17,10 @@
     const jwt = await electronApi.auth.startOAuthFlow.query({
       apiBaseUrl: "https://wotw.orirando.com/api"
     })
-    console.log("JWT:", jwt)
+
+    if (jwt) {
+      authStore.jwt = jwt
+    }
   }
 </script>
 

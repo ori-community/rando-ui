@@ -26,7 +26,7 @@ export default router({
 
         await loginWindow.loadURL(`${input.apiBaseUrl}/login?redirect=ori-rando://authenticate`)
 
-        return await new Promise((resolve, reject) => {
+        return await new Promise<string>((resolve, reject) => {
           loginWindow.on("close", reject)
 
           loginWindow.webContents.on("will-redirect", (event, urlString) => {
@@ -53,6 +53,7 @@ export default router({
   setClientJwt: publicProcedure
     .input(z.string())
     .query(async ({input}) => {
+      console.log(getUserDataPath(".jwt"))
       await fs.promises.writeFile(getUserDataPath(".jwt"), input, { encoding: "utf8" })
     }),
   deleteClientJwt: publicProcedure

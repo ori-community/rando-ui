@@ -1,6 +1,12 @@
 <template>
   <v-app>
-    <nuxt-page />
+    <v-container>
+      <page-toolbar />
+    </v-container>
+
+    <v-main>
+      <nuxt-page />
+    </v-main>
   </v-app>
 </template>
 

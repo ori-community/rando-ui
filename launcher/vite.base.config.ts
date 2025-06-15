@@ -19,7 +19,8 @@ export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
       // 🚧 Multiple builds may conflict.
       outDir: '.vite/build',
       watch: command === 'serve' ? {} : null,
-      minify: command === 'build',
+      // minify: command === 'build',
+      minify: false,
     },
     clearScreen: false,
   }

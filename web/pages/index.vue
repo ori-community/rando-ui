@@ -9,26 +9,20 @@
 </template>
 
 <script lang="ts" setup>
-  import { createTRPCProxyClient } from '@trpc/client'
-  import type { LauncherApiRouter } from '@ori-rando/launcher/src/api/api'
-  import { ipcLink } from 'electron-trpc/renderer'
-
-  const client = createTRPCProxyClient<LauncherApiRouter>({
-    links: [ipcLink()]
-  })
-
+  const electronApi = useElectronApi()
   const time = ref(0)
 
   async function test1() {
-    await client.auth.startOAuthFlow.query({
-      baseUrl: 'https://wotw.orirando.com',
+    await electronApi.auth.startOAuthFlow.query({
+      apiBaseUrl: 'https://wotw.orirando.com',
       forceWindowLogin: false,
     })
   }
 
   onMounted(() => {
-    client.timer.onTick.subscribe(undefined, {
+    electronApi.timer.onTick.subscribe(undefined, {
       onData(value: number) {
+        console.log("Timer:", value)
         time.value = value
       },
     })

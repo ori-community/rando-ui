@@ -12,23 +12,23 @@
     "lint": "eslint --ext .ts,.tsx ."
   },
   "devDependencies": {
-    "@electron-forge/cli": "^7.4.0",
-    "@electron-forge/maker-deb": "^7.4.0",
-    "@electron-forge/maker-rpm": "^7.4.0",
-    "@electron-forge/maker-squirrel": "^7.4.0",
-    "@electron-forge/maker-zip": "^7.4.0",
-    "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
-    "@electron-forge/plugin-fuses": "^7.4.0",
-    "@electron-forge/plugin-vite": "^7.4.0",
+    "@electron-forge/cli": "^7.8.1",
+    "@electron-forge/maker-deb": "^7.8.1",
+    "@electron-forge/maker-rpm": "^7.8.1",
+    "@electron-forge/maker-squirrel": "^7.8.1",
+    "@electron-forge/maker-zip": "^7.8.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.8.1",
+    "@electron-forge/plugin-fuses": "^7.8.1",
+    "@electron-forge/plugin-vite": "^7.8.1",
     "@electron/fuses": "^1.8.0",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "@typescript-eslint/parser": "^5.0.0",
-    "electron": "31.3.0",
-    "eslint": "^8.0.1",
-    "eslint-plugin-import": "^2.25.0",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "electron": "36.4.0",
+    "eslint": "^8.57.1",
+    "eslint-plugin-import": "^2.31.0",
     "ts-node": "^10.9.2",
-    "typescript": "~5.5.4",
-    "vite": "^5.3.5"
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
   },
   "keywords": [],
   "author": {
@@ -37,7 +37,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "electron-trpc": "^0.6.1",
-    "zod": "^3.23.8"
+    "@trpc/client": "^10.45.2",
+    "@trpc/server": "^10.45.2",
+    "electron-trpc": "^0.7.1",
+    "zod": "^3.25.64"
   }
 }

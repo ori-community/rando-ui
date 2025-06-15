@@ -4,10 +4,11 @@ const REDIRECT_PATH_LOCAL_STORAGE_KEY = 'auth.redirectPath'
 const JWT_LOCAL_STORAGE_KEY = 'auth.jwt'
 
 const isElectron = useIsElectron()
+const electronApi = isElectron ? useElectronApi() : null
 
 export const useAuthStore = defineStore('auth', () => {
-  const jwt = ref<null|string>(null)
-  const redirectPath = ref<null|string>(window.localStorage.getItem(REDIRECT_PATH_LOCAL_STORAGE_KEY))
+  const jwt = ref<null | string>(null)
+  const redirectPath = ref<null | string>(window.localStorage.getItem(REDIRECT_PATH_LOCAL_STORAGE_KEY))
 
   watch(() => useAuthStore().redirectPath, (value) => {
     if (value) {
@@ -19,8 +20,12 @@ export const useAuthStore = defineStore('auth', () => {
 
   watch(jwt, (value) => {
     // Persist the new token
-    if (isElectron) {
-      // TODO: Make tRPC call to persist the new JWT
+    if (electronApi) {
+      if (value) {
+        electronApi.auth.setClientJwt.query(value)
+      } else {
+        electronApi.auth.deleteClientJwt.query()
+      }
     } else {
       if (value) {
         window.localStorage.setItem(JWT_LOCAL_STORAGE_KEY, value)
@@ -51,8 +56,8 @@ export const useAuthStore = defineStore('auth', () => {
    * switching servers.
    */
   async function restoreJwt() {
-    if (isElectron) {
-      // TODO: Make tRPC call to get the stored JWT token or null
+    if (electronApi) {
+      jwt.value = await electronApi.auth.getClientJwt.query()
     } else {
       jwt.value = window.localStorage.getItem(JWT_LOCAL_STORAGE_KEY)
     }

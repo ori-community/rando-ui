@@ -17,6 +17,7 @@ export default defineConfig((env) => {
       rollupOptions: {
         external,
       },
+      minify: false,
     },
     plugins: [pluginHotRestart('restart')],
     define,

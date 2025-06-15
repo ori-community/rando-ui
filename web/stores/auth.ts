@@ -18,22 +18,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   })
 
-  watch(jwt, (value) => {
-    // Persist the new token
-    if (electronApi) {
-      if (value) {
-        electronApi.auth.setClientJwt.query(value)
-      } else {
-        electronApi.auth.deleteClientJwt.query()
-      }
-    } else {
-      if (value) {
-        window.localStorage.setItem(JWT_LOCAL_STORAGE_KEY, value)
-      } else {
-        window.localStorage.removeItem(JWT_LOCAL_STORAGE_KEY)
-      }
-    }
-
+  watch(jwt, async (value) => {
     // Push the token to the Axios HTTP client
     const axios = useAxios()
 
@@ -44,6 +29,17 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     // TODO: Push the token to WebSocket client
+
+    // Persist the new token
+    if (electronApi) {
+      await electronApi.auth.setClientJwt.query(value)
+    } else {
+      if (value) {
+        window.localStorage.setItem(JWT_LOCAL_STORAGE_KEY, value)
+      } else {
+        window.localStorage.removeItem(JWT_LOCAL_STORAGE_KEY)
+      }
+    }
   })
 
   /**

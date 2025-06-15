@@ -5,6 +5,13 @@ import fs from "fs"
 import {getUserDataPath} from "../../paths"
 
 export const auth = router({
+  /**
+   * Starts the OAuth2 authentication flow.
+   * If this launcher is set as the default handler for the ori-rando://
+   * protocol, it opens the login page in the default browser.
+   * If not, or `forceWindowLogin` is true, opens the login page in
+   * an embedded window.
+   */
   startOAuthFlow: publicProcedure
     .input(z.object({
       apiBaseUrl: z.string(),
@@ -41,6 +48,9 @@ export const auth = router({
         })
       }
     }),
+  /**
+   * Returns the saved client JWT, or null if it doesn't exist
+   */
   getClientJwt: publicProcedure
     .query(async () => {
       const jwtFilePath = getUserDataPath(".jwt")
@@ -50,17 +60,19 @@ export const auth = router({
 
       return null
     }),
+  /**
+   * Sets the saved client JWT, or deletes it when the token is null.
+   */
   setClientJwt: publicProcedure
-    .input(z.string())
+    .input(z.string().nullable())
     .query(async ({input}) => {
-      console.log(getUserDataPath(".jwt"))
-      await fs.promises.writeFile(getUserDataPath(".jwt"), input, { encoding: "utf8" })
-    }),
-  deleteClientJwt: publicProcedure
-    .query(async () => {
-      const jwtFilePath = getUserDataPath(".jwt")
-      if (fs.existsSync(jwtFilePath)) {
-        await fs.promises.unlink(jwtFilePath)
+      if (input === null) {
+        const jwtFilePath = getUserDataPath(".jwt")
+        if (fs.existsSync(jwtFilePath)) {
+          await fs.promises.unlink(jwtFilePath)
+        }
+      } else {
+        await fs.promises.writeFile(getUserDataPath(".jwt"), input, { encoding: "utf8" })
       }
-    })
+    }),
 })

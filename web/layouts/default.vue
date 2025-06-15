@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-container>
-      <page-toolbar />
+      <rando-page-toolbar />
     </v-container>
 
     <v-main>

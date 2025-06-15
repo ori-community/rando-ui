@@ -1,6 +1,19 @@
 <template>
-  <div class="page-toolbar">
-    <v-btn @click="login">Login</v-btn>
+  <div class="page-toolbar d-flex align-center my-4">
+    <v-scale-transition group tag="div" class="flex-gap align-center">
+      <v-btn key="home" exact :to="`${isElectron ? `/electron` : `/`}`" size="x-large" variant="text">
+        <v-icon>mdi-home-outline</v-icon>
+      </v-btn>
+    </v-scale-transition>
+    <v-spacer/>
+    <throttled-spinner no-margin>
+      <div class="d-flex align-center">
+        <v-btn size="x-large" variant="text" @click="login">
+          <v-icon start>mdi-login-variant</v-icon>
+          Log in
+        </v-btn>
+      </div>
+    </throttled-spinner>
   </div>
 </template>
 
@@ -26,6 +39,6 @@
 
 <style lang="scss" scoped>
   .page-toolbar {
-    display: flex;
+    gap: 0.2em;
   }
 </style>

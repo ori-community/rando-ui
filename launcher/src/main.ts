@@ -6,6 +6,10 @@ import {events} from "./api/routers/timer"
 import {getUserDataPath} from "./paths"
 import fs from "fs"
 
+// Override session data path to have a clean app data directory.
+// Otherwise, Chromium will pollute it...
+app.setPath("sessionData", path.join(app.getPath("userData"), "launcher"))
+
 const createWindow = async () => {
   // Create user data directory
   if (!fs.existsSync(getUserDataPath())) {

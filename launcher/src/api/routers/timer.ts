@@ -4,7 +4,7 @@ import { EventEmitter } from 'events'
 
 export const events = new EventEmitter()
 
-export default router({
+export const timer = router({
   onTick: publicProcedure
     .subscription(() => {
       return observable<number>((emit) => {

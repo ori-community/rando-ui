@@ -4,7 +4,7 @@ import {app, BrowserWindow, shell} from "electron"
 import fs from "fs"
 import {getUserDataPath} from "../../paths"
 
-export default router({
+export const auth = router({
   startOAuthFlow: publicProcedure
     .input(z.object({
       apiBaseUrl: z.string(),

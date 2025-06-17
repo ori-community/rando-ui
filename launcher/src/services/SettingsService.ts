@@ -3,17 +3,19 @@ import {getUserDataPath} from "../paths"
 import fs from "fs"
 import {merge} from "lodash"
 
-type Settings = ReturnType<typeof SettingsService.getDefaultSettings>
-type SettingsKey = keyof Settings
+export type Settings = ReturnType<typeof SettingsService.getDefaultSettings>
+export type SettingKey = keyof Settings
 type SettingsEvent = {
   /** Emitted when a single setting changed */
-  settingChanged: [SettingsKey, Settings[SettingsKey]],
+  settingChanged: [SettingKey, Settings[SettingKey]],
 
   /** Emitted when all settings were (re-)loaded */
   settingsLoaded: [Settings],
 }
 
 export class SettingsService {
+  public static readonly instance = new SettingsService()
+
   /** The currently loaded settings */
   private settingsCache: Settings | null = null
 
@@ -119,7 +121,7 @@ export class SettingsService {
    * is queued for in at most 2 seconds.
    * Use `flushSettings` to flush settings immediately.
    */
-  public async setSetting<K extends SettingsKey>(key: K, value: Settings[K]) {
+  public async setSetting<K extends SettingKey>(key: K, value: Settings[K]) {
     if (this.settingsCache === null) {
       await this.loadSettingsToCache()
     }

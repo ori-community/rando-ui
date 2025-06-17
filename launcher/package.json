@@ -39,7 +39,9 @@
   "dependencies": {
     "@trpc/client": "^10.45.2",
     "@trpc/server": "^10.45.2",
+    "@types/lodash": "^4.17.17",
     "electron-trpc": "^0.7.1",
+    "lodash": "^4.17.21",
     "zod": "^3.25.64"
   }
 }

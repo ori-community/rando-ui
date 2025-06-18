@@ -1,6 +1,5 @@
 import {publicProcedure, router} from "../trpc"
-import fs from "fs"
-import {getInstallDataPath} from "../../paths"
+import {VersionService} from "../../services/VersionService"
 
 export const updater = router({
   /**
@@ -8,12 +7,6 @@ export const updater = router({
    */
   getVersion: publicProcedure
     .query(async () => {
-      const versionFilePath = getInstallDataPath("VERSION")
-
-      if (!fs.existsSync(versionFilePath)) {
-        return "develop"
-      }
-
-      return await fs.promises.readFile(versionFilePath, {encoding: "utf8"})
+      return await VersionService.getVersion()
     })
 })

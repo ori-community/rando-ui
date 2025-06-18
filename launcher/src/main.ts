@@ -2,7 +2,6 @@ import {app, BrowserWindow} from "electron"
 import path from "path"
 import {createIPCHandler} from "electron-trpc/main"
 import {appRouter} from "./api/api"
-import {events} from "./api/routers/timer"
 import {getUserDataPath} from "./paths"
 import fs from "fs"
 import {RandoIPCService} from "./services/RandoIPCService"
@@ -38,7 +37,6 @@ const createWindow = async () => {
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
-
   mainWindow.maximize()
 
   await RandoIPCService.startIPCServer()

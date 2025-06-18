@@ -5,6 +5,7 @@ import {appRouter} from "./api/api"
 import {events} from "./api/routers/timer"
 import {getUserDataPath} from "./paths"
 import fs from "fs"
+import {RandoIPCService} from "./services/RandoIPCService"
 
 // Override session data path to have a clean app data directory.
 // Otherwise, Chromium will pollute it...
@@ -40,12 +41,7 @@ const createWindow = async () => {
 
   mainWindow.maximize()
 
-  function loop() {
-    events.emit("tick", Date.now())
-    setTimeout(loop, 1000)
-  }
-
-  loop()
+  await RandoIPCService.startIPCServer()
 }
 
 app.on("ready", createWindow)

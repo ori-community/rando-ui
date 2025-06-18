@@ -5,6 +5,7 @@ import {appRouter} from "./api/api"
 import {getUserDataPath} from "./paths"
 import fs from "fs"
 import {RandoIPCService} from "./services/RandoIPCService"
+import {LocalTrackerWebSocketService} from "./services/LocalTrackerWebSocketService"
 
 // Override session data path to have a clean app data directory.
 // Otherwise, Chromium will pollute it...
@@ -40,6 +41,7 @@ const createWindow = async () => {
   mainWindow.maximize()
 
   await RandoIPCService.startIPCServer()
+  LocalTrackerWebSocketService.start()
 }
 
 app.on("ready", createWindow)

@@ -1,7 +1,7 @@
 import type {UberId} from "../../../shared/UberStates"
 import * as zmq from "zeromq"
-import {SettingKey, Settings} from "./SettingsService"
 import {EventEmitter} from "events"
+import {LocalTrackerWebSocketService} from "./LocalTrackerWebSocketService"
 
 let socket: zmq.Dealer | null = null
 let receiveLoopActive = false
@@ -133,9 +133,12 @@ export class RandoIPCService {
   static async handleIncomingRequest(request: Request) {
     switch (request.method) {
       case "notify_timer_state_changed": {
-        // TODO: LocalTrackerWebSocketService
-        // const { in_game_time: inGameTime, async_loading_time: asyncLoadingTime, timer_should_run: timerShouldRun } = request.payload
-        // LocalTrackerWebSocketService.reportTimerState(inGameTime, asyncLoadingTime, timerShouldRun)
+        const { in_game_time: inGameTime, async_loading_time: asyncLoadingTime, timer_should_run: timerShouldRun } = request.payload as {
+          in_game_time: number,
+          async_loading_time: number,
+          timer_should_run: boolean,
+        }
+        LocalTrackerWebSocketService.reportTimerState(inGameTime, asyncLoadingTime, timerShouldRun)
         break
       }
       case "notify_on_uber_state_changed": {
@@ -156,14 +159,12 @@ export class RandoIPCService {
           // uiIpc.queueSend("game.uberStateChanged", {group, state, value, previousValue: previous_value})
         }
 
-        // TODO: LocalTrackerWebSocketService
-        // LocalTrackerWebSocketService.reportUberState({group, state, value})
+        LocalTrackerWebSocketService.reportUberState({group, state, value})
         break
       }
       case "notify_on_reload":
       case "notify_on_load": {
-        // TODO: LocalTrackerWebSocketService
-        // await LocalTrackerWebSocketService.forceRefreshAll()
+        await LocalTrackerWebSocketService.forceRefreshAll()
         break
       }
       case "notify_input": {
@@ -172,7 +173,7 @@ export class RandoIPCService {
         if (pressed) {
           switch (type) {
             case "ToggleBingoBoardOverlay":
-              // TODO
+              // TODO: BingoBoardOverlayService
               // await BingoBoardOverlayService.toggleVisibility()
               break
           }
@@ -181,22 +182,22 @@ export class RandoIPCService {
         break
       }
       case "notify_async_loading_state_changed": {
-        // TODO
+        // TODO: TASService
         // TASService.reportAsyncLoadingStateChanged(request.payload)
         break
       }
       case "notify_tas_state_changed": {
-        // TODO
+        // TODO: TASService
         // TASService.reportStateChanged(request.payload)
         break
       }
       case "notify_tas_timeline_loaded": {
-        // TODO
+        // TODO: TASService
         // TASService.reportTimelineLoaded(request.payload?.tas_config ?? null)
         break
       }
       case "league.run_submitted": {
-        // TODO
+        // TODO: uiIpc
         // uiIpc.queueSend('league.runSubmitted')
         break
       }

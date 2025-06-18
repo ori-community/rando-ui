@@ -35,18 +35,18 @@ export class SettingsService {
     // const localTrackerInitialWindowRect = LocalTrackerService.getInitialWindowRect()
 
     return {
-      ServerHost: "wotw.orirando.com",  // TODO: Client
-      ServerTLS: true,  // TODO: Client
-      // TODO: Infer UDP Port from WS connection
-      UseMicrosoftStore: false,  // TODO: Client
-      DeveloperMode: false,  // TODO: Client
-      DebugControls: false,  // TODO: Client
+      ServerHost: "wotw.orirando.com",
+      ServerTLS: true,
+      UseMicrosoftStore: false,
+      DeveloperMode: false,
+      DebugControls: false,
       HideQuestFilter: true,
       HideWarpFilter: true,
       HideCollectableFilter: true,
       AlwaysShowWarps: true,
       AlwaysShowKeystones: true,
-      EnableWorldMap: false,  // TODO: Client
+      AlwaysShowKeystoneDoors: true,
+      EnableWorldMap: false,
       GrappleMouseControl: false,
       BurrowMouseControl: false,
       WaterDashMouseControl: false,
@@ -54,15 +54,14 @@ export class SettingsService {
       LaunchWithTracker: true,
       FunnyMoney: false,
       InvertFastSwim: false,
-      LockCursor: false,  // TODO: Client
+      LockCursor: false,
       UpdateToPrereleaseVersions: false,
       ShowStatsAfterFinish: true,
-      ShowAllSecrets: true,  // TODO: Client
-      DisableAutoAim: false,  // TODO: Client
-      AlwaysShowKeystoneDoors: true,
+      ShowAllSecrets: true,
+      DisableAutoAim: false,
       SelectInLogicFilterByDefault: true,
       EnableMinimap: false,
-      EnableNativeControllerSupport: true,  // TODO: Client
+      EnableNativeControllerSupport: true,
       MapIconTransparency: 0.25,
       MapPanSpeed: 1.0,
       CameraShakeIntensity: 1.0,

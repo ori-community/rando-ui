@@ -1,7 +1,6 @@
 {
   "name": "@ori-rando/ui",
   "private": true,
-  "main": "dist-electron/main.js",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",

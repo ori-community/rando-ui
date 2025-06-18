@@ -1,0 +1,14 @@
+{
+  "name": "@ori-rando/shared",
+  "version": "1.0.0",
+  "description": "Shared assets for launcher and web",
+  "author": {
+    "name": "Timo Schwarzer",
+    "email": "timo@schwarzer.dev"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "typescript": "^5.8.3",
+    "protobufjs": "^7.5.3"
+  }
+}

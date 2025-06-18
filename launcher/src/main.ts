@@ -1,5 +1,6 @@
 import {app, BrowserWindow} from "electron"
 import path from "path"
+// eslint-disable-next-line import/no-unresolved
 import {createIPCHandler} from "electron-trpc/main"
 import {appRouter} from "./api/api"
 import {getUserDataPath} from "./paths"

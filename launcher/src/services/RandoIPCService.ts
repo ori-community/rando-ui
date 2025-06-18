@@ -2,6 +2,7 @@ import type {UberId} from "../../../shared/UberStates"
 import * as zmq from "zeromq"
 import {EventEmitter} from "events"
 import {LocalTrackerWebSocketService} from "./LocalTrackerWebSocketService"
+import log from "electron-log/main"
 
 let socket: zmq.Dealer | null = null
 let receiveLoopActive = false
@@ -86,10 +87,10 @@ export class RandoIPCService {
         this._receiveLoop()
       }
 
-      console.log("RandoIPC: ZMQ Server started")
+      log.info("RandoIPC: ZMQ Server started")
     } catch (e) {
       this.events.emit("connectionStateChanged", false)
-      console.log("RandoIPC: Error while starting IPC server:", e)
+      log.error("RandoIPC: Error while starting IPC server:", e)
     }
   }
 
@@ -109,19 +110,19 @@ export class RandoIPCService {
         const message = JSON.parse(messageString.toString())
 
         if (message.type === "request") {
-          this.handleIncomingRequest(message).catch((error) => console.log("RandoIPC: Could not handle incoming request", error))
+          this.handleIncomingRequest(message).catch((error) => log.error("RandoIPC: Could not handle incoming request", error))
         } else if (message.type === "response") {
           if (message.id in outgoingRequestHandlers) {
             outgoingRequestHandlers[message.id].resolve?.(message.payload)
           }
         } else {
-          console.log("RandoIPC: Could not handle message:", messageString)
+          log.error("RandoIPC: Could not handle message:", messageString)
         }
 
         this._receiveLoop()
       })
       .catch((e: Error) => {
-        console.error(e)
+        log.error("RandoIPCService: ", e)
         retryLater()
       })
   }
@@ -220,9 +221,9 @@ export class RandoIPCService {
 
           break
         } catch (e) {
-          console.error(e)
+          log.error("RandoIPCService: ", e)
           tries++
-          console.log(`Trying again... (try ${tries})`)
+          log.info(`Trying again... (try ${tries})`)
         }
       } while (tries < 3)
 
@@ -251,7 +252,9 @@ export class RandoIPCService {
     })
     outgoingRequestHandlers[request.id].promise = promise
 
-    this.handleOutgoingRequestQueue().catch(console.log)
+    this.handleOutgoingRequestQueue().catch(reason => {
+      log.error("RandoIPCService: Failed to process outgoing request queue: ", reason)
+    })
 
     return await promise
   }

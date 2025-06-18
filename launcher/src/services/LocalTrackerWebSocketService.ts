@@ -11,6 +11,7 @@ import {
 import { decodePacket, makePacket } from '../../../shared/proto/ProtoUtil'
 import { VersionService } from './VersionService'
 import {EventEmitter} from "events"
+import log from "electron-log/main"
 
 type TrackedUberState = {
   uberId: UberId,
@@ -193,7 +194,7 @@ export class LocalTrackerWebSocketService {
     this.wss.on('listening', () => {
       this.webSocketListening = true
       this.events.emit("serverStateChanged", true)
-      console.log('LocalTrackerWebSocketService: Started on port ' + this.port)
+      log.info('LocalTrackerWebSocketService: Started on port ' + this.port)
     })
 
     this.wss.on('close', () => {
@@ -329,7 +330,7 @@ export class LocalTrackerWebSocketService {
       socket.close()
     }
     this.wss?.close()
-    console.log('LocalTrackerWebSocketService: Stopped')
+    log.info('LocalTrackerWebSocketService: Stopped')
   }
 
   static get isRunning() {
@@ -352,7 +353,7 @@ export class LocalTrackerWebSocketService {
         let wasConnected = false
 
         const url = `${baseUrl}/remote-tracker${reconnect ? '?reconnect=true' : ''}`
-        console.log(`LocalTrackerWebSocketService: Connecting to ${url}`)
+        log.info(`LocalTrackerWebSocketService: Connecting to ${url}`)
         const ws = new WebSocket(url)
 
         ws.on('open', async () => {
@@ -373,7 +374,7 @@ export class LocalTrackerWebSocketService {
 
           switch (packet.$type) {
             case SetTrackerEndpointId.$type:
-              console.log('LocalTrackerWebSocketService: Connected')
+              log.info('LocalTrackerWebSocketService: Connected')
               wasConnected = true
               this._remoteTrackerEndpointId = (packet as SetTrackerEndpointId).endpointId
               this.ws = ws
@@ -381,7 +382,7 @@ export class LocalTrackerWebSocketService {
               await this.forceRefresh(ws)
               break
             case RequestFullUpdate.$type:
-              console.log('LocalTrackerWebSocketService: Server requested full refresh')
+              log.info('LocalTrackerWebSocketService: Server requested full refresh')
               await this.forceRefresh(ws)
               break
           }
@@ -389,14 +390,14 @@ export class LocalTrackerWebSocketService {
 
         ws.on('close', (code, reason) => {
           if (this.ws) {
-            console.log('LocalTrackerWebSocketService: Client socket closed, reconnecting in 4s...', code, reason.toString())
+            log.info('LocalTrackerWebSocketService: Client socket closed, reconnecting in 4s...', code, reason.toString())
             setTimeout(() => connect(true), 4000)
           }
         })
 
         ws.on('error', (e) => {
           if (this.ws) {
-            console.log('LocalTrackerWebSocketService: Client socket error, reconnecting in 4s...', e)
+            log.info('LocalTrackerWebSocketService: Client socket error, reconnecting in 4s...', e)
             setTimeout(() => connect(true), 4000)
           }
         })

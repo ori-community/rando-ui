@@ -2,6 +2,7 @@ import {EventEmitter} from "events"
 import {getUserDataPath} from "../paths"
 import fs from "fs"
 import {merge} from "lodash"
+import log from "electron-log/main"
 
 export type Settings = ReturnType<typeof SettingsService.getDefaultSettings>
 export type SettingKey = keyof Settings
@@ -92,7 +93,7 @@ export class SettingsService {
       const settingsContent = await fs.promises.readFile(settingsFilePath, {encoding: "utf-8"})
       settingsObject = merge(settingsObject, JSON.parse(settingsContent))
     } else {
-      console.log("Settings file not found. Using default settings.")
+      log.info("Settings file not found. Using default settings.")
     }
 
     this.settingsCache = {...settingsObject}

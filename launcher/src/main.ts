@@ -7,10 +7,13 @@ import {getUserDataPath} from "./paths"
 import fs from "fs"
 import {RandoIPCService} from "./services/RandoIPCService"
 import {LocalTrackerWebSocketService} from "./services/LocalTrackerWebSocketService"
+import log from "electron-log/main"
 
 // Override session data path to have a clean app data directory.
 // Otherwise, Chromium will pollute it...
 app.setPath("sessionData", path.join(app.getPath("userData"), "launcher"))
+
+log.transports.file.resolvePathFn = () => getUserDataPath("launcher.log")
 
 const createWindow = async () => {
   // Create user data directory

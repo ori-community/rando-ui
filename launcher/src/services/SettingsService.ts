@@ -1,5 +1,5 @@
 import {EventEmitter} from "events"
-import {getUserDataPath} from "../paths"
+import {getUserDataPath} from "@/paths"
 import fs from "fs"
 import {merge} from "lodash"
 import log from "electron-log/main"

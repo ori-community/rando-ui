@@ -1,7 +1,7 @@
-import {publicProcedure, router} from "../trpc"
-import {RandoIPCService} from "../../services/RandoIPCService"
+import {publicProcedure, router} from "@/api/trpc"
+import {RandoIPCService} from "@/services/RandoIPCService"
 import {observable} from "@trpc/server/observable"
-import {LocalTrackerWebSocketService} from "../../services/LocalTrackerWebSocketService"
+import {LocalTrackerWebSocketService} from "@/services/LocalTrackerWebSocketService"
 
 export const localTrackerWebSocket = router({
   isRunning: publicProcedure

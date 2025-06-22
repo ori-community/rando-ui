@@ -4,6 +4,12 @@
     "es6": true,
     "node": true
   },
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "project": ["tsconfig.json"]
+      }
+    },
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",

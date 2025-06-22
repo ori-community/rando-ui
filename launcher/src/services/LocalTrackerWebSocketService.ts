@@ -1,15 +1,15 @@
 import { AddressInfo, WebSocket, WebSocketServer } from 'ws'
-import type { UberId, UberState } from '../../../shared/UberStates'
-import { RandoIPCService } from './RandoIPCService'
+import type { UberId, UberState } from '@shared/UberStates'
+import { RandoIPCService } from '@/services/RandoIPCService'
 import {
   AuthenticateMessage,
   RequestFullUpdate,
   ResetTracker, SetTrackerEndpointId,
   TrackerFlagsUpdate, TrackerTimerStateUpdate,
   TrackerUpdate,
-} from '../../../shared/proto/messages'
-import { decodePacket, makePacket } from '../../../shared/proto/ProtoUtil'
-import { VersionService } from './VersionService'
+} from "@shared/proto/messages"
+import { decodePacket, makePacket } from "@shared/proto/ProtoUtil"
+import { VersionService } from '@/services/VersionService'
 import {EventEmitter} from "events"
 import log from "electron-log/main"
 

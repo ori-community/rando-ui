@@ -1,7 +1,7 @@
-import type {UberId} from "../../../shared/UberStates"
+import type {UberId} from "@shared/UberStates"
 import * as zmq from "zeromq"
 import {EventEmitter} from "events"
-import {LocalTrackerWebSocketService} from "./LocalTrackerWebSocketService"
+import {LocalTrackerWebSocketService} from "@/services/LocalTrackerWebSocketService"
 import log from "electron-log/main"
 
 let socket: zmq.Dealer | null = null

@@ -2,11 +2,11 @@ import {app, BrowserWindow} from "electron"
 import path from "path"
 // eslint-disable-next-line import/no-unresolved
 import {createIPCHandler} from "electron-trpc/main"
-import {appRouter} from "./api/api"
-import {getUserDataPath} from "./paths"
+import {appRouter} from "@/api/api"
+import {getUserDataPath} from "@/paths"
 import fs from "fs"
-import {RandoIPCService} from "./services/RandoIPCService"
-import {LocalTrackerWebSocketService} from "./services/LocalTrackerWebSocketService"
+import {RandoIPCService} from "@/services/RandoIPCService"
+import {LocalTrackerWebSocketService} from "@/services/LocalTrackerWebSocketService"
 import log from "electron-log/main"
 
 // Override session data path to have a clean app data directory.

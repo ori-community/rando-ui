@@ -1,5 +1,5 @@
 import {publicProcedure, router} from "../trpc"
-import {RandoIPCService} from "../../services/RandoIPCService"
+import {RandoIPCService} from "@/services/RandoIPCService"
 import {observable} from "@trpc/server/observable"
 
 export const randoIpc = router({

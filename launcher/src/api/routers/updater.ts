@@ -1,5 +1,5 @@
-import {publicProcedure, router} from "../trpc"
-import {VersionService} from "../../services/VersionService"
+import {publicProcedure, router} from "@/api/trpc"
+import {VersionService} from "@/services/VersionService"
 
 export const updater = router({
   /**

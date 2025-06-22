@@ -1,5 +1,5 @@
-import {publicProcedure, router} from "../trpc"
-import {SettingKey, SettingsService} from "../../services/SettingsService"
+import {publicProcedure, router} from "@/api/trpc"
+import {SettingKey, SettingsService} from "@/services/SettingsService"
 import {z} from "zod"
 
 export const settings = router({

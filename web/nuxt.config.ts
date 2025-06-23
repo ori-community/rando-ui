@@ -1,20 +1,25 @@
-import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+import vuetify, {transformAssetUrls} from "vite-plugin-vuetify"
+import {resolve} from "path"
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  devtools: { enabled: true },
+  devtools: {enabled: true},
   ssr: false,
 
   build: {
-    transpile: ['vuetify'],
+    transpile: ["vuetify"],
+  },
+
+  alias: {
+    "@shared": resolve(__dirname, "../shared"),
   },
 
   modules: [
-    '@nuxt/eslint',
-    '@pinia/nuxt',
+    "@nuxt/eslint",
+    "@pinia/nuxt",
     (_options, nuxt) => {
-      nuxt.hooks.hook('vite:extendConfig', (config) => {
-        config.plugins?.push(vuetify({ autoImport: true }))
+      nuxt.hooks.hook("vite:extendConfig", (config) => {
+        config.plugins?.push(vuetify({autoImport: true}))
       })
     },
   ],
@@ -27,5 +32,5 @@ export default defineNuxtConfig({
     },
   },
 
-  compatibilityDate: '2024-07-28',
+  compatibilityDate: "2024-07-28",
 })

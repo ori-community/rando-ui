@@ -4,16 +4,20 @@
       <v-btn key="home" exact :to="`${isElectron ? `/electron` : `/`}`" size="x-large" variant="text">
         <v-icon>mdi-home-outline</v-icon>
       </v-btn>
+      <v-btn key="league" size="x-large" variant="text" to="/league/seasons">
+        <v-icon start>mdi-trophy</v-icon>
+        <span class="main-button-text"> League </span>
+      </v-btn>
     </v-scale-transition>
     <v-spacer/>
-    <throttled-spinner no-margin>
+    <rando-throttled-spinner no-margin>
       <div class="d-flex align-center">
         <v-btn size="x-large" variant="text" @click="login">
           <v-icon start>mdi-login-variant</v-icon>
           Log in
         </v-btn>
       </div>
-    </throttled-spinner>
+    </rando-throttled-spinner>
   </div>
 </template>
 

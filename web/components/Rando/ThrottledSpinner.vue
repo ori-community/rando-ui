@@ -13,7 +13,7 @@
   const show = ref(false)
 
   withDefaults(defineProps<{
-    noMargin: boolean,
+    noMargin?: boolean,
   }>(), {
     noMargin: false,
   })

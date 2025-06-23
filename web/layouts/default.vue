@@ -1,11 +1,12 @@
 <template>
   <v-app>
-    <v-container>
-      <rando-page-toolbar />
+    <div id="backdrop" class="backdrop"/>
+    <v-container class="toolbar">
+      <rando-page-toolbar/>
     </v-container>
 
-    <v-main>
-      <nuxt-page />
+    <v-main class="content">
+      <nuxt-page/>
     </v-main>
   </v-app>
 </template>
@@ -15,5 +16,13 @@
 </script>
 
 <style lang="scss" scoped>
+  .backdrop {
+    z-index: 0;
+  }
+
+  .toolbar,
+  .content {
+    z-index: 1;
+  }
 
 </style>

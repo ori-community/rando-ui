@@ -1,6 +1,8 @@
 <template>
   <v-card class="season-card" :flat="flat" :to="{ name: 'league-seasons-seasonId', params: { seasonId: season.id } }">
-    <v-img v-if="!!season.backgroundImageUrl" class="background-image" alt="" :src="season.backgroundImageUrl"/>
+    <v-img
+      v-if="!!season.backgroundImageUrl" cover class="background-image" alt=""
+      :src="season.backgroundImageUrl"/>
 
     <div v-if="joinedOverlay" class="joined-overlay">
       <v-icon size="96">mdi-check</v-icon>
@@ -138,7 +140,6 @@
       left: 0;
       right: 0;
       bottom: 0;
-      object-fit: cover;
       width: 100%;
       height: 100%;
       opacity: 0.75;

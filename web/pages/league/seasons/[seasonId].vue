@@ -414,7 +414,6 @@
   })
   const loadSeason = (async () => {
     try {
-      console.log(seasonId)
       leagueSeason.value = (await axios.get(`/league/seasons/${seasonId}`)).data
       if (leagueSeason.value?.currentGameId) {
         currentGameSubmissions.value = (await axios.get(`/league/games/${leagueSeason.value.currentGameId}/submissions`)).data

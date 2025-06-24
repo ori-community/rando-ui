@@ -42,7 +42,7 @@
 
 <script lang="ts" setup>
   import type {LeagueSeasonInfo} from "@shared/types/league"
-  import {type PropType} from 'vue'
+  import type {PropType} from 'vue'
 
   const props = defineProps({
     season: {

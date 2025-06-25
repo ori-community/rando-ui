@@ -119,7 +119,6 @@
 
   const loadSeasons = (async () => {
     seasonsLoading.value = true
-    console.log('test')
     try {
       leagueSeasons.value = (await axios.get('/league/seasons')).data
     } catch (e) {

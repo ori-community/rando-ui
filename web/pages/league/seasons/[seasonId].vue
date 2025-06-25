@@ -84,7 +84,7 @@
                 <!-- items -->
                 <template #[`item.rank`]="{ item }">
                   <div class="d-flex">
-                    <rando-place-badge v-if="item.rank ?? false" :size="40" :place="item.rank" light-circle/>
+                    <rando-place-badge v-if="item.rank ?? false" :size="40" :place="item.rank"/>
                     <v-tooltip v-if="item.lastRankDelta !== null && leagueSeason.currentGameId !== null" right>
                       <template #activator="{ props: on }">
                         <v-icon v-if="item.lastRankDelta < 0" small color="green" v-on="on">mdi-arrow-up</v-icon>
@@ -217,7 +217,6 @@
                     v-if="item.userMetadata?.ownSubmission?.rankingData?.rank ?? false"
                     :size="40"
                     :place="item.userMetadata?.ownSubmission?.rankingData?.rank"
-                    light-circle
                   />
                   <div v-else>-</div>
                 </template>

@@ -23,10 +23,6 @@
       type: Number,
       default: 64,
     },
-    lightCircle: {
-      type: Boolean,
-      default: true,
-    },
   })
   const icon = computed(() => {
     switch (Number(props.place)) {
@@ -47,11 +43,7 @@
       case 3:
         return '#864b30'
       default:
-        if (props.lightCircle) {
-          return 'background lighten-2'
-        }
-
-        return 'background lighten-1'
+        return 'background-lighten-2'
     }
   })
   const calcFontSize = computed(() => {

@@ -24,22 +24,22 @@
           </v-tooltip>
         </div>
         <div class="mb-2">
-          <v-btn text exact to="/league/seasons">
+          <v-btn variant="text" exact to="/league/seasons">
             <v-icon>mdi-arrow-left-thin</v-icon>
             Seasons
           </v-btn>
-          <v-btn text @click="showSeasonInfo = true">
-            <v-icon left>mdi-information-outline</v-icon>
+          <v-btn variant="text" @click="showSeasonInfo = true">
+            <v-icon start>mdi-information-outline</v-icon>
             Info
           </v-btn>
-          <v-btn text @click="showSeasonRules = true">
-            <v-icon left>mdi-book-open-outline</v-icon>
+          <v-btn variant="text" @click="showSeasonRules = true">
+            <v-icon start>mdi-book-open-outline</v-icon>
             Rules
           </v-btn>
           <v-tooltip v-if="isElectron" bottom open-delay="300">
             <template #activator="{ props: on }">
               <div class="top-row-button" v-on="on">
-                <v-btn text :disabled="!isLoggedIn" @click="trainingSeedDialogOpen = true">
+                <v-btn variant="text" :disabled="!isLoggedIn" @click="trainingSeedDialogOpen = true">
                   <v-icon left>mdi-dumbbell</v-icon>
                   Training
                 </v-btn>
@@ -87,8 +87,9 @@
                     <rando-place-badge v-if="item.rank ?? false" :size="40" :place="item.rank"/>
                     <v-tooltip v-if="item.lastRankDelta !== null && leagueSeason.currentGameId !== null" right>
                       <template #activator="{ props: on }">
-                        <v-icon v-if="item.lastRankDelta < 0" small color="green" v-on="on">mdi-arrow-up</v-icon>
-                        <v-icon v-else-if="item.lastRankDelta > 0" small color="red" v-on="on">mdi-arrow-down</v-icon>
+                        <v-icon v-if="item.lastRankDelta < 0" size="small" color="green" v-on="on">mdi-arrow-up</v-icon>
+                        <v-icon v-else-if="item.lastRankDelta > 0" size="small" color="red" v-on="on">mdi-arrow-down
+                        </v-icon>
                       </template>
                       <span>
                         {{ Math.abs(item.lastRankDelta) }} rank{{ Math.abs(item.lastRankDelta) !== 1 ? 's' : '' }}
@@ -112,7 +113,7 @@
                     bottom
                   >
                     <template #activator="{ props: on }">
-                      <v-icon small color="green lighten-2" v-on="on">mdi-flag-checkered</v-icon>
+                      <v-icon size="small" color="green lighten-2" v-on="on">mdi-flag-checkered</v-icon>
                     </template>
                     Submitted to current game
                   </v-tooltip>
@@ -275,8 +276,7 @@
         <div class="dialog-buttons mt-8 mb-2">
           <v-btn
             ref="trainingSeedLaunchButton"
-            x-large
-            depressed
+            size="x-large"
             color="accent"
             :loading="trainingSeedLoading"
             @click="launchTrainingSeed"
@@ -302,7 +302,7 @@
 
   const trainingSeedLaunchButton = useTemplateRef('trainingSeedLaunchButton')
 
-  const axios = useAxios()
+  const {axios} = useAxios()
   const route = useRoute()
   const router = useRouter()
   const isElectron = useIsElectron()

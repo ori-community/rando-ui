@@ -6,7 +6,7 @@
       Pick a season and start gaming!
     </div>
     <div class="text-center mb-12">
-      <v-btn text large outlined @click="showLeagueInfo = true">
+      <v-btn variant="text" size="large" outlined @click="showLeagueInfo = true">
         <v-icon left>mdi-information-outline</v-icon>
         FAQ / Help
       </v-btn>
@@ -82,7 +82,7 @@
   import type {LeagueGameInfo, LeagueSeasonInfo} from "@shared/types/league"
   import type {UserInfo} from "@shared/types/user"
 
-  const axios = useAxios()
+  const {axios} = useAxios()
   const seasonsLoading = ref(false)
   const leagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
   const showLeagueInfo = ref(false)

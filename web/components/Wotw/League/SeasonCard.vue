@@ -13,7 +13,7 @@
     <div class="card-tags">
       <div v-if="upcomingTag" class="px-2 blue darken-1">Upcoming</div>
       <div v-if="joinedTag" class="px-2 accent">
-        <v-icon x-small>mdi-check</v-icon>
+        <v-icon size="x-small">mdi-check</v-icon>
         Joined
       </div>
     </div>
@@ -25,15 +25,15 @@
       <div class="spacer"/>
 
       <div v-if="mode === MODE_TYPES.Default ">
-        <v-icon x-small>mdi-clock-outline</v-icon>
+        <v-icon size="x-small">mdi-clock-outline</v-icon>
         starts at
         {{ season.nextContinuationAt }}
         <!-- {{ formatDateEpoch(season.nextContinuationAt, 'P p') }} TODO formatDate -->
       </div>
       <div>
-        <v-icon x-small>mdi-account-multiple-outline</v-icon>
+        <v-icon size="x-small">mdi-account-multiple-outline</v-icon>
         {{ season.memberships.length }} {{ season.memberships.length === 1 ? 'player' : 'players' }},
-        <v-icon x-small>mdi-gamepad-variant-outline</v-icon>
+        <v-icon size="x-small">mdi-gamepad-variant-outline</v-icon>
         {{ currentGameNumber }}/{{ season.gameCount }} games
       </div>
     </div>

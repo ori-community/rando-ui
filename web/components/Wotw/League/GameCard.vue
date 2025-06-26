@@ -5,8 +5,8 @@
     <v-card
       class="game-card"
       :class="{ accent: isPending }"
+      :to="{ name: 'league-game-gameId', params: { gameId: game.id } }"
     >
-      <!-- :to="{ name: 'league-game-gameId', params: { gameId: game.id } }" -->
       <div class="gradient-overlay" :class="{ extreme: !!season?.backgroundImageUrl }"/>
       <v-img
         v-if="!!season?.backgroundImageUrl"
@@ -36,12 +36,12 @@
           <div>
             {{ game.submissionCount }}
             <template v-if="memberCount">/ {{ memberCount }}</template>
-            <v-icon :color="game.userMetadata?.ownSubmission ? 'green' : ''" small>mdi-flag-checkered</v-icon>
+            <v-icon :color="game.userMetadata?.ownSubmission ? 'green' : ''" size="small">mdi-flag-checkered</v-icon>
           </div>
           <div v-if="game.userMetadata?.ownSubmission">
-            {{ game.userMetadata.ownSubmission.rankingData.time }}
+            {{ game.userMetadata.ownSubmission.rankingData?.time }}
             <!-- {{ formatTime(game.userMetadata.ownSubmission.rankingData.time) }} TODO format time -->
-            <v-icon small>mdi-timer-outline</v-icon>
+            <v-icon size="small">mdi-timer-outline</v-icon>
           </div>
         </div>
       </div>
@@ -76,6 +76,7 @@
   // import {formatTime} from '~/assets/lib/formatTime'
   import type {PropType} from "vue"
   import type {LeagueSeasonInfo, LeagueGameInfo} from "@shared/types/league";
+  import type {Timeout} from "unenv/node/internal/timers/timeout";
 
   const props = defineProps({
     game: {
@@ -99,8 +100,8 @@
       default: () => null,
     },
   })
-  const countdownTimerTextOrSecondsLeft: string | number = ref(null)
-  const updateIntervalId = ref(null)
+  const countdownTimerTextOrSecondsLeft = ref<string | number | null>(null)
+  const updateIntervalId = ref<Timeout<never> | null>(null)
   const attentionActive = ref(false)
   const isPending = computed(() => {
     return props.game.isCurrent && props.game.userMetadata?.canSubmit
@@ -110,13 +111,12 @@
   })
 
   onMounted(() => {
-    console.log('test1')
     updateIntervalId.value = setInterval(() => updateTimer(), 1000)
     updateTimer()
   })
   onUnmounted(() => {
     if (updateIntervalId.value !== null) {
-      clearInterval(updateIntervalId)
+      clearInterval(updateIntervalId.value)
     }
   })
   // formatTime TODO format time

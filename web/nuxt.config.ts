@@ -6,6 +6,8 @@ export default defineNuxtConfig({
   devtools: {enabled: true},
   ssr: false,
 
+  css: ["@/assets/vuetify/globals.scss"],
+
   build: {
     transpile: ["vuetify"],
   },
@@ -19,7 +21,11 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     (_options, nuxt) => {
       nuxt.hooks.hook("vite:extendConfig", (config) => {
-        config.plugins?.push(vuetify({autoImport: true}))
+        config.plugins?.push(vuetify({
+          autoImport: true, styles: {
+            configFile: "./assets/vuetify/components.scss",
+          },
+        }))
       })
     },
   ],

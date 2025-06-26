@@ -25,6 +25,6 @@
     "@trpc/client": "^10.45.2",
     "axios": "^1.10.0",
     "electron-trpc": "^0.7.1",
-    "sass": "^1.89.2"
+    "sass-embedded": "^1.89.2"
   }
 }

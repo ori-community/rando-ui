@@ -1,6 +1,7 @@
 import type {ConfigEnv, UserConfig} from "vite"
 import {defineConfig, mergeConfig} from "vite"
-import {getBuildConfig, getBuildDefine, external, pluginHotRestart} from "./vite.base.config"
+import {getBuildConfig, external, pluginHotRestart, getBuildDefine} from "./vite.base.config"
+import { fileURLToPath, URL } from "url"
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {
@@ -25,8 +26,8 @@ export default defineConfig((env) => {
       // Load the Node.js entry.
       mainFields: ["module", "jsnext:main", "jsnext"],
       alias: {
-        "@": "./src",
-        "@shared": "../shared",
+        "@": fileURLToPath(new URL("./src", import.meta.url)),
+        "@shared": fileURLToPath(new URL("../shared", import.meta.url)),
       },
     },
   }

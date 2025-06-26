@@ -155,7 +155,7 @@ export class LocalTrackerWebSocketService {
 
   public static readonly events: EventEmitter<LocalTrackerWebSocketEvent> = new EventEmitter()
 
-  public static get remoteTrackerEndpointId() {
+  public static get remoteTrackerEndpointId(): string | null {
     return this._remoteTrackerEndpointId
   }
 

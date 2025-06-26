@@ -4,9 +4,11 @@ import {settings} from "@/api/routers/settings"
 import {randoIpc} from "@/api/routers/randoIpc"
 import {updater} from "@/api/routers/updater"
 import {localTrackerWebSocket} from "@/api/routers/localTrackerWebSocket"
+import {localTracker} from "@/api/routers/localTracker"
 
 export const appRouter = router({
   auth,
+  localTracker,
   localTrackerWebSocket,
   randoIpc,
   settings,

@@ -1,12 +1,28 @@
 import {publicProcedure, router} from "@/api/trpc"
-import {RandoIPCService} from "@/services/RandoIPCService"
 import {observable} from "@trpc/server/observable"
 import {LocalTrackerWebSocketService} from "@/services/LocalTrackerWebSocketService"
+import {z} from "zod"
 
 export const localTrackerWebSocket = router({
   isRunning: publicProcedure
     .query(async () => {
       return LocalTrackerWebSocketService.isRunning
+    }),
+  getPort: publicProcedure
+    .query(async () => {
+      return LocalTrackerWebSocketService.port
+    }),
+  getEndpointId: publicProcedure
+    .query(async () => {
+      return LocalTrackerWebSocketService.remoteTrackerEndpointId
+    }),
+  expose: publicProcedure
+    .input(z.object({
+      baseUrl: z.string(),
+      jwt: z.string(),
+    }))
+    .query(async ({input}) => {
+      return await LocalTrackerWebSocketService.expose(input.baseUrl, input.jwt)
     }),
   onServerStateChanged: publicProcedure
     .subscription(() => {

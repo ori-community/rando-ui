@@ -1,8 +1,8 @@
-import {publicProcedure, router} from "@/api/trpc"
+import {publicProcedure, router} from "@launcher/api/trpc"
 import {observable} from "@trpc/server/observable"
-import {LocalTrackerWebSocketService} from "@/services/LocalTrackerWebSocketService"
-import {LocalTrackerService} from "@/services/LocalTrackerService"
-import {SettingsService} from "@/services/SettingsService"
+import {LocalTrackerWebSocketService} from "@launcher/services/LocalTrackerWebSocketService"
+import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
+import {SettingsService} from "@launcher/services/SettingsService"
 
 export const localTracker = router({
   openWindow: publicProcedure

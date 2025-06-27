@@ -1,12 +1,11 @@
 import {EventEmitter} from "events"
-import {getUserDataPath} from "@/paths"
+import {getUserDataPath} from "@launcher/paths"
 import fs from "fs"
 import {merge} from "lodash"
 import log from "electron-log/main"
-import {LocalTrackerService} from "@/services/LocalTrackerService"
+import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
+import {SettingKey, Settings} from "@shared/types/settings"
 
-export type Settings = ReturnType<typeof SettingsService.getDefaultSettings>
-export type SettingKey = keyof Settings
 type SettingsEvent = {
   /** Emitted when a single setting changed */
   settingChanged: [SettingKey, Settings[SettingKey]],
@@ -97,6 +96,7 @@ export class SettingsService {
     }
 
     this.settingsCache = {...settingsObject}
+    log.info("Settings loaded")
 
     this.events.emit("settingsLoaded", await this.getSettings())
   }
@@ -132,10 +132,11 @@ export class SettingsService {
 
     this.settingsCache[key] = value
     this.settingsCacheDirty = true
+    log.info("Setting changed:", key, value)
     this.events.emit("settingChanged", key, value)
 
     if (this.settingsFlushTimeoutId === null) {
-      this.settingsFlushTimeoutId = setTimeout(this.flushSettings, 2000)
+      this.settingsFlushTimeoutId = setTimeout(() => this.flushSettings(), 2000)
     }
   }
 
@@ -154,5 +155,6 @@ export class SettingsService {
     this.settingsCacheDirty = false
 
     await fs.promises.writeFile(settingsFilePath, json, {encoding: "utf-8"})
+    log.info("Settings saved")
   }
 }

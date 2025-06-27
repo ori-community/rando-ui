@@ -26,8 +26,9 @@ export default defineConfig((env) => {
       // Load the Node.js entry.
       mainFields: ["module", "jsnext:main", "jsnext"],
       alias: {
-        "@": fileURLToPath(new URL("./src", import.meta.url)),
+        "@launcher": fileURLToPath(new URL("./src", import.meta.url)),
         "@shared": fileURLToPath(new URL("../shared", import.meta.url)),
+        "@web": fileURLToPath(new URL("../web", import.meta.url)),
       },
     },
   }

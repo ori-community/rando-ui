@@ -1,10 +1,10 @@
-import {auth} from "@/api/routers/auth"
-import {router} from "@/api/trpc"
-import {settings} from "@/api/routers/settings"
-import {randoIpc} from "@/api/routers/randoIpc"
-import {updater} from "@/api/routers/updater"
-import {localTrackerWebSocket} from "@/api/routers/localTrackerWebSocket"
-import {localTracker} from "@/api/routers/localTracker"
+import {auth} from "@launcher/api/routers/auth"
+import {router} from "@launcher/api/trpc"
+import {settings} from "@launcher/api/routers/settings"
+import {randoIpc} from "@launcher/api/routers/randoIpc"
+import {updater} from "@launcher/api/routers/updater"
+import {localTrackerWebSocket} from "@launcher/api/routers/localTrackerWebSocket"
+import {localTracker} from "@launcher/api/routers/localTracker"
 
 export const appRouter = router({
   auth,

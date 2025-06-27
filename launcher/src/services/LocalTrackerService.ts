@@ -1,10 +1,10 @@
 import {BrowserWindow, Rectangle, screen} from "electron"
-import {getElectronUrl} from "@/helpers"
-import {LocalTrackerWebSocketService} from "@/services/LocalTrackerWebSocketService"
+import {getElectronUrl} from "@launcher/helpers"
+import {LocalTrackerWebSocketService} from "@launcher/services/LocalTrackerWebSocketService"
 import {debounce} from "lodash"
-import {SettingsService} from "@/services/SettingsService"
-import type {SettingKey} from "@/services/SettingsService"
-import {PopupWindow} from "@/services/PopupWindow"
+import {SettingsService} from "@launcher/services/SettingsService"
+import type {SettingKey} from "@launcher/services/SettingsService"
+import {PopupWindow} from "@launcher/services/PopupWindow"
 
 export class LocalTrackerService {
   private static window: BrowserWindow | null = null

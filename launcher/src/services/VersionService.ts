@@ -1,4 +1,4 @@
-import {getInstallDataPath} from "@/paths"
+import {getInstallDataPath} from "@launcher/paths"
 import fs from "fs"
 
 export class VersionService {

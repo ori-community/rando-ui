@@ -1,6 +1,8 @@
-import {publicProcedure, router} from "@/api/trpc"
-import {SettingKey, SettingsService} from "@/services/SettingsService"
+import {publicProcedure, router} from "@launcher/api/trpc"
+import {SettingsService} from "@launcher/services/SettingsService"
+import {SettingKey} from "@shared/types/settings"
 import {z} from "zod"
+import log from "electron-log/main"
 
 export const settings = router({
   /**
@@ -16,9 +18,9 @@ export const settings = router({
   setSetting: publicProcedure
     .input(z.object({
       key: z.string(),
-      value: z.string().or(z.number()).or(z.boolean())
+      value: z.string().or(z.number()).or(z.boolean()),
     }))
     .query(async ({input}) => {
       await SettingsService.instance.setSetting(input.key as SettingKey, input.value)
-    })
+    }),
 })

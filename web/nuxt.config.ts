@@ -13,7 +13,9 @@ export default defineNuxtConfig({
   },
 
   alias: {
+    "@launcher": resolve(__dirname, "../launcher/src"),
     "@shared": resolve(__dirname, "../shared"),
+    "@web": resolve(__dirname, "../web"),
   },
 
   modules: [

@@ -3,9 +3,7 @@
     <teleport defer to="#backdrop">
       <v-slide-y-transition>
         <div v-if="!!leagueSeason?.backgroundImageUrl" class="background-image-wrapper">
-
           <img class="background-image" alt="" :src="leagueSeason.backgroundImageUrl">
-          <!--        <div class="overlay"/>-->
         </div>
       </v-slide-y-transition>
     </teleport>
@@ -16,9 +14,12 @@
           <h1 class="pl-12 text-center mx-6">{{ leagueSeason.name }}</h1>
           <v-tooltip top open-delay="500">
             <template #activator="{ props: on }">
-              <v-btn icon :disabled="seasonLinkCopied" v-on="on" @click="copySeasonLink">
-                <v-icon>{{ seasonLinkCopied ? 'mdi-clipboard-check-outline' : 'mdi-link' }}</v-icon>
-              </v-btn>
+              <v-btn
+                variant="text"
+                :icon="seasonLinkCopied ? 'mdi-clipboard-check-outline' : 'mdi-link'"
+                :disabled="seasonLinkCopied"
+                v-on="on" @click="copySeasonLink"
+              />
             </template>
             <span>Copy season link</span>
           </v-tooltip>
@@ -297,6 +298,7 @@
   } from "@shared/types/league";
   import type {UserInfo} from "@shared/types/user";
   import type {DataTableHeader} from "vuetify/framework";
+  import {renderMarkdown} from "assets/utils/markdown";
 
   const trainingSeedLaunchButton = useTemplateRef('trainingSeedLaunchButton')
 
@@ -348,12 +350,10 @@
     )
   })
   const rulesHtml = computed(() => {
-    // TODO markdown
-    return leagueSeason.value?.rulesMarkdown // renderMarkdown(leagueSeason.value?.rulesMarkdown)
+    return renderMarkdown(String(leagueSeason.value?.rulesMarkdown))
   })
   const longDescriptionHtml = computed(() => {
-    // TODO markdown
-    return leagueSeason.value?.longDescriptionMarkdown // renderMarkdown(leagueSeason.value?.longDescriptionMarkdown)
+    return renderMarkdown(String(leagueSeason.value?.longDescriptionMarkdown))
   })
   const currentGame = computed(() => {
     return leagueSeason.value?.games?.find((g) => g.isCurrent) ?? null

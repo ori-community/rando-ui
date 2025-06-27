@@ -11,6 +11,7 @@
   "devDependencies": {
     "@nuxt/devtools": "^1.7.0",
     "@nuxt/eslint": "^0.4.0",
+    "@types/commonmark": "^0.27.9",
     "nuxt": "^3.17.5",
     "typescript": "^5.8.3",
     "vite-plugin-vuetify": "^2.1.1",
@@ -24,6 +25,7 @@
     "@pinia/nuxt": "^0.11.1",
     "@trpc/client": "^10.45.2",
     "axios": "^1.10.0",
+    "commonmark": "^0.31.2",
     "electron-trpc": "^0.7.1",
     "sass-embedded": "^1.89.2"
   }

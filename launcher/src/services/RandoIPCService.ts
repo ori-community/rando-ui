@@ -30,6 +30,8 @@ interface QueuedRequest {
 type RandoIPCEvent = {
   /** Emitted when the randomizer client connected to or disconnected from RandoIPC. true = connected */
   connectionStateChanged: [boolean],
+  /** Emitted when the league.run_submitted IPC event was fired */
+  leagueRunSubmitted: [],
 }
 
 const outgoingRequestHandlers: {
@@ -71,11 +73,13 @@ export class RandoIPCService {
       })
 
       socket.events.on("accept", () => {
+        log.info("RandoIPC: Connected")
         peerConnected = true
         this.events.emit("connectionStateChanged", true)
       })
 
       socket.events.on("disconnect", () => {
+        log.info("RandoIPC: Disconnected")
         peerConnected = false
         this.events.emit("connectionStateChanged", false)
       })
@@ -198,8 +202,7 @@ export class RandoIPCService {
         break
       }
       case "league.run_submitted": {
-        // TODO: uiIpc
-        // uiIpc.queueSend('league.runSubmitted')
+        this.events.emit("leagueRunSubmitted")
         break
       }
     }

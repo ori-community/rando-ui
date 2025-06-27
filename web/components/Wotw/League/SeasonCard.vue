@@ -27,8 +27,7 @@
       <div v-if="mode === MODE_TYPES.Default ">
         <v-icon size="x-small">mdi-clock-outline</v-icon>
         starts at
-        {{ season.nextContinuationAt }}
-        <!-- {{ formatDateEpoch(season.nextContinuationAt, 'P p') }} TODO formatDate -->
+        {{ formatDateEpoch(season.nextContinuationAt, 'P p') }}
       </div>
       <div>
         <v-icon size="x-small">mdi-account-multiple-outline</v-icon>
@@ -43,6 +42,7 @@
 <script lang="ts" setup>
   import type {LeagueSeasonInfo} from "@shared/types/league"
   import type {PropType} from 'vue'
+  import {formatDateEpoch} from "@shared/utils/formatsDates";
 
   const props = defineProps({
     season: {

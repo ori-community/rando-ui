@@ -199,13 +199,12 @@
 
 <script lang="ts" setup>
   // import {mapGetters, mapState} from 'vuex'
-  // import {formatTime} from '~/assets/lib/formatTime' TODO format time
   // import {EventBus} from '~/assets/lib/EventBus'
 
   import type {LeagueSeasonInfo, LeagueGameInfo, LeagueGameSubmissionInfo} from "@shared/types/league"
-  import type {UserInfo} from "@shared/types/user";
-  import {useHead} from "#imports";
-  import type {DataTableHeader} from "vuetify/framework";
+  import type {UserInfo} from "@shared/types/user"
+  import {useHead} from "#imports"
+  import type {DataTableHeader} from "vuetify/framework"
 
   const {axios, catchAxiosErrors} = useAxios()
   const route = useRoute()
@@ -310,8 +309,6 @@
     }
   })
 
-
-  // formatTime TODO format time
   const loadGame = (async () => {
     try {
       leagueGame.value = (await axios.get(`/league/games/${route.params.gameId}`)).data

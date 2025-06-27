@@ -39,8 +39,7 @@
             <v-icon :color="game.userMetadata?.ownSubmission ? 'green' : ''" size="small">mdi-flag-checkered</v-icon>
           </div>
           <div v-if="game.userMetadata?.ownSubmission">
-            {{ game.userMetadata.ownSubmission.rankingData?.time }}
-            <!-- {{ formatTime(game.userMetadata.ownSubmission.rankingData.time) }} TODO format time -->
+            {{ formatTime(Number(game?.userMetadata?.ownSubmission?.rankingData?.time)) }}
             <v-icon size="small">mdi-timer-outline</v-icon>
           </div>
         </div>
@@ -50,8 +49,7 @@
         <template v-if="typeof countdownTimerTextOrSecondsLeft === 'number'">
           {{ isPending ? 'Time left to finish this game' : (isLast ? 'Season over in' : 'Next game in') }}<br>
           <span class="font-weight-bold">
-{{ countdownTimerTextOrSecondsLeft }}
-            <!-- {{ formatTime(countdownTimerTextOrSecondsLeft, 0, true) }} TODO format time -->
+            {{ formatTime(countdownTimerTextOrSecondsLeft, 0, true) }}
           </span>
         </template>
         <template v-else-if="typeof countdownTimerTextOrSecondsLeft === 'string'">
@@ -60,8 +58,7 @@
         <template v-else>
           {{ isPending ? 'Finish this game until' : (isLast ? 'Season over at' : 'Next game at') }}<br>
           <span class="font-weight-bold">
-            {{ playableUntil }}
-            <!-- {{ formatDateEpoch(playableUntil, 'P p') }} TODO formatDateEpoch -->
+            {{ formatDateEpoch(playableUntil, 'P p') }}
           </span>
         </template>
       </div>
@@ -70,13 +67,12 @@
 </template>
 
 <script lang="ts" setup>
-
-  // TODO date formatting
-  // import {formatsDates} from '~/assets/lib/formatsDates'
-  // import {formatTime} from '~/assets/lib/formatTime'
+  
   import type {PropType} from "vue"
   import type {LeagueSeasonInfo, LeagueGameInfo} from "@shared/types/league";
   import type {Timeout} from "unenv/node/internal/timers/timeout";
+  import {formatTime} from "@shared/utils/formatTime"
+  import {formatDateEpoch} from "@shared/utils/formatsDates";
 
   const props = defineProps({
     game: {
@@ -119,7 +115,6 @@
       clearInterval(updateIntervalId.value)
     }
   })
-  // formatTime TODO format time
   const updateTimer = (() => {
     if (!props.playableUntil) {
       countdownTimerTextOrSecondsLeft.value = null

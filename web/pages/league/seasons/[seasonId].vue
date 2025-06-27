@@ -166,9 +166,7 @@
             <div class="starting-date-content">
               <div>Starting at</div>
               <span class="starting-date">
-                                {{ leagueSeason?.nextContinuationAt }}
-                <!-- TODO format data
-                 {{ formatDateEpoch(leagueSeason?.nextContinuationAt, 'P p') }} -->
+                 formatDateEpoch(leagueSeason?.nextContinuationAt, 'P p') }}
               </span>
               <div>
                 <template v-if="isJoined">Be prepared!</template>

@@ -1,5 +1,5 @@
 <template>
-  <v-badge :value='connected' color='green' location="bottom right" bordered dot offset-x='4'>
+  <v-badge :model-value='connected' color='green' location="bottom right" bordered dot offset-x='4'>
     <v-avatar :color='raceReady ? "success" : "accent"' :size='Number($attrs.Size) || "32"' v-bind='$attrs'>
       <v-icon v-if="raceReady">mdi-check</v-icon>
       <v-img v-else-if='discordAvatarUrl !== null' :src='discordAvatarUrl'>

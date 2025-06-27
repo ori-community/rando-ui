@@ -20,7 +20,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   watch(jwt, async (value) => {
     // Push the token to the Axios HTTP client
-    const axios = useAxios()
+    const {axios} = useAxios()
 
     if (value) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${value}`

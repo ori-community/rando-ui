@@ -1,4 +1,4 @@
-import type {UberId} from "@shared/UberStates"
+import type {UberId} from "@shared/types/UberStates"
 import * as zmq from "zeromq"
 import {EventEmitter} from "events"
 import {LocalTrackerWebSocketService} from "@/services/LocalTrackerWebSocketService"

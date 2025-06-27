@@ -11,7 +11,7 @@
     <div class="gradient-overlay"/>
 
     <div class="card-tags">
-      <div v-if="upcomingTag" class="px-2 blue darken-1">Upcoming</div>
+      <div v-if="upcomingTag" class="px-2 bg-blue-darken-1">Upcoming</div>
       <div v-if="joinedTag" class="px-2 accent">
         <v-icon size="x-small">mdi-check</v-icon>
         Joined
@@ -42,7 +42,7 @@
 <script lang="ts" setup>
   import type {LeagueSeasonInfo} from "@shared/types/league"
   import type {PropType} from 'vue'
-  import {formatDateEpoch} from "@shared/utils/formatsDates";
+  import {formatDateEpoch} from "assets/utils/formatsDates";
 
   const props = defineProps({
     season: {

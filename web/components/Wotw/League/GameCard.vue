@@ -71,7 +71,6 @@
   import type {PropType} from "vue"
   import type {LeagueSeasonInfo, LeagueGameInfo} from "@shared/types/league";
   import type {Timeout} from "unenv/node/internal/timers/timeout";
-  import {formatTime} from "@shared/utils/formatTime"
   import {formatDateEpoch} from "@shared/utils/formatsDates";
 
   const props = defineProps({

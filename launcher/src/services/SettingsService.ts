@@ -3,6 +3,7 @@ import {getUserDataPath} from "@/paths"
 import fs from "fs"
 import {merge} from "lodash"
 import log from "electron-log/main"
+import {LocalTrackerService} from "@/services/LocalTrackerService"
 
 export type Settings = ReturnType<typeof SettingsService.getDefaultSettings>
 export type SettingKey = keyof Settings
@@ -32,8 +33,7 @@ export class SettingsService {
    * Returns the default settings values.
    */
   public static getDefaultSettings() {
-    // TODO
-    // const localTrackerInitialWindowRect = LocalTrackerService.getInitialWindowRect()
+    const localTrackerInitialWindowRect = LocalTrackerService.getInitialWindowRect()
 
     return {
       ServerHost: "wotw.orirando.com",
@@ -66,10 +66,10 @@ export class SettingsService {
       MapIconTransparency: 0.25,
       MapPanSpeed: 1.0,
       CameraShakeIntensity: 1.0,
-      LocalTrackerWindowPositionX: 0.0,  // localTrackerInitialWindowRect.x TODO: Initialize
-      LocalTrackerWindowPositionY: 0.0,  // localTrackerInitialWindowRect.y TODO: Initialize
-      LocalTrackerWindowPositionWidth: 0.0,  // localTrackerInitialWindowRect.width TODO: Initialize
-      LocalTrackerWindowPositionHeight: 0.0,  // localTrackerInitialWindowRect.height TODO: Initialize
+      LocalTrackerWindowPositionX: localTrackerInitialWindowRect.x,
+      LocalTrackerWindowPositionY: localTrackerInitialWindowRect.y,
+      LocalTrackerWindowPositionWidth: localTrackerInitialWindowRect.width,
+      LocalTrackerWindowPositionHeight: localTrackerInitialWindowRect.height,
       LocalTrackerShowTimer: true,
       LocalTrackerTransparent: false,
       LocalTrackerAlwaysOnTop: false,

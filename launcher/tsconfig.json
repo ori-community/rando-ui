@@ -12,8 +12,9 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "paths": {
-      "@/*": ["./src/*"],
-      "@shared/*": ["../shared/*"]
+      "@launcher/*": ["./src/*"],
+      "@shared/*": ["../shared/*"],
+      "@web/*": ["../web/*"]
     }
   }
 }

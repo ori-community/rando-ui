@@ -8,7 +8,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "date-fns": "^4.1.0",
     "protobufjs": "^7.5.3",
     "typescript": "^5.8.3"
   }

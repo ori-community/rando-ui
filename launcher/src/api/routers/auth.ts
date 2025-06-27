@@ -1,8 +1,8 @@
-import {publicProcedure, router} from "@/api/trpc"
+import {publicProcedure, router} from "@launcher/api/trpc"
 import {z} from "zod"
 import {app, BrowserWindow, shell} from "electron"
 import fs from "fs"
-import {getUserDataPath} from "@/paths"
+import {getUserDataPath} from "@launcher/paths"
 
 export const auth = router({
   /**

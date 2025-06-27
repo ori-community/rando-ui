@@ -1,6 +1,6 @@
-import {publicProcedure, router} from "@/api/trpc"
+import {publicProcedure, router} from "@launcher/api/trpc"
 import {observable} from "@trpc/server/observable"
-import {LocalTrackerWebSocketService} from "@/services/LocalTrackerWebSocketService"
+import {LocalTrackerWebSocketService} from "@launcher/services/LocalTrackerWebSocketService"
 import {z} from "zod"
 
 export const localTrackerWebSocket = router({

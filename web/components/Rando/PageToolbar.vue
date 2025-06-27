@@ -25,14 +25,22 @@
   const isElectron = useIsElectron()
   const electronApi = isElectron ? useElectronApi() : null
   const authStore = useAuthStore()
+  const route = useRoute()
+  const {axios} = useAxios()
 
   async function login() {
     if (!electronApi) {
+      authStore.redirectPath = route.fullPath
+
+      const url = new URL(axios.defaults.baseURL ?? "")
+      url.pathname += "/login"
+      url.searchParams.set("redirect", `${window.location.origin}/auth/callback`)
+      window.location.href = url.href
       return
     }
 
     const jwt = await electronApi.auth.startOAuthFlow.query({
-      apiBaseUrl: "https://wotw.orirando.com/api"
+      apiBaseUrl: "https://wotw.orirando.com/api",
     })
 
     if (jwt) {

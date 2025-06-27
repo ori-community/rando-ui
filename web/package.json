@@ -25,6 +25,7 @@
     "@trpc/client": "^10.45.2",
     "axios": "^1.10.0",
     "commonmark": "^0.31.2",
+    "date-fns": "^4.1.0",
     "electron-trpc": "^0.7.1",
     "sass-embedded": "^1.89.2"
   }

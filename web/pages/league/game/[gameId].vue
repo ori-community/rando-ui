@@ -14,8 +14,9 @@
             </template>
             <span><kbd>Ctrl</kbd> + Click to close this window</span>
           </v-tooltip>
-          <v-btn v-else-if="!didSubmit && canSubmit" size="x-large" color="accent" :loading="launching"
-                 @click="launchGame()">
+          <v-btn
+            v-else-if="!didSubmit && canSubmit" size="x-large" color="accent" :loading="launching"
+            @click="launchGame()">
             <img class="launch-icon" src="@shared/images/launch.png" alt="">
             Launch
           </v-btn>
@@ -170,8 +171,9 @@
             </div>
           </v-row>
           <v-row justify="end" class="dialog-buttons">
-            <v-btn variant="text" :disabled="videoUrlSubmissionLoading"
-                   @click="removeVideoUrlConfirmationDialogOpen = false"
+            <v-btn
+              variant="text" :disabled="videoUrlSubmissionLoading"
+              @click="removeVideoUrlConfirmationDialogOpen = false"
             >No
             </v-btn
             >
@@ -263,11 +265,11 @@
     })
   })
   const hasWorldWithCurrentUser = computed(() => {
-    if (!multiverse) {
+    if (!multiverse.value) {
       return false
     }
 
-    return multiverse.universes.some((u) =>
+    return multiverse.value.universes.some((u) =>
       u.worlds.some((w) => w.memberships.find((m) => m.user.id === user.value?.id)),
     )
   })

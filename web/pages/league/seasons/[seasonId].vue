@@ -12,17 +12,17 @@
       <div v-if="leagueSeason !== null" class="season-container justify-center">
         <div class="d-flex justify-center align-center mt-12 mb-6">
           <h1 class="pl-12 text-center mx-6">{{ leagueSeason.name }}</h1>
-          <v-tooltip top open-delay="500">
-            <template #activator="{ props: on }">
-              <v-btn
-                variant="text"
-                :icon="seasonLinkCopied ? 'mdi-clipboard-check-outline' : 'mdi-link'"
-                :disabled="seasonLinkCopied"
-                v-on="on" @click="copySeasonLink"
-              />
-            </template>
-            <span>Copy season link</span>
-          </v-tooltip>
+          <v-btn
+            variant="text"
+            icon
+            :disabled="seasonLinkCopied"
+            @click="copySeasonLink"
+          >
+            <v-icon>{{ seasonLinkCopied ? 'mdi-clipboard-check-outline' : 'mdi-link' }}</v-icon>
+            <v-tooltip location="top" open-delay="500" activator="parent">
+              <span>Copy season link</span>
+            </v-tooltip>
+          </v-btn>
         </div>
         <div class="mb-2">
           <v-btn variant="text" exact to="/league/seasons">
@@ -37,33 +37,30 @@
             <v-icon start>mdi-book-open-outline</v-icon>
             Rules
           </v-btn>
-          <v-tooltip v-if="isElectron" bottom open-delay="300">
-            <template #activator="{ props: on }">
-              <div class="top-row-button" v-on="on">
-                <v-btn variant="text" :disabled="!isLoggedIn" @click="trainingSeedDialogOpen = true">
-                  <v-icon left>mdi-dumbbell</v-icon>
-                  Training
-                </v-btn>
-              </div>
-            </template>
-            <span>{{ isLoggedIn ? 'Create a practice game' : 'Log in to create a practice game' }}</span>
-          </v-tooltip>
-          <v-tooltip v-if="!isJoined && !seasonEnded" bottom :disabled="canJoin">
-            <template #activator="{ props: on }">
-              <div class="top-row-button" v-on="on">
-                <div class="ori-lurk-container">
-                  <img
-                    class="ori-lurk" :class="{ lurking: joinButtonLurking }"
-                    src="../../../../shared/images/ori_lurk.png" alt="">
-                </div>
-                <v-btn color="accent" :loading="actionLoading" :disabled="!canJoin" @click="showSeasonRules = true">
-                  <v-icon left>mdi-plus-circle-outline</v-icon>
-                  Join
-                </v-btn>
-              </div>
-            </template>
-            <span>{{ isLoggedIn ? `You can't join running seasons` : 'Log in to join' }}</span>
-          </v-tooltip>
+
+          <div v-if="isElectron" class="top-row-button">
+            <v-btn variant="text" :disabled="!isLoggedIn" @click="trainingSeedDialogOpen = true">
+              <v-icon left>mdi-dumbbell</v-icon>
+              Training
+            </v-btn>
+            <v-tooltip location="bottom" open-delay="300" activator="parent">
+              <span>{{ isLoggedIn ? 'Create a practice game' : 'Log in to create a practice game' }}</span>
+            </v-tooltip>
+          </div>
+          <div v-if="!isJoined && !seasonEnded" class="top-row-button">
+            <div class="ori-lurk-container">
+              <img
+                class="ori-lurk" :class="{ lurking: joinButtonLurking }"
+                src="../../../../shared/images/ori_lurk.png" alt="">
+            </div>
+            <v-btn color="accent" :loading="actionLoading" :disabled="!canJoin" @click="showSeasonRules = true">
+              <v-icon left>mdi-plus-circle-outline</v-icon>
+              Join
+            </v-btn>
+            <v-tooltip activator="parent" location="bottom" :disabled="canJoin">
+              <span>{{ isLoggedIn ? `You can't join running seasons` : 'Log in to join' }}</span>
+            </v-tooltip>
+          </div>
         </div>
         <div class="tables-container">
 
@@ -84,55 +81,53 @@
               >
                 <!-- items -->
                 <template #[`item.rank`]="{ item }">
-                  <div class="d-flex">
+                  <div class="d-flex align-center">
                     <rando-place-badge v-if="item.rank ?? false" :size="40" :place="item.rank"/>
-                    <v-tooltip v-if="item.lastRankDelta !== null && leagueSeason.currentGameId !== null" right>
-                      <template #activator="{ props: on }">
-                        <v-icon v-if="item.lastRankDelta < 0" size="small" color="green" v-on="on">mdi-arrow-up</v-icon>
-                        <v-icon v-else-if="item.lastRankDelta > 0" size="small" color="red" v-on="on">mdi-arrow-down
-                        </v-icon>
+                    <template
+                      v-if="item.lastRankDelta !== null && item.lastRankDelta !== 0 && leagueSeason.currentGameId !== null">
+                      <template v-if="item.lastRankDelta < 0">
+                        <v-icon size="small" color="green-darken-2">mdi-arrow-up</v-icon>
+                        <span class="text-green-darken-2"> {{ Math.abs(item.lastRankDelta) }}</span>
                       </template>
-                      <span>
-                        {{ Math.abs(item.lastRankDelta) }} rank{{ Math.abs(item.lastRankDelta) !== 1 ? 's' : '' }}
-                        <span v-if="item.lastRankDelta > 0" class="red--text">down</span>
-                        <span v-else class="green--text">up</span>
-                        since last game
-                      </span>
-                    </v-tooltip>
+                      <template v-else>
+                        <v-icon size="small" color="red-darken-2">mdi-arrow-down</v-icon>
+                        <span class="text-red-darken-2 pa-lg-1"> {{ Math.abs(item.lastRankDelta) }}</span>
+                      </template>
+                    </template>
                   </div>
                 </template>
                 <template #[`item.user.name`]="{ item }">
-                  <div class="text-no-wrap">
+                  <div class="d-flex text-no-wrap align-center">
                     <rando-discord-avatar :user="item.user" class="mr-1"/>
                     {{ item.user.name }}
                   </div>
                 </template>
                 <template #[`item.currentGame.submitted`]="{ item }">
-                  <v-tooltip
-                    v-if="currentGameSubmissions?.some((s) => s.membership.user.id === item.user.id)"
-                    open-delay="500"
-                    bottom
-                  >
-                    <template #activator="{ props: on }">
-                      <v-icon size="small" color="green lighten-2" v-on="on">mdi-flag-checkered</v-icon>
-                    </template>
-                    Submitted to current game
-                  </v-tooltip>
+                  <div v-if="currentGameSubmissions?.some((s) => s.membership.user.id === item.user.id)">
+                    <v-icon
+                      size="small" color="green lighten-2">mdi-flag-checkered
+                    </v-icon>
+                    <v-tooltip activator="parent" open-delay="500" location="bottom">
+                      Submitted to current game
+                    </v-tooltip>
+                  </div>
                 </template>
                 <template #[`item.points`]="{ item }">
-                  <v-tooltip left open-delay="500" :disabled="item.rankingCompensationPoints === 0">
-                    <template #activator="{ props: on }">
-                      <span :class="{'compensating-points': item.rankingCompensationPoints > 0}" v-on="on">
-                        {{ item.points }}
-                      </span>
-                    </template>
-                    <div class="text-right">
-                      Includes {{ item.rankingCompensationPoints }}
-                      {{ item.rankingCompensationPoints === 1 ? 'point' : 'points' }} to compensate<br>
-                      missed or unusually bad games. These points<br>
-                      disappear over time until the end of the season.
-                    </div>
-                  </v-tooltip>
+                  <span :class="{'compensating-points': item.rankingCompensationPoints > 0}">
+                    {{ item.points }}
+                    <v-tooltip
+                      activator="parent"
+                      location="left"
+                      open-delay="500"
+                      :disabled="item.rankingCompensationPoints === 0">
+                      <div class="text-right">
+                        Includes {{ item.rankingCompensationPoints }}
+                        {{ item.rankingCompensationPoints === 1 ? 'point' : 'points' }} to compensate<br>
+                        missed or unusually bad games. These points<br>
+                        disappear over time until the end of the season.
+                      </div>
+                    </v-tooltip>
+                  </span>
                 </template>
                 <!-- no data -->
                 <template #no-data>
@@ -208,7 +203,7 @@
                 :sort-by="[{ key: 'gameNumber'}]"
                 :item-class="() => 'cursor-pointer'"
                 :mobile-breakpoint='0'
-                @click:row="(game: LeagueGameInfo) => openGamePage(game.id)"
+                @click:row="(event: PointerEvent, row: any) => openGamePage(row.item.id)"
               >
                 <!-- items -->
                 <template #[`item.gameNumber`]="{ item }">#{{ item.gameNumber }}</template>
@@ -291,7 +286,6 @@
 
 <script setup lang="ts">
   import type {
-    LeagueGameInfo,
     LeagueGameSubmissionInfo,
     LeagueSeasonInfo,
     LeagueSeasonMembershipInfo
@@ -374,7 +368,7 @@
         align: 'center',
       })
     }
-    headers.push({title: 'Points', value: 'points', align: 'start'})
+    headers.push({title: 'Points', value: 'points', align: 'end'})
     return headers
   })
 
@@ -451,6 +445,7 @@
     //   seasonLinkCopied.value = false
     // }, 3000)
   })
+
   const launchTrainingSeed = (async () => {
     trainingSeedLoading.value = true
 

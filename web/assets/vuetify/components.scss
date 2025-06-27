@@ -1,3 +1,5 @@
 @use 'vuetify/settings' with (
-  $overlay-scrim-background: rgb(var(--v-theme-background))
+  $overlay-scrim-background: rgb(var(--v-theme-background)),
+  $tooltip-background-color: rgb(var(--v-theme-surface)),
+  $tooltip-text-color: rgb(var(--v-theme-on-surface)),
 );

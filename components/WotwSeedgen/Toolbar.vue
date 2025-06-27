@@ -161,7 +161,6 @@
 <style lang="scss" scoped>
   .right-container {
     display: flex;
-    flex-wrap: wrap;
     gap: 0.3em;
   }
 </style>

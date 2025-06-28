@@ -1,5 +1,5 @@
 import { AddressInfo, WebSocket, WebSocketServer } from 'ws'
-import type { UberId, UberState } from '@shared/UberStates'
+import type { UberId, UberState } from '@shared/types/UberStates'
 import { RandoIPCService } from '@launcher/services/RandoIPCService'
 import {
   AuthenticateMessage,

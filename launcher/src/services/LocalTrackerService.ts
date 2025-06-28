@@ -3,7 +3,7 @@ import {getElectronUrl} from "@launcher/helpers"
 import {LocalTrackerWebSocketService} from "@launcher/services/LocalTrackerWebSocketService"
 import {debounce} from "lodash"
 import {SettingsService} from "@launcher/services/SettingsService"
-import type {SettingKey} from "@launcher/services/SettingsService"
+import type {SettingKey} from "@shared/types/settings"
 import {PopupWindow} from "@launcher/services/PopupWindow"
 
 export class LocalTrackerService {

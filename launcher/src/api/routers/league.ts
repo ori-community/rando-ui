@@ -3,6 +3,9 @@ import {RandoIPCService} from "@launcher/services/RandoIPCService"
 import {observable} from "@trpc/server/observable"
 
 export const league = router({
+  /**
+   * Subscribe to get notified about league run submissions
+   */
   onRunSubmitted: publicProcedure
     .subscription(() => {
       return observable<void>((emit) => {

@@ -4,7 +4,7 @@ import fs from "fs"
 import {merge} from "lodash"
 import log from "electron-log/main"
 import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
-import {SettingKey, Settings} from "@shared/types/settings"
+import type {SettingKey, Settings} from "@shared/types/settings"
 
 type SettingsEvent = {
   /** Emitted when a single setting changed */

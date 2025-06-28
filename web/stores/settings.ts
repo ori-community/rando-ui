@@ -66,6 +66,14 @@ export const useSettingsStore = defineStore("settings", () => {
         })
       }
 
+      electronApi.settings.onSettingChanged.subscribe(undefined, {
+        onData({key, value}) {
+          if (settingsRefs[key as SettingKey].value !== value) {
+            settingsRefs[key as SettingKey].value = value
+          }
+        },
+      })
+
       isInitialized.value = true
     })()
   } else {

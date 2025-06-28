@@ -42,3 +42,8 @@ export type Settings = {
 }
 
 export type SettingKey = keyof Settings
+
+export type Setting = {
+  key: SettingKey,
+  value: Settings[SettingKey],
+}

@@ -138,7 +138,11 @@ export class RandoIPCService {
   static async handleIncomingRequest(request: Request) {
     switch (request.method) {
       case "notify_timer_state_changed": {
-        const { in_game_time: inGameTime, async_loading_time: asyncLoadingTime, timer_should_run: timerShouldRun } = request.payload as {
+        const {
+          in_game_time: inGameTime,
+          async_loading_time: asyncLoadingTime,
+          timer_should_run: timerShouldRun,
+        } = request.payload as {
           in_game_time: number,
           async_loading_time: number,
           timer_should_run: boolean,
@@ -173,7 +177,7 @@ export class RandoIPCService {
         break
       }
       case "notify_input": {
-        const {type, pressed} = request.payload as {type: string, pressed: boolean}
+        const {type, pressed} = request.payload as { type: string, pressed: boolean }
 
         if (pressed) {
           switch (type) {

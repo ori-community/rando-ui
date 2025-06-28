@@ -1,8 +1,8 @@
-import { exposeElectronTRPC } from 'electron-trpc/main'
-import { contextBridge } from 'electron'
+import {exposeElectronTRPC} from "electron-trpc/main"
+import {contextBridge} from "electron"
 
-process.once('loaded', async () => {
+process.once("loaded", async () => {
   exposeElectronTRPC()
 
-  contextBridge.exposeInMainWorld('__isElectron', true)
+  contextBridge.exposeInMainWorld("__isElectron", true)
 })

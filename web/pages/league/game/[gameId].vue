@@ -81,10 +81,10 @@
                 <template #[`item.rankingData.time`]="{ item }">
                   <wotw-league-time-view
                     :time="item.rankingData?.time ?? null"
-                    :original-time="item.rankingData?.originalTime"/>
+                    :original-time="item.rankingData?.originalTime ?? null"/>
                 </template>
                 <template #[`item.rankingData.points`]="{ item }">
-                  <template v-if="!leagueGame.isCurrent">
+                  <template v-if="!leagueGame.isCurrent && item.rankingData !== null">
                     <wotw-league-points-view
                       :ranking-data="item.rankingData"
                       :discard-worst-games-count="leagueSeason.discardWorstGamesCount"

@@ -8,6 +8,12 @@
         <v-icon start>mdi-trophy</v-icon>
         <span class="main-button-text"> League </span>
       </v-btn>
+      <template v-if="isElectron">
+        <v-btn key="settings" size="x-large" variant="text" to="/electron/settings">
+          <v-icon start>mdi-cog-outline</v-icon>
+          Settings
+        </v-btn>
+      </template>
     </v-scale-transition>
     <v-spacer/>
     <rando-throttled-spinner no-margin>

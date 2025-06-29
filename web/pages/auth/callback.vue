@@ -8,16 +8,16 @@
   const {axios} = useAxios()
   const authStore = useAuthStore()
 
-  const jwt = route.query.jwt
+  const shortLivedJwt = route.query.jwt
 
   // Exchange short-lived token with a long-lived one
-  if (jwt) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${jwt}`
+  if (shortLivedJwt) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${shortLivedJwt}`
 
-    authStore.jwt = (await axios.post('/tokens/', {
+    const longLivedJwt = (await axios.post('/tokens/', {
       scopes: ['*'],
     })).data as string
-    // TODO: Update user in userStore
+    await authStore.setJwt(longLivedJwt)
 
     if (authStore.redirectPath !== null) {
       try {

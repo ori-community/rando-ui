@@ -7,10 +7,12 @@ const isElectron = useIsElectron()
 const electronApi = isElectron ? useElectronApi() : null
 
 export const useAuthStore = defineStore('auth', () => {
+  const userStore = useUserStore()
+
   const jwt = ref<null | string>(null)
   const redirectPath = ref<null | string>(window.localStorage.getItem(REDIRECT_PATH_LOCAL_STORAGE_KEY))
 
-  watch(() => useAuthStore().redirectPath, (value) => {
+  watch(redirectPath, (value) => {
     if (value) {
       window.localStorage.setItem(REDIRECT_PATH_LOCAL_STORAGE_KEY, value)
     } else {
@@ -18,12 +20,14 @@ export const useAuthStore = defineStore('auth', () => {
     }
   })
 
-  watch(jwt, async (value) => {
+  async function setJwt(token: string | null) {
+    jwt.value = token
+
     // Push the token to the Axios HTTP client
     const {axios} = useAxios()
 
-    if (value) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${value}`
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
     } else {
       delete axios.defaults.headers.common['Authorization']
     }
@@ -32,15 +36,17 @@ export const useAuthStore = defineStore('auth', () => {
 
     // Persist the new token
     if (electronApi) {
-      await electronApi.auth.setClientJwt.query(value)
+      await electronApi.auth.setClientJwt.query(token)
     } else {
-      if (value) {
-        window.localStorage.setItem(JWT_LOCAL_STORAGE_KEY, value)
+      if (token) {
+        window.localStorage.setItem(JWT_LOCAL_STORAGE_KEY, token)
       } else {
         window.localStorage.removeItem(JWT_LOCAL_STORAGE_KEY)
       }
     }
-  })
+
+    await userStore.updateUser()
+  }
 
   /**
    * Restores the JWT token from localStorage (web) or
@@ -53,14 +59,15 @@ export const useAuthStore = defineStore('auth', () => {
    */
   async function restoreJwt() {
     if (electronApi) {
-      jwt.value = await electronApi.auth.getClientJwt.query()
+      await setJwt(await electronApi.auth.getClientJwt.query())
     } else {
-      jwt.value = window.localStorage.getItem(JWT_LOCAL_STORAGE_KEY)
+      await setJwt(window.localStorage.getItem(JWT_LOCAL_STORAGE_KEY))
     }
   }
 
   return {
-    jwt,
+    jwt: computed(() => jwt.value),
+    setJwt,
     redirectPath,
     restoreJwt,
   }

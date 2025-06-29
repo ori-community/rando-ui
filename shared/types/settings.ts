@@ -38,7 +38,8 @@ export type Settings = {
   LocalTrackerAlwaysOnTop: boolean,
   LocalTrackerIgnoreMouse: boolean,
   LocalTrackerShowWillowHearts: boolean,
-  LocalTrackerHideHeartsUntilFirstHeart: boolean
+  LocalTrackerHideHeartsUntilFirstHeart: boolean,
+  GameOrSteamBinaryPath: string,
 }
 
 export type SettingKey = keyof Settings

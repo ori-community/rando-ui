@@ -52,6 +52,7 @@ export const useSettingsStore = defineStore("settings", () => {
     LocalTrackerIgnoreMouse: ref<boolean>(false),
     LocalTrackerShowWillowHearts: ref<boolean>(false),
     LocalTrackerHideHeartsUntilFirstHeart: ref<boolean>(false),
+    GameOrSteamBinaryPath: ref<string>(""),
   }
 
   if (electronApi !== null) {

@@ -5,6 +5,7 @@ import {merge} from "lodash"
 import log from "electron-log/main"
 import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
 import type {SettingKey, Settings} from "@shared/types/settings"
+import {getPlatform, Platform} from "@launcher/helpers"
 
 type SettingsEvent = {
   /** Emitted when a single setting changed */
@@ -28,10 +29,21 @@ export class SettingsService {
 
   public readonly events: EventEmitter<SettingsEvent> = new EventEmitter()
 
+  public static getDefaultGameOrSteamBinaryPath() {
+    switch (getPlatform()) {
+      case Platform.Windows:
+        return "C:\\Program Files (x86)\\Steam\\steam.exe"
+      case Platform.Linux:
+        return `/home/${process.env.USER ?? "user"}/.steam/steam/steamapps/common/Ori and the Will of the Wisps/oriwotw.exe`
+    }
+
+    return ""
+  }
+
   /**
    * Returns the default settings values.
    */
-  public static getDefaultSettings() {
+  public static getDefaultSettings(): Settings {
     const localTrackerInitialWindowRect = LocalTrackerService.getInitialWindowRect()
 
     return {
@@ -75,6 +87,7 @@ export class SettingsService {
       LocalTrackerIgnoreMouse: false,
       LocalTrackerShowWillowHearts: true,
       LocalTrackerHideHeartsUntilFirstHeart: true,
+      GameOrSteamBinaryPath: SettingsService.getDefaultGameOrSteamBinaryPath(),
     }
   }
 

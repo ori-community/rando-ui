@@ -1,9 +1,6 @@
 import {defineStore} from "pinia"
 import type {UserInfo} from "@shared/types/user"
 
-const isElectron = useIsElectron()
-const electronApi = isElectron ? useElectronApi() : null
-
 export const useUserStore = defineStore("user", () => {
   const {axios, catchAxiosErrors} = useAxios()
 

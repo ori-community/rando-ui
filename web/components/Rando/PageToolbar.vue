@@ -1,9 +1,15 @@
 <template>
   <div class="page-toolbar d-flex align-center my-4">
     <v-scale-transition group tag="div" class="flex-gap align-center">
+      <!-- TODO *mobile* btn widths   -->
+      <!-- TODO smaller button text   -->
+      <!-- TODO stats -->
+      <!-- TODO tracker -->
+      <!-- TODO archipelago -->
       <v-btn key="home" exact :to="`${isElectron ? `/electron` : `/`}`" size="x-large" variant="text">
         <v-icon>mdi-home-outline</v-icon>
       </v-btn>
+      <!-- TODO pending league games -->
       <v-btn key="league" size="x-large" variant="text" to="/league/seasons">
         <v-icon start>mdi-trophy</v-icon>
         <span class="main-button-text"> League </span>
@@ -18,12 +24,75 @@
     <v-spacer/>
     <rando-throttled-spinner no-margin>
       <div class="d-flex align-center">
-        <v-btn size="x-large" variant="text" @click="login">
-          <v-icon start>mdi-login-variant</v-icon>
-          Log in
-        </v-btn>
+        <template v-if="userStore.isLoggedIn">
+          <!-- TODO no greeting on mobile -->
+          <div class="mr-4 user-info">
+            <div class="text-no-wrap">{{ randomGreeting(userStore.user?.name ?? '') }}</div>
+          </div>
+          <v-menu offset-y left nudge-bottom="6">
+            <template #activator="{ props }">
+              <v-btn x-large class="ma-0 mr-1" icon v-bind="props">
+                <rando-discord-avatar v-if="userStore.user" :user="userStore.user" size="48"/>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item @click="editedNickname = ''; showEditNicknameDialog = true">
+                <v-icon left>mdi-account-edit-outline</v-icon>
+                Change Nickname
+              </v-list-item>
+              <!-- TODO Dev Tools
+              <v-list-item v-if="userStore.isDeveloper" @click="toggleDevtools">
+                <v-icon left>mdi-code-braces</v-icon>
+                {{ devtoolsEnabled ? 'Disable' : 'Enable' }} Server Devtools
+              </v-list-item>
+              -->
+              <v-list-item @click="logout">
+                <v-icon left>mdi-logout-variant</v-icon>
+                Log out
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </template>
+        <template v-else>
+          <v-btn size="x-large" variant="text" @click="login">
+            <v-icon start>mdi-login-variant</v-icon>
+            Log in
+          </v-btn>
+        </template>
       </div>
     </rando-throttled-spinner>
+
+    <v-dialog v-model="showEditNicknameDialog" :persistent="RenameRequestInProgress" max-width="500">
+      <v-card>
+        <v-card-title>Change Nickname</v-card-title>
+        <v-card-text>
+          <v-text-field
+            v-model="editedNickname"
+            autofocus
+            label="Nickname"
+            counter="32"
+            @keydown.enter="saveNickname"
+          />
+
+          <div class="d-flex">
+            <v-spacer/>
+            <v-btn class="mr-1" text :disabled="RenameRequestInProgress" @click="showEditNicknameDialog = false">
+              Cancel
+            </v-btn>
+            <v-btn
+              depressed
+              color="accent"
+              :disabled="!nicknameIsValid"
+              :loading="RenameRequestInProgress"
+              @click="saveNickname"
+            >
+              Save
+            </v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
   </div>
 </template>
 
@@ -33,8 +102,40 @@
   const authStore = useAuthStore()
   const route = useRoute()
   const {axios} = useAxios()
+  const userStore = useUserStore()
 
-  async function login() {
+  const editedNickname = ref('')
+  const showEditNicknameDialog = ref(false)
+  const RenameRequestInProgress = ref(false)
+
+  const randomGreetingTemplate = computed(() => {
+    const templates = [
+      'Hi, #!',
+      'Hello, #!',
+      'Hey, #!',
+      'Hiya, #!',
+      'Yo, #!',
+      'Ahoy, #!',
+      'Howdy, #!',
+      'oriHi, #!',
+      'Hello there, #!',
+      'Hola, #!',
+      '#, wassup?',
+      '#,  sup?',
+    ]
+    return templates[Math.floor(Math.random() * templates.length)]
+  })
+  const nicknameIsValid = computed(() => {
+    const trimmedNickname = editedNickname.value.trim()
+    return trimmedNickname.length > 0 && trimmedNickname.length <= 32
+  })
+
+
+  const randomGreeting = ((username: string) => {
+    return randomGreetingTemplate.value.replace('#', username)
+  })
+
+  const login = (async () => {
     if (!electronApi) {
       authStore.redirectPath = route.fullPath
 
@@ -50,9 +151,29 @@
     })
 
     if (jwt) {
-      authStore.jwt = jwt
+      await authStore.setJwt(jwt)
     }
-  }
+  })
+
+  const logout = (async () => {
+    await authStore.setJwt(null)
+  })
+  const saveNickname = (async () => {
+    if (!nicknameIsValid.value) {
+      return
+    }
+
+    RenameRequestInProgress.value = true
+    await axios.put('/users/me/nickname', editedNickname.value, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+      },
+    })
+    await userStore.updateUser()
+    RenameRequestInProgress.value = false
+    showEditNicknameDialog.value = false
+  })
+
 </script>
 
 <style lang="scss" scoped>

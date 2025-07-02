@@ -80,16 +80,15 @@
 
 <script lang="ts" setup>
   import type {LeagueGameInfo, LeagueSeasonInfo} from "@shared/types/league"
-  import type {UserInfo} from "@shared/types/user"
 
   const {axios} = useAxios()
+  const userStore = useUserStore()
   const seasonsLoading = ref(false)
   const leagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
   const showLeagueInfo = ref(false)
   const leagueDiscordChannelUrl = ref('https://discord.gg/kXuZSAuxZt')
 
   const pendingGames: { game: LeagueGameInfo, season: LeagueSeasonInfo }[] = []   // TODO pending LeagueGames
-  const user = ref<UserInfo | null>(null) // TODO post user handling
 
   const categorizedSeasons = computed(() => {
     const value: {
@@ -129,7 +128,8 @@
   })
 
   const userIsMemberOfSeason = ((season: LeagueSeasonInfo) => {
-    return season.memberships?.some((m) => m.user.id === user.value?.id)
+    if (!userStore.isLoggedIn) return false
+    return season.memberships?.some((m) => m.user.id === userStore.user?.id)
   })
 
 </script>

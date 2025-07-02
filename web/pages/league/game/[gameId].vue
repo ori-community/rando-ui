@@ -52,6 +52,9 @@
           <v-card class="pt-5">
             <h2 class="text-center mb-5">Submissions</h2>
             <rando-throttled-spinner>
+
+              <!-- TODO fix row highlighting -->
+              <!-- SUBMISSIONS -->
               <v-data-table
                 v-if="sortedSubmissions"
                 class="submissions"
@@ -61,7 +64,7 @@
                 hide-default-footer
                 :mobile-breakpoint="0"
                 disable-sort
-                :item-class="(item: LeagueGameSubmissionInfo) => (item.membership.user.id === user?.id ? 'row-highlighting' : '')"
+                :item-class="(item: LeagueGameSubmissionInfo) => (item.membership.user.id === userStore.user?.id ? 'row-highlighting' : '')"
               >
                 <!-- Items -->
                 <template #[`item.rankingData.rank`]="{ item }">
@@ -206,7 +209,6 @@
   // import {EventBus} from '~/assets/lib/EventBus'
 
   import type {LeagueSeasonInfo, LeagueGameInfo, LeagueGameSubmissionInfo} from "@shared/types/league"
-  import type {UserInfo} from "@shared/types/user"
   import {useHead} from "#imports"
   import type {DataTableHeader} from "vuetify/framework"
 
@@ -214,9 +216,7 @@
   const route = useRoute()
   const isElectron = useIsElectron()
   const electronApi = useElectronApi()
-
-  const user = ref<UserInfo | null>(null) // TODO user
-
+  const userStore = useUserStore()
   const leagueSeason = ref<LeagueSeasonInfo | null>(null)
   const leagueGame = ref<LeagueGameInfo | null>(null)
   const gameSubmissions = ref<LeagueGameSubmissionInfo[]>([])
@@ -236,15 +236,13 @@
       : 'Game - League'
   })
 
-
-  // ...mapGetters('user', ['isLoggedIn']),
   // ...mapState('multiverseState', ['multiverses']), TODO multiverses
   // ...mapState('electron', ['launching', 'settings']), TODO launch seed
   const canSubmit = computed(() => {
     return leagueGame.value !== null && leagueGame.value.userMetadata?.canSubmit
   })
   const ownSubmission = computed(() => {
-    return gameSubmissions.value?.find((s) => s.membership.user.id === user.value?.id) ?? null
+    return gameSubmissions.value?.find((s) => s.membership.user.id === userStore.user?.id) ?? null
   })
   const didSubmit = computed(() => {
     return ownSubmission.value !== null
@@ -270,7 +268,7 @@
     }
 
     return multiverse.value.universes.some((u) =>
-      u.worlds.some((w) => w.memberships.find((m) => m.user.id === user.value?.id)),
+      u.worlds.some((w) => w.memberships.find((m) => m.user.id === userStore.user?.id)),
     )
   })
   const launcherUrl = computed(() => {

@@ -40,7 +40,7 @@
 
   const props = defineProps({
     rankingData: {
-      type: Object as PropType<LeagueGameSubmissionRankingDataInfo>,
+      type: Object as PropType<LeagueGameSubmissionRankingDataInfo | null>,
       default: () => null,
     },
     discardWorstGamesCount: {

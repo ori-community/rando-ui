@@ -39,12 +39,12 @@
           </v-btn>
 
           <div v-if="isElectron" class="top-row-button">
-            <v-btn variant="text" :disabled="!isLoggedIn" @click="trainingSeedDialogOpen = true">
+            <v-btn variant="text" :disabled="!userStore.isLoggedIn" @click="trainingSeedDialogOpen = true">
               <v-icon left>mdi-dumbbell</v-icon>
               Training
             </v-btn>
             <v-tooltip location="bottom" open-delay="300" activator="parent">
-              <span>{{ isLoggedIn ? 'Create a practice game' : 'Log in to create a practice game' }}</span>
+              <span>{{ userStore.isLoggedIn ? 'Create a practice game' : 'Log in to create a practice game' }}</span>
             </v-tooltip>
           </div>
           <div v-if="!isJoined && !seasonEnded" class="top-row-button">
@@ -58,12 +58,13 @@
               Join
             </v-btn>
             <v-tooltip activator="parent" location="bottom" :disabled="canJoin">
-              <span>{{ isLoggedIn ? `You can't join running seasons` : 'Log in to join' }}</span>
+              <span>{{ userStore.isLoggedIn ? `You can't join running seasons` : 'Log in to join' }}</span>
             </v-tooltip>
           </div>
         </div>
         <div class="tables-container">
 
+          <!-- TODO fix row highlighting -->
           <!-- LEADERBOARD -->
           <v-card class="overflow-x-auto leaderboard-container">
             <h2 ref="leaderboardTitle" class="text-center mt-5 mb-5">Leaderboard</h2>
@@ -77,7 +78,7 @@
                 hide-default-footer
                 disable-sort
                 :mobile-breakpoint='0'
-                :item-class="(item: LeagueSeasonMembershipInfo) => (item.user.id === user?.id ? 'row-highlighting' : '')"
+                :item-class="(item: LeagueSeasonMembershipInfo) => (item.user.id === userStore.user?.id ? 'row-highlighting' : '')"
               >
                 <!-- items -->
                 <template #[`item.rank`]="{ item }">
@@ -290,7 +291,6 @@
     LeagueSeasonInfo,
     LeagueSeasonMembershipInfo
   } from "@shared/types/league";
-  import type {UserInfo} from "@shared/types/user";
   import type {DataTableHeader} from "vuetify/framework";
   import {renderMarkdown} from "assets/utils/markdown";
 
@@ -300,6 +300,7 @@
   const route = useRoute()
   const router = useRouter()
   const isElectron = useIsElectron()
+  const userStore = useUserStore()
   const seasonId = route.params.seasonId
   const leagueSeason = ref<LeagueSeasonInfo | null>(null)
   const currentGameSubmissions = ref<LeagueGameSubmissionInfo[] | null>(null)
@@ -319,14 +320,12 @@
     {title: 'Your Time', value: 'userMetadata.ownSubmission.rankingData.time', align: 'end'},
   ]
 
-  const isLoggedIn = ref(false) // TODO post user handling
-  const user = ref<UserInfo | null>(null) // TODO post user handling
-
   const isJoined = computed(() => {
-    return leagueSeason.value !== null && leagueSeason.value.memberships.some((m) => m.user.id === user.value?.id)
+    if (!userStore.isLoggedIn) return false
+    return leagueSeason.value !== null && leagueSeason.value.memberships.some((m) => m.user.id === userStore.user?.id)
   })
   const canJoin = computed(() => {
-    return leagueSeason.value !== null && leagueSeason.value.canJoin && isLoggedIn && !isJoined.value
+    return leagueSeason.value !== null && leagueSeason.value.canJoin && userStore.isLoggedIn && !isJoined.value
   })
   const seasonEnded = computed(() => {
     return (

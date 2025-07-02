@@ -1,14 +1,12 @@
 <template>
   <span>
-    <v-tooltip v-if="originalTime !== null" bottom>
-      <template #activator="{ props: on }">
-        <v-icon size="x-small" color="warning" v-on="on">mdi-timer-alert-outline</v-icon>
-      </template>
-      <span>
+    <span v-if="originalTime !== null" class="pr-1">
+      <v-icon size="x-small" color="warning">mdi-timer-alert-outline</v-icon>
+      <v-tooltip location="bottom" activator="parent">
         The final time of this run has been altered.<br>
         The originally submitted time was {{ formatTime(originalTime) }}.
-      </span>
     </v-tooltip>
+    </span>
     <template v-if="time !== null">
       {{ formatTime(time) }}
     </template>

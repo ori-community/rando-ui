@@ -74,7 +74,7 @@
                 class="leaderboard"
                 :headers="memberHeaders"
                 :items="sortedMembers"
-                disable-pagination
+                :items-per-page="-1"
                 hide-default-footer
                 disable-sort
                 :mobile-breakpoint='0'
@@ -198,7 +198,7 @@
                 class="past-games"
                 :headers="gameHeaders"
                 :items="pastGames"
-                disable-pagination
+                :items-per-page="-1"
                 hide-default-footer
                 must-sort
                 :sort-by="[{ key: 'gameNumber'}]"
@@ -229,8 +229,8 @@
                 </template>
                 <template #[`item.userMetadata.ownSubmission.rankingData.time`]="{ item }">
                   <wotw-league-time-view
-                    :time="item.userMetadata?.ownSubmission?.rankingData?.time"
-                    :original-time="item.userMetadata?.ownSubmission?.rankingData?.originalTime"
+                    :time="item.userMetadata?.ownSubmission?.rankingData?.time ?? null"
+                    :original-time="item.userMetadata?.ownSubmission?.rankingData?.originalTime ?? null"
                   />
                 </template>
               </v-data-table>

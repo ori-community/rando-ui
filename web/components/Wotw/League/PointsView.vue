@@ -1,38 +1,35 @@
 <template>
-  <v-tooltip bottom open-delay="200" :disabled="!isDiscarded">
-    <template #activator="{ props: on }">
-      <span
-        class="no-wrap"
-        :class="{
-          'text-grey': isDiscarded && !isDiscardedFully,
-          'text-red text-decoration-line-through': isDiscardedFully,
-        }"
-        v-on="on"
-      >
-        <span>
-          {{ rankingData?.points }}
-        </span>
-        <span v-if="isDiscarded && !isDiscardedFully" class="percentage">
-          ({{ discardPercentage }})
-        </span>
-      </span>
-    </template>
-    <div v-if="discardWorstGamesCount > 1" class="text-center max-width-300">
-      {{ discardWorstGamesCount }} worst races get discarded over time.
-      <template v-if="rankingMultiplier > 0.0">
-        {{ discardPercentage }} of points from this game currently
-        count towards the leaderboard ranking.
-        <template v-if="rankingMultiplier > 1.0">
-          This game offsets other games that deviated
-          from your average.
+  <span
+    class="no-wrap"
+    :class="{
+      'text-grey': isDiscarded && !isDiscardedFully,
+      'text-red text-decoration-line-through': isDiscardedFully,
+    }"
+  >
+    <span>
+      {{ rankingData?.points }}
+    </span>
+    <span v-if="isDiscarded && !isDiscardedFully" class="percentage">
+      ({{ discardPercentage }})
+    </span>
+    <v-tooltip location="bottom" open-delay="200" :disabled="!isDiscarded" activator="parent">
+      <div v-if="discardWorstGamesCount > 1" class="text-center max-width-300">
+        {{ discardWorstGamesCount }} worst races get discarded over time.
+        <template v-if="rankingMultiplier > 0.0">
+          {{ discardPercentage }} of points from this game currently
+          count towards the leaderboard ranking.
+          <template v-if="rankingMultiplier > 1.0">
+            This game offsets other games that deviated
+            from your average.
+          </template>
         </template>
-      </template>
-      <template v-else>
-        This game does not count towards the leaderboard.
-      </template>
-    </div>
-    <span v-else>Worst game gets discarded over time</span>
-  </v-tooltip>
+        <template v-else>
+          This game does not count towards the leaderboard.
+        </template>
+      </div>
+      <span v-else>Worst game gets discarded over time</span>
+    </v-tooltip>
+  </span>
 </template>
 
 <script lang="ts" setup>

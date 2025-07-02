@@ -12,7 +12,7 @@
 
     <div class="card-tags">
       <div v-if="upcomingTag" class="px-2 bg-blue-darken-1">Upcoming</div>
-      <div v-if="joinedTag" class="px-2 accent">
+      <div v-if="joinedTag" class="px-2 bg-accent">
         <v-icon size="x-small">mdi-check</v-icon>
         Joined
       </div>

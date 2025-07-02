@@ -60,7 +60,7 @@
                 class="submissions"
                 :headers="submissionHeaders"
                 :items="sortedSubmissions"
-                disable-pagination
+                :items-per-page="-1"
                 hide-default-footer
                 :mobile-breakpoint="0"
                 disable-sort
@@ -76,7 +76,7 @@
                   />
                 </template>
                 <template #[`item.membership.user.name`]="{ item }">
-                  <div class="text-no-wrap">
+                  <div class="d-flex align-center">
                     <rando-discord-avatar :user="item.membership.user" class="mr-1"/>
                     {{ item.membership.user.name }}
                   </div>
@@ -106,7 +106,9 @@
                   <v-btn v-if="item.rankingData?.videoUrl" icon @click="openVideo(item.rankingData.videoUrl)">
                     <v-icon>mdi-video-outline</v-icon>
                   </v-btn>
-                  <v-btn v-else-if="item.membership.user.id === user?.id" icon @click="showVideoSubmission = true">
+                  <v-btn
+                    v-else-if="item.membership.user.id === userStore.user?.id" icon
+                    @click="showVideoSubmission = true">
                     <v-icon>mdi-plus</v-icon>
                   </v-btn>
                 </template>

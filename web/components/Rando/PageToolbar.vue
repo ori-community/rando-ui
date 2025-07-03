@@ -149,12 +149,18 @@
       return
     }
 
-    const jwt = await electronApi.auth.startOAuthFlow.query({
+    const shortLivedJwt = await electronApi.auth.startOAuthFlow.query({
       apiBaseUrl: "https://wotw.orirando.com/api",
     })
 
-    if (jwt) {
-      await authStore.setJwt(jwt)
+    axios.defaults.headers.common['Authorization'] = `Bearer ${shortLivedJwt}`
+
+    const longLivedJwt = (await axios.post('/tokens/', {
+      scopes: ['*'],
+    })).data as string
+
+    if (longLivedJwt) {
+      await authStore.setJwt(longLivedJwt)
     }
   })
 

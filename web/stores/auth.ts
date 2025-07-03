@@ -36,7 +36,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     // Persist the new token
     if (electronApi) {
-      await electronApi.auth.setClientJwt.query(token)
+      await electronApi.auth.setClientJwt.query({jwt: token})
     } else {
       if (token) {
         window.localStorage.setItem(JWT_LOCAL_STORAGE_KEY, token)

@@ -2,7 +2,7 @@
   <span>
     <span v-if="originalTime !== null" class="pr-1">
       <v-icon size="x-small" color="warning">mdi-timer-alert-outline</v-icon>
-      <v-tooltip location="bottom" activator="parent">
+      <v-tooltip location="start" activator="parent">
         The final time of this run has been altered.<br>
         The originally submitted time was {{ formatTime(originalTime) }}.
     </v-tooltip>

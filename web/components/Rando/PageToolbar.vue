@@ -9,6 +9,10 @@
       <v-btn key="home" exact :to="`${isElectron ? `/electron` : `/`}`" size="x-large" variant="text">
         <v-icon>mdi-home-outline</v-icon>
       </v-btn>
+      <v-btn key="seedgen" size="x-large" variant="text" to="/seedgen">
+        <v-icon start>mdi-dice-multiple</v-icon>
+        <span class="main-button-text"> Seed Generator </span>
+      </v-btn>
       <!-- TODO pending league games -->
       <v-btn key="league" size="x-large" variant="text" to="/league/seasons">
         <v-icon start>mdi-trophy</v-icon>
@@ -121,7 +125,6 @@
       'Hello there, #!',
       'Hola, #!',
       '#, wassup?',
-      '#,  sup?',
     ]
     return templates[Math.floor(Math.random() * templates.length)]
   })

@@ -64,17 +64,15 @@ export const auth = router({
    * Sets the saved client JWT, or deletes it when the token is null.
    */
   setClientJwt: publicProcedure
-    .input(z.object({
-      jwt: z.nullable(z.string())
-    }))
+    .input(z.string().nullable())
     .query(async ({input}) => {
-      if (input.jwt === null) {
+      if (input === null) {
         const jwtFilePath = getUserDataPath(".jwt")
         if (fs.existsSync(jwtFilePath)) {
           await fs.promises.unlink(jwtFilePath)
         }
       } else {
-        await fs.promises.writeFile(getUserDataPath(".jwt"), input.jwt, { encoding: "utf8" })
+        await fs.promises.writeFile(getUserDataPath(".jwt"), input, { encoding: "utf8" })
       }
     }),
 })

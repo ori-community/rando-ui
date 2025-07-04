@@ -36,9 +36,11 @@
 <script lang="ts" setup>
   import type {NuxtError} from "#app"
 
-  defineProps<{
+  const props = defineProps<{
     error: NuxtError
   }>()
+
+  console.error("Error from the error page:", props.error)
 
   const showError = ref(false)
 

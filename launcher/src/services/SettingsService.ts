@@ -5,7 +5,7 @@ import {merge} from "lodash"
 import log from "electron-log/main"
 import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
 import type {SettingKey, Settings} from "@shared/types/settings"
-import {getPlatform, Platform} from "@launcher/helpers"
+import {getPlatform} from "@launcher/helpers"
 
 type SettingsEvent = {
   /** Emitted when a single setting changed */
@@ -31,9 +31,9 @@ export class SettingsService {
 
   public static getDefaultGameOrSteamBinaryPath() {
     switch (getPlatform()) {
-      case Platform.Windows:
+      case "windows":
         return "C:\\Program Files (x86)\\Steam\\steam.exe"
-      case Platform.Linux:
+      case "linux":
         return `/home/${process.env.USER ?? "user"}/.steam/steam/steamapps/common/Ori and the Will of the Wisps/oriwotw.exe`
     }
 

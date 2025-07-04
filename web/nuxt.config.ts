@@ -8,12 +8,19 @@ export default defineNuxtConfig({
 
   css: ["@/assets/vuetify/globals.scss"],
 
+  runtimeConfig: {
+    public: {
+      platform: "web",
+      webApiBaseUrl: "https://wotw.orirando.com/api"
+    }
+  },
+
   build: {
     transpile: ["vuetify"],
   },
 
   alias: {
-    "@launcher": resolve(__dirname, "../launcher/src"),
+    "@launcher-api": resolve(__dirname, "../launcher/src/api/api"),
     "@shared": resolve(__dirname, "../shared"),
     "@web": resolve(__dirname, "../web"),
   },

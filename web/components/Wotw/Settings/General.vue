@@ -289,8 +289,7 @@
 
 <script lang="ts" setup>
 
-import {isPlatform, Platform} from "@launcher/helpers";
-
+const platform = usePlatform()
 const settingsStore = useSettingsStore()
 const settings = storeToRefs(settingsStore)
 const electronApi = useElectronApi()
@@ -301,10 +300,11 @@ const ctrlPressed = ref(false)
 const localTrackerPositionReset = ref(false)
 
 const isLinux = computed(() => {
-  return isPlatform(Platform.Linux)
+  return platform === "linux"
 })
+
 const isWindows = computed(() => {
-  return isPlatform(Platform.Windows)
+  return platform === "windows"
 })
 
 const steamPathWarning = (() => {

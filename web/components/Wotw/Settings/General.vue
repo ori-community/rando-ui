@@ -392,7 +392,7 @@
   })
 
   const onKeyDown = ((event: KeyboardEvent) => {
-    if (settingsStore.isInitialized && !settings.DeveloperMode) {
+    if (settingsStore.isInitialized && !settingsStore.DeveloperMode) {
       if (event.key === 'Control') {
         if (!ctrlPressed.value) {
           ctrlPressed.value = true

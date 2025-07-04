@@ -115,7 +115,9 @@
             hide-details
             @click:append="selectSteamPath"
           />
-          <div v-if="steamPathWarning" class="mb-2 mt-2 filepath-warning">{{ steamPathWarning }}</div>
+          <div v-if="steamPathWarning && !settings.UseMicrosoftStore.value" class="mb-2 mt-2 filepath-warning">
+            {{ steamPathWarning }}
+          </div>
         </template>
 
         <template v-if="isLinux">
@@ -307,7 +309,7 @@
     return platform === "windows"
   })
 
-  const steamPathWarning = (() => {
+  const steamPathWarning = computed(() => {
     const filename = getBaseName(settings.GameOrSteamBinaryPath.value)
 
     switch (filename?.toLowerCase()) {
@@ -320,12 +322,12 @@
     }
   })
 
-  const gameBinaryWarning = (() => {
-    // const filename = getBaseName(settings.paths.gameBinary) TODO detect OS for binary path
-    //
-    // if (filename?.toLowerCase() !== 'oriwotw.exe') {
-    //   return 'Warning! Make sure to select the game executable (oriwotw.exe)'
-    // }
+  const gameBinaryWarning = computed(() => {
+    const filename = getBaseName(settings.GameOrSteamBinaryPath.value)
+
+    if (filename?.toLowerCase() !== 'oriwotw.exe') {
+      return 'Warning! Make sure to select the game executable (oriwotw.exe)'
+    }
     return null
   })
 
@@ -359,7 +361,6 @@
 
   const disableDeveloperTools = (async () => {
     settings.DeveloperMode.value = false
-    await nextTick()
     settings.ServerHost.value = "wotw.orirando.com"
     settings.UpdateToPrereleaseVersions.value = false
     settings.DebugControls.value = false

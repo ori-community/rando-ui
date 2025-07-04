@@ -1,6 +1,6 @@
 <template>
   <div class="page-toolbar d-flex align-center my-4">
-    <v-scale-transition group tag="div" class="flex-gap align-center">
+    <v-scale-transition group tag="div" class="d-flex toolbar-gap align-center">
       <!-- TODO *mobile* btn widths   -->
       <!-- TODO smaller button text   -->
       <!-- TODO stats -->
@@ -11,17 +11,17 @@
       </v-btn>
       <v-btn key="seedgen" size="x-large" variant="text" to="/seedgen">
         <v-icon start>mdi-dice-multiple</v-icon>
-        <span class="main-button-text"> Seed Generator </span>
+        <span class="toolbar-button-text">Seed Generator</span>
       </v-btn>
       <!-- TODO pending league games -->
       <v-btn key="league" size="x-large" variant="text" to="/league/seasons">
         <v-icon start>mdi-trophy</v-icon>
-        <span class="main-button-text"> League </span>
+        <span class="toolbar-button-text">League</span>
       </v-btn>
       <template v-if="isElectron">
         <v-btn key="settings" size="x-large" variant="text" to="/electron/settings">
           <v-icon start>mdi-cog-outline</v-icon>
-          Settings
+          <span class="toolbar-button-text">Settings</span>
         </v-btn>
       </template>
     </v-scale-transition>
@@ -65,39 +65,38 @@
         </template>
       </div>
     </rando-throttled-spinner>
-
-    <v-dialog v-model="showEditNicknameDialog" :persistent="RenameRequestInProgress" max-width="500">
-      <v-card>
-        <v-card-title>Change Nickname</v-card-title>
-        <v-card-text>
-          <v-text-field
-            v-model="editedNickname"
-            autofocus
-            label="Nickname"
-            counter="32"
-            @keydown.enter="saveNickname"
-          />
-
-          <div class="d-flex">
-            <v-spacer/>
-            <v-btn class="mr-1" text :disabled="RenameRequestInProgress" @click="showEditNicknameDialog = false">
-              Cancel
-            </v-btn>
-            <v-btn
-              depressed
-              color="accent"
-              :disabled="!nicknameIsValid"
-              :loading="RenameRequestInProgress"
-              @click="saveNickname"
-            >
-              Save
-            </v-btn>
-          </div>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-
   </div>
+
+  <v-dialog v-model="showEditNicknameDialog" :persistent="RenameRequestInProgress" max-width="500">
+    <v-card>
+      <v-card-title>Change Nickname</v-card-title>
+      <v-card-text>
+        <v-text-field
+          v-model="editedNickname"
+          autofocus
+          label="Nickname"
+          counter="32"
+          @keydown.enter="saveNickname"
+        />
+
+        <div class="d-flex">
+          <v-spacer/>
+          <v-btn class="mr-1" text :disabled="RenameRequestInProgress" @click="showEditNicknameDialog = false">
+            Cancel
+          </v-btn>
+          <v-btn
+            depressed
+            color="accent"
+            :disabled="!nicknameIsValid"
+            :loading="RenameRequestInProgress"
+            @click="saveNickname"
+          >
+            Save
+          </v-btn>
+        </div>
+      </v-card-text>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -188,5 +187,13 @@
 <style lang="scss" scoped>
   .page-toolbar {
     gap: 0.2em;
+  }
+
+  .toolbar-gap {
+    gap: 0.2em;
+  }
+
+  .toolbar-button-text {
+    font-size: 1.0rem;
   }
 </style>

@@ -4,7 +4,6 @@ export function usePlatform(): Platform {
   const runtimeConfig = useRuntimeConfig()
 
   const platform = runtimeConfig.public.platform
-  console.log(runtimeConfig)
 
   switch (platform) {
     case "windows":

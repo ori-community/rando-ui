@@ -6,6 +6,17 @@ import colors from "vuetify/util/colors"
 
 export default defineNuxtPlugin((app) => {
   const vuetify = createVuetify({
+    defaults: {
+      VSwitch: {
+        color: "primary",
+      },
+      VCheckbox: {
+        color: "primary",
+      },
+      VSlider: {
+        color: "primary",
+      },
+    },
     theme: {
       defaultTheme: "dark",
       themes: {

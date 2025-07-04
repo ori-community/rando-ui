@@ -4,97 +4,90 @@
     <v-col cols="12" md="6">
       <div class="mb-8">
         <h3>Map</h3>
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.HideQuestFilter.value"
             label="Hide Quest Filter"
-            messages="Never show the Quests filter in the in-game map"
+            description="Never show the Quests filter in the in-game map"
         />
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.HideWarpFilter.value"
             label="Hide Warp Filter"
-            messages="Never show the Warp filter in the in-game map"
+            description="Never show the Warp filter in the in-game map"
         />
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.HideCollectableFilter.value"
             label="Hide Collectibles Filter"
-            messages="Never show the Collectables filter in the in-game map"
+            description="Never show the Collectables filter in the in-game map"
         />
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.AlwaysShowWarps.value"
             label="Always Show Warps"
-            messages="Always show Spirit Wells on the in-game map, no matter what filter"
+            description="Always show Spirit Wells on the in-game map, no matter what filter"
         />
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.AlwaysShowKeystoneDoors.value"
             label="Always Show Keystone Doors"
-            messages="Always show Keystone Doors on the in-game map, no matter what filter"
+            description="Always show Keystone Doors on the in-game map, no matter what filter"
         />
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="showTransparentIcons"
             label="Show Transparent Icons"
-            messages="Show out of logic icons as transparent"
+            description="Show out of logic icons as transparent"
         />
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.EnableWorldMap.value"
             label="Disable World Map"
-            messages="Disables the world map that opens when zooming out"
+            description="Disables the world map that opens when zooming out"
         />
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.EnableMinimap.value"
             label="Enable Minimap"
-            messages="Display an in-game minimap overlay"
+            description="Display an in-game minimap overlay"
         />
-        <v-slider
-            v-model="settings.MapPanSpeed.value"
-            class="mt-3"
-            min="0.5"
-            max="5"
-            step="0.1"
-            show-ticks
-            thumb-label
-            label="Map Pan Speed"
-            messages="Sets how fast the map pans on controller or keyboard"
+        <rando-settings-slider
+          v-model="settings.MapPanSpeed.value"
+          :min="0.5"
+          :max="5"
+          :step="0.1"
+          label="Map Pan Speed"
+          description="Sets how fast the map pans on controller or keyboard"
         />
       </div>
       <div class="mb-8">
         <h3>Miscellaneous</h3>
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.ShowStatsAfterFinish.value"
             label="Show Stats after Finish"
-            messages="Show stats in the launcher after finishing a game"
+            description="Show stats in the launcher after finishing a game"
         />
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.FunnyMoney.value"
             label="Random Currency Names"
-            messages='Bored of seeing "X Spirit Light"? This setting is for you!'
+            description='Bored of seeing "X Spirit Light"? This setting is for you!'
         />
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.AlwaysShowKeystones.value"
             label="Always Show Keystones"
-            messages="Keep your keystone count visible while playing"
+            description="Keep your keystone count visible while playing"
         />
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.SelectInLogicFilterByDefault.value"
             label="Start with In Logic Filter"
-            messages="Select the In Logic map filter by default instead of the All filter"
+            description="Select the In Logic map filter by default instead of the All filter"
         />
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.ShowAllSecrets.value"
             label="Disable always showing secret areas"
-            messages="By default, the randomizer shows all secrets without having the Sense Shard equipped"
+            description="By default, the randomizer shows all secrets without having the Sense Shard equipped"
         />
-        <v-slider
-            v-model="settings.CameraShakeIntensity.value"
-            class="mt-3"
-            min="0"
-            max="2"
-            step="0.1"
-            show-ticks
-            thumb-label
-            label="Camera Shake Intensity"
-            messages="Sets the intensity of camera shakes in the game"
+        <rando-settings-slider
+          v-model="settings.CameraShakeIntensity.value"
+          :min="0"
+          :max="2"
+          :step="0.1"
+          label="Camera Shake Intensity"
+          description="Sets the intensity of camera shakes in the game"
         />
-        <!-- TODO message using complete width -->
       </div>
       <div class="mb-8">
         <h3>Launch Settings</h3>
@@ -142,93 +135,93 @@
     <v-col cols="12" md="6">
       <div class="mb-8">
         <h3>Control Options</h3>
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.GrappleMouseControl.value"
             label="Grapple Mouse Aiming"
-            messages="Enables aiming Grapple with your mouse cursor"
+            description="Enables aiming Grapple with your mouse cursor"
         />
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.BurrowMouseControl.value"
             label="Burrow Mouse Aiming"
-            messages="Enables aiming Burrow with your mouse cursor"
+            description="Enables aiming Burrow with your mouse cursor"
         />
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.WaterDashMouseControl.value"
             label="Swimming Mouse Aiming"
-            messages="Enable Swimming and Water Dashing towards your mouse cursor"
+            description="Enable Swimming and Water Dashing towards your mouse cursor"
         />
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.HybridMouseControl.value"
             :disabled="!settings.BurrowMouseControl.value && !settings.WaterDashMouseControl.value"
             label="Hybrid Mouse Control"
-            messages="Use Mouse Aiming for Burrow and Swimming only when no directional input is pressed. Mouse Aiming needs to be enabled"
+            description="Use Mouse Aiming for Burrow and Swimming only when no directional input is pressed. Mouse Aiming needs to be enabled"
         />
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.InvertFastSwim.value"
             label="Invert Swim Speeds"
-            messages="Swim fast by default. Hold jump to swim slower instead"
+            description="Swim fast by default. Hold jump to swim slower instead"
         />
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.LockCursor.value"
             label="Lock Cursor to Window"
-            messages="Prevents the mouse cursor from moving outside the game window"
+            description="Prevents the mouse cursor from moving outside the game window"
         />
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.DisableAutoAim.value"
             label="Disable Autoaim"
-            messages="Disables Autoaiming for Spike, Bow and Shuriken"
+            description="Disables Autoaiming for Spike, Bow and Shuriken"
         />
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.EnableNativeControllerSupport.value"
             label="Enable Native Controller Support"
-            messages="Enables native support for many non-Xbox controllers. Disable this if you have issues."
+            description="Enables native support for many non-Xbox controllers. Disable this if you have issues."
         />
       </div>
       <div class="mb-8">
         <h3>Tracker</h3>
 
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.LaunchWithTracker.value"
             label="Launch with Game"
-            messages="Automatically open the item tracker when launching the randomizer"
+            description="Automatically open the item tracker when launching the randomizer"
         />
 
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.LocalTrackerShowTimer.value"
             label="Show Timer"
-            messages="Shows the timer for the current game"
+            description="Shows the timer for the current game"
         />
 
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.LocalTrackerAlwaysOnTop.value"
             label="Always on Top"
-            messages="Show the Item Tracker on top of other windows"
+            description="Show the Item Tracker on top of other windows"
         />
 
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.LocalTrackerTransparent.value"
             label="Transparent Window"
-            messages="Make the Item Tracker transparent"
+            description="Make the Item Tracker transparent"
         />
 
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.LocalTrackerIgnoreMouse.value"
             label="Ignore Mouse"
-            messages="This is helpful if you want to show the tracker above the game. Note that you cannot move/resize the tracker with this option enabled"
+            description="This is helpful if you want to show the tracker above the game. Note that you cannot move/resize the tracker with this option enabled"
         />
 
-        <v-checkbox
+        <rando-settings-checkbox
             v-model="settings.LocalTrackerShowWillowHearts.value"
             label="Show Willow Hearts"
-            messages="Shows the amount of destroyed willow hearts"
+            description="Shows the amount of destroyed willow hearts"
         />
 
         <v-expand-transition>
-          <v-checkbox
+          <rando-settings-checkbox
               v-if="settings.LocalTrackerShowWillowHearts.value"
               v-model="settings.LocalTrackerHideHeartsUntilFirstHeart.value"
               label="Hide counter until first heart is destroyed"
-              messages="Only shows the amount of willow hearts when at least one heart is destroyed"
+              description="Only shows the amount of willow hearts when at least one heart is destroyed"
           />
         </v-expand-transition>
 
@@ -252,10 +245,10 @@
       <div ref="developerSettingsContainer" class="mb-8">
         <template v-if="settings.DeveloperMode.value">
           <h3>Developer Tools</h3>
-          <v-checkbox
+          <rando-settings-checkbox
               v-model="settings.UpdateToPrereleaseVersions.value"
               label="Update to prerelease versions"
-              messages="Search for and ask to update to unreleased unstable versions"
+              description="Search for and ask to update to unreleased unstable versions"
           />
 
           <!-- TODO post Update handling
@@ -270,10 +263,10 @@
           </v-btn>
           -->
 
-          <v-checkbox
+          <rando-settings-checkbox
               v-model="settings.DebugControls.value"
               label="Enable Debug Controls"
-              messages="Enable Debug Controls by default"
+              description="Enable Debug Controls by default"
           />
           <v-combobox
               v-model="settings.ServerHost.value"
@@ -282,10 +275,10 @@
               :items="['wotw.orirando.com', 'dev.wotw.orirando.com', '127.0.0.1:8081']"
               messages="Press Ctrl+R after changing this setting for it to apply in the launcher"
           />
-          <v-checkbox
+          <rando-settings-checkbox
               v-model="settings.ServerTLS.value"
               label="Use Secure Connection"
-              messages="Connect to the Server using HTTPS and WSS instead of HTTP and WS"
+              description="Connect to the Server using HTTPS and WSS instead of HTTP and WS"
           />
           <v-btn color="accent" class="mt-5" @click="disableDeveloperTools"> Disable Developer Tools</v-btn>
         </template>

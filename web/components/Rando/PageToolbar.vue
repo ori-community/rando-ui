@@ -4,8 +4,9 @@
       <!-- TODO *mobile* btn widths   -->
       <!-- TODO smaller button text   -->
       <!-- TODO stats -->
-      <!-- TODO tracker -->
       <!-- TODO archipelago -->
+
+      <!--   MAIN BUTTONS  -->
       <v-btn key="home" exact :to="`${isElectron ? `/electron` : `/`}`" size="x-large" variant="text">
         <v-icon>mdi-home-outline</v-icon>
       </v-btn>
@@ -23,6 +24,23 @@
           <v-icon start>mdi-cog-outline</v-icon>
           <span class="toolbar-button-text">Settings</span>
         </v-btn>
+
+        <!--  MENU  -->
+        <v-menu key="electron-menu" offset-y>
+          <template #activator="{ props }">
+            <v-btn variant="text" icon v-bind="props" v-on="on">
+              <v-icon>mdi-dots-vertical</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <!-- TODO disable when tracker already running -->
+            <v-list-item size="x-large" variant="text" @click="openLocalTrackerWindow">
+              <v-icon start>mdi-radar</v-icon>
+              Tracker
+            </v-list-item>
+          </v-list>
+        </v-menu>
+
       </template>
     </v-scale-transition>
     <v-spacer/>
@@ -180,6 +198,10 @@
     await userStore.updateUser()
     RenameRequestInProgress.value = false
     showEditNicknameDialog.value = false
+  })
+
+  const openLocalTrackerWindow = (async () => {
+    await electronApi?.localTracker.openWindow.query()
   })
 
 </script>

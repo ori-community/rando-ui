@@ -21,14 +21,14 @@
     "@electron-forge/plugin-fuses": "^7.8.1",
     "@electron-forge/plugin-vite": "^7.8.1",
     "@electron/fuses": "^1.8.0",
-    "@eslint/js": "^9.30.0",
-    "@typescript-eslint/parser": "^8.35.0",
-    "electron": "36.4.0",
-    "eslint": "^8.57.1",
+    "@eslint/js": "^9.31.0",
+    "@typescript-eslint/parser": "^8.37.0",
+    "electron": "37.2.3",
+    "eslint": "^9.31.0",
     "eslint-plugin-import-x": "^4.16.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
-    "vite": "^6.3.5"
+    "vite": "^7.0.5"
   },
   "keywords": [],
   "author": {
@@ -45,9 +45,9 @@
     "electron-trpc": "^0.7.1",
     "lodash": "^4.17.21",
     "superjson": "^2.2.2",
-    "ws": "^8.18.2",
-    "zeromq": "^6.4.2",
-    "zod": "^3.25.64"
+    "ws": "^8.18.3",
+    "zeromq": "^6.5.0",
+    "zod": "^4.0.5"
   },
   "optionalDependencies": {
     "focus-ori": "file:./native/focus-ori"

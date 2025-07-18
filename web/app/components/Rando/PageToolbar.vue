@@ -19,16 +19,16 @@
         <v-icon start>mdi-trophy</v-icon>
         <span class="toolbar-button-text">League</span>
       </v-btn>
-      <template v-if="isElectron">
-        <v-btn key="settings" size="x-large" variant="text" to="/electron/settings">
-          <v-icon start>mdi-cog-outline</v-icon>
-          <span class="toolbar-button-text">Settings</span>
-        </v-btn>
+      <v-btn v-if="isElectron" key="settings" size="x-large" variant="text" to="/electron/settings">
+        <v-icon start>mdi-cog-outline</v-icon>
+        <span class="toolbar-button-text">Settings</span>
+      </v-btn>
 
-        <!--  MENU  -->
-        <v-menu key="electron-menu" offset-y>
+      <!--  MENU  -->
+      <div key="electron-menu">
+        <v-menu offset-y>
           <template #activator="{ props }">
-            <v-btn variant="text" icon v-bind="props" v-on="on">
+            <v-btn variant="text" icon v-bind="props">
               <v-icon>mdi-dots-vertical</v-icon>
             </v-btn>
           </template>
@@ -40,8 +40,7 @@
             </v-list-item>
           </v-list>
         </v-menu>
-
-      </template>
+      </div>
     </v-scale-transition>
     <v-spacer/>
     <rando-throttled-spinner no-margin>

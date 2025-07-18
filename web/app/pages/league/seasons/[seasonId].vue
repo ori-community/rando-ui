@@ -51,7 +51,7 @@
             <div class="ori-lurk-container">
               <img
                 class="ori-lurk" :class="{ lurking: joinButtonLurking }"
-                src="../../../../shared/images/ori_lurk.png" alt="">
+                src="@shared/images/ori_lurk.png" alt="">
             </div>
             <v-btn color="accent" :loading="actionLoading" :disabled="!canJoin" @click="showSeasonRules = true">
               <v-icon left>mdi-plus-circle-outline</v-icon>
@@ -134,7 +134,7 @@
                 <template #no-data>
                   <div class="mb-2 mt-5">
                     <template v-if="!(sortedMembers.length > 0)">
-                      <img class="ori-image" src="../../../../shared/images/ori_think.png" alt=""><br>no players
+                      <img class="ori-image" src="@shared/images/ori_think.png" alt=""><br>no players
                     </template>
                   </div>
                 </template>

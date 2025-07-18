@@ -2,7 +2,7 @@
   <v-app>
     <v-main class="content">
       <v-container class="fill-height flex-column align-center justify-center">
-        <img src="@shared/images/ori_shy.png">
+        <img alt="" src="@shared/images/ori_shy.png">
         <h1 class="mb-4">Something went oribly wrong.</h1>
 
         <v-btn

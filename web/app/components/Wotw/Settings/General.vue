@@ -371,20 +371,25 @@
     return path?.match(/[\\/]([^\\/]*)$/)?.[1] ?? ''
   })
 
+  // TODO split selection to separate settings
   const selectSteamPath = (async () => {
-    // TODO select directory
-    // const newPath = await window.electronApi.invoke('settings.selectSteamPath')
-    // if (newPath) {
-    //   this.settings['Paths.Steam'] = newPath
-    // }
+    const newPath = await electronApi?.systemDialogs.pickFile.query({
+      defaultPath: settings.GameOrSteamBinaryPath.value,
+      filters: [{name: 'Executables', extensions: ['exe']}]
+    })
+    if (newPath) {
+      settings.GameOrSteamBinaryPath.value = newPath
+    }
   })
 
   const selectGameBinaryPath = (async () => {
-    // TODO select directory
-    // const newPath = await window.electronApi.invoke('settings.selectGameBinaryPath')
-    // if (newPath) {
-    //   this.settings['Paths.GameBinary'] = newPath
-    // }
+    const newPath = await electronApi?.systemDialogs.pickFile.query({
+      defaultPath: settings.GameOrSteamBinaryPath.value,
+      filters: [{name: 'Executables', extensions: ['exe']}]
+    })
+    if (newPath) {
+      settings.GameOrSteamBinaryPath.value = newPath
+    }
   })
   const onKeyUp = ((event: KeyboardEvent) => {
     if (event.key === 'Control') {

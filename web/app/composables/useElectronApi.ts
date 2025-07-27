@@ -1,5 +1,5 @@
 import {type CreateTRPCProxyClient, createTRPCProxyClient} from "@trpc/client"
-import type {LauncherApiRouter} from "@launcher-api"
+import type {LauncherApiRouter} from "@launcher/api/api"
 import {ipcLink} from "electron-trpc/renderer"
 import superjson from "superjson"
 

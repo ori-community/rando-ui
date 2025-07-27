@@ -88,11 +88,11 @@
                       v-if="item.lastRankDelta !== null && item.lastRankDelta !== 0 && leagueSeason.currentGameId !== null">
                       <template v-if="item.lastRankDelta < 0">
                         <v-icon size="small" color="green-darken-2">mdi-arrow-up</v-icon>
-                        <span class="text-green-darken-2"> {{ Math.abs(item.lastRankDelta) }}</span>
+                        <span class="text-green-darken-2 pl-1"> {{ Math.abs(item.lastRankDelta) }}</span>
                       </template>
                       <template v-else>
                         <v-icon size="small" color="red-darken-2">mdi-arrow-down</v-icon>
-                        <span class="text-red-darken-2 pa-lg-1"> {{ Math.abs(item.lastRankDelta) }}</span>
+                        <span class="text-red-darken-2 pl-1"> {{ Math.abs(item.lastRankDelta) }}</span>
                       </template>
                     </template>
                   </div>

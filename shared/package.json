@@ -6,9 +6,14 @@
     "name": "Timo Schwarzer",
     "email": "timo@schwarzer.dev"
   },
+  "scripts": {
+    "protoc:win": "cd proto && protoc --plugin=../../node_modules/.bin/protoc-gen-ts_proto.cmd --ts_proto_out=. --ts_proto_opt=esModuleInterop=true --ts_proto_opt=outputTypeRegistry=true messages.proto",
+    "protoc:linux": "cd proto && protoc --plugin=../../node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=. --ts_proto_opt=esModuleInterop=true --ts_proto_opt=outputTypeRegistry=true messages.proto"
+  },
   "license": "MIT",
   "dependencies": {
     "protobufjs": "^7.5.3",
+    "ts-proto": "^2.7.5",
     "typescript": "^5.8.3"
   }
 }

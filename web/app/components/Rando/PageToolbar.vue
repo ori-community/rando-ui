@@ -16,11 +16,12 @@
       </v-btn>
       <!-- TODO pending league games -->
       <v-btn key="league" size="x-large" variant="text" to="/league/seasons">
-        <v-icon start>mdi-trophy</v-icon>
-        <span class="toolbar-button-text">League</span>
         <v-icon :start="!mdAndDown">mdi-trophy</v-icon>
         <span v-if="!mdAndDown">League</span>
       </v-btn>
+      <v-btn v-if="userStore.isLoggedIn" key="my-games" exact size="x-large" variant="text" :to="{ name: 'my-games' }">
+        <v-icon :start="!mdAndDown">mdi-gamepad-variant-outline</v-icon>
+        <span v-if="!mdAndDown"> My Games </span>
       </v-btn>
       <v-btn v-if="isElectron" key="settings" size="x-large" variant="text" to="/electron/settings">
         <v-icon :start="!mdAndDown">mdi-cog-outline</v-icon>

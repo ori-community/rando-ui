@@ -57,6 +57,14 @@ message RaceInfo {
   optional float finishedTime = 3;
 }
 
+message MultiverseMetadataInfoMessage {
+    int64 id = 1;
+    bool hasBingoBoard = 2;
+    bool hasSeed = 3;
+    repeated UserInfo members = 4;
+    int64 createdAt = 5;
+}
+
 message MultiverseInfoMessage {
   enum GameHandlerType {
     Normal = 0;

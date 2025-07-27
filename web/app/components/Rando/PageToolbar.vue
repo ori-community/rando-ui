@@ -1,27 +1,30 @@
 <template>
   <div class="page-toolbar d-flex align-center my-4">
     <v-scale-transition group tag="div" class="d-flex toolbar-gap align-center">
-      <!-- TODO *mobile* btn widths   -->
-      <!-- TODO smaller button text   -->
       <!-- TODO stats -->
+      <!-- TODO mygames -->
       <!-- TODO archipelago -->
+      <!-- TODO Map -->
 
       <!--   MAIN BUTTONS  -->
       <v-btn key="home" exact :to="`${isElectron ? `/electron` : `/`}`" size="x-large" variant="text">
         <v-icon>mdi-home-outline</v-icon>
       </v-btn>
       <v-btn key="seedgen" size="x-large" variant="text" to="/seedgen">
-        <v-icon start>mdi-dice-multiple</v-icon>
-        <span class="toolbar-button-text">Seed Generator</span>
+        <v-icon :start="!mdAndDown">mdi-dice-multiple</v-icon>
+        <span v-if="!mdAndDown">Seed Generator</span>
       </v-btn>
       <!-- TODO pending league games -->
       <v-btn key="league" size="x-large" variant="text" to="/league/seasons">
         <v-icon start>mdi-trophy</v-icon>
         <span class="toolbar-button-text">League</span>
+        <v-icon :start="!mdAndDown">mdi-trophy</v-icon>
+        <span v-if="!mdAndDown">League</span>
+      </v-btn>
       </v-btn>
       <v-btn v-if="isElectron" key="settings" size="x-large" variant="text" to="/electron/settings">
-        <v-icon start>mdi-cog-outline</v-icon>
-        <span class="toolbar-button-text">Settings</span>
+        <v-icon :start="!mdAndDown">mdi-cog-outline</v-icon>
+        <span v-if="!mdAndDown">Settings</span>
       </v-btn>
 
       <!--  MENU  -->
@@ -47,7 +50,7 @@
       <div class="d-flex align-center">
         <template v-if="userStore.isLoggedIn">
           <!-- TODO no greeting on mobile -->
-          <div class="mr-4 user-info">
+          <div v-if="!smAndDown" class="mr-4 user-info">
             <div class="text-no-wrap">{{ randomGreeting(userStore.user?.name ?? '') }}</div>
           </div>
           <v-menu offset-y left nudge-bottom="6">
@@ -117,17 +120,18 @@
 </template>
 
 <script lang="ts" setup>
+  import {useDisplay} from "vuetify"
+
   const isElectron = useIsElectron()
   const electronApi = isElectron ? useElectronApi() : null
   const authStore = useAuthStore()
   const route = useRoute()
   const {axios} = useAxios()
   const userStore = useUserStore()
-
+  const {smAndDown, mdAndDown} = useDisplay()
   const editedNickname = ref('')
   const showEditNicknameDialog = ref(false)
   const RenameRequestInProgress = ref(false)
-
   const randomGreetingTemplate = computed(() => {
     const templates = [
       'Hi, #!',

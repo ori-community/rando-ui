@@ -601,12 +601,10 @@
     watch: {
       userLoaded: {
         immediate: true,
-        async handler(userLoaded) {
-          if (userLoaded && !this.isLoggedIn) {
-            if (this.$route.query.jwt) {
-              await this.$store.dispatch('auth/setJwt', this.$route.query.jwt)
-              await this.$store.dispatch('user/updateUser')
-            }
+        async handler() {
+          if (this.$route.query.jwt) {
+            await this.$store.dispatch('auth/setJwt', this.$route.query.jwt)
+            await this.$store.dispatch('user/updateUser')
           }
         },
       },

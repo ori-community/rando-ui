@@ -49,8 +49,8 @@ GrenadeRedirect:
 SentryRedirect:
   name: Sentry Redirect
   description: Redirecting projectiles with Sentry
-PauseHover:
-  name: Pause Hover
+PauseFloat:
+  name: Pause Float
   description: Cancelling falling momentum through the pause menu
 GlideJump:
   name: Glide Jump
@@ -70,8 +70,8 @@ WallHammerJump:
 GroundedHammerJump:
   name: Grounded Hammer Jump
   description: Preserving regular Jump momentum with Hammer
-ExtendedHammer:
-  name: Extended Hammer
+HammerExtention:
+  name: Hammer Extention
   description: Extending upwards momentum by swinging Hammer in alternating directions
 SpearJump:
   name: Spear Jump

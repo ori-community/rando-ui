@@ -76,3 +76,15 @@ HammerExtention:
 SpearJump:
   name: Spear Jump
   description: Storing a grounded jump into the air with Spear
+GlideBashChain:
+  name: Glide Bash Chain
+  description: Cancelling Bash momentum by using Glide so you can Bash again the same object
+DoubleJumpBashChain:
+  name: Double Jump Bash Chain
+  description: Cancelling Bash momentum by using Double Jump so you can Bash again the same object
+DashBashChain:
+  name: Dash Bash Chain
+  description: Cancelling Bash momentum by using Dash in the opposite way so you can Bash again the same object
+LaunchBashChain:
+  name: Launch Bash Chain
+  description: Cancelling Bash momentum by using Launch in the opposite way so you can Bash again the same object

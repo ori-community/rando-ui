@@ -78,16 +78,16 @@ SpearJump:
   description: Storing a grounded jump into the air with Spear
 GlideBashChain:
   name: Glide Bash Chain
-  description: Cancelling Bash momentum by using Glide so you can Bash again the same object
+  description: Cancelling Bash momentum by using Glide to Bash the same object again
 DoubleJumpBashChain:
   name: Double Jump Bash Chain
-  description: Cancelling Bash momentum by using Double Jump so you can Bash again the same object
+  description: Cancelling Bash momentum by using Double Jump to Bash the same object again
 DashBashChain:
   name: Dash Bash Chain
-  description: Cancelling Bash momentum by using Dash in the opposite way so you can Bash again the same object
+  description: Cancelling Bash momentum by using Dash in the opposite way to Bash the same object again
 LaunchBashChain:
   name: Launch Bash Chain
-  description: Cancelling Bash momentum by using Launch in the opposite way so you can Bash again the same object
+  description: Cancelling Bash momentum by using Launch in the opposite way to Bash the same object again
 Unpopular:
   name: Unpopular
   description: Unsafe paths that are unpopular in the community because they are percieved as excessively hard or annoying

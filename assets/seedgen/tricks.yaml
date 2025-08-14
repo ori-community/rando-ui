@@ -70,8 +70,8 @@ WallHammerJump:
 GroundedHammerJump:
   name: Grounded Hammer Jump
   description: Preserving regular Jump momentum with Hammer
-HammerExtention:
-  name: Hammer Extention
+HammerExtension:
+  name: Hammer Extension
   description: Extending upwards momentum by swinging Hammer in alternating directions
 SpearJump:
   name: Spear Jump

@@ -88,3 +88,6 @@ DashBashChain:
 LaunchBashChain:
   name: Launch Bash Chain
   description: Cancelling Bash momentum by using Launch in the opposite way so you can Bash again the same object
+Unpopular:
+  name: Unpopular
+  description: Add unsafe paths the community doesn't like to play with in logic

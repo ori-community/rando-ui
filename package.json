@@ -20,7 +20,7 @@
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/pwa": "^3.3.5",
     "@octokit/rest": "^18.10.0",
-    "@ori-rando/wotw-seedgen-wasm-ui": "^0.6.1",
+    "@ori-rando/wotw-seedgen-wasm-ui": "^0.6.5",
     "apexcharts": "^3.29.0",
     "base64url": "^3.0.1",
     "canvas-confetti": "^1.6.0",
@@ -66,5 +66,10 @@
     "eslint-plugin-vue": "^9.7.0",
     "prettier": "^2.7.1",
     "worker-loader": "^3.0.8"
+  },
+  "resolutions": {
+    "nuxt/**/@webassemblyjs/ast": "^1.14.1",
+    "nuxt/**/@webassemblyjs/wasm-edit": "^1.14.1",
+    "nuxt/**/@webassemblyjs/wasm-parser": "^1.14.1"
   }
 }

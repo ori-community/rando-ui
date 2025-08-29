@@ -20,7 +20,7 @@
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/pwa": "^3.3.5",
     "@octokit/rest": "^18.10.0",
-    "@ori-rando/wotw-seedgen-wasm-ui": "^0.6.0",
+    "@ori-rando/wotw-seedgen-wasm-ui": "^0.6.1",
     "apexcharts": "^3.29.0",
     "base64url": "^3.0.1",
     "canvas-confetti": "^1.6.0",

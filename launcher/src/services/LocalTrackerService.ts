@@ -50,8 +50,12 @@ export class LocalTrackerService {
     }
   }
 
+  static isOpen(): boolean {
+    return this.window && !this.window.isDestroyed()
+  }
+
   static close() {
-    if (this.window && !this.window.isDestroyed()) {
+    if (this.isOpen()) {
       this.window.close()
     }
   }

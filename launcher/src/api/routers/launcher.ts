@@ -26,5 +26,12 @@ export const launcher = router({
   installOrUpdateProxyModloader: publicProcedure
     .query(async () => {
       await LauncherService.installOrUpdateProxyModloader()
-    })
+    }),
+  /**
+   * @see LauncherService.launchOrFocusRandomizer
+   */
+  launchOrFocusRandomizer: publicProcedure
+    .query(async () => {
+      await LauncherService.launchOrFocusRandomizer()
+    }),
 })

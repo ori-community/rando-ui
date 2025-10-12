@@ -1,4 +1,4 @@
-import {LaunchSetupValidationError} from "@shared/types/launcher"
+import {LaunchResult, LaunchSetupValidationError} from "@shared/types/launcher"
 import {SettingsService} from "@launcher/services/SettingsService"
 import fs from "node:fs"
 import {execa} from "execa"
@@ -8,6 +8,10 @@ import {fromFile as hashFile} from "hasha"
 import {Settings} from "@shared/types/settings"
 import os from "node:os"
 import {LauncherPlatform} from "@shared/types/platform"
+import log from "electron-log/main"
+import {waitForProcess} from "@launcher/helpers"
+import {RandoIPCService} from "@launcher/services/RandoIPCService"
+import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
 
 export class LauncherService {
   static getPlatform(): LauncherPlatform {
@@ -27,6 +31,15 @@ export class LauncherService {
         return ["standalone", "steam", "microsoft-store"]
       case "linux":
         return ["standalone"]
+    }
+  }
+
+  static async getModloaderMethodsAvailableOnPlatform(): Promise<Settings["ModloaderMethod"][]> {
+    switch (this.getPlatform()) {
+      case "windows":
+        return ["inject", "proxy"]
+      case "linux":
+        return ["proxy"]
     }
   }
 
@@ -76,6 +89,17 @@ export class LauncherService {
       errors.push("invalid-proxy-modloader-file")
     }
 
+    const gameLaunchMethodsAvailable = await this.getGameLaunchMethodsAvailableOnPlatform()
+    const modloaderMethodsAvailable = await this.getModloaderMethodsAvailableOnPlatform()
+
+    if (!gameLaunchMethodsAvailable.includes(settings.GameLaunchMethod)) {
+      errors.push("game-launch-method-not-available-on-current-platform")
+    }
+
+    if (!modloaderMethodsAvailable.includes(settings.ModloaderMethod)) {
+      errors.push("modloader-method-not-available-on-current-platform")
+    }
+
     return errors
   }
 
@@ -121,5 +145,88 @@ export class LauncherService {
     const targetHash = await hashFile(targetProxyFileName, {algorithm: "md5"})
 
     return sourceHash === targetHash
+  }
+
+  /**
+   * Launches the randomizer or brings the game window into focus if it's
+   * already running.
+   */
+  static async launchOrFocusRandomizer(): Promise<LaunchResult> {
+    if (RandoIPCService.isConnected()) {
+      await RandoIPCService.emit("load_new_game_source")
+
+      if (this.getPlatform() === "windows") {
+        (await import("focus-ori")).focusOri()
+      }
+
+      return {launchedSuccessfully: true}
+    }
+
+    const setupValidationErrors = await this.validateSetup()
+
+    if (setupValidationErrors.length > 0) {
+      return {
+        launchedSuccessfully: false,
+        setupValidationErrors,
+      }
+    }
+
+    const settings = await SettingsService.instance.getSettings()
+
+    const defaultExec = execa({
+      stdio: "inherit",
+      detached: true,
+    })
+    const powershellExec = defaultExec({
+      shell: "powershell.exe",
+    })
+
+    if (settings.ModloaderMethod === "inject") {
+      const injectorPathWithWindowsSlashes = getInstallDataPath("client/Injector.exe").replaceAll("/", "\\")
+
+      const startArguments = settings.DeveloperMode
+        ? ["-FilePath", injectorPathWithWindowsSlashes]
+        : ["-WindowStyle", "Hidden", "-FilePath", injectorPathWithWindowsSlashes, "-ArgumentList", "/nowait"]
+
+      log.info("Starting Injector with start arguments:", startArguments)
+      powershellExec("start", startArguments)
+
+      await waitForProcess('injector.exe', 10)
+    }
+
+    const gameArguments: string[] = []
+
+    if (settings.ModloaderMethod === "proxy") {
+      gameArguments.push("-m", getInstallDataPath("client"))
+    }
+
+    switch (settings.GameLaunchMethod) {
+      case "steam":
+        defaultExec(settings.SteamBinaryPath, ["-applaunch", "1057090", ...gameArguments])
+        await waitForProcess('oriwotw.exe', 60)
+        break;
+      case "microsoft-store":
+        powershellExec("explorer.exe", ["shell:AppsFolder\\Microsoft.Patagonia_8wekyb3d8bbwe!App"]).unref()
+        await waitForProcess('oriandthewillofthewisps-pc.exe')
+        break;
+      case "standalone":
+        switch (this.getPlatform()) {
+          case "windows":
+            defaultExec(settings.GameBinaryPath, gameArguments)
+            await waitForProcess('oriwotw.exe', 60)
+            break;
+          case "linux":
+            // TODO
+            break;
+        }
+
+        break;
+    }
+
+    if (settings.LaunchWithTracker) {
+      await LocalTrackerService.openLocalTracker()
+    }
+
+    return {launchedSuccessfully: true}
   }
 }

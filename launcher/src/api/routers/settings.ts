@@ -40,9 +40,4 @@ export const settings = router({
         }
       })
     }),
-
-  pickFileSteamOrGameBinaryPath: publicProcedure
-    .query(async () => {
-
-    })
 })

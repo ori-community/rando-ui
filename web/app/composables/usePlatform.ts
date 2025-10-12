@@ -1,16 +1,20 @@
 import type {Platform} from "@shared/types/platform"
 
-export function usePlatform(): Platform {
-  const runtimeConfig = useRuntimeConfig()
 
-  const platform = runtimeConfig.public.platform
+let platformCache: Platform | null = null
 
-  switch (platform) {
-    case "windows":
-    case "linux":
-    case "web":
-      return platform
-    default:
-      return "unknown"
+
+export async function usePlatform(): Promise<Platform> {
+  if (platformCache === null) {
+    const electronApi = useElectronApi()
+    const launcherPlatform = await electronApi?.launcher.getPlatform.query()
+
+    if (launcherPlatform) {
+      platformCache = launcherPlatform
+    } else {
+      platformCache = "other"
+    }
   }
+
+  return platformCache
 }

@@ -290,8 +290,7 @@
 </template>
 
 <script lang="ts" setup>
-
-  const platform = usePlatform()
+  const platform = await usePlatform()
   const settingsStore = useSettingsStore()
   const settings = storeToRefs(settingsStore)
   const electronApi = useElectronApi()
@@ -302,12 +301,16 @@
   const localTrackerPositionReset = ref(false)
 
   const isLinux = computed(() => {
-    return platform === "linux"
+    return platform === 'linux'
   })
 
   const isWindows = computed(() => {
-    return platform === "windows"
+    return platform === 'windows'
   })
+
+  // TODO: Remove these warnings and use electronApi.launcher.validateSetup instead to show warnings.
+  // TODO: Replace GameOrSteamBinaryPath etc. with GameLaunchMethod, ModloaderMethod, GameBinaryPath, SteamBinaryPath.
+  //       These should not be single settings items but rather a wizard/assistant dialog.
 
   const steamPathWarning = computed(() => {
     const filename = getBaseName(settings.GameOrSteamBinaryPath.value)
@@ -337,7 +340,7 @@
     },
     set(value) {
       settings.MapIconTransparency.value = value ? 0.25 : 0.0
-    }
+    },
   })
 
   onMounted(() => {
@@ -361,7 +364,7 @@
 
   const disableDeveloperTools = (async () => {
     settings.DeveloperMode.value = false
-    settings.ServerHost.value = "wotw.orirando.com"
+    settings.ServerHost.value = 'wotw.orirando.com'
     settings.UpdateToPrereleaseVersions.value = false
     settings.DebugControls.value = false
     settings.ServerTLS.value = true
@@ -375,7 +378,7 @@
   const selectSteamPath = (async () => {
     const newPath = await electronApi?.systemDialogs.pickFile.query({
       defaultPath: settings.GameOrSteamBinaryPath.value,
-      filters: [{name: 'Executables', extensions: ['exe']}]
+      filters: [{name: 'Executables', extensions: ['exe']}],
     })
     if (newPath) {
       settings.GameOrSteamBinaryPath.value = newPath
@@ -385,7 +388,7 @@
   const selectGameBinaryPath = (async () => {
     const newPath = await electronApi?.systemDialogs.pickFile.query({
       defaultPath: settings.GameOrSteamBinaryPath.value,
-      filters: [{name: 'Executables', extensions: ['exe']}]
+      filters: [{name: 'Executables', extensions: ['exe']}],
     })
     if (newPath) {
       settings.GameOrSteamBinaryPath.value = newPath

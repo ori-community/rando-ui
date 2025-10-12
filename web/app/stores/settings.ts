@@ -14,7 +14,6 @@ export const useSettingsStore = defineStore("settings", () => {
   const settingsRefs: SettingsRefs = {
     ServerHost: ref<string>(""),
     ServerTLS: ref<boolean>(false),
-    UseMicrosoftStore: ref<boolean>(false),
     DeveloperMode: ref<boolean>(false),
     DebugControls: ref<boolean>(false),
     HideQuestFilter: ref<boolean>(false),
@@ -52,7 +51,11 @@ export const useSettingsStore = defineStore("settings", () => {
     LocalTrackerIgnoreMouse: ref<boolean>(false),
     LocalTrackerShowWillowHearts: ref<boolean>(false),
     LocalTrackerHideHeartsUntilFirstHeart: ref<boolean>(false),
-    GameOrSteamBinaryPath: ref<string>(""),
+    GameLaunchMethod: ref<"steam" | "microsoft-store" | "standalone">("steam"),
+    ModloaderMethod: ref<"proxy" | "inject">("proxy"),
+    ValidateProxyModloader: ref<boolean>(false),
+    GameBinaryPath: ref<string>(""),
+    SteamBinaryPath: ref<string>(""),
   }
 
   if (electronApi !== null) {

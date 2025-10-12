@@ -1,7 +1,6 @@
 export type Settings = {
   ServerHost: string,
   ServerTLS: boolean,
-  UseMicrosoftStore: boolean,
   DeveloperMode: boolean,
   DebugControls: boolean,
   HideQuestFilter: boolean,
@@ -39,7 +38,11 @@ export type Settings = {
   LocalTrackerIgnoreMouse: boolean,
   LocalTrackerShowWillowHearts: boolean,
   LocalTrackerHideHeartsUntilFirstHeart: boolean,
-  GameOrSteamBinaryPath: string,
+  GameLaunchMethod: "steam" | "microsoft-store" | "standalone",
+  ModloaderMethod: "proxy" | "inject",
+  ValidateProxyModloader: boolean,
+  GameBinaryPath: string,
+  SteamBinaryPath: string,
 }
 
 export type SettingKey = keyof Settings

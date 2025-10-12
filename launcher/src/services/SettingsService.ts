@@ -4,8 +4,8 @@ import fs from "fs"
 import {merge} from "lodash"
 import log from "electron-log/main"
 import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
-import type {SettingKey, Settings} from "@shared/types/settings"
-import {getPlatform} from "@launcher/helpers"
+import {SettingKey, Settings} from "@shared/types/settings"
+import {LauncherService} from "@launcher/services/LauncherService"
 
 type SettingsEvent = {
   /** Emitted when a single setting changed */
@@ -29,15 +29,22 @@ export class SettingsService {
 
   public readonly events: EventEmitter<SettingsEvent> = new EventEmitter()
 
-  public static getDefaultGameOrSteamBinaryPath() {
-    switch (getPlatform()) {
+  public static getDefaultGameBinaryPath() {
+    switch (LauncherService.getPlatform()) {
       case "windows":
-        return "C:\\Program Files (x86)\\Steam\\steam.exe"
+        return "C:\\Program Files (x86)\\Steam\\common\\Ori and the Will of the Wisps\\oriwotw.exe"
       case "linux":
         return `/home/${process.env.USER ?? "user"}/.steam/steam/steamapps/common/Ori and the Will of the Wisps/oriwotw.exe`
     }
+  }
 
-    return ""
+  public static getDefaultSteamBinaryPath() {
+    switch (LauncherService.getPlatform()) {
+      case "windows":
+        return "C:\\Program Files (x86)\\Steam\\steam.exe"
+      case "linux":
+        return "steam"
+    }
   }
 
   /**
@@ -49,7 +56,6 @@ export class SettingsService {
     return {
       ServerHost: "wotw.orirando.com",
       ServerTLS: true,
-      UseMicrosoftStore: false,
       DeveloperMode: false,
       DebugControls: false,
       HideQuestFilter: true,
@@ -87,7 +93,11 @@ export class SettingsService {
       LocalTrackerIgnoreMouse: false,
       LocalTrackerShowWillowHearts: true,
       LocalTrackerHideHeartsUntilFirstHeart: true,
-      GameOrSteamBinaryPath: SettingsService.getDefaultGameOrSteamBinaryPath(),
+      GameLaunchMethod: "steam",
+      ModloaderMethod: "proxy",
+      ValidateProxyModloader: true,
+      GameBinaryPath: SettingsService.getDefaultGameBinaryPath(),
+      SteamBinaryPath: SettingsService.getDefaultSteamBinaryPath(),
     }
   }
 

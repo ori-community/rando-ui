@@ -10,7 +10,6 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      platform: "web",
       webApiBaseUrl: "https://wotw.orirando.com/api"
     }
   },

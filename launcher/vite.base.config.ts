@@ -1,31 +1,32 @@
 import { builtinModules } from 'node:module'
 import type { ConfigEnv, Plugin, UserConfig } from 'vite'
 import pkg from './package.json'
+import {fileURLToPath} from "url"
 
 export const builtins = ['electron', ...builtinModules.map((m) => [m, `node:${m}`]).flat()]
-
 export const external = [...builtins, ...Object.keys('dependencies' in pkg ? (pkg.dependencies as Record<string, unknown>) : {})]
 
-export function getBuildConfig(env: ConfigEnv<'build'>): UserConfig {
-  const { root, mode, command } = env
-
+export function getBaseViteConfig(env: ConfigEnv): UserConfig {
   return {
-    root,
-    mode,
-    build: {
-      // Prevent multiple builds from interfering with each other.
-      emptyOutDir: false,
-      // 🚧 Multiple builds may conflict.
-      outDir: '.vite/build',
-      watch: command === 'serve' ? {} : null,
-      // minify: command === 'build',
-      minify: false,
+    plugins: [pluginHotRestart("restart")],
+    define: getBuildDefines(env),
+    resolve: {
+      alias: {
+        "@launcher": fileURLToPath(new URL("./src", import.meta.url)),
+        "@shared": fileURLToPath(new URL("../shared", import.meta.url)),
+        "@web": fileURLToPath(new URL("../web", import.meta.url)),
+      },
     },
-    clearScreen: false,
+    build: {
+      minify: false,
+      rollupOptions: {
+        external,
+      }
+    }
   }
 }
 
-export function getBuildDefine(env: ConfigEnv<'build'>) {
+export function getBuildDefines(env: ConfigEnv) {
   if (env.command === "serve") {
     process.env.NODE_ENV = "development"
   }

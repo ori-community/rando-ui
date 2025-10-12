@@ -44,7 +44,7 @@
     "electron-log": "^5.4.1",
     "electron-trpc": "^0.7.1",
     "execa": "^9.6.0",
-    "hasha": "^6.0.0",
+    "hasha": "^5.2.2",
     "lodash": "^4.17.21",
     "superjson": "^2.2.2",
     "ws": "^8.18.3",

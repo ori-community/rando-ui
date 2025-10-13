@@ -23,7 +23,6 @@ export const useUserStore = defineStore("user", () => {
     await catchAxiosErrors(
       async () => {
         user.value = (await (axios.get("/users/me/info"))).data as UserInfo
-        console.log(user.value)
       },
       async (e) => {
         user.value = null

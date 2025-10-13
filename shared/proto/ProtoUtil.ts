@@ -1,4 +1,5 @@
 import {
+  type MessageFns,
   AuthenticateMessage,
   MultiverseInfoMessage,
   Packet, RequestFullUpdate,
@@ -7,14 +8,28 @@ import {
   SyncBingoUniversesMessage,
   SyncBoardMessage, TrackerFlagsUpdate, TrackerTimerStateUpdate,
   TrackerUpdate,
-} from './messages'
-import { MessageType } from './typeRegistry'
+} from "./messages"
+import {cloneDeepWith} from "lodash"
 
-type PacketTypes = {
-  [id: number]: MessageType | null,
+type PacketIdMap = {
+  [id: number]: MessageFns<PacketType, PacketType["$type"]> | null,
 }
 
-const packetTypes: PacketTypes = {
+export type PacketType =
+  SyncBoardMessage |
+  RequestUpdatesMessage |
+  SyncBingoUniversesMessage |
+  MultiverseInfoMessage |
+  AuthenticateMessage |
+  ShowUINotificationMessage |
+  TrackerUpdate |
+  ResetTracker |
+  TrackerFlagsUpdate |
+  RequestFullUpdate |
+  SetTrackerEndpointId |
+  TrackerTimerStateUpdate
+
+const packetIdMap: PacketIdMap = {
   1: SyncBoardMessage,
   2: RequestUpdatesMessage,
   4: SyncBingoUniversesMessage,
@@ -30,8 +45,16 @@ const packetTypes: PacketTypes = {
   105: TrackerTimerStateUpdate,
 }
 
+export type WithoutProtoType<T> = (
+  T extends object
+    ? {
+      [P in keyof T as P extends "$type" ? never : P]: WithoutProtoType<T[P]>;
+    }
+    : T
+  ) & { $type: never };
+
 export const blobToArray = async (blob: any) => {
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     return new Uint8Array(await new Response(blob).arrayBuffer())
   } else {
     return blob
@@ -41,25 +64,33 @@ export const blobToArray = async (blob: any) => {
 export const decodePacket = async (blob: any) => {
   const packet = Packet.decode(await blobToArray(blob))
 
-  if (!(packet.id in packetTypes)) {
+  if (!(packet.id in packetIdMap)) {
     throw new Error(`Invalid packet ID ${packet.id}`)
   }
 
-  if (packetTypes[packet.id] === null) {
+  if (packetIdMap[packet.id] === null) {
     console.debug(`Ignored packet with packed id ${packet.id}`)
     return null
   }
 
-  return packetTypes[packet.id]?.decode(packet.packet)
+  return packetIdMap[packet.id]?.decode(packet.packet) ?? null
 }
 
 const getPacketId = (type: any) => {
-  return Number(Object.keys(packetTypes).find(key => packetTypes[Number(key)] === type))
+  return Number(Object.keys(packetIdMap).find(key => packetIdMap[Number(key)] === type))
 }
 
-export const makePacket = (type: any, content: object = {}) => {
+export function makePacket<T>(type: MessageFns<T, string>, content: Omit<T, "$type">) {
   return Packet.encode(Packet.fromPartial({
     id: getPacketId(type),
-    packet: type.encode(content).finish(),
+    packet: type.encode(content as T).finish(),
   })).finish()
+}
+
+export function withoutProtoType<T extends PacketType>(message: T): WithoutProtoType<T> {
+  return cloneDeepWith(message, (value) => {
+    if (typeof value === "object") {
+      delete value.$type
+    }
+  })
 }

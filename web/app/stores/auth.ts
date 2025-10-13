@@ -32,8 +32,6 @@ export const useAuthStore = defineStore('auth', () => {
       delete axios.defaults.headers.common['Authorization']
     }
 
-    // TODO: Push the token to WebSocket client
-
     // Persist the new token
     if (electronApi) {
       await electronApi.auth.setClientJwt.query(token)

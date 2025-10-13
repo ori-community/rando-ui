@@ -28,6 +28,7 @@
     "date-fns": "^4.1.0",
     "electron-trpc": "^0.7.1",
     "sass-embedded": "^1.93.2",
-    "superjson": "^2.2.2"
+    "superjson": "^2.2.2",
+    "typescript-event-target": "^1.1.1"
   }
 }

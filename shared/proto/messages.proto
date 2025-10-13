@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package RandoProto;
+package Proto;
 
 message Packet {
   int32 id = 1;
@@ -127,7 +127,6 @@ message BingoBoardMessage {
 
 message SyncBoardMessage {
   BingoBoardMessage board = 1;
-  bool replace = 2;
 }
 
 message AuthenticateMessage {

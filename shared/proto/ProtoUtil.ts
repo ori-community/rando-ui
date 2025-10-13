@@ -1,48 +1,42 @@
-import {
-  type MessageFns,
-  AuthenticateMessage,
-  MultiverseInfoMessage,
-  Packet, RequestFullUpdate,
-  RequestUpdatesMessage,
-  ResetTracker, SetTrackerEndpointId, ShowUINotificationMessage,
-  SyncBingoUniversesMessage,
-  SyncBoardMessage, TrackerFlagsUpdate, TrackerTimerStateUpdate,
-  TrackerUpdate,
-} from "./messages"
 import {cloneDeepWith} from "lodash"
+import {Proto} from "./index"
+import type {MessageType} from "./typeRegistry"
+import type {MessageFns} from "./messages"
 
 type PacketIdMap = {
-  [id: number]: MessageFns<PacketType, PacketType["$type"]> | null,
+  [id: number]: MessageType | null,
 }
 
 export type PacketType =
-  SyncBoardMessage |
-  RequestUpdatesMessage |
-  SyncBingoUniversesMessage |
-  MultiverseInfoMessage |
-  AuthenticateMessage |
-  ShowUINotificationMessage |
-  TrackerUpdate |
-  ResetTracker |
-  TrackerFlagsUpdate |
-  RequestFullUpdate |
-  SetTrackerEndpointId |
-  TrackerTimerStateUpdate
+  Proto.SyncBoardMessage |
+  Proto.RequestUpdatesMessage |
+  Proto.SyncBingoUniversesMessage |
+  Proto.MultiverseInfoMessage |
+  Proto.AuthenticateMessage |
+  Proto.ShowUINotificationMessage |
+  Proto.TrackerUpdate |
+  Proto.ResetTracker |
+  Proto.TrackerFlagsUpdate |
+  Proto.RequestFullUpdate |
+  Proto.SetTrackerEndpointId |
+  Proto.TrackerTimerStateUpdate |
+  Proto.BingoBoardMessage |
+  Proto.BingoUniverseInfo
 
 const packetIdMap: PacketIdMap = {
-  1: SyncBoardMessage,
-  2: RequestUpdatesMessage,
-  4: SyncBingoUniversesMessage,
-  8: MultiverseInfoMessage,
-  9: AuthenticateMessage,
-  31: ShowUINotificationMessage,
+  1: Proto.SyncBoardMessage,
+  2: Proto.RequestUpdatesMessage,
+  4: Proto.SyncBingoUniversesMessage,
+  8: Proto.MultiverseInfoMessage,
+  9: Proto.AuthenticateMessage,
+  31: Proto.ShowUINotificationMessage,
   12: null,
-  100: TrackerUpdate,
-  101: ResetTracker,
-  102: TrackerFlagsUpdate,
-  103: RequestFullUpdate,
-  104: SetTrackerEndpointId,
-  105: TrackerTimerStateUpdate,
+  100: Proto.TrackerUpdate,
+  101: Proto.ResetTracker,
+  102: Proto.TrackerFlagsUpdate,
+  103: Proto.RequestFullUpdate,
+  104: Proto.SetTrackerEndpointId,
+  105: Proto.TrackerTimerStateUpdate,
 }
 
 export type WithoutProtoType<T> = (
@@ -62,7 +56,7 @@ export const blobToArray = async (blob: any) => {
 }
 
 export const decodePacket = async (blob: any) => {
-  const packet = Packet.decode(await blobToArray(blob))
+  const packet = Proto.Packet.decode(await blobToArray(blob))
 
   if (!(packet.id in packetIdMap)) {
     throw new Error(`Invalid packet ID ${packet.id}`)
@@ -73,7 +67,7 @@ export const decodePacket = async (blob: any) => {
     return null
   }
 
-  return packetIdMap[packet.id]?.decode(packet.packet) ?? null
+  return packetIdMap[packet.id]?.decode(packet.packet) as PacketType ?? null
 }
 
 const getPacketId = (type: any) => {
@@ -81,10 +75,11 @@ const getPacketId = (type: any) => {
 }
 
 export function makePacket<T>(type: MessageFns<T, string>, content: Omit<T, "$type">) {
-  return Packet.encode(Packet.fromPartial({
+  return Proto.Packet.encode({
+    $type: "Proto.Packet",
     id: getPacketId(type),
     packet: type.encode(content as T).finish(),
-  })).finish()
+  }).finish()
 }
 
 export function withoutProtoType<T extends PacketType>(message: T): WithoutProtoType<T> {

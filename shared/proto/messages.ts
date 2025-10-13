@@ -8,45 +8,45 @@
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { messageTypeRegistry } from "./typeRegistry";
 
-export const protobufPackage = "RandoProto";
+export const protobufPackage = "Proto";
 
 export interface Packet {
-  $type: "RandoProto.Packet";
+  $type: "Proto.Packet";
   id: number;
   packet: Uint8Array;
 }
 
 export interface BingoGoal {
-  $type: "RandoProto.BingoGoal";
+  $type: "Proto.BingoGoal";
   text: string;
   completed: boolean;
 }
 
 export interface UserInfo {
-  $type: "RandoProto.UserInfo";
+  $type: "Proto.UserInfo";
   id: string;
   name: string;
-  avatarId?: string | undefined;
+  avatarId?: string | null | undefined;
   isDeveloper: boolean;
 }
 
 export interface WorldMembershipInfo {
-  $type: "RandoProto.WorldMembershipInfo";
+  $type: "Proto.WorldMembershipInfo";
   id: number;
-  user: UserInfo | undefined;
+  user: UserInfo | null;
 }
 
 export interface WorldInfo {
-  $type: "RandoProto.WorldInfo";
+  $type: "Proto.WorldInfo";
   id: number;
   name: string;
   color: string;
   memberships: WorldMembershipInfo[];
-  seedId?: number | undefined;
+  seedId?: number | null | undefined;
 }
 
 export interface UniverseInfo {
-  $type: "RandoProto.UniverseInfo";
+  $type: "Proto.UniverseInfo";
   id: number;
   name: string;
   color: string;
@@ -54,28 +54,28 @@ export interface UniverseInfo {
 }
 
 export interface RaceTeamMemberInfo {
-  $type: "RandoProto.RaceTeamMemberInfo";
+  $type: "Proto.RaceTeamMemberInfo";
   id: number;
-  user: UserInfo | undefined;
-  finishedTime?: number | undefined;
+  user: UserInfo | null;
+  finishedTime?: number | null | undefined;
 }
 
 export interface RaceTeamInfo {
-  $type: "RandoProto.RaceTeamInfo";
+  $type: "Proto.RaceTeamInfo";
   id: number;
   members: RaceTeamMemberInfo[];
-  finishedTime?: number | undefined;
+  finishedTime?: number | null | undefined;
 }
 
 export interface RaceInfo {
-  $type: "RandoProto.RaceInfo";
+  $type: "Proto.RaceInfo";
   id: number;
   teams: RaceTeamInfo[];
-  finishedTime?: number | undefined;
+  finishedTime?: number | null | undefined;
 }
 
 export interface MultiverseMetadataInfoMessage {
-  $type: "RandoProto.MultiverseMetadataInfoMessage";
+  $type: "Proto.MultiverseMetadataInfoMessage";
   id: number;
   hasBingoBoard: boolean;
   hasSeed: boolean;
@@ -84,17 +84,17 @@ export interface MultiverseMetadataInfoMessage {
 }
 
 export interface MultiverseInfoMessage {
-  $type: "RandoProto.MultiverseInfoMessage";
+  $type: "Proto.MultiverseInfoMessage";
   id: number;
   universes: UniverseInfo[];
   hasBingoBoard: boolean;
   spectators: UserInfo[];
-  seedId?: number | undefined;
+  seedId?: number | null | undefined;
   gameHandlerType: MultiverseInfoMessage_GameHandlerType;
   gameHandlerClientInfo: Uint8Array;
   locked: boolean;
   isLockable: boolean;
-  race?: RaceInfo | undefined;
+  race?: RaceInfo | null | undefined;
   seedSpoilerDownloadedBy: UserInfo[];
   connectedUserIds: string[];
   raceReadyUserIds: string[];
@@ -134,7 +134,7 @@ export function multiverseInfoMessage_GameHandlerTypeToJSON(object: MultiverseIn
 }
 
 export interface BingoSquare {
-  $type: "RandoProto.BingoSquare";
+  $type: "Proto.BingoSquare";
   text: string;
   completedBy: number[];
   goals: BingoGoal[];
@@ -142,12 +142,12 @@ export interface BingoSquare {
 }
 
 export interface RequestUpdatesMessage {
-  $type: "RandoProto.RequestUpdatesMessage";
+  $type: "Proto.RequestUpdatesMessage";
   playerId: string;
 }
 
 export interface BingoUniverseInfo {
-  $type: "RandoProto.BingoUniverseInfo";
+  $type: "Proto.BingoUniverseInfo";
   universeId: number;
   score: string;
   rank: number;
@@ -156,115 +156,114 @@ export interface BingoUniverseInfo {
 }
 
 export interface SyncBingoUniversesMessage {
-  $type: "RandoProto.SyncBingoUniversesMessage";
+  $type: "Proto.SyncBingoUniversesMessage";
   bingoUniverses: BingoUniverseInfo[];
 }
 
 export interface Position {
-  $type: "RandoProto.Position";
+  $type: "Proto.Position";
   x: number;
   y: number;
 }
 
 export interface PositionedBingoSquare {
-  $type: "RandoProto.PositionedBingoSquare";
-  position: Position | undefined;
-  square: BingoSquare | undefined;
+  $type: "Proto.PositionedBingoSquare";
+  position: Position | null;
+  square: BingoSquare | null;
 }
 
 export interface BingoBoardMessage {
-  $type: "RandoProto.BingoBoardMessage";
+  $type: "Proto.BingoBoardMessage";
   squares: PositionedBingoSquare[];
   size: number;
   lockout: boolean;
 }
 
 export interface SyncBoardMessage {
-  $type: "RandoProto.SyncBoardMessage";
-  board: BingoBoardMessage | undefined;
-  replace: boolean;
+  $type: "Proto.SyncBoardMessage";
+  board: BingoBoardMessage | null;
 }
 
 export interface AuthenticateMessage {
-  $type: "RandoProto.AuthenticateMessage";
+  $type: "Proto.AuthenticateMessage";
   jwt: string;
   clientVersion: string;
 }
 
 export interface ShowUINotificationMessage {
-  $type: "RandoProto.ShowUINotificationMessage";
+  $type: "Proto.ShowUINotificationMessage";
   text: string;
   color: string;
 }
 
 /** Unused in web */
 export interface AuthenticatedMessage {
-  $type: "RandoProto.AuthenticatedMessage";
-  user: UserInfo | undefined;
+  $type: "Proto.AuthenticatedMessage";
+  user: UserInfo | null;
   udpId: number;
   udpKey: Uint8Array;
 }
 
 export interface PlayerPositionMessage {
-  $type: "RandoProto.PlayerPositionMessage";
+  $type: "Proto.PlayerPositionMessage";
   x: number;
   y: number;
 }
 
 export interface UpdatePlayerPositionMessage {
-  $type: "RandoProto.UpdatePlayerPositionMessage";
+  $type: "Proto.UpdatePlayerPositionMessage";
   playerId: string;
   x: number;
   y: number;
 }
 
 export interface UdpPacket {
-  $type: "RandoProto.UdpPacket";
+  $type: "Proto.UdpPacket";
   udpId: number;
   encryptedPacket: Uint8Array;
 }
 
 /** 100 */
 export interface TrackerUpdate {
-  $type: "RandoProto.TrackerUpdate";
+  $type: "Proto.TrackerUpdate";
   id: string;
   value: number;
 }
 
 /** 101 */
 export interface ResetTracker {
-  $type: "RandoProto.ResetTracker";
+  $type: "Proto.ResetTracker";
 }
 
 /** 102 */
 export interface TrackerFlagsUpdate {
-  $type: "RandoProto.TrackerFlagsUpdate";
+  $type: "Proto.TrackerFlagsUpdate";
   flags: string[];
 }
 
 /** 103 */
 export interface RequestFullUpdate {
-  $type: "RandoProto.RequestFullUpdate";
+  $type: "Proto.RequestFullUpdate";
 }
 
 /** 104 */
 export interface SetTrackerEndpointId {
-  $type: "RandoProto.SetTrackerEndpointId";
+  $type: "Proto.SetTrackerEndpointId";
   endpointId: string;
 }
 
 /** 105 */
 export interface TrackerTimerStateUpdate {
-  $type: "RandoProto.TrackerTimerStateUpdate";
+  $type: "Proto.TrackerTimerStateUpdate";
   inGameTime: number;
   asyncLoadingTime: number;
   timerShouldRun: boolean;
 }
 
 export interface NormalGameHandlerState {
-  $type: "RandoProto.NormalGameHandlerState";
-  raceStartingAt?: number | undefined;
-  finishedTime?: number | undefined;
+  $type: "Proto.NormalGameHandlerState";
+  raceStartingAt?: number | null | undefined;
+  finishedTime?: number | null | undefined;
   playerInGameTimes: { [key: number]: number };
   playerFinishedTimes: { [key: number]: number };
   worldFinishedTimes: { [key: number]: number };
@@ -274,35 +273,35 @@ export interface NormalGameHandlerState {
 }
 
 export interface NormalGameHandlerState_PlayerInGameTimesEntry {
-  $type: "RandoProto.NormalGameHandlerState.PlayerInGameTimesEntry";
+  $type: "Proto.NormalGameHandlerState.PlayerInGameTimesEntry";
   key: number;
   value: number;
 }
 
 export interface NormalGameHandlerState_PlayerFinishedTimesEntry {
-  $type: "RandoProto.NormalGameHandlerState.PlayerFinishedTimesEntry";
+  $type: "Proto.NormalGameHandlerState.PlayerFinishedTimesEntry";
   key: number;
   value: number;
 }
 
 export interface NormalGameHandlerState_WorldFinishedTimesEntry {
-  $type: "RandoProto.NormalGameHandlerState.WorldFinishedTimesEntry";
+  $type: "Proto.NormalGameHandlerState.WorldFinishedTimesEntry";
   key: number;
   value: number;
 }
 
 export interface NormalGameHandlerState_UniverseFinishedTimesEntry {
-  $type: "RandoProto.NormalGameHandlerState.UniverseFinishedTimesEntry";
+  $type: "Proto.NormalGameHandlerState.UniverseFinishedTimesEntry";
   key: number;
   value: number;
 }
 
 function createBasePacket(): Packet {
-  return { $type: "RandoProto.Packet", id: 0, packet: new Uint8Array(0) };
+  return { $type: "Proto.Packet", id: 0, packet: new Uint8Array(0) };
 }
 
-export const Packet: MessageFns<Packet, "RandoProto.Packet"> = {
-  $type: "RandoProto.Packet" as const,
+export const Packet: MessageFns<Packet, "Proto.Packet"> = {
+  $type: "Proto.Packet" as const,
 
   encode(message: Packet, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== 0) {
@@ -364,26 +363,16 @@ export const Packet: MessageFns<Packet, "RandoProto.Packet"> = {
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<Packet>, I>>(base?: I): Packet {
-    return Packet.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<Packet>, I>>(object: I): Packet {
-    const message = createBasePacket();
-    message.id = object.id ?? 0;
-    message.packet = object.packet ?? new Uint8Array(0);
-    return message;
-  },
 };
 
 messageTypeRegistry.set(Packet.$type, Packet);
 
 function createBaseBingoGoal(): BingoGoal {
-  return { $type: "RandoProto.BingoGoal", text: "", completed: false };
+  return { $type: "Proto.BingoGoal", text: "", completed: false };
 }
 
-export const BingoGoal: MessageFns<BingoGoal, "RandoProto.BingoGoal"> = {
-  $type: "RandoProto.BingoGoal" as const,
+export const BingoGoal: MessageFns<BingoGoal, "Proto.BingoGoal"> = {
+  $type: "Proto.BingoGoal" as const,
 
   encode(message: BingoGoal, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.text !== "") {
@@ -445,26 +434,16 @@ export const BingoGoal: MessageFns<BingoGoal, "RandoProto.BingoGoal"> = {
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<BingoGoal>, I>>(base?: I): BingoGoal {
-    return BingoGoal.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<BingoGoal>, I>>(object: I): BingoGoal {
-    const message = createBaseBingoGoal();
-    message.text = object.text ?? "";
-    message.completed = object.completed ?? false;
-    return message;
-  },
 };
 
 messageTypeRegistry.set(BingoGoal.$type, BingoGoal);
 
 function createBaseUserInfo(): UserInfo {
-  return { $type: "RandoProto.UserInfo", id: "", name: "", avatarId: undefined, isDeveloper: false };
+  return { $type: "Proto.UserInfo", id: "", name: "", avatarId: null, isDeveloper: false };
 }
 
-export const UserInfo: MessageFns<UserInfo, "RandoProto.UserInfo"> = {
-  $type: "RandoProto.UserInfo" as const,
+export const UserInfo: MessageFns<UserInfo, "Proto.UserInfo"> = {
+  $type: "Proto.UserInfo" as const,
 
   encode(message: UserInfo, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== "") {
@@ -473,7 +452,7 @@ export const UserInfo: MessageFns<UserInfo, "RandoProto.UserInfo"> = {
     if (message.name !== "") {
       writer.uint32(18).string(message.name);
     }
-    if (message.avatarId !== undefined) {
+    if (message.avatarId !== undefined && message.avatarId !== null) {
       writer.uint32(26).string(message.avatarId);
     }
     if (message.isDeveloper !== false) {
@@ -535,7 +514,7 @@ export const UserInfo: MessageFns<UserInfo, "RandoProto.UserInfo"> = {
       $type: UserInfo.$type,
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
-      avatarId: isSet(object.avatarId) ? globalThis.String(object.avatarId) : undefined,
+      avatarId: isSet(object.avatarId) ? globalThis.String(object.avatarId) : null,
       isDeveloper: isSet(object.isDeveloper) ? globalThis.Boolean(object.isDeveloper) : false,
     };
   },
@@ -548,7 +527,7 @@ export const UserInfo: MessageFns<UserInfo, "RandoProto.UserInfo"> = {
     if (message.name !== "") {
       obj.name = message.name;
     }
-    if (message.avatarId !== undefined) {
+    if (message.avatarId !== undefined && message.avatarId !== null) {
       obj.avatarId = message.avatarId;
     }
     if (message.isDeveloper !== false) {
@@ -556,34 +535,22 @@ export const UserInfo: MessageFns<UserInfo, "RandoProto.UserInfo"> = {
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<UserInfo>, I>>(base?: I): UserInfo {
-    return UserInfo.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<UserInfo>, I>>(object: I): UserInfo {
-    const message = createBaseUserInfo();
-    message.id = object.id ?? "";
-    message.name = object.name ?? "";
-    message.avatarId = object.avatarId ?? undefined;
-    message.isDeveloper = object.isDeveloper ?? false;
-    return message;
-  },
 };
 
 messageTypeRegistry.set(UserInfo.$type, UserInfo);
 
 function createBaseWorldMembershipInfo(): WorldMembershipInfo {
-  return { $type: "RandoProto.WorldMembershipInfo", id: 0, user: undefined };
+  return { $type: "Proto.WorldMembershipInfo", id: 0, user: null };
 }
 
-export const WorldMembershipInfo: MessageFns<WorldMembershipInfo, "RandoProto.WorldMembershipInfo"> = {
-  $type: "RandoProto.WorldMembershipInfo" as const,
+export const WorldMembershipInfo: MessageFns<WorldMembershipInfo, "Proto.WorldMembershipInfo"> = {
+  $type: "Proto.WorldMembershipInfo" as const,
 
   encode(message: WorldMembershipInfo, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== 0) {
       writer.uint32(8).int64(message.id);
     }
-    if (message.user !== undefined) {
+    if (message.user !== undefined && message.user !== null) {
       UserInfo.encode(message.user, writer.uint32(18).fork()).join();
     }
     return writer;
@@ -625,7 +592,7 @@ export const WorldMembershipInfo: MessageFns<WorldMembershipInfo, "RandoProto.Wo
     return {
       $type: WorldMembershipInfo.$type,
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
-      user: isSet(object.user) ? UserInfo.fromJSON(object.user) : undefined,
+      user: isSet(object.user) ? UserInfo.fromJSON(object.user) : null,
     };
   },
 
@@ -634,31 +601,21 @@ export const WorldMembershipInfo: MessageFns<WorldMembershipInfo, "RandoProto.Wo
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
     }
-    if (message.user !== undefined) {
+    if (message.user !== undefined && message.user !== null) {
       obj.user = UserInfo.toJSON(message.user);
     }
     return obj;
-  },
-
-  create<I extends Exact<DeepPartial<WorldMembershipInfo>, I>>(base?: I): WorldMembershipInfo {
-    return WorldMembershipInfo.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<WorldMembershipInfo>, I>>(object: I): WorldMembershipInfo {
-    const message = createBaseWorldMembershipInfo();
-    message.id = object.id ?? 0;
-    message.user = (object.user !== undefined && object.user !== null) ? UserInfo.fromPartial(object.user) : undefined;
-    return message;
   },
 };
 
 messageTypeRegistry.set(WorldMembershipInfo.$type, WorldMembershipInfo);
 
 function createBaseWorldInfo(): WorldInfo {
-  return { $type: "RandoProto.WorldInfo", id: 0, name: "", color: "", memberships: [], seedId: undefined };
+  return { $type: "Proto.WorldInfo", id: 0, name: "", color: "", memberships: [], seedId: null };
 }
 
-export const WorldInfo: MessageFns<WorldInfo, "RandoProto.WorldInfo"> = {
-  $type: "RandoProto.WorldInfo" as const,
+export const WorldInfo: MessageFns<WorldInfo, "Proto.WorldInfo"> = {
+  $type: "Proto.WorldInfo" as const,
 
   encode(message: WorldInfo, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== 0) {
@@ -673,7 +630,7 @@ export const WorldInfo: MessageFns<WorldInfo, "RandoProto.WorldInfo"> = {
     for (const v of message.memberships) {
       WorldMembershipInfo.encode(v!, writer.uint32(34).fork()).join();
     }
-    if (message.seedId !== undefined) {
+    if (message.seedId !== undefined && message.seedId !== null) {
       writer.uint32(40).int64(message.seedId);
     }
     return writer;
@@ -744,7 +701,7 @@ export const WorldInfo: MessageFns<WorldInfo, "RandoProto.WorldInfo"> = {
       memberships: globalThis.Array.isArray(object?.memberships)
         ? object.memberships.map((e: any) => WorldMembershipInfo.fromJSON(e))
         : [],
-      seedId: isSet(object.seedId) ? globalThis.Number(object.seedId) : undefined,
+      seedId: isSet(object.seedId) ? globalThis.Number(object.seedId) : null,
     };
   },
 
@@ -762,34 +719,21 @@ export const WorldInfo: MessageFns<WorldInfo, "RandoProto.WorldInfo"> = {
     if (message.memberships?.length) {
       obj.memberships = message.memberships.map((e) => WorldMembershipInfo.toJSON(e));
     }
-    if (message.seedId !== undefined) {
+    if (message.seedId !== undefined && message.seedId !== null) {
       obj.seedId = Math.round(message.seedId);
     }
     return obj;
-  },
-
-  create<I extends Exact<DeepPartial<WorldInfo>, I>>(base?: I): WorldInfo {
-    return WorldInfo.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<WorldInfo>, I>>(object: I): WorldInfo {
-    const message = createBaseWorldInfo();
-    message.id = object.id ?? 0;
-    message.name = object.name ?? "";
-    message.color = object.color ?? "";
-    message.memberships = object.memberships?.map((e) => WorldMembershipInfo.fromPartial(e)) || [];
-    message.seedId = object.seedId ?? undefined;
-    return message;
   },
 };
 
 messageTypeRegistry.set(WorldInfo.$type, WorldInfo);
 
 function createBaseUniverseInfo(): UniverseInfo {
-  return { $type: "RandoProto.UniverseInfo", id: 0, name: "", color: "", worlds: [] };
+  return { $type: "Proto.UniverseInfo", id: 0, name: "", color: "", worlds: [] };
 }
 
-export const UniverseInfo: MessageFns<UniverseInfo, "RandoProto.UniverseInfo"> = {
-  $type: "RandoProto.UniverseInfo" as const,
+export const UniverseInfo: MessageFns<UniverseInfo, "Proto.UniverseInfo"> = {
+  $type: "Proto.UniverseInfo" as const,
 
   encode(message: UniverseInfo, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== 0) {
@@ -881,37 +825,25 @@ export const UniverseInfo: MessageFns<UniverseInfo, "RandoProto.UniverseInfo"> =
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<UniverseInfo>, I>>(base?: I): UniverseInfo {
-    return UniverseInfo.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<UniverseInfo>, I>>(object: I): UniverseInfo {
-    const message = createBaseUniverseInfo();
-    message.id = object.id ?? 0;
-    message.name = object.name ?? "";
-    message.color = object.color ?? "";
-    message.worlds = object.worlds?.map((e) => WorldInfo.fromPartial(e)) || [];
-    return message;
-  },
 };
 
 messageTypeRegistry.set(UniverseInfo.$type, UniverseInfo);
 
 function createBaseRaceTeamMemberInfo(): RaceTeamMemberInfo {
-  return { $type: "RandoProto.RaceTeamMemberInfo", id: 0, user: undefined, finishedTime: undefined };
+  return { $type: "Proto.RaceTeamMemberInfo", id: 0, user: null, finishedTime: null };
 }
 
-export const RaceTeamMemberInfo: MessageFns<RaceTeamMemberInfo, "RandoProto.RaceTeamMemberInfo"> = {
-  $type: "RandoProto.RaceTeamMemberInfo" as const,
+export const RaceTeamMemberInfo: MessageFns<RaceTeamMemberInfo, "Proto.RaceTeamMemberInfo"> = {
+  $type: "Proto.RaceTeamMemberInfo" as const,
 
   encode(message: RaceTeamMemberInfo, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== 0) {
       writer.uint32(8).int64(message.id);
     }
-    if (message.user !== undefined) {
+    if (message.user !== undefined && message.user !== null) {
       UserInfo.encode(message.user, writer.uint32(18).fork()).join();
     }
-    if (message.finishedTime !== undefined) {
+    if (message.finishedTime !== undefined && message.finishedTime !== null) {
       writer.uint32(29).float(message.finishedTime);
     }
     return writer;
@@ -961,8 +893,8 @@ export const RaceTeamMemberInfo: MessageFns<RaceTeamMemberInfo, "RandoProto.Race
     return {
       $type: RaceTeamMemberInfo.$type,
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
-      user: isSet(object.user) ? UserInfo.fromJSON(object.user) : undefined,
-      finishedTime: isSet(object.finishedTime) ? globalThis.Number(object.finishedTime) : undefined,
+      user: isSet(object.user) ? UserInfo.fromJSON(object.user) : null,
+      finishedTime: isSet(object.finishedTime) ? globalThis.Number(object.finishedTime) : null,
     };
   },
 
@@ -971,35 +903,24 @@ export const RaceTeamMemberInfo: MessageFns<RaceTeamMemberInfo, "RandoProto.Race
     if (message.id !== 0) {
       obj.id = Math.round(message.id);
     }
-    if (message.user !== undefined) {
+    if (message.user !== undefined && message.user !== null) {
       obj.user = UserInfo.toJSON(message.user);
     }
-    if (message.finishedTime !== undefined) {
+    if (message.finishedTime !== undefined && message.finishedTime !== null) {
       obj.finishedTime = message.finishedTime;
     }
     return obj;
-  },
-
-  create<I extends Exact<DeepPartial<RaceTeamMemberInfo>, I>>(base?: I): RaceTeamMemberInfo {
-    return RaceTeamMemberInfo.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<RaceTeamMemberInfo>, I>>(object: I): RaceTeamMemberInfo {
-    const message = createBaseRaceTeamMemberInfo();
-    message.id = object.id ?? 0;
-    message.user = (object.user !== undefined && object.user !== null) ? UserInfo.fromPartial(object.user) : undefined;
-    message.finishedTime = object.finishedTime ?? undefined;
-    return message;
   },
 };
 
 messageTypeRegistry.set(RaceTeamMemberInfo.$type, RaceTeamMemberInfo);
 
 function createBaseRaceTeamInfo(): RaceTeamInfo {
-  return { $type: "RandoProto.RaceTeamInfo", id: 0, members: [], finishedTime: undefined };
+  return { $type: "Proto.RaceTeamInfo", id: 0, members: [], finishedTime: null };
 }
 
-export const RaceTeamInfo: MessageFns<RaceTeamInfo, "RandoProto.RaceTeamInfo"> = {
-  $type: "RandoProto.RaceTeamInfo" as const,
+export const RaceTeamInfo: MessageFns<RaceTeamInfo, "Proto.RaceTeamInfo"> = {
+  $type: "Proto.RaceTeamInfo" as const,
 
   encode(message: RaceTeamInfo, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== 0) {
@@ -1008,7 +929,7 @@ export const RaceTeamInfo: MessageFns<RaceTeamInfo, "RandoProto.RaceTeamInfo"> =
     for (const v of message.members) {
       RaceTeamMemberInfo.encode(v!, writer.uint32(18).fork()).join();
     }
-    if (message.finishedTime !== undefined) {
+    if (message.finishedTime !== undefined && message.finishedTime !== null) {
       writer.uint32(37).float(message.finishedTime);
     }
     return writer;
@@ -1061,7 +982,7 @@ export const RaceTeamInfo: MessageFns<RaceTeamInfo, "RandoProto.RaceTeamInfo"> =
       members: globalThis.Array.isArray(object?.members)
         ? object.members.map((e: any) => RaceTeamMemberInfo.fromJSON(e))
         : [],
-      finishedTime: isSet(object.finishedTime) ? globalThis.Number(object.finishedTime) : undefined,
+      finishedTime: isSet(object.finishedTime) ? globalThis.Number(object.finishedTime) : null,
     };
   },
 
@@ -1073,32 +994,21 @@ export const RaceTeamInfo: MessageFns<RaceTeamInfo, "RandoProto.RaceTeamInfo"> =
     if (message.members?.length) {
       obj.members = message.members.map((e) => RaceTeamMemberInfo.toJSON(e));
     }
-    if (message.finishedTime !== undefined) {
+    if (message.finishedTime !== undefined && message.finishedTime !== null) {
       obj.finishedTime = message.finishedTime;
     }
     return obj;
-  },
-
-  create<I extends Exact<DeepPartial<RaceTeamInfo>, I>>(base?: I): RaceTeamInfo {
-    return RaceTeamInfo.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<RaceTeamInfo>, I>>(object: I): RaceTeamInfo {
-    const message = createBaseRaceTeamInfo();
-    message.id = object.id ?? 0;
-    message.members = object.members?.map((e) => RaceTeamMemberInfo.fromPartial(e)) || [];
-    message.finishedTime = object.finishedTime ?? undefined;
-    return message;
   },
 };
 
 messageTypeRegistry.set(RaceTeamInfo.$type, RaceTeamInfo);
 
 function createBaseRaceInfo(): RaceInfo {
-  return { $type: "RandoProto.RaceInfo", id: 0, teams: [], finishedTime: undefined };
+  return { $type: "Proto.RaceInfo", id: 0, teams: [], finishedTime: null };
 }
 
-export const RaceInfo: MessageFns<RaceInfo, "RandoProto.RaceInfo"> = {
-  $type: "RandoProto.RaceInfo" as const,
+export const RaceInfo: MessageFns<RaceInfo, "Proto.RaceInfo"> = {
+  $type: "Proto.RaceInfo" as const,
 
   encode(message: RaceInfo, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== 0) {
@@ -1107,7 +1017,7 @@ export const RaceInfo: MessageFns<RaceInfo, "RandoProto.RaceInfo"> = {
     for (const v of message.teams) {
       RaceTeamInfo.encode(v!, writer.uint32(18).fork()).join();
     }
-    if (message.finishedTime !== undefined) {
+    if (message.finishedTime !== undefined && message.finishedTime !== null) {
       writer.uint32(29).float(message.finishedTime);
     }
     return writer;
@@ -1158,7 +1068,7 @@ export const RaceInfo: MessageFns<RaceInfo, "RandoProto.RaceInfo"> = {
       $type: RaceInfo.$type,
       id: isSet(object.id) ? globalThis.Number(object.id) : 0,
       teams: globalThis.Array.isArray(object?.teams) ? object.teams.map((e: any) => RaceTeamInfo.fromJSON(e)) : [],
-      finishedTime: isSet(object.finishedTime) ? globalThis.Number(object.finishedTime) : undefined,
+      finishedTime: isSet(object.finishedTime) ? globalThis.Number(object.finishedTime) : null,
     };
   },
 
@@ -1170,21 +1080,10 @@ export const RaceInfo: MessageFns<RaceInfo, "RandoProto.RaceInfo"> = {
     if (message.teams?.length) {
       obj.teams = message.teams.map((e) => RaceTeamInfo.toJSON(e));
     }
-    if (message.finishedTime !== undefined) {
+    if (message.finishedTime !== undefined && message.finishedTime !== null) {
       obj.finishedTime = message.finishedTime;
     }
     return obj;
-  },
-
-  create<I extends Exact<DeepPartial<RaceInfo>, I>>(base?: I): RaceInfo {
-    return RaceInfo.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<RaceInfo>, I>>(object: I): RaceInfo {
-    const message = createBaseRaceInfo();
-    message.id = object.id ?? 0;
-    message.teams = object.teams?.map((e) => RaceTeamInfo.fromPartial(e)) || [];
-    message.finishedTime = object.finishedTime ?? undefined;
-    return message;
   },
 };
 
@@ -1192,7 +1091,7 @@ messageTypeRegistry.set(RaceInfo.$type, RaceInfo);
 
 function createBaseMultiverseMetadataInfoMessage(): MultiverseMetadataInfoMessage {
   return {
-    $type: "RandoProto.MultiverseMetadataInfoMessage",
+    $type: "Proto.MultiverseMetadataInfoMessage",
     id: 0,
     hasBingoBoard: false,
     hasSeed: false,
@@ -1203,9 +1102,9 @@ function createBaseMultiverseMetadataInfoMessage(): MultiverseMetadataInfoMessag
 
 export const MultiverseMetadataInfoMessage: MessageFns<
   MultiverseMetadataInfoMessage,
-  "RandoProto.MultiverseMetadataInfoMessage"
+  "Proto.MultiverseMetadataInfoMessage"
 > = {
-  $type: "RandoProto.MultiverseMetadataInfoMessage" as const,
+  $type: "Proto.MultiverseMetadataInfoMessage" as const,
 
   encode(message: MultiverseMetadataInfoMessage, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== 0) {
@@ -1312,46 +1211,31 @@ export const MultiverseMetadataInfoMessage: MessageFns<
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<MultiverseMetadataInfoMessage>, I>>(base?: I): MultiverseMetadataInfoMessage {
-    return MultiverseMetadataInfoMessage.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<MultiverseMetadataInfoMessage>, I>>(
-    object: I,
-  ): MultiverseMetadataInfoMessage {
-    const message = createBaseMultiverseMetadataInfoMessage();
-    message.id = object.id ?? 0;
-    message.hasBingoBoard = object.hasBingoBoard ?? false;
-    message.hasSeed = object.hasSeed ?? false;
-    message.members = object.members?.map((e) => UserInfo.fromPartial(e)) || [];
-    message.createdAt = object.createdAt ?? 0;
-    return message;
-  },
 };
 
 messageTypeRegistry.set(MultiverseMetadataInfoMessage.$type, MultiverseMetadataInfoMessage);
 
 function createBaseMultiverseInfoMessage(): MultiverseInfoMessage {
   return {
-    $type: "RandoProto.MultiverseInfoMessage",
+    $type: "Proto.MultiverseInfoMessage",
     id: 0,
     universes: [],
     hasBingoBoard: false,
     spectators: [],
-    seedId: undefined,
+    seedId: null,
     gameHandlerType: 0,
     gameHandlerClientInfo: new Uint8Array(0),
     locked: false,
     isLockable: false,
-    race: undefined,
+    race: null,
     seedSpoilerDownloadedBy: [],
     connectedUserIds: [],
     raceReadyUserIds: [],
   };
 }
 
-export const MultiverseInfoMessage: MessageFns<MultiverseInfoMessage, "RandoProto.MultiverseInfoMessage"> = {
-  $type: "RandoProto.MultiverseInfoMessage" as const,
+export const MultiverseInfoMessage: MessageFns<MultiverseInfoMessage, "Proto.MultiverseInfoMessage"> = {
+  $type: "Proto.MultiverseInfoMessage" as const,
 
   encode(message: MultiverseInfoMessage, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== 0) {
@@ -1366,7 +1250,7 @@ export const MultiverseInfoMessage: MessageFns<MultiverseInfoMessage, "RandoProt
     for (const v of message.spectators) {
       UserInfo.encode(v!, writer.uint32(34).fork()).join();
     }
-    if (message.seedId !== undefined) {
+    if (message.seedId !== undefined && message.seedId !== null) {
       writer.uint32(40).int64(message.seedId);
     }
     if (message.gameHandlerType !== 0) {
@@ -1381,7 +1265,7 @@ export const MultiverseInfoMessage: MessageFns<MultiverseInfoMessage, "RandoProt
     if (message.isLockable !== false) {
       writer.uint32(72).bool(message.isLockable);
     }
-    if (message.race !== undefined) {
+    if (message.race !== undefined && message.race !== null) {
       RaceInfo.encode(message.race, writer.uint32(82).fork()).join();
     }
     for (const v of message.seedSpoilerDownloadedBy) {
@@ -1527,7 +1411,7 @@ export const MultiverseInfoMessage: MessageFns<MultiverseInfoMessage, "RandoProt
       spectators: globalThis.Array.isArray(object?.spectators)
         ? object.spectators.map((e: any) => UserInfo.fromJSON(e))
         : [],
-      seedId: isSet(object.seedId) ? globalThis.Number(object.seedId) : undefined,
+      seedId: isSet(object.seedId) ? globalThis.Number(object.seedId) : null,
       gameHandlerType: isSet(object.gameHandlerType)
         ? multiverseInfoMessage_GameHandlerTypeFromJSON(object.gameHandlerType)
         : 0,
@@ -1536,7 +1420,7 @@ export const MultiverseInfoMessage: MessageFns<MultiverseInfoMessage, "RandoProt
         : new Uint8Array(0),
       locked: isSet(object.locked) ? globalThis.Boolean(object.locked) : false,
       isLockable: isSet(object.isLockable) ? globalThis.Boolean(object.isLockable) : false,
-      race: isSet(object.race) ? RaceInfo.fromJSON(object.race) : undefined,
+      race: isSet(object.race) ? RaceInfo.fromJSON(object.race) : null,
       seedSpoilerDownloadedBy: globalThis.Array.isArray(object?.seedSpoilerDownloadedBy)
         ? object.seedSpoilerDownloadedBy.map((e: any) => UserInfo.fromJSON(e))
         : [],
@@ -1563,7 +1447,7 @@ export const MultiverseInfoMessage: MessageFns<MultiverseInfoMessage, "RandoProt
     if (message.spectators?.length) {
       obj.spectators = message.spectators.map((e) => UserInfo.toJSON(e));
     }
-    if (message.seedId !== undefined) {
+    if (message.seedId !== undefined && message.seedId !== null) {
       obj.seedId = Math.round(message.seedId);
     }
     if (message.gameHandlerType !== 0) {
@@ -1578,7 +1462,7 @@ export const MultiverseInfoMessage: MessageFns<MultiverseInfoMessage, "RandoProt
     if (message.isLockable !== false) {
       obj.isLockable = message.isLockable;
     }
-    if (message.race !== undefined) {
+    if (message.race !== undefined && message.race !== null) {
       obj.race = RaceInfo.toJSON(message.race);
     }
     if (message.seedSpoilerDownloadedBy?.length) {
@@ -1592,37 +1476,16 @@ export const MultiverseInfoMessage: MessageFns<MultiverseInfoMessage, "RandoProt
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<MultiverseInfoMessage>, I>>(base?: I): MultiverseInfoMessage {
-    return MultiverseInfoMessage.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<MultiverseInfoMessage>, I>>(object: I): MultiverseInfoMessage {
-    const message = createBaseMultiverseInfoMessage();
-    message.id = object.id ?? 0;
-    message.universes = object.universes?.map((e) => UniverseInfo.fromPartial(e)) || [];
-    message.hasBingoBoard = object.hasBingoBoard ?? false;
-    message.spectators = object.spectators?.map((e) => UserInfo.fromPartial(e)) || [];
-    message.seedId = object.seedId ?? undefined;
-    message.gameHandlerType = object.gameHandlerType ?? 0;
-    message.gameHandlerClientInfo = object.gameHandlerClientInfo ?? new Uint8Array(0);
-    message.locked = object.locked ?? false;
-    message.isLockable = object.isLockable ?? false;
-    message.race = (object.race !== undefined && object.race !== null) ? RaceInfo.fromPartial(object.race) : undefined;
-    message.seedSpoilerDownloadedBy = object.seedSpoilerDownloadedBy?.map((e) => UserInfo.fromPartial(e)) || [];
-    message.connectedUserIds = object.connectedUserIds?.map((e) => e) || [];
-    message.raceReadyUserIds = object.raceReadyUserIds?.map((e) => e) || [];
-    return message;
-  },
 };
 
 messageTypeRegistry.set(MultiverseInfoMessage.$type, MultiverseInfoMessage);
 
 function createBaseBingoSquare(): BingoSquare {
-  return { $type: "RandoProto.BingoSquare", text: "", completedBy: [], goals: [], visibleFor: [] };
+  return { $type: "Proto.BingoSquare", text: "", completedBy: [], goals: [], visibleFor: [] };
 }
 
-export const BingoSquare: MessageFns<BingoSquare, "RandoProto.BingoSquare"> = {
-  $type: "RandoProto.BingoSquare" as const,
+export const BingoSquare: MessageFns<BingoSquare, "Proto.BingoSquare"> = {
+  $type: "Proto.BingoSquare" as const,
 
   encode(message: BingoSquare, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.text !== "") {
@@ -1742,28 +1605,16 @@ export const BingoSquare: MessageFns<BingoSquare, "RandoProto.BingoSquare"> = {
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<BingoSquare>, I>>(base?: I): BingoSquare {
-    return BingoSquare.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<BingoSquare>, I>>(object: I): BingoSquare {
-    const message = createBaseBingoSquare();
-    message.text = object.text ?? "";
-    message.completedBy = object.completedBy?.map((e) => e) || [];
-    message.goals = object.goals?.map((e) => BingoGoal.fromPartial(e)) || [];
-    message.visibleFor = object.visibleFor?.map((e) => e) || [];
-    return message;
-  },
 };
 
 messageTypeRegistry.set(BingoSquare.$type, BingoSquare);
 
 function createBaseRequestUpdatesMessage(): RequestUpdatesMessage {
-  return { $type: "RandoProto.RequestUpdatesMessage", playerId: "" };
+  return { $type: "Proto.RequestUpdatesMessage", playerId: "" };
 }
 
-export const RequestUpdatesMessage: MessageFns<RequestUpdatesMessage, "RandoProto.RequestUpdatesMessage"> = {
-  $type: "RandoProto.RequestUpdatesMessage" as const,
+export const RequestUpdatesMessage: MessageFns<RequestUpdatesMessage, "Proto.RequestUpdatesMessage"> = {
+  $type: "Proto.RequestUpdatesMessage" as const,
 
   encode(message: RequestUpdatesMessage, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.playerId !== "") {
@@ -1810,25 +1661,16 @@ export const RequestUpdatesMessage: MessageFns<RequestUpdatesMessage, "RandoProt
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<RequestUpdatesMessage>, I>>(base?: I): RequestUpdatesMessage {
-    return RequestUpdatesMessage.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<RequestUpdatesMessage>, I>>(object: I): RequestUpdatesMessage {
-    const message = createBaseRequestUpdatesMessage();
-    message.playerId = object.playerId ?? "";
-    return message;
-  },
 };
 
 messageTypeRegistry.set(RequestUpdatesMessage.$type, RequestUpdatesMessage);
 
 function createBaseBingoUniverseInfo(): BingoUniverseInfo {
-  return { $type: "RandoProto.BingoUniverseInfo", universeId: 0, score: "", rank: 0, squares: 0, lines: 0 };
+  return { $type: "Proto.BingoUniverseInfo", universeId: 0, score: "", rank: 0, squares: 0, lines: 0 };
 }
 
-export const BingoUniverseInfo: MessageFns<BingoUniverseInfo, "RandoProto.BingoUniverseInfo"> = {
-  $type: "RandoProto.BingoUniverseInfo" as const,
+export const BingoUniverseInfo: MessageFns<BingoUniverseInfo, "Proto.BingoUniverseInfo"> = {
+  $type: "Proto.BingoUniverseInfo" as const,
 
   encode(message: BingoUniverseInfo, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.universeId !== 0) {
@@ -1935,97 +1777,74 @@ export const BingoUniverseInfo: MessageFns<BingoUniverseInfo, "RandoProto.BingoU
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<BingoUniverseInfo>, I>>(base?: I): BingoUniverseInfo {
-    return BingoUniverseInfo.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<BingoUniverseInfo>, I>>(object: I): BingoUniverseInfo {
-    const message = createBaseBingoUniverseInfo();
-    message.universeId = object.universeId ?? 0;
-    message.score = object.score ?? "";
-    message.rank = object.rank ?? 0;
-    message.squares = object.squares ?? 0;
-    message.lines = object.lines ?? 0;
-    return message;
-  },
 };
 
 messageTypeRegistry.set(BingoUniverseInfo.$type, BingoUniverseInfo);
 
 function createBaseSyncBingoUniversesMessage(): SyncBingoUniversesMessage {
-  return { $type: "RandoProto.SyncBingoUniversesMessage", bingoUniverses: [] };
+  return { $type: "Proto.SyncBingoUniversesMessage", bingoUniverses: [] };
 }
 
-export const SyncBingoUniversesMessage: MessageFns<SyncBingoUniversesMessage, "RandoProto.SyncBingoUniversesMessage"> =
-  {
-    $type: "RandoProto.SyncBingoUniversesMessage" as const,
+export const SyncBingoUniversesMessage: MessageFns<SyncBingoUniversesMessage, "Proto.SyncBingoUniversesMessage"> = {
+  $type: "Proto.SyncBingoUniversesMessage" as const,
 
-    encode(message: SyncBingoUniversesMessage, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-      for (const v of message.bingoUniverses) {
-        BingoUniverseInfo.encode(v!, writer.uint32(10).fork()).join();
-      }
-      return writer;
-    },
+  encode(message: SyncBingoUniversesMessage, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    for (const v of message.bingoUniverses) {
+      BingoUniverseInfo.encode(v!, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
 
-    decode(input: BinaryReader | Uint8Array, length?: number): SyncBingoUniversesMessage {
-      const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-      const end = length === undefined ? reader.len : reader.pos + length;
-      const message = createBaseSyncBingoUniversesMessage();
-      while (reader.pos < end) {
-        const tag = reader.uint32();
-        switch (tag >>> 3) {
-          case 1: {
-            if (tag !== 10) {
-              break;
-            }
-
-            message.bingoUniverses.push(BingoUniverseInfo.decode(reader, reader.uint32()));
-            continue;
+  decode(input: BinaryReader | Uint8Array, length?: number): SyncBingoUniversesMessage {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSyncBingoUniversesMessage();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
           }
+
+          message.bingoUniverses.push(BingoUniverseInfo.decode(reader, reader.uint32()));
+          continue;
         }
-        if ((tag & 7) === 4 || tag === 0) {
-          break;
-        }
-        reader.skip(tag & 7);
       }
-      return message;
-    },
-
-    fromJSON(object: any): SyncBingoUniversesMessage {
-      return {
-        $type: SyncBingoUniversesMessage.$type,
-        bingoUniverses: globalThis.Array.isArray(object?.bingoUniverses)
-          ? object.bingoUniverses.map((e: any) => BingoUniverseInfo.fromJSON(e))
-          : [],
-      };
-    },
-
-    toJSON(message: SyncBingoUniversesMessage): unknown {
-      const obj: any = {};
-      if (message.bingoUniverses?.length) {
-        obj.bingoUniverses = message.bingoUniverses.map((e) => BingoUniverseInfo.toJSON(e));
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
       }
-      return obj;
-    },
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
 
-    create<I extends Exact<DeepPartial<SyncBingoUniversesMessage>, I>>(base?: I): SyncBingoUniversesMessage {
-      return SyncBingoUniversesMessage.fromPartial(base ?? ({} as any));
-    },
-    fromPartial<I extends Exact<DeepPartial<SyncBingoUniversesMessage>, I>>(object: I): SyncBingoUniversesMessage {
-      const message = createBaseSyncBingoUniversesMessage();
-      message.bingoUniverses = object.bingoUniverses?.map((e) => BingoUniverseInfo.fromPartial(e)) || [];
-      return message;
-    },
-  };
+  fromJSON(object: any): SyncBingoUniversesMessage {
+    return {
+      $type: SyncBingoUniversesMessage.$type,
+      bingoUniverses: globalThis.Array.isArray(object?.bingoUniverses)
+        ? object.bingoUniverses.map((e: any) => BingoUniverseInfo.fromJSON(e))
+        : [],
+    };
+  },
+
+  toJSON(message: SyncBingoUniversesMessage): unknown {
+    const obj: any = {};
+    if (message.bingoUniverses?.length) {
+      obj.bingoUniverses = message.bingoUniverses.map((e) => BingoUniverseInfo.toJSON(e));
+    }
+    return obj;
+  },
+};
 
 messageTypeRegistry.set(SyncBingoUniversesMessage.$type, SyncBingoUniversesMessage);
 
 function createBasePosition(): Position {
-  return { $type: "RandoProto.Position", x: 0, y: 0 };
+  return { $type: "Proto.Position", x: 0, y: 0 };
 }
 
-export const Position: MessageFns<Position, "RandoProto.Position"> = {
-  $type: "RandoProto.Position" as const,
+export const Position: MessageFns<Position, "Proto.Position"> = {
+  $type: "Proto.Position" as const,
 
   encode(message: Position, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.x !== 0) {
@@ -2087,32 +1906,22 @@ export const Position: MessageFns<Position, "RandoProto.Position"> = {
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<Position>, I>>(base?: I): Position {
-    return Position.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<Position>, I>>(object: I): Position {
-    const message = createBasePosition();
-    message.x = object.x ?? 0;
-    message.y = object.y ?? 0;
-    return message;
-  },
 };
 
 messageTypeRegistry.set(Position.$type, Position);
 
 function createBasePositionedBingoSquare(): PositionedBingoSquare {
-  return { $type: "RandoProto.PositionedBingoSquare", position: undefined, square: undefined };
+  return { $type: "Proto.PositionedBingoSquare", position: null, square: null };
 }
 
-export const PositionedBingoSquare: MessageFns<PositionedBingoSquare, "RandoProto.PositionedBingoSquare"> = {
-  $type: "RandoProto.PositionedBingoSquare" as const,
+export const PositionedBingoSquare: MessageFns<PositionedBingoSquare, "Proto.PositionedBingoSquare"> = {
+  $type: "Proto.PositionedBingoSquare" as const,
 
   encode(message: PositionedBingoSquare, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.position !== undefined) {
+    if (message.position !== undefined && message.position !== null) {
       Position.encode(message.position, writer.uint32(10).fork()).join();
     }
-    if (message.square !== undefined) {
+    if (message.square !== undefined && message.square !== null) {
       BingoSquare.encode(message.square, writer.uint32(18).fork()).join();
     }
     return writer;
@@ -2153,45 +1962,31 @@ export const PositionedBingoSquare: MessageFns<PositionedBingoSquare, "RandoProt
   fromJSON(object: any): PositionedBingoSquare {
     return {
       $type: PositionedBingoSquare.$type,
-      position: isSet(object.position) ? Position.fromJSON(object.position) : undefined,
-      square: isSet(object.square) ? BingoSquare.fromJSON(object.square) : undefined,
+      position: isSet(object.position) ? Position.fromJSON(object.position) : null,
+      square: isSet(object.square) ? BingoSquare.fromJSON(object.square) : null,
     };
   },
 
   toJSON(message: PositionedBingoSquare): unknown {
     const obj: any = {};
-    if (message.position !== undefined) {
+    if (message.position !== undefined && message.position !== null) {
       obj.position = Position.toJSON(message.position);
     }
-    if (message.square !== undefined) {
+    if (message.square !== undefined && message.square !== null) {
       obj.square = BingoSquare.toJSON(message.square);
     }
     return obj;
-  },
-
-  create<I extends Exact<DeepPartial<PositionedBingoSquare>, I>>(base?: I): PositionedBingoSquare {
-    return PositionedBingoSquare.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<PositionedBingoSquare>, I>>(object: I): PositionedBingoSquare {
-    const message = createBasePositionedBingoSquare();
-    message.position = (object.position !== undefined && object.position !== null)
-      ? Position.fromPartial(object.position)
-      : undefined;
-    message.square = (object.square !== undefined && object.square !== null)
-      ? BingoSquare.fromPartial(object.square)
-      : undefined;
-    return message;
   },
 };
 
 messageTypeRegistry.set(PositionedBingoSquare.$type, PositionedBingoSquare);
 
 function createBaseBingoBoardMessage(): BingoBoardMessage {
-  return { $type: "RandoProto.BingoBoardMessage", squares: [], size: 0, lockout: false };
+  return { $type: "Proto.BingoBoardMessage", squares: [], size: 0, lockout: false };
 }
 
-export const BingoBoardMessage: MessageFns<BingoBoardMessage, "RandoProto.BingoBoardMessage"> = {
-  $type: "RandoProto.BingoBoardMessage" as const,
+export const BingoBoardMessage: MessageFns<BingoBoardMessage, "Proto.BingoBoardMessage"> = {
+  $type: "Proto.BingoBoardMessage" as const,
 
   encode(message: BingoBoardMessage, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.squares) {
@@ -2270,34 +2065,20 @@ export const BingoBoardMessage: MessageFns<BingoBoardMessage, "RandoProto.BingoB
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<BingoBoardMessage>, I>>(base?: I): BingoBoardMessage {
-    return BingoBoardMessage.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<BingoBoardMessage>, I>>(object: I): BingoBoardMessage {
-    const message = createBaseBingoBoardMessage();
-    message.squares = object.squares?.map((e) => PositionedBingoSquare.fromPartial(e)) || [];
-    message.size = object.size ?? 0;
-    message.lockout = object.lockout ?? false;
-    return message;
-  },
 };
 
 messageTypeRegistry.set(BingoBoardMessage.$type, BingoBoardMessage);
 
 function createBaseSyncBoardMessage(): SyncBoardMessage {
-  return { $type: "RandoProto.SyncBoardMessage", board: undefined, replace: false };
+  return { $type: "Proto.SyncBoardMessage", board: null };
 }
 
-export const SyncBoardMessage: MessageFns<SyncBoardMessage, "RandoProto.SyncBoardMessage"> = {
-  $type: "RandoProto.SyncBoardMessage" as const,
+export const SyncBoardMessage: MessageFns<SyncBoardMessage, "Proto.SyncBoardMessage"> = {
+  $type: "Proto.SyncBoardMessage" as const,
 
   encode(message: SyncBoardMessage, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.board !== undefined) {
+    if (message.board !== undefined && message.board !== null) {
       BingoBoardMessage.encode(message.board, writer.uint32(10).fork()).join();
-    }
-    if (message.replace !== false) {
-      writer.uint32(16).bool(message.replace);
     }
     return writer;
   },
@@ -2317,14 +2098,6 @@ export const SyncBoardMessage: MessageFns<SyncBoardMessage, "RandoProto.SyncBoar
           message.board = BingoBoardMessage.decode(reader, reader.uint32());
           continue;
         }
-        case 2: {
-          if (tag !== 16) {
-            break;
-          }
-
-          message.replace = reader.bool();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -2337,43 +2110,27 @@ export const SyncBoardMessage: MessageFns<SyncBoardMessage, "RandoProto.SyncBoar
   fromJSON(object: any): SyncBoardMessage {
     return {
       $type: SyncBoardMessage.$type,
-      board: isSet(object.board) ? BingoBoardMessage.fromJSON(object.board) : undefined,
-      replace: isSet(object.replace) ? globalThis.Boolean(object.replace) : false,
+      board: isSet(object.board) ? BingoBoardMessage.fromJSON(object.board) : null,
     };
   },
 
   toJSON(message: SyncBoardMessage): unknown {
     const obj: any = {};
-    if (message.board !== undefined) {
+    if (message.board !== undefined && message.board !== null) {
       obj.board = BingoBoardMessage.toJSON(message.board);
     }
-    if (message.replace !== false) {
-      obj.replace = message.replace;
-    }
     return obj;
-  },
-
-  create<I extends Exact<DeepPartial<SyncBoardMessage>, I>>(base?: I): SyncBoardMessage {
-    return SyncBoardMessage.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<SyncBoardMessage>, I>>(object: I): SyncBoardMessage {
-    const message = createBaseSyncBoardMessage();
-    message.board = (object.board !== undefined && object.board !== null)
-      ? BingoBoardMessage.fromPartial(object.board)
-      : undefined;
-    message.replace = object.replace ?? false;
-    return message;
   },
 };
 
 messageTypeRegistry.set(SyncBoardMessage.$type, SyncBoardMessage);
 
 function createBaseAuthenticateMessage(): AuthenticateMessage {
-  return { $type: "RandoProto.AuthenticateMessage", jwt: "", clientVersion: "" };
+  return { $type: "Proto.AuthenticateMessage", jwt: "", clientVersion: "" };
 }
 
-export const AuthenticateMessage: MessageFns<AuthenticateMessage, "RandoProto.AuthenticateMessage"> = {
-  $type: "RandoProto.AuthenticateMessage" as const,
+export const AuthenticateMessage: MessageFns<AuthenticateMessage, "Proto.AuthenticateMessage"> = {
+  $type: "Proto.AuthenticateMessage" as const,
 
   encode(message: AuthenticateMessage, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.jwt !== "") {
@@ -2435,111 +2192,90 @@ export const AuthenticateMessage: MessageFns<AuthenticateMessage, "RandoProto.Au
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<AuthenticateMessage>, I>>(base?: I): AuthenticateMessage {
-    return AuthenticateMessage.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<AuthenticateMessage>, I>>(object: I): AuthenticateMessage {
-    const message = createBaseAuthenticateMessage();
-    message.jwt = object.jwt ?? "";
-    message.clientVersion = object.clientVersion ?? "";
-    return message;
-  },
 };
 
 messageTypeRegistry.set(AuthenticateMessage.$type, AuthenticateMessage);
 
 function createBaseShowUINotificationMessage(): ShowUINotificationMessage {
-  return { $type: "RandoProto.ShowUINotificationMessage", text: "", color: "" };
+  return { $type: "Proto.ShowUINotificationMessage", text: "", color: "" };
 }
 
-export const ShowUINotificationMessage: MessageFns<ShowUINotificationMessage, "RandoProto.ShowUINotificationMessage"> =
-  {
-    $type: "RandoProto.ShowUINotificationMessage" as const,
+export const ShowUINotificationMessage: MessageFns<ShowUINotificationMessage, "Proto.ShowUINotificationMessage"> = {
+  $type: "Proto.ShowUINotificationMessage" as const,
 
-    encode(message: ShowUINotificationMessage, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-      if (message.text !== "") {
-        writer.uint32(10).string(message.text);
-      }
-      if (message.color !== "") {
-        writer.uint32(18).string(message.color);
-      }
-      return writer;
-    },
+  encode(message: ShowUINotificationMessage, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.text !== "") {
+      writer.uint32(10).string(message.text);
+    }
+    if (message.color !== "") {
+      writer.uint32(18).string(message.color);
+    }
+    return writer;
+  },
 
-    decode(input: BinaryReader | Uint8Array, length?: number): ShowUINotificationMessage {
-      const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-      const end = length === undefined ? reader.len : reader.pos + length;
-      const message = createBaseShowUINotificationMessage();
-      while (reader.pos < end) {
-        const tag = reader.uint32();
-        switch (tag >>> 3) {
-          case 1: {
-            if (tag !== 10) {
-              break;
-            }
-
-            message.text = reader.string();
-            continue;
+  decode(input: BinaryReader | Uint8Array, length?: number): ShowUINotificationMessage {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseShowUINotificationMessage();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
           }
-          case 2: {
-            if (tag !== 18) {
-              break;
-            }
 
-            message.color = reader.string();
-            continue;
+          message.text = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
           }
+
+          message.color = reader.string();
+          continue;
         }
-        if ((tag & 7) === 4 || tag === 0) {
-          break;
-        }
-        reader.skip(tag & 7);
       }
-      return message;
-    },
-
-    fromJSON(object: any): ShowUINotificationMessage {
-      return {
-        $type: ShowUINotificationMessage.$type,
-        text: isSet(object.text) ? globalThis.String(object.text) : "",
-        color: isSet(object.color) ? globalThis.String(object.color) : "",
-      };
-    },
-
-    toJSON(message: ShowUINotificationMessage): unknown {
-      const obj: any = {};
-      if (message.text !== "") {
-        obj.text = message.text;
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
       }
-      if (message.color !== "") {
-        obj.color = message.color;
-      }
-      return obj;
-    },
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
 
-    create<I extends Exact<DeepPartial<ShowUINotificationMessage>, I>>(base?: I): ShowUINotificationMessage {
-      return ShowUINotificationMessage.fromPartial(base ?? ({} as any));
-    },
-    fromPartial<I extends Exact<DeepPartial<ShowUINotificationMessage>, I>>(object: I): ShowUINotificationMessage {
-      const message = createBaseShowUINotificationMessage();
-      message.text = object.text ?? "";
-      message.color = object.color ?? "";
-      return message;
-    },
-  };
+  fromJSON(object: any): ShowUINotificationMessage {
+    return {
+      $type: ShowUINotificationMessage.$type,
+      text: isSet(object.text) ? globalThis.String(object.text) : "",
+      color: isSet(object.color) ? globalThis.String(object.color) : "",
+    };
+  },
+
+  toJSON(message: ShowUINotificationMessage): unknown {
+    const obj: any = {};
+    if (message.text !== "") {
+      obj.text = message.text;
+    }
+    if (message.color !== "") {
+      obj.color = message.color;
+    }
+    return obj;
+  },
+};
 
 messageTypeRegistry.set(ShowUINotificationMessage.$type, ShowUINotificationMessage);
 
 function createBaseAuthenticatedMessage(): AuthenticatedMessage {
-  return { $type: "RandoProto.AuthenticatedMessage", user: undefined, udpId: 0, udpKey: new Uint8Array(0) };
+  return { $type: "Proto.AuthenticatedMessage", user: null, udpId: 0, udpKey: new Uint8Array(0) };
 }
 
-export const AuthenticatedMessage: MessageFns<AuthenticatedMessage, "RandoProto.AuthenticatedMessage"> = {
-  $type: "RandoProto.AuthenticatedMessage" as const,
+export const AuthenticatedMessage: MessageFns<AuthenticatedMessage, "Proto.AuthenticatedMessage"> = {
+  $type: "Proto.AuthenticatedMessage" as const,
 
   encode(message: AuthenticatedMessage, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.user !== undefined) {
+    if (message.user !== undefined && message.user !== null) {
       UserInfo.encode(message.user, writer.uint32(10).fork()).join();
     }
     if (message.udpId !== 0) {
@@ -2594,7 +2330,7 @@ export const AuthenticatedMessage: MessageFns<AuthenticatedMessage, "RandoProto.
   fromJSON(object: any): AuthenticatedMessage {
     return {
       $type: AuthenticatedMessage.$type,
-      user: isSet(object.user) ? UserInfo.fromJSON(object.user) : undefined,
+      user: isSet(object.user) ? UserInfo.fromJSON(object.user) : null,
       udpId: isSet(object.udpId) ? globalThis.Number(object.udpId) : 0,
       udpKey: isSet(object.udpKey) ? bytesFromBase64(object.udpKey) : new Uint8Array(0),
     };
@@ -2602,7 +2338,7 @@ export const AuthenticatedMessage: MessageFns<AuthenticatedMessage, "RandoProto.
 
   toJSON(message: AuthenticatedMessage): unknown {
     const obj: any = {};
-    if (message.user !== undefined) {
+    if (message.user !== undefined && message.user !== null) {
       obj.user = UserInfo.toJSON(message.user);
     }
     if (message.udpId !== 0) {
@@ -2613,27 +2349,16 @@ export const AuthenticatedMessage: MessageFns<AuthenticatedMessage, "RandoProto.
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<AuthenticatedMessage>, I>>(base?: I): AuthenticatedMessage {
-    return AuthenticatedMessage.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<AuthenticatedMessage>, I>>(object: I): AuthenticatedMessage {
-    const message = createBaseAuthenticatedMessage();
-    message.user = (object.user !== undefined && object.user !== null) ? UserInfo.fromPartial(object.user) : undefined;
-    message.udpId = object.udpId ?? 0;
-    message.udpKey = object.udpKey ?? new Uint8Array(0);
-    return message;
-  },
 };
 
 messageTypeRegistry.set(AuthenticatedMessage.$type, AuthenticatedMessage);
 
 function createBasePlayerPositionMessage(): PlayerPositionMessage {
-  return { $type: "RandoProto.PlayerPositionMessage", x: 0, y: 0 };
+  return { $type: "Proto.PlayerPositionMessage", x: 0, y: 0 };
 }
 
-export const PlayerPositionMessage: MessageFns<PlayerPositionMessage, "RandoProto.PlayerPositionMessage"> = {
-  $type: "RandoProto.PlayerPositionMessage" as const,
+export const PlayerPositionMessage: MessageFns<PlayerPositionMessage, "Proto.PlayerPositionMessage"> = {
+  $type: "Proto.PlayerPositionMessage" as const,
 
   encode(message: PlayerPositionMessage, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.x !== 0) {
@@ -2695,126 +2420,103 @@ export const PlayerPositionMessage: MessageFns<PlayerPositionMessage, "RandoProt
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<PlayerPositionMessage>, I>>(base?: I): PlayerPositionMessage {
-    return PlayerPositionMessage.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<PlayerPositionMessage>, I>>(object: I): PlayerPositionMessage {
-    const message = createBasePlayerPositionMessage();
-    message.x = object.x ?? 0;
-    message.y = object.y ?? 0;
-    return message;
-  },
 };
 
 messageTypeRegistry.set(PlayerPositionMessage.$type, PlayerPositionMessage);
 
 function createBaseUpdatePlayerPositionMessage(): UpdatePlayerPositionMessage {
-  return { $type: "RandoProto.UpdatePlayerPositionMessage", playerId: "", x: 0, y: 0 };
+  return { $type: "Proto.UpdatePlayerPositionMessage", playerId: "", x: 0, y: 0 };
 }
 
-export const UpdatePlayerPositionMessage: MessageFns<
-  UpdatePlayerPositionMessage,
-  "RandoProto.UpdatePlayerPositionMessage"
-> = {
-  $type: "RandoProto.UpdatePlayerPositionMessage" as const,
+export const UpdatePlayerPositionMessage: MessageFns<UpdatePlayerPositionMessage, "Proto.UpdatePlayerPositionMessage"> =
+  {
+    $type: "Proto.UpdatePlayerPositionMessage" as const,
 
-  encode(message: UpdatePlayerPositionMessage, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.playerId !== "") {
-      writer.uint32(10).string(message.playerId);
-    }
-    if (message.x !== 0) {
-      writer.uint32(21).float(message.x);
-    }
-    if (message.y !== 0) {
-      writer.uint32(29).float(message.y);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): UpdatePlayerPositionMessage {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUpdatePlayerPositionMessage();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.playerId = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 21) {
-            break;
-          }
-
-          message.x = reader.float();
-          continue;
-        }
-        case 3: {
-          if (tag !== 29) {
-            break;
-          }
-
-          message.y = reader.float();
-          continue;
-        }
+    encode(message: UpdatePlayerPositionMessage, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+      if (message.playerId !== "") {
+        writer.uint32(10).string(message.playerId);
       }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
+      if (message.x !== 0) {
+        writer.uint32(21).float(message.x);
       }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
+      if (message.y !== 0) {
+        writer.uint32(29).float(message.y);
+      }
+      return writer;
+    },
 
-  fromJSON(object: any): UpdatePlayerPositionMessage {
-    return {
-      $type: UpdatePlayerPositionMessage.$type,
-      playerId: isSet(object.playerId) ? globalThis.String(object.playerId) : "",
-      x: isSet(object.x) ? globalThis.Number(object.x) : 0,
-      y: isSet(object.y) ? globalThis.Number(object.y) : 0,
-    };
-  },
+    decode(input: BinaryReader | Uint8Array, length?: number): UpdatePlayerPositionMessage {
+      const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+      const end = length === undefined ? reader.len : reader.pos + length;
+      const message = createBaseUpdatePlayerPositionMessage();
+      while (reader.pos < end) {
+        const tag = reader.uint32();
+        switch (tag >>> 3) {
+          case 1: {
+            if (tag !== 10) {
+              break;
+            }
 
-  toJSON(message: UpdatePlayerPositionMessage): unknown {
-    const obj: any = {};
-    if (message.playerId !== "") {
-      obj.playerId = message.playerId;
-    }
-    if (message.x !== 0) {
-      obj.x = message.x;
-    }
-    if (message.y !== 0) {
-      obj.y = message.y;
-    }
-    return obj;
-  },
+            message.playerId = reader.string();
+            continue;
+          }
+          case 2: {
+            if (tag !== 21) {
+              break;
+            }
 
-  create<I extends Exact<DeepPartial<UpdatePlayerPositionMessage>, I>>(base?: I): UpdatePlayerPositionMessage {
-    return UpdatePlayerPositionMessage.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<UpdatePlayerPositionMessage>, I>>(object: I): UpdatePlayerPositionMessage {
-    const message = createBaseUpdatePlayerPositionMessage();
-    message.playerId = object.playerId ?? "";
-    message.x = object.x ?? 0;
-    message.y = object.y ?? 0;
-    return message;
-  },
-};
+            message.x = reader.float();
+            continue;
+          }
+          case 3: {
+            if (tag !== 29) {
+              break;
+            }
+
+            message.y = reader.float();
+            continue;
+          }
+        }
+        if ((tag & 7) === 4 || tag === 0) {
+          break;
+        }
+        reader.skip(tag & 7);
+      }
+      return message;
+    },
+
+    fromJSON(object: any): UpdatePlayerPositionMessage {
+      return {
+        $type: UpdatePlayerPositionMessage.$type,
+        playerId: isSet(object.playerId) ? globalThis.String(object.playerId) : "",
+        x: isSet(object.x) ? globalThis.Number(object.x) : 0,
+        y: isSet(object.y) ? globalThis.Number(object.y) : 0,
+      };
+    },
+
+    toJSON(message: UpdatePlayerPositionMessage): unknown {
+      const obj: any = {};
+      if (message.playerId !== "") {
+        obj.playerId = message.playerId;
+      }
+      if (message.x !== 0) {
+        obj.x = message.x;
+      }
+      if (message.y !== 0) {
+        obj.y = message.y;
+      }
+      return obj;
+    },
+  };
 
 messageTypeRegistry.set(UpdatePlayerPositionMessage.$type, UpdatePlayerPositionMessage);
 
 function createBaseUdpPacket(): UdpPacket {
-  return { $type: "RandoProto.UdpPacket", udpId: 0, encryptedPacket: new Uint8Array(0) };
+  return { $type: "Proto.UdpPacket", udpId: 0, encryptedPacket: new Uint8Array(0) };
 }
 
-export const UdpPacket: MessageFns<UdpPacket, "RandoProto.UdpPacket"> = {
-  $type: "RandoProto.UdpPacket" as const,
+export const UdpPacket: MessageFns<UdpPacket, "Proto.UdpPacket"> = {
+  $type: "Proto.UdpPacket" as const,
 
   encode(message: UdpPacket, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.udpId !== 0) {
@@ -2876,26 +2578,16 @@ export const UdpPacket: MessageFns<UdpPacket, "RandoProto.UdpPacket"> = {
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<UdpPacket>, I>>(base?: I): UdpPacket {
-    return UdpPacket.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<UdpPacket>, I>>(object: I): UdpPacket {
-    const message = createBaseUdpPacket();
-    message.udpId = object.udpId ?? 0;
-    message.encryptedPacket = object.encryptedPacket ?? new Uint8Array(0);
-    return message;
-  },
 };
 
 messageTypeRegistry.set(UdpPacket.$type, UdpPacket);
 
 function createBaseTrackerUpdate(): TrackerUpdate {
-  return { $type: "RandoProto.TrackerUpdate", id: "", value: 0 };
+  return { $type: "Proto.TrackerUpdate", id: "", value: 0 };
 }
 
-export const TrackerUpdate: MessageFns<TrackerUpdate, "RandoProto.TrackerUpdate"> = {
-  $type: "RandoProto.TrackerUpdate" as const,
+export const TrackerUpdate: MessageFns<TrackerUpdate, "Proto.TrackerUpdate"> = {
+  $type: "Proto.TrackerUpdate" as const,
 
   encode(message: TrackerUpdate, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.id !== "") {
@@ -2957,26 +2649,16 @@ export const TrackerUpdate: MessageFns<TrackerUpdate, "RandoProto.TrackerUpdate"
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<TrackerUpdate>, I>>(base?: I): TrackerUpdate {
-    return TrackerUpdate.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<TrackerUpdate>, I>>(object: I): TrackerUpdate {
-    const message = createBaseTrackerUpdate();
-    message.id = object.id ?? "";
-    message.value = object.value ?? 0;
-    return message;
-  },
 };
 
 messageTypeRegistry.set(TrackerUpdate.$type, TrackerUpdate);
 
 function createBaseResetTracker(): ResetTracker {
-  return { $type: "RandoProto.ResetTracker" };
+  return { $type: "Proto.ResetTracker" };
 }
 
-export const ResetTracker: MessageFns<ResetTracker, "RandoProto.ResetTracker"> = {
-  $type: "RandoProto.ResetTracker" as const,
+export const ResetTracker: MessageFns<ResetTracker, "Proto.ResetTracker"> = {
+  $type: "Proto.ResetTracker" as const,
 
   encode(_: ResetTracker, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     return writer;
@@ -3006,24 +2688,16 @@ export const ResetTracker: MessageFns<ResetTracker, "RandoProto.ResetTracker"> =
     const obj: any = {};
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<ResetTracker>, I>>(base?: I): ResetTracker {
-    return ResetTracker.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<ResetTracker>, I>>(_: I): ResetTracker {
-    const message = createBaseResetTracker();
-    return message;
-  },
 };
 
 messageTypeRegistry.set(ResetTracker.$type, ResetTracker);
 
 function createBaseTrackerFlagsUpdate(): TrackerFlagsUpdate {
-  return { $type: "RandoProto.TrackerFlagsUpdate", flags: [] };
+  return { $type: "Proto.TrackerFlagsUpdate", flags: [] };
 }
 
-export const TrackerFlagsUpdate: MessageFns<TrackerFlagsUpdate, "RandoProto.TrackerFlagsUpdate"> = {
-  $type: "RandoProto.TrackerFlagsUpdate" as const,
+export const TrackerFlagsUpdate: MessageFns<TrackerFlagsUpdate, "Proto.TrackerFlagsUpdate"> = {
+  $type: "Proto.TrackerFlagsUpdate" as const,
 
   encode(message: TrackerFlagsUpdate, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     for (const v of message.flags) {
@@ -3070,25 +2744,16 @@ export const TrackerFlagsUpdate: MessageFns<TrackerFlagsUpdate, "RandoProto.Trac
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<TrackerFlagsUpdate>, I>>(base?: I): TrackerFlagsUpdate {
-    return TrackerFlagsUpdate.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<TrackerFlagsUpdate>, I>>(object: I): TrackerFlagsUpdate {
-    const message = createBaseTrackerFlagsUpdate();
-    message.flags = object.flags?.map((e) => e) || [];
-    return message;
-  },
 };
 
 messageTypeRegistry.set(TrackerFlagsUpdate.$type, TrackerFlagsUpdate);
 
 function createBaseRequestFullUpdate(): RequestFullUpdate {
-  return { $type: "RandoProto.RequestFullUpdate" };
+  return { $type: "Proto.RequestFullUpdate" };
 }
 
-export const RequestFullUpdate: MessageFns<RequestFullUpdate, "RandoProto.RequestFullUpdate"> = {
-  $type: "RandoProto.RequestFullUpdate" as const,
+export const RequestFullUpdate: MessageFns<RequestFullUpdate, "Proto.RequestFullUpdate"> = {
+  $type: "Proto.RequestFullUpdate" as const,
 
   encode(_: RequestFullUpdate, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     return writer;
@@ -3118,24 +2783,16 @@ export const RequestFullUpdate: MessageFns<RequestFullUpdate, "RandoProto.Reques
     const obj: any = {};
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<RequestFullUpdate>, I>>(base?: I): RequestFullUpdate {
-    return RequestFullUpdate.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<RequestFullUpdate>, I>>(_: I): RequestFullUpdate {
-    const message = createBaseRequestFullUpdate();
-    return message;
-  },
 };
 
 messageTypeRegistry.set(RequestFullUpdate.$type, RequestFullUpdate);
 
 function createBaseSetTrackerEndpointId(): SetTrackerEndpointId {
-  return { $type: "RandoProto.SetTrackerEndpointId", endpointId: "" };
+  return { $type: "Proto.SetTrackerEndpointId", endpointId: "" };
 }
 
-export const SetTrackerEndpointId: MessageFns<SetTrackerEndpointId, "RandoProto.SetTrackerEndpointId"> = {
-  $type: "RandoProto.SetTrackerEndpointId" as const,
+export const SetTrackerEndpointId: MessageFns<SetTrackerEndpointId, "Proto.SetTrackerEndpointId"> = {
+  $type: "Proto.SetTrackerEndpointId" as const,
 
   encode(message: SetTrackerEndpointId, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.endpointId !== "") {
@@ -3182,25 +2839,16 @@ export const SetTrackerEndpointId: MessageFns<SetTrackerEndpointId, "RandoProto.
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<SetTrackerEndpointId>, I>>(base?: I): SetTrackerEndpointId {
-    return SetTrackerEndpointId.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<SetTrackerEndpointId>, I>>(object: I): SetTrackerEndpointId {
-    const message = createBaseSetTrackerEndpointId();
-    message.endpointId = object.endpointId ?? "";
-    return message;
-  },
 };
 
 messageTypeRegistry.set(SetTrackerEndpointId.$type, SetTrackerEndpointId);
 
 function createBaseTrackerTimerStateUpdate(): TrackerTimerStateUpdate {
-  return { $type: "RandoProto.TrackerTimerStateUpdate", inGameTime: 0, asyncLoadingTime: 0, timerShouldRun: false };
+  return { $type: "Proto.TrackerTimerStateUpdate", inGameTime: 0, asyncLoadingTime: 0, timerShouldRun: false };
 }
 
-export const TrackerTimerStateUpdate: MessageFns<TrackerTimerStateUpdate, "RandoProto.TrackerTimerStateUpdate"> = {
-  $type: "RandoProto.TrackerTimerStateUpdate" as const,
+export const TrackerTimerStateUpdate: MessageFns<TrackerTimerStateUpdate, "Proto.TrackerTimerStateUpdate"> = {
+  $type: "Proto.TrackerTimerStateUpdate" as const,
 
   encode(message: TrackerTimerStateUpdate, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.inGameTime !== 0) {
@@ -3277,26 +2925,15 @@ export const TrackerTimerStateUpdate: MessageFns<TrackerTimerStateUpdate, "Rando
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<TrackerTimerStateUpdate>, I>>(base?: I): TrackerTimerStateUpdate {
-    return TrackerTimerStateUpdate.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<TrackerTimerStateUpdate>, I>>(object: I): TrackerTimerStateUpdate {
-    const message = createBaseTrackerTimerStateUpdate();
-    message.inGameTime = object.inGameTime ?? 0;
-    message.asyncLoadingTime = object.asyncLoadingTime ?? 0;
-    message.timerShouldRun = object.timerShouldRun ?? false;
-    return message;
-  },
 };
 
 messageTypeRegistry.set(TrackerTimerStateUpdate.$type, TrackerTimerStateUpdate);
 
 function createBaseNormalGameHandlerState(): NormalGameHandlerState {
   return {
-    $type: "RandoProto.NormalGameHandlerState",
-    raceStartingAt: undefined,
-    finishedTime: undefined,
+    $type: "Proto.NormalGameHandlerState",
+    raceStartingAt: null,
+    finishedTime: null,
     playerInGameTimes: {},
     playerFinishedTimes: {},
     worldFinishedTimes: {},
@@ -3306,40 +2943,40 @@ function createBaseNormalGameHandlerState(): NormalGameHandlerState {
   };
 }
 
-export const NormalGameHandlerState: MessageFns<NormalGameHandlerState, "RandoProto.NormalGameHandlerState"> = {
-  $type: "RandoProto.NormalGameHandlerState" as const,
+export const NormalGameHandlerState: MessageFns<NormalGameHandlerState, "Proto.NormalGameHandlerState"> = {
+  $type: "Proto.NormalGameHandlerState" as const,
 
   encode(message: NormalGameHandlerState, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.raceStartingAt !== undefined) {
+    if (message.raceStartingAt !== undefined && message.raceStartingAt !== null) {
       writer.uint32(8).int64(message.raceStartingAt);
     }
-    if (message.finishedTime !== undefined) {
+    if (message.finishedTime !== undefined && message.finishedTime !== null) {
       writer.uint32(21).float(message.finishedTime);
     }
     Object.entries(message.playerInGameTimes).forEach(([key, value]) => {
       NormalGameHandlerState_PlayerInGameTimesEntry.encode({
-        $type: "RandoProto.NormalGameHandlerState.PlayerInGameTimesEntry",
+        $type: "Proto.NormalGameHandlerState.PlayerInGameTimesEntry",
         key: key as any,
         value,
       }, writer.uint32(26).fork()).join();
     });
     Object.entries(message.playerFinishedTimes).forEach(([key, value]) => {
       NormalGameHandlerState_PlayerFinishedTimesEntry.encode({
-        $type: "RandoProto.NormalGameHandlerState.PlayerFinishedTimesEntry",
+        $type: "Proto.NormalGameHandlerState.PlayerFinishedTimesEntry",
         key: key as any,
         value,
       }, writer.uint32(34).fork()).join();
     });
     Object.entries(message.worldFinishedTimes).forEach(([key, value]) => {
       NormalGameHandlerState_WorldFinishedTimesEntry.encode({
-        $type: "RandoProto.NormalGameHandlerState.WorldFinishedTimesEntry",
+        $type: "Proto.NormalGameHandlerState.WorldFinishedTimesEntry",
         key: key as any,
         value,
       }, writer.uint32(42).fork()).join();
     });
     Object.entries(message.universeFinishedTimes).forEach(([key, value]) => {
       NormalGameHandlerState_UniverseFinishedTimesEntry.encode({
-        $type: "RandoProto.NormalGameHandlerState.UniverseFinishedTimesEntry",
+        $type: "Proto.NormalGameHandlerState.UniverseFinishedTimesEntry",
         key: key as any,
         value,
       }, writer.uint32(50).fork()).join();
@@ -3382,7 +3019,7 @@ export const NormalGameHandlerState: MessageFns<NormalGameHandlerState, "RandoPr
           }
 
           const entry3 = NormalGameHandlerState_PlayerInGameTimesEntry.decode(reader, reader.uint32());
-          if (entry3.value !== undefined) {
+          if (entry3.value !== undefined && entry3.value !== null) {
             message.playerInGameTimes[entry3.key] = entry3.value;
           }
           continue;
@@ -3393,7 +3030,7 @@ export const NormalGameHandlerState: MessageFns<NormalGameHandlerState, "RandoPr
           }
 
           const entry4 = NormalGameHandlerState_PlayerFinishedTimesEntry.decode(reader, reader.uint32());
-          if (entry4.value !== undefined) {
+          if (entry4.value !== undefined && entry4.value !== null) {
             message.playerFinishedTimes[entry4.key] = entry4.value;
           }
           continue;
@@ -3404,7 +3041,7 @@ export const NormalGameHandlerState: MessageFns<NormalGameHandlerState, "RandoPr
           }
 
           const entry5 = NormalGameHandlerState_WorldFinishedTimesEntry.decode(reader, reader.uint32());
-          if (entry5.value !== undefined) {
+          if (entry5.value !== undefined && entry5.value !== null) {
             message.worldFinishedTimes[entry5.key] = entry5.value;
           }
           continue;
@@ -3415,7 +3052,7 @@ export const NormalGameHandlerState: MessageFns<NormalGameHandlerState, "RandoPr
           }
 
           const entry6 = NormalGameHandlerState_UniverseFinishedTimesEntry.decode(reader, reader.uint32());
-          if (entry6.value !== undefined) {
+          if (entry6.value !== undefined && entry6.value !== null) {
             message.universeFinishedTimes[entry6.key] = entry6.value;
           }
           continue;
@@ -3448,8 +3085,8 @@ export const NormalGameHandlerState: MessageFns<NormalGameHandlerState, "RandoPr
   fromJSON(object: any): NormalGameHandlerState {
     return {
       $type: NormalGameHandlerState.$type,
-      raceStartingAt: isSet(object.raceStartingAt) ? globalThis.Number(object.raceStartingAt) : undefined,
-      finishedTime: isSet(object.finishedTime) ? globalThis.Number(object.finishedTime) : undefined,
+      raceStartingAt: isSet(object.raceStartingAt) ? globalThis.Number(object.raceStartingAt) : null,
+      finishedTime: isSet(object.finishedTime) ? globalThis.Number(object.finishedTime) : null,
       playerInGameTimes: isObject(object.playerInGameTimes)
         ? Object.entries(object.playerInGameTimes).reduce<{ [key: number]: number }>((acc, [key, value]) => {
           acc[globalThis.Number(key)] = Number(value);
@@ -3481,10 +3118,10 @@ export const NormalGameHandlerState: MessageFns<NormalGameHandlerState, "RandoPr
 
   toJSON(message: NormalGameHandlerState): unknown {
     const obj: any = {};
-    if (message.raceStartingAt !== undefined) {
+    if (message.raceStartingAt !== undefined && message.raceStartingAt !== null) {
       obj.raceStartingAt = Math.round(message.raceStartingAt);
     }
-    if (message.finishedTime !== undefined) {
+    if (message.finishedTime !== undefined && message.finishedTime !== null) {
       obj.finishedTime = message.finishedTime;
     }
     if (message.playerInGameTimes) {
@@ -3531,66 +3168,19 @@ export const NormalGameHandlerState: MessageFns<NormalGameHandlerState, "RandoPr
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<NormalGameHandlerState>, I>>(base?: I): NormalGameHandlerState {
-    return NormalGameHandlerState.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<NormalGameHandlerState>, I>>(object: I): NormalGameHandlerState {
-    const message = createBaseNormalGameHandlerState();
-    message.raceStartingAt = object.raceStartingAt ?? undefined;
-    message.finishedTime = object.finishedTime ?? undefined;
-    message.playerInGameTimes = Object.entries(object.playerInGameTimes ?? {}).reduce<{ [key: number]: number }>(
-      (acc, [key, value]) => {
-        if (value !== undefined) {
-          acc[globalThis.Number(key)] = globalThis.Number(value);
-        }
-        return acc;
-      },
-      {},
-    );
-    message.playerFinishedTimes = Object.entries(object.playerFinishedTimes ?? {}).reduce<{ [key: number]: number }>(
-      (acc, [key, value]) => {
-        if (value !== undefined) {
-          acc[globalThis.Number(key)] = globalThis.Number(value);
-        }
-        return acc;
-      },
-      {},
-    );
-    message.worldFinishedTimes = Object.entries(object.worldFinishedTimes ?? {}).reduce<{ [key: number]: number }>(
-      (acc, [key, value]) => {
-        if (value !== undefined) {
-          acc[globalThis.Number(key)] = globalThis.Number(value);
-        }
-        return acc;
-      },
-      {},
-    );
-    message.universeFinishedTimes = Object.entries(object.universeFinishedTimes ?? {}).reduce<
-      { [key: number]: number }
-    >((acc, [key, value]) => {
-      if (value !== undefined) {
-        acc[globalThis.Number(key)] = globalThis.Number(value);
-      }
-      return acc;
-    }, {});
-    message.raceModeEnabled = object.raceModeEnabled ?? false;
-    message.raceStarted = object.raceStarted ?? false;
-    return message;
-  },
 };
 
 messageTypeRegistry.set(NormalGameHandlerState.$type, NormalGameHandlerState);
 
 function createBaseNormalGameHandlerState_PlayerInGameTimesEntry(): NormalGameHandlerState_PlayerInGameTimesEntry {
-  return { $type: "RandoProto.NormalGameHandlerState.PlayerInGameTimesEntry", key: 0, value: 0 };
+  return { $type: "Proto.NormalGameHandlerState.PlayerInGameTimesEntry", key: 0, value: 0 };
 }
 
 export const NormalGameHandlerState_PlayerInGameTimesEntry: MessageFns<
   NormalGameHandlerState_PlayerInGameTimesEntry,
-  "RandoProto.NormalGameHandlerState.PlayerInGameTimesEntry"
+  "Proto.NormalGameHandlerState.PlayerInGameTimesEntry"
 > = {
-  $type: "RandoProto.NormalGameHandlerState.PlayerInGameTimesEntry" as const,
+  $type: "Proto.NormalGameHandlerState.PlayerInGameTimesEntry" as const,
 
   encode(
     message: NormalGameHandlerState_PlayerInGameTimesEntry,
@@ -3655,20 +3245,6 @@ export const NormalGameHandlerState_PlayerInGameTimesEntry: MessageFns<
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<NormalGameHandlerState_PlayerInGameTimesEntry>, I>>(
-    base?: I,
-  ): NormalGameHandlerState_PlayerInGameTimesEntry {
-    return NormalGameHandlerState_PlayerInGameTimesEntry.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<NormalGameHandlerState_PlayerInGameTimesEntry>, I>>(
-    object: I,
-  ): NormalGameHandlerState_PlayerInGameTimesEntry {
-    const message = createBaseNormalGameHandlerState_PlayerInGameTimesEntry();
-    message.key = object.key ?? 0;
-    message.value = object.value ?? 0;
-    return message;
-  },
 };
 
 messageTypeRegistry.set(
@@ -3677,14 +3253,14 @@ messageTypeRegistry.set(
 );
 
 function createBaseNormalGameHandlerState_PlayerFinishedTimesEntry(): NormalGameHandlerState_PlayerFinishedTimesEntry {
-  return { $type: "RandoProto.NormalGameHandlerState.PlayerFinishedTimesEntry", key: 0, value: 0 };
+  return { $type: "Proto.NormalGameHandlerState.PlayerFinishedTimesEntry", key: 0, value: 0 };
 }
 
 export const NormalGameHandlerState_PlayerFinishedTimesEntry: MessageFns<
   NormalGameHandlerState_PlayerFinishedTimesEntry,
-  "RandoProto.NormalGameHandlerState.PlayerFinishedTimesEntry"
+  "Proto.NormalGameHandlerState.PlayerFinishedTimesEntry"
 > = {
-  $type: "RandoProto.NormalGameHandlerState.PlayerFinishedTimesEntry" as const,
+  $type: "Proto.NormalGameHandlerState.PlayerFinishedTimesEntry" as const,
 
   encode(
     message: NormalGameHandlerState_PlayerFinishedTimesEntry,
@@ -3749,20 +3325,6 @@ export const NormalGameHandlerState_PlayerFinishedTimesEntry: MessageFns<
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<NormalGameHandlerState_PlayerFinishedTimesEntry>, I>>(
-    base?: I,
-  ): NormalGameHandlerState_PlayerFinishedTimesEntry {
-    return NormalGameHandlerState_PlayerFinishedTimesEntry.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<NormalGameHandlerState_PlayerFinishedTimesEntry>, I>>(
-    object: I,
-  ): NormalGameHandlerState_PlayerFinishedTimesEntry {
-    const message = createBaseNormalGameHandlerState_PlayerFinishedTimesEntry();
-    message.key = object.key ?? 0;
-    message.value = object.value ?? 0;
-    return message;
-  },
 };
 
 messageTypeRegistry.set(
@@ -3771,14 +3333,14 @@ messageTypeRegistry.set(
 );
 
 function createBaseNormalGameHandlerState_WorldFinishedTimesEntry(): NormalGameHandlerState_WorldFinishedTimesEntry {
-  return { $type: "RandoProto.NormalGameHandlerState.WorldFinishedTimesEntry", key: 0, value: 0 };
+  return { $type: "Proto.NormalGameHandlerState.WorldFinishedTimesEntry", key: 0, value: 0 };
 }
 
 export const NormalGameHandlerState_WorldFinishedTimesEntry: MessageFns<
   NormalGameHandlerState_WorldFinishedTimesEntry,
-  "RandoProto.NormalGameHandlerState.WorldFinishedTimesEntry"
+  "Proto.NormalGameHandlerState.WorldFinishedTimesEntry"
 > = {
-  $type: "RandoProto.NormalGameHandlerState.WorldFinishedTimesEntry" as const,
+  $type: "Proto.NormalGameHandlerState.WorldFinishedTimesEntry" as const,
 
   encode(
     message: NormalGameHandlerState_WorldFinishedTimesEntry,
@@ -3843,20 +3405,6 @@ export const NormalGameHandlerState_WorldFinishedTimesEntry: MessageFns<
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<NormalGameHandlerState_WorldFinishedTimesEntry>, I>>(
-    base?: I,
-  ): NormalGameHandlerState_WorldFinishedTimesEntry {
-    return NormalGameHandlerState_WorldFinishedTimesEntry.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<NormalGameHandlerState_WorldFinishedTimesEntry>, I>>(
-    object: I,
-  ): NormalGameHandlerState_WorldFinishedTimesEntry {
-    const message = createBaseNormalGameHandlerState_WorldFinishedTimesEntry();
-    message.key = object.key ?? 0;
-    message.value = object.value ?? 0;
-    return message;
-  },
 };
 
 messageTypeRegistry.set(
@@ -3865,14 +3413,14 @@ messageTypeRegistry.set(
 );
 
 function createBaseNormalGameHandlerState_UniverseFinishedTimesEntry(): NormalGameHandlerState_UniverseFinishedTimesEntry {
-  return { $type: "RandoProto.NormalGameHandlerState.UniverseFinishedTimesEntry", key: 0, value: 0 };
+  return { $type: "Proto.NormalGameHandlerState.UniverseFinishedTimesEntry", key: 0, value: 0 };
 }
 
 export const NormalGameHandlerState_UniverseFinishedTimesEntry: MessageFns<
   NormalGameHandlerState_UniverseFinishedTimesEntry,
-  "RandoProto.NormalGameHandlerState.UniverseFinishedTimesEntry"
+  "Proto.NormalGameHandlerState.UniverseFinishedTimesEntry"
 > = {
-  $type: "RandoProto.NormalGameHandlerState.UniverseFinishedTimesEntry" as const,
+  $type: "Proto.NormalGameHandlerState.UniverseFinishedTimesEntry" as const,
 
   encode(
     message: NormalGameHandlerState_UniverseFinishedTimesEntry,
@@ -3937,20 +3485,6 @@ export const NormalGameHandlerState_UniverseFinishedTimesEntry: MessageFns<
     }
     return obj;
   },
-
-  create<I extends Exact<DeepPartial<NormalGameHandlerState_UniverseFinishedTimesEntry>, I>>(
-    base?: I,
-  ): NormalGameHandlerState_UniverseFinishedTimesEntry {
-    return NormalGameHandlerState_UniverseFinishedTimesEntry.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<NormalGameHandlerState_UniverseFinishedTimesEntry>, I>>(
-    object: I,
-  ): NormalGameHandlerState_UniverseFinishedTimesEntry {
-    const message = createBaseNormalGameHandlerState_UniverseFinishedTimesEntry();
-    message.key = object.key ?? 0;
-    message.value = object.value ?? 0;
-    return message;
-  },
 };
 
 messageTypeRegistry.set(
@@ -3983,18 +3517,6 @@ function base64FromBytes(arr: Uint8Array): string {
   }
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
-
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in Exclude<keyof T, "$type">]?: DeepPartial<T[K]> }
-  : Partial<T>;
-
-type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P> | "$type">]: never };
-
 function longToNumber(int64: { toString(): string }): number {
   const num = globalThis.Number(int64.toString());
   if (num > globalThis.Number.MAX_SAFE_INTEGER) {
@@ -4020,6 +3542,4 @@ export interface MessageFns<T, V extends string> {
   decode(input: BinaryReader | Uint8Array, length?: number): T;
   fromJSON(object: any): T;
   toJSON(message: T): unknown;
-  create<I extends Exact<DeepPartial<T>, I>>(base?: I): T;
-  fromPartial<I extends Exact<DeepPartial<T>, I>>(object: I): T;
 }

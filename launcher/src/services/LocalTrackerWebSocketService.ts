@@ -1,13 +1,7 @@
 import {AddressInfo, WebSocket, WebSocketServer} from "ws"
 import type {UberId, UberState} from "@shared/types/UberStates"
 import {RandoIPCService} from "@launcher/services/RandoIPCService"
-import {
-  AuthenticateMessage,
-  RequestFullUpdate,
-  ResetTracker, SetTrackerEndpointId,
-  TrackerFlagsUpdate, TrackerTimerStateUpdate,
-  TrackerUpdate,
-} from "@shared/proto/messages"
+import {Proto} from "@shared/proto"
 import {decodePacket, makePacket} from "@shared/proto/ProtoUtil"
 import {VersionService} from "@launcher/services/VersionService"
 import {EventEmitter} from "events"
@@ -55,10 +49,26 @@ const TRACKED_UBER_STATES: TrackedUberState[] = [
   {uberId: {group: 16155, state: 50867}, trackingId: "tp_willow_outer", valueConverter: teleporterValueConverter},
   {uberId: {group: 58674, state: 7071}, trackingId: "tp_silent_woods_west", valueConverter: teleporterValueConverter},
   {uberId: {group: 58674, state: 1965}, trackingId: "tp_silent_woods_wast", valueConverter: teleporterValueConverter},
-  {uberId: {group: 58674, state: 10029}, trackingId: "tp_windswept_wastes_west", valueConverter: teleporterValueConverter,},
-  {uberId: {group: 20120, state: 49994}, trackingId: "tp_windswept_wastes_east", valueConverter: teleporterValueConverter,},
-  {uberId: {group: 20120, state: 41398}, trackingId: "tp_windtorn_ruins_outer", valueConverter: teleporterValueConverter,},
-  {uberId: {group: 10289, state: 4928}, trackingId: "tp_windtorn_ruins_inner", valueConverter: teleporterValueConverter,},
+  {
+    uberId: {group: 58674, state: 10029},
+    trackingId: "tp_windswept_wastes_west",
+    valueConverter: teleporterValueConverter,
+  },
+  {
+    uberId: {group: 20120, state: 49994},
+    trackingId: "tp_windswept_wastes_east",
+    valueConverter: teleporterValueConverter,
+  },
+  {
+    uberId: {group: 20120, state: 41398},
+    trackingId: "tp_windtorn_ruins_outer",
+    valueConverter: teleporterValueConverter,
+  },
+  {
+    uberId: {group: 10289, state: 4928},
+    trackingId: "tp_windtorn_ruins_inner",
+    valueConverter: teleporterValueConverter,
+  },
   {uberId: {group: 42178, state: 42096}, trackingId: "tp_wellspring_glades", valueConverter: teleporterValueConverter},
 
   {uberId: {group: 24, state: 0}, trackingId: "skill_bash"},
@@ -206,7 +216,7 @@ export class LocalTrackerWebSocketService {
 
     this.wss.on("connection", async (socket) => {
       // Send a reset and all tracked uber states on initial connection
-      socket.send(makePacket(ResetTracker))
+      socket.send(makePacket(Proto.ResetTracker, {}))
       await this.forceRefresh(socket)
     })
 
@@ -222,12 +232,11 @@ export class LocalTrackerWebSocketService {
   static reportUberState(state: UberState) {
     const trackedUberState = this.trackedUberStatesLookupTable[this.uberIdHash(state)]
     if (trackedUberState) {
-      this.sendUpdate(
-        TrackerUpdate.fromJSON({
-          id: trackedUberState.trackingId,
-          value: trackedUberState.valueConverter ? trackedUberState.valueConverter(state.value) : state.value,
-        }),
-      )
+      this.sendUpdate({
+        $type: "Proto.TrackerUpdate",
+        id: trackedUberState.trackingId,
+        value: trackedUberState.valueConverter ? trackedUberState.valueConverter(state.value) : state.value,
+      })
     }
   }
 
@@ -269,7 +278,7 @@ export class LocalTrackerWebSocketService {
 
   static reportTimerStateToClient(client: WebSocket, inGameTime: number, asyncLoadingTime: number, timerShouldRun: boolean) {
     client.send(
-      makePacket(TrackerTimerStateUpdate, {
+      makePacket(Proto.TrackerTimerStateUpdate, {
         inGameTime,
         asyncLoadingTime,
         timerShouldRun,
@@ -277,23 +286,23 @@ export class LocalTrackerWebSocketService {
     )
   }
 
-  static sendUpdate(update: TrackerUpdate) {
+  static sendUpdate(update: Proto.TrackerUpdate) {
     for (const client of this.wss?.clients || []) {
-      client.send(makePacket(TrackerUpdate, update))
+      client.send(makePacket(Proto.TrackerUpdate, update))
     }
 
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(makePacket(TrackerUpdate, update))
+      this.ws.send(makePacket(Proto.TrackerUpdate, update))
     }
   }
 
-  static sendTimerStateUpdate(update: TrackerTimerStateUpdate) {
+  static sendTimerStateUpdate(update: Proto.TrackerTimerStateUpdate) {
     for (const client of this.wss?.clients || []) {
-      client.send(makePacket(TrackerTimerStateUpdate, update))
+      client.send(makePacket(Proto.TrackerTimerStateUpdate, update))
     }
 
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(makePacket(TrackerTimerStateUpdate, update))
+      this.ws.send(makePacket(Proto.TrackerTimerStateUpdate, update))
     }
   }
 
@@ -313,19 +322,20 @@ export class LocalTrackerWebSocketService {
     }
 
     const trackedValues = await RandoIPCService.getUberStates(TRACKED_UBER_STATES.map((s) => s.uberId))
-    const trackerUpdates: TrackerUpdate[] = trackedValues.map((value, index) =>
-      TrackerUpdate.fromJSON({
+    const trackerUpdates: Proto.TrackerUpdate[] = trackedValues.map(
+      (value, index) => ({
+        $type: "Proto.TrackerUpdate",
         id: TRACKED_UBER_STATES[index].trackingId,
         value: TRACKED_UBER_STATES[index].valueConverter ? TRACKED_UBER_STATES[index].valueConverter?.(value) ?? value : value,
       }),
     )
 
     for (const update of trackerUpdates) {
-      client.send(makePacket(TrackerUpdate, update))
+      client.send(makePacket(Proto.TrackerUpdate, update))
     }
 
     client.send(
-      makePacket(TrackerFlagsUpdate, {
+      makePacket(Proto.TrackerFlagsUpdate, {
         flags: await RandoIPCService.getSeedFlags(),
       }),
     )
@@ -366,7 +376,7 @@ export class LocalTrackerWebSocketService {
 
         ws.on("open", async () => {
           ws?.send(
-            makePacket(AuthenticateMessage, {
+            makePacket(Proto.AuthenticateMessage, {
               jwt,
               clientVersion: await VersionService.getVersion(),
             }),
@@ -381,15 +391,15 @@ export class LocalTrackerWebSocketService {
           }
 
           switch (packet.$type) {
-            case SetTrackerEndpointId.$type:
+            case Proto.SetTrackerEndpointId.$type:
               log.info("LocalTrackerWebSocketService: Connected")
               wasConnected = true
-              this._remoteTrackerEndpointId = (packet as SetTrackerEndpointId).endpointId
+              this._remoteTrackerEndpointId = packet.endpointId
               this.ws = ws
               resolve(this._remoteTrackerEndpointId)
               await this.forceRefresh(ws)
               break
-            case RequestFullUpdate.$type:
+            case Proto.RequestFullUpdate.$type:
               log.info("LocalTrackerWebSocketService: Server requested full refresh")
               await this.forceRefresh(ws)
               break

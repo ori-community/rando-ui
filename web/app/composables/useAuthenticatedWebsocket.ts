@@ -1,5 +1,5 @@
 import {decodePacket, makePacket, type PacketType} from "@shared/proto/ProtoUtil"
-import {AuthenticateMessage} from "@shared/proto/messages"
+import {Proto} from "@shared/proto"
 import {TypedEventTarget} from "typescript-event-target"
 
 class AuthenticatedWebSocketMessageEvent extends Event {
@@ -68,7 +68,7 @@ export class AuthenticatedWebSocketConnection extends TypedEventTarget<Authentic
         // If we have a JWT, send it as the first message
         if (jwt !== null) {
           ws.send(
-            makePacket(AuthenticateMessage, {
+            makePacket(Proto.AuthenticateMessage, {
               jwt,
               clientVersion: protocolVersion,
             })

@@ -39,16 +39,11 @@
 </template>
 
 <script lang="ts" setup>
+  import type {MultiverseMetadataInfo} from '@shared/types/http-api'
 
-  import type {MultiverseMetadataInfoMessage} from "@shared/proto/messages";
-  import type {PropType} from 'vue'
-
-  defineProps({
-    multiverseMetadata: {
-      type: Object as PropType<MultiverseMetadataInfoMessage>,
-      required: true,
-    }
-  })
+  defineProps<{
+    multiverseMetadata: MultiverseMetadataInfo
+  }>()
 </script>
 
 <style scoped lang="scss">

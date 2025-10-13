@@ -3,11 +3,17 @@
     Hi bitte Injector.exe doppelklick und so warnungen ignorieren have fun!
 
     <v-text-field v-model="id" label="m ID" />
-    <h2>Multiverse 1</h2>
-    <div>{{ multiverse1 }}</div>
+    <h2>Multiverse</h2>
+    <div>{{ multiverse }}</div>
 
-    <h2>Multiverse 2</h2>
-    <div>{{ multiverse2 }}</div>
+    <h2>Seed</h2>
+    <div>{{ seed }}</div>
+
+    <h2>Bingo Board</h2>
+    <div>{{ bingoBoard }}</div>
+
+    <h2>Bingo Universes</h2>
+    <div>{{ bingoUniverses }}</div>
   </v-container>
 </template>
 
@@ -17,8 +23,7 @@
     return Number(id.value)
   })
 
-  const multiverse1 = await useMultiverse(idAsNumber)
-  const multiverse2 = await useMultiverse(idAsNumber)
+  const {multiverse, seed, bingoBoard, bingoUniverses} = await useMultiverse(idAsNumber)
 </script>
 
 <style lang="scss" scoped>

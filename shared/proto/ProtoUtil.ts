@@ -40,13 +40,14 @@ const packetIdMap: PacketIdMap = {
 }
 
 export type WithoutProtoType<T> =
-  T extends any[]
-    ? WithoutProtoType<T[0]>[]
-    : (
-      T extends object
+  T extends Uint8Array
+    ? T
+    : T extends any[]
+      ? WithoutProtoType<T[0]>[]
+      : T extends object
         ? { [P in keyof T as P extends "$type" ? never : P]: WithoutProtoType<T[P]> }
         : T
-      )
+
 
 export const blobToArray = async (blob: any) => {
   if (typeof window !== "undefined") {

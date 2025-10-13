@@ -8,7 +8,7 @@ import {Proto} from "@shared/proto"
 type MultiverseRefs = {
   multiverse: Ref<MultiverseInfo>,
   seed: Ref<SeedInfo | null>,
-  bingoBoard: Ref<BingoBoard>,
+  bingoBoard: Ref<BingoBoard | null>,
   bingoUniverses: Ref<BingoUniverseInfo[]>
 }
 

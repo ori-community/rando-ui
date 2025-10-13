@@ -1,4 +1,4 @@
-import {cloneDeepWith} from "lodash"
+import {klona} from "klona"
 import {Proto} from "./index"
 import type {MessageType} from "./typeRegistry"
 import type {MessageFns} from "./messages"
@@ -39,13 +39,12 @@ const packetIdMap: PacketIdMap = {
   105: Proto.TrackerTimerStateUpdate,
 }
 
-export type WithoutProtoType<T> = (
+export type WithoutProtoType<T> =
   T extends object
-    ? {
+    ? ({
       [P in keyof T as P extends "$type" ? never : P]: WithoutProtoType<T[P]>;
-    }
+    } & { $type?: never })
     : T
-  ) & { $type: never };
 
 export const blobToArray = async (blob: any) => {
   if (typeof window !== "undefined") {
@@ -82,10 +81,23 @@ export function makePacket<T>(type: MessageFns<T, string>, content: Omit<T, "$ty
   }).finish()
 }
 
+/**
+ * Returns a deep copy of the message with all $type fields removed
+ * @param message
+ */
 export function withoutProtoType<T extends PacketType>(message: T): WithoutProtoType<T> {
-  return cloneDeepWith(message, (value) => {
-    if (typeof value === "object") {
+  const clonedObject = klona(message)
+
+  const removeTypeRecursively = (value: any) => {
+    if (Array.isArray(value)) {
+      value.forEach(removeTypeRecursively)
+    } else if (typeof value === "object" && value.$type) {
       delete value.$type
+      Object.values(value).forEach(removeTypeRecursively)
     }
-  })
+  }
+
+  removeTypeRecursively(clonedObject)
+
+  return clonedObject as WithoutProtoType<T>
 }

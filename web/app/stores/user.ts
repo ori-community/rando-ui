@@ -1,5 +1,5 @@
 import {defineStore} from "pinia"
-import type {UserInfo} from "@shared/types/user"
+import type {UserInfo} from "@shared/types/http-api"
 
 export const useUserStore = defineStore("user", () => {
   const {axios, catchAxiosErrors} = useAxios()

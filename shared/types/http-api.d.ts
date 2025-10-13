@@ -1,16 +1,11 @@
 import {WithoutProtoType} from "../proto/ProtoUtil"
-import {
-  ProtoBingoBoardMessage,
-  ProtoBingoUniverseInfo,
-  ProtoMultiverseInfoMessage,
-  ProtoUserInfo,
-} from "../proto/messages"
+import {Proto} from "../proto"
 
-type UserInfo = WithoutProtoType<ProtoUserInfo>
-type MultiverseInfo = WithoutProtoType<ProtoMultiverseInfoMessage>
-type BingoBoard = WithoutProtoType<ProtoBingoBoardMessage>
-type BingoUniverseInfo = WithoutProtoType<ProtoBingoUniverseInfo>
-type MultiverseMetadataInfo = WithoutProtoType<ProtoMultiverseMetadataInfoMessage>
+type UserInfo = WithoutProtoType<Proto.UserInfo>
+type MultiverseInfo = WithoutProtoType<Proto.MultiverseInfoMessage>
+type BingoBoard = WithoutProtoType<Proto.BingoBoardMessage>
+type BingoUniverseInfo = WithoutProtoType<Proto.BingoUniverseInfo>
+type MultiverseMetadataInfo = WithoutProtoType<Proto.MultiverseMetadataInfoMessage>
 
 type BingoData = {
   board: BingoBoard,

@@ -126,7 +126,7 @@ export const actions = {
     let bingoUniverses = []
 
     try {
-      const response = await this.$axios.$get(`/bingo/${multiverseId}`)
+      const response = await this.$axios.$get(`/multiverses/${multiverseId}/bingo`)
       board = response.board
       bingoUniverses = response.universes ?? []
     } catch (e) {
@@ -158,7 +158,7 @@ export const actions = {
       ws?.close()
 
       try {
-        webSockets[multiverseId] = await WebSocketFactory.create(`/observers/${multiverseId}`, this.$paths)
+        webSockets[multiverseId] = await WebSocketFactory.create(`/multiverses/${multiverseId}/subscribe`, this.$paths)
         ws = webSockets[multiverseId]
       } catch (e) {
         retryConnection()

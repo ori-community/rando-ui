@@ -93,7 +93,7 @@ export class AuthenticatedWebSocketConnection extends TypedEventTarget<Authentic
         console.warn(`WebSocket connection closed, reconnecting in ${reconnectDelay} seconds`)
         this.#reconnectTimeoutId = setTimeout(() => {
           connectWebSocket()
-        }, reconnectDelay)
+        }, reconnectDelay * 1000)
 
         retriesSinceLastSuccessfulAttempt++
       })

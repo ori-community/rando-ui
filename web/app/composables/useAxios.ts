@@ -1,8 +1,6 @@
-import axios, {type AxiosError} from "axios"
+import axios, {type AxiosError, type AxiosInstance} from "axios"
 
-const axiosInstance = axios.create({
-  baseURL: "https://wotw.orirando.com/api",
-})
+let axiosInstance: AxiosInstance | null = null
 
 const catchAxiosErrors = async (block: () => Promise<void>, onError: (e: AxiosError) => Promise<void>) => {
   try {
@@ -17,6 +15,14 @@ const catchAxiosErrors = async (block: () => Promise<void>, onError: (e: AxiosEr
 }
 
 export const useAxios = () => {
+  if (axiosInstance === null) {
+    const runtimeConfig = useRuntimeConfig()
+
+    axiosInstance = axios.create({
+      baseURL: runtimeConfig.public.webApiBaseUrl,
+    })
+  }
+
   return {axios: axiosInstance, catchAxiosErrors}
 }
 

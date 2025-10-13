@@ -56,10 +56,11 @@ export class AuthenticatedWebSocketConnection extends TypedEventTarget<Authentic
             return
           }
 
+          retriesSinceLastSuccessfulAttempt = 0
+
           this.dispatchTypedEvent("message", new AuthenticatedWebSocketMessageEvent(packet))
         })
 
-        retriesSinceLastSuccessfulAttempt = 0
         resolve()
       }
 

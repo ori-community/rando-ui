@@ -36,12 +36,15 @@
 
       <v-row>
         <v-col cols="12">
-          <v-text-field v-model="forceContinueId" type="number" label="Season ID" />
+          <v-text-field v-model="seasonId" type="number" label="Season ID" />
         </v-col>
       </v-row>
 
-      <v-btn color="accent" @click="forceContinue">
+      <v-btn class="mr-1" color="accent" @click="forceContinue">
         Force Continue
+      </v-btn>
+      <v-btn color="accent" @click="recalculateSingleLeaderboard">
+        Recalculate Leaderboard
       </v-btn>
     </div>
     <div class="mb-6">
@@ -64,7 +67,7 @@
       createLongDescriptionMarkdown: 'Welcome to the *Test League*.\nWhat you can expect here:\n- Fun\n- Bugs\n- even more Fun',
       createRulesMarkdown: '1. Do not cheat\n2. If you do, uninstall the game immediately',
       createBackgroundImageUrl: '',
-      forceContinueId: 0,
+      seasonId: 0,
     }),
     methods: {
       async create() {
@@ -87,8 +90,17 @@
       },
       async forceContinue() {
         try {
-          await this.$axios.$post(`/dev/league/season/${this.forceContinueId}/continue`)
+          await this.$axios.$post(`/dev/league/season/${this.seasonId}/continue`)
           alert("Successfully continued season")
+        } catch (e) {
+          alert(e)
+          console.error(e)
+        }
+      },
+      async recalculateSingleLeaderboard() {
+        try {
+          await this.$axios.$post(`/dev/league/season/${this.seasonId}/recalculate-points`)
+          alert("Successfully recalculated leaderboard")
         } catch (e) {
           alert(e)
           console.error(e)

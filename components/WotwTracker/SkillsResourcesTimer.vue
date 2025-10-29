@@ -28,6 +28,8 @@
       :current-area-has-uncollected-relic="trackedValues.relic_current_area_uncollected > 0"
       :show-timer="showTimer"
       :time="time"
+      :door-count="doorCount"
+      :total-door-count="32"
     />
     <WotwTrackerViewSkill skill="hammer" :bonus-melting-acquired="trackedValues.melting_hammer > 0" :acquired="trackedValues.skill_hammer > 0" />
     <WotwTrackerViewSkill skill="shuriken" :bonus-melting-acquired="trackedValues.melting_shuriken > 0" :acquired="trackedValues.skill_shuriken > 0" />
@@ -84,6 +86,10 @@
         type: Number,
         default: 0,
       },
+      doorCount: {
+        type: Number,
+        default: 0,
+      }
     },
     computed: {
       gladesRebuildProjectsDone(){

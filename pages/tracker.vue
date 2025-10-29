@@ -16,6 +16,7 @@
             :show-willow-hearts="showWillowHearts"
             :time="displayedTime"
             :show-timer="showTimer"
+            :door-count="doorCount"
           />
           <wotw-tracker-teleporters v-if="showTeleporters" :tracked-values="trackedValues" />
         </div>
@@ -129,6 +130,51 @@
       requestedDelay() {
         return Number(this.$route.query.delay ?? 0)
       },
+      doorCount() {
+        const doors = [
+          "lupoShopDoorOutside",
+          "lupoShopDoorInside",
+          "hutBEntrance",
+          "hutBExit",
+          "hutCEntrance",
+          "hutCExit",
+          "hutDEntrance",
+          "hutDExit",
+          "hutEEntrance",
+          "hutEExit",
+          "hutFEntrance",
+          "hutFExit",
+          "caveEntrance",
+          "caveExit",
+          "waterMillOutsideDoorA",
+          "waterMillInsideDoorA",
+          "waterMillOutsideDoorB",
+          "waterMillInsideDoorB",
+          "waterMillOutsideDoorC",
+          "waterMillInsideDoorC",
+          "waterMillOutsideDoorD",
+          "waterMillInsideDoorD",
+          "baursReachHutEntrance",
+          "baursReachHutExit",
+          "petrifiedHutDoorOutside",
+          "petrifiedHutDoorInside",
+          "desertRuinsEntranceDoor",
+          "doorB", // Outer ruins door
+          "willowsEndEntrance",
+          "willowsEndExit",
+          "powlArenaEntrance",
+          "powlArenaExit",
+        ]
+        let count = 0
+
+        for (const door of doors) {
+          if (this.trackedValues[door]) {
+            count++
+          }
+        }
+
+        return count
+      }
     },
     watch: {
       connected: {

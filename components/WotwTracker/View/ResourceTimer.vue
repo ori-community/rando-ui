@@ -60,6 +60,14 @@
           {{ questCount }}<span class="small">/{{ totalQuestCount }}</span>
         </div>
       </div>
+      <div v-if="showDoors" class="line">
+        <div class="image">
+          <img src="@/assets/images/tracker/watermill_door.png" />
+        </div>
+        <div class="value" :class="{ completed: doorCount === totalDoorCount }">
+          {{ doorCount }}<span class="small">/{{ totalDoorCount }}</span>
+        </div>
+      </div>
       <div v-if="showWillowHearts" class="line">
         <div class="image">
           <img src="@/assets/images/tracker/willow_heart.png" />
@@ -68,7 +76,6 @@
           {{ heartCount }}<span class="small">/{{ totalHeartCount }}</span>
         </div>
       </div>
-
       <div v-if="showTimer" class="line timer-line full-width">
         <div class="timer-container">
           <div class="timer" :class="{ completed: gameFinished }">{{ mainTimerText }}<span class="fraction">{{
@@ -169,6 +176,14 @@ export default {
       type: Number,
       default: 0,
     },
+    doorCount: {
+      type: Number,
+      default: 0,
+    },
+    totalDoorCount: {
+      type: Number,
+      default: 0,
+    },
   },
   data: () => ({
     mainTimerText: '0:00',
@@ -186,6 +201,9 @@ export default {
     },
     showQuests() {
       return this.flags.includes('All Quests')
+    },
+    showDoors() {
+      return this.flags.includes('Randomized Doors')
     },
     rows() {
       return 2 /* SL, KS, Ore */ + Math.ceil([

@@ -135,6 +135,41 @@ const TRACKED_UBER_STATES: TrackedUberState[] = [
   { uberId: { group: 18793, state: 63291 }, trackingId: 'wisp_depths' },
   { uberId: { group: 46462, state: 59806 }, trackingId: 'wisp_hollow' },
   { uberId: { group: 10289, state: 22102 }, trackingId: 'wisp_ruins' },
+
+  { uberId: { group: 28, state: 1 }, trackingId: "lupoShopDoorOutside"},
+  { uberId: { group: 28, state: 2 }, trackingId: "lupoShopDoorInside"},
+  { uberId: { group: 28, state: 3 }, trackingId: "hutBEntrance"},
+  { uberId: { group: 28, state: 4 }, trackingId: "hutBExit"},
+  { uberId: { group: 28, state: 5 }, trackingId: "hutCEntrance"},
+  { uberId: { group: 28, state: 6 }, trackingId: "hutCExit"},
+  { uberId: { group: 28, state: 7 }, trackingId: "hutDEntrance"},
+  { uberId: { group: 28, state: 8 }, trackingId: "hutDExit"},
+  { uberId: { group: 28, state: 9 }, trackingId: "hutEEntrance"},
+  { uberId: { group: 28, state: 10 }, trackingId: "hutEExit"},
+  { uberId: { group: 28, state: 11 }, trackingId: "hutFEntrance"},
+  { uberId: { group: 28, state: 12 }, trackingId: "hutFExit"},
+  { uberId: { group: 28, state: 13 }, trackingId: "caveEntrance"},
+  { uberId: { group: 28, state: 14 }, trackingId: "caveExit"},
+  { uberId: { group: 28, state: 15 }, trackingId: "waterMillOutsideDoorA"},
+  { uberId: { group: 28, state: 16 }, trackingId: "waterMillInsideDoorA"},
+  { uberId: { group: 28, state: 17 }, trackingId: "waterMillOutsideDoorB"},
+  { uberId: { group: 28, state: 18 }, trackingId: "waterMillInsideDoorB"},
+  { uberId: { group: 28, state: 19 }, trackingId: "waterMillOutsideDoorC"},
+  { uberId: { group: 28, state: 20 }, trackingId: "waterMillInsideDoorC"},
+  { uberId: { group: 28, state: 21 }, trackingId: "waterMillOutsideDoorD"},
+  { uberId: { group: 28, state: 22}, trackingId: "waterMillInsideDoorD"},
+  { uberId: { group: 28, state: 23}, trackingId: "baursReachHutEntrance"},
+  { uberId: { group: 28, state: 24 }, trackingId: "baursReachHutExit"},
+  { uberId: { group: 28, state: 25 }, trackingId: "petrifiedHutDoorOutside"},
+  { uberId: { group: 28, state: 26 }, trackingId: "petrifiedHutDoorInside"},
+  { uberId: { group: 28, state: 27 }, trackingId: "desertRuinsEntranceDoor"},
+  { uberId: { group: 28, state: 28 }, trackingId: "doorB"}, // Outer ruins door
+  { uberId: { group: 28, state: 29 }, trackingId: "willowsEndEntrance"},
+  { uberId: { group: 28, state: 30 }, trackingId: "willowsEndExit"},
+  { uberId: { group: 28, state: 31 }, trackingId: "powlArenaEntrance"},
+  { uberId: { group: 28, state: 32 }, trackingId: "powlArenaExit"},
+
+
 ]
 
 export class LocalTrackerWebSocketService {

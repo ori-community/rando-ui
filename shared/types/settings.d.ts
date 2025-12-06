@@ -22,7 +22,6 @@ export type Settings = {
   ShowStatsAfterFinish: boolean,
   ShowAllSecrets: boolean,
   DisableAutoAim: boolean,
-  SelectInLogicFilterByDefault: boolean,
   EnableMinimap: boolean,
   EnableNativeControllerSupport: boolean,
   MapIconTransparency: number,

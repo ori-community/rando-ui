@@ -35,7 +35,6 @@ export const useSettingsStore = defineStore("settings", () => {
     ShowStatsAfterFinish: ref<boolean>(false),
     ShowAllSecrets: ref<boolean>(false),
     DisableAutoAim: ref<boolean>(false),
-    SelectInLogicFilterByDefault: ref<boolean>(false),
     EnableMinimap: ref<boolean>(false),
     EnableNativeControllerSupport: ref<boolean>(false),
     MapIconTransparency: ref<number>(0),

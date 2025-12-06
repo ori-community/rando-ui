@@ -71,11 +71,6 @@
           description="Keep your keystone count visible while playing"
         />
         <rando-settings-checkbox
-          v-model="settings.SelectInLogicFilterByDefault.value"
-          label="Start with In Logic Filter"
-          description="Select the In Logic map filter by default instead of the All filter"
-        />
-        <rando-settings-checkbox
           v-model="settings.ShowAllSecrets.value"
           label="Disable always showing secret areas"
           description="By default, the randomizer shows all secrets without having the Sense Shard equipped"

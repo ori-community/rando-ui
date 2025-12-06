@@ -77,7 +77,6 @@ export class SettingsService {
       ShowStatsAfterFinish: true,
       ShowAllSecrets: true,
       DisableAutoAim: false,
-      SelectInLogicFilterByDefault: true,
       EnableMinimap: false,
       EnableNativeControllerSupport: true,
       MapIconTransparency: 0.25,

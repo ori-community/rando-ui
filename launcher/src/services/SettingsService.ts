@@ -79,7 +79,7 @@ export class SettingsService {
       DisableAutoAim: false,
       EnableMinimap: false,
       EnableNativeControllerSupport: true,
-      MapIconTransparency: 0.25,
+      ShowTransparentOutOfLogicIcons: true,
       MapPanSpeed: 1.0,
       CameraShakeIntensity: 1.0,
       LocalTrackerWindowPositionX: localTrackerInitialWindowRect.x,

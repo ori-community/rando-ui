@@ -30,9 +30,9 @@
           description="Always show Keystone Doors on the in-game map, no matter what filter"
         />
         <rando-settings-checkbox
-          v-model="showTransparentIcons"
-          label="Show Transparent Icons"
-          description="Show out of logic icons as transparent"
+          v-model="settings.ShowTransparentOutOfLogicIcons.value"
+          label="Show Out-of-Logic Items"
+          description="Show transparent out of logic icons on the In-Logic map"
         />
         <rando-settings-checkbox
           v-model="settings.EnableWorldMap.value"
@@ -327,15 +327,6 @@
       return 'Warning! Make sure to select the game executable (oriwotw.exe)'
     }
     return null
-  })
-
-  const showTransparentIcons = computed({
-    get() {
-      return settings.MapIconTransparency.value > 0.0
-    },
-    set(value) {
-      settings.MapIconTransparency.value = value ? 0.25 : 0.0
-    },
   })
 
   onMounted(() => {

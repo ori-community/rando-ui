@@ -34,7 +34,7 @@ export class AuthenticatedWebSocketConnection extends TypedEventTarget<Authentic
     const authStore = useAuthStore()
     const electronApi = useElectronApi()
     const jwt = authStore.jwt
-    const protocolVersion = await electronApi?.updater.getVersion.query() ?? "4.33.0"
+    const protocolVersion = await electronApi?.updater.getVersion.query() ?? "4.39.2"
     let retriesSinceLastSuccessfulAttempt = 0
 
     const connectWebSocket = () => new Promise<void>((resolve) => {
@@ -71,7 +71,7 @@ export class AuthenticatedWebSocketConnection extends TypedEventTarget<Authentic
             makePacket(Proto.AuthenticateMessage, {
               jwt,
               clientVersion: protocolVersion,
-            })
+            }),
           )
         }
 

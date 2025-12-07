@@ -24,7 +24,7 @@ export type Settings = {
   DisableAutoAim: boolean,
   EnableMinimap: boolean,
   EnableNativeControllerSupport: boolean,
-  MapIconTransparency: number,
+  ShowTransparentOutOfLogicIcons: boolean,
   MapPanSpeed: number,
   CameraShakeIntensity: number,
   LocalTrackerWindowPositionX: number,

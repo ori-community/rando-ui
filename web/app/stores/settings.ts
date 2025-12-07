@@ -37,7 +37,7 @@ export const useSettingsStore = defineStore("settings", () => {
     DisableAutoAim: ref<boolean>(false),
     EnableMinimap: ref<boolean>(false),
     EnableNativeControllerSupport: ref<boolean>(false),
-    MapIconTransparency: ref<number>(0),
+    ShowTransparentOutOfLogicIcons: ref<boolean>(false),
     MapPanSpeed: ref<number>(0),
     CameraShakeIntensity: ref<number>(0),
     LocalTrackerWindowPositionX: ref<number>(0),

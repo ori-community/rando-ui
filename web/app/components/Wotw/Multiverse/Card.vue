@@ -1,14 +1,12 @@
 <template>
   <v-card
     class="multiverse-card"
+    :to="{ name: 'game-multiverseId', params: { multiverseId: multiverseMetadata.id } }"
   >
-    <!-- TODO multiverse page   -->
-    <!--    :to="{ name: 'game-multiverseId', params: { multiverseId: multiverseMetadata.id } }"-->
     <div class="gradient-overlay"/>
 
     <div class="card-content pa-4">
       <div class="multiverse-id-container">
-        <div>Game</div>
         <div>
           <span class="hashtag">#</span><span class="multiverse-id">{{ multiverseMetadata.id }}</span>
         </div>
@@ -19,7 +17,6 @@
           <v-icon large>mdi-grid</v-icon>
           <v-tooltip bottom open-delay="250">
             <span>Bingo</span>
-
           </v-tooltip>
         </div>
       </div>

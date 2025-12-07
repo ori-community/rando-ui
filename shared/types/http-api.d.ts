@@ -5,7 +5,9 @@ type UserInfo = WithoutProtoType<Proto.UserInfo>
 type MultiverseInfo = WithoutProtoType<Proto.MultiverseInfoMessage>
 type BingoBoard = WithoutProtoType<Proto.BingoBoardMessage>
 type BingoUniverseInfo = WithoutProtoType<Proto.BingoUniverseInfo>
+type BingoSquare = WithoutProtoType<Proto.BingoSquare>
 type MultiverseMetadataInfo = WithoutProtoType<Proto.MultiverseMetadataInfoMessage>
+type WorldInfo = WithoutProtoType<Proto.WorldInfo>
 
 type BingoData = {
   board: BingoBoard,

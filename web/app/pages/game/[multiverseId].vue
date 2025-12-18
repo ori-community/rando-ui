@@ -248,7 +248,6 @@
   const hideSeedgenResultCompletely = ref(false)
   const lockGameLoading = ref(false)
   const devDebugEventName = ref('')
-  const showBoard = ref(false)
   const title = computed(() => {
     return `Game ${multiverse.value.id}`
   })

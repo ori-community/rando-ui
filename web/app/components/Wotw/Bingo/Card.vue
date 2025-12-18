@@ -39,48 +39,27 @@
 
   import type {BingoUniverseInfo, BingoSquare} from "@shared/types/http-api";
 
-  const props = defineProps<{
-    forceFlip: {
-      type: boolean,
-      default: false,
-    },
-    square: {
-      type: BingoSquare,
-      required: true,
-    },
-    universeColors: {
-      type: Array<string>,
-      required: true,
-    },
-    hiddenUniverses: {
-      type: Array<BingoUniverseInfo>,
-      default: () => [],
-    },
-    highlightedUniverse: {
-      type: number | null,
-      default: null,
-    },
-    isLockout: {
-      type: boolean,
-      default: false,
-    },
-    marked: {
-      type: boolean,
-      default: false,
-    },
-    markedNeighborMask: {
-      type: number,
-      default: 0b0000, // top, left, right, bottom
-    },
-    ownUniverseId: {
-      type: number,
-      default: null,
-    },
-    attentionEffect: {
-      type: boolean,
-      default: false,
-    },
-  }>()
+  const props = withDefaults(defineProps<{
+    attentionEffect?: boolean,
+    forceFlip?: boolean,
+    hiddenUniverseIds?: number[],
+    highlightedUniverseId?: number | null,
+    isLockout?: boolean,
+    marked?: boolean,
+    markedNeighborMask?: number,
+    ownUniverseId?: number | null,
+    square: BingoSquare | null,
+    universeColors: Array<string>,
+  }>(), {
+    attentionEffect: false,
+    forceFlip: false,
+    hiddenUniverseIds: () => [],
+    highlightedUniverseId: null,
+    isLockout: false,
+    marked: false,
+    markedNeighborMask: 0b000, // top, left, right, bottom
+    ownUniverseId: null,
+  })
 
   const emit = defineEmits(["click"])
 
@@ -88,21 +67,25 @@
     return props.forceFlip || !props.square
   })
   const goalsShouldBeLarge = computed(() => {
+    if (!props.square) {
+      return false
+    }
     return props.square.goals.length === 1 && props.square.goals[0].text.length <= 16
   })
   const hasGoals = computed(() => {
+    if (!props.square) return false
     return props.square.goals.length !== 0
   })
   const cardStyle = computed(() => {
     if (props.square === null || props.square.completedBy.length === 0) {
       return {}
     }
-
+    
     const highlightSplitPercentage = props.isLockout
       ? 20
       : 33
 
-    let nonHighlightedColors = []
+    let nonHighlightedColors: (string | undefined)[] = []
 
     if (props.isLockout) {
       if (props.square.completedBy.length >= 2) {
@@ -111,14 +94,14 @@
       }
     } else {
       nonHighlightedColors = props.square.completedBy
-        .filter((universeId) => (!props.hiddenUniverses.includes(universeId) && universeId !== this.highlightUniverse))
+        .filter((universeId) => (!props.hiddenUniverseIds.includes(universeId) && universeId !== props.highlightedUniverseId))
         .sort((a, b) => b - a)
         .map((universeId) => props.universeColors[universeId])
     }
 
     const stops = []
 
-    const shouldHighlight = (!!props.highlightUniverse && !props.hiddenUniverses.includes(props.highlightUniverse)) ||
+    const shouldHighlight = (!!props.highlightedUniverseId && !props.hiddenUniverseIds.includes(props.highlightedUniverseId)) ||
       (props.isLockout && props.square.completedBy.length >= 2)
 
     for (let i = 0; i < nonHighlightedColors.length; i++) {
@@ -132,14 +115,14 @@
     }
 
     if (props.isLockout) {
-      if (props.square.completedBy.length >= 1) {
+      if (props.square.completedBy.length >= 1 && props.square.completedBy[0]) {
         stops.push(`${props.universeColors[props.square.completedBy[0]]} ${highlightSplitPercentage}% 100%`)
       } else {
         stops.push(`transparent ${highlightSplitPercentage}% 100%`)
       }
-    } else if (props.highlightUniverse) {
-      if (shouldHighlight && props.square.completedBy.includes(this.highlightUniverse)) {
-        stops.push(`${props.universeColors[props.highlightedUniverse]} ${highlightSplitPercentage}% 100%`)
+    } else if (props.highlightedUniverseId) {
+      if (shouldHighlight && props.square.completedBy.includes(props.highlightedUniverseId)) {
+        stops.push(`${props.universeColors[props.highlightedUniverseId]} ${highlightSplitPercentage}% 100%`)
       } else {
         stops.push(`transparent ${highlightSplitPercentage}% 100%`)
       }

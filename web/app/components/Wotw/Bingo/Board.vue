@@ -8,7 +8,7 @@
         :label="alphabet[x - 1]"
         @click="selectLine(x, 1, 0, 1)"
       />
-      <wotw-bingo-edge-label label="Y" @click="selectLine(1, multiverse.bingoBoard.size, 1, -1)"/>
+      <wotw-bingo-edge-label label="Y" @click="selectLine(1, bingoBoard.size, 1, -1)"/>
     </template>
 
     <template v-for="y in bingoBoard.size">
@@ -18,10 +18,10 @@
       <template v-for="x in bingoBoard.size" :key="`${x}${y}`">
         <wotw-bingo-card
           :force-flip="x + y > unveilProgress"
-          :square="cardVisible(x, y) ? cardTable?.[x]?.[y] : null"
+          :square="getSquare(x, y)"
           :universe-colors="universeColors"
-          :hidden-universes="hiddenUniverses"
-          :highlight-universe="highlightUniverse"
+          :hidden-universe-ids="hiddenUniverseIds"
+          :highlighted-universe-id="highlightedUniverseId"
           :is-lockout="bingoBoard.lockout"
           :marked="isCardMarked(x, y)"
           :marked-neighbor-mask="getMarkedNeighborMask(x, y)"
@@ -37,7 +37,7 @@
     </template>
 
     <template v-if="edgeLabels">
-      <wotw-bingo-edge-label label="Y" @click="selectLine(1, multiverse.bingoBoard.size, 1, -1)"/>
+      <wotw-bingo-edge-label label="Y" @click="selectLine(1, bingoBoard.size, 1, -1)"/>
       <wotw-bingo-edge-label
         v-for="x in bingoBoard.size"
         :key="`${x}-bottom`"
@@ -59,9 +59,9 @@
     edgeLabels: boolean,
     isSpectating: boolean,
     multiverseId: number,
-    hiddenUniverses: number[],
-    highlightedUniverse: number,
-    ownUniverseId: number,
+    hiddenUniverseIds: number[],
+    highlightedUniverseId: number | null,
+    ownUniverseId: number | null,
     cardAttentionEffect: boolean,
     spectatorDisplayAll: boolean,
   }>()
@@ -74,13 +74,13 @@
   const gridStyle = computed(() => {
     if (props.edgeLabels) {
       return {
-        gridTemplateColumns: `auto repeat(${bingoBoard.value.size}, minmax(0, 1fr)) auto`,
-        gridTemplateRows: `auto repeat(${bingoBoard.value.size}, minmax(0, 1fr)) auto`,
+        gridTemplateColumns: `auto repeat(${bingoBoard.value?.size ?? 1}, minmax(0, 1fr)) auto`,
+        gridTemplateRows: `auto repeat(${bingoBoard.value?.size ?? 1}, minmax(0, 1fr)) auto`,
       }
     } else {
       return {
-        gridTemplateColumns: `repeat(${bingoBoard.value.size}, minmax(0, 1fr))`,
-        gridTemplateRows: `repeat(${bingoBoard.value.size}, minmax(0, 1fr))`,
+        gridTemplateColumns: `repeat(${bingoBoard.value?.size ?? 1}, minmax(0, 1fr))`,
+        gridTemplateRows: `repeat(${bingoBoard.value?.size ?? 1}, minmax(0, 1fr))`,
       }
     }
   })
@@ -102,13 +102,19 @@
     return squares
   })
   const universeColors = computed(() => {
-    const colorMap = {}
+    const colorMap: string[] = []
     for (const universe of multiverse.value.universes) {
       colorMap[universe.id] = universe.color
     }
     return colorMap
   })
+  const highlightedUniverseId = computed(() => {
+    if (multiverse.value.universes.length <= 1) {
+      return null
+    }
 
+    return props.ownUniverseId
+  })
 
   const cardVisible = ((x: number, y: number) => {
     if (!props.isSpectating) {
@@ -120,8 +126,16 @@
     }
 
     const square = cardTable.value?.[x]?.[y]
-    return square?.visibleFor?.some(universeId => (!this.hiddenUniverses.includes(universeId)))
+    return square?.visibleFor?.some(universeId => (!props.hiddenUniverseIds.includes(universeId)))
 
+  })
+
+  const getSquare = ((x: number, y: number) => {
+    if (cardVisible(x, y)) {
+      return cardTable.value?.[x]?.[y]
+    } else {
+      return null
+    }
   })
 
   const isCardMarked = (x: number, y: number) => {
@@ -137,6 +151,23 @@
     mask += isCardMarked(x, y + 1) ? 0b0001 : 0
     return mask
   })
+
+  const selectLine = ((x: number, y: number, dX: number, dY: number) => {
+    if (!bingoBoard.value) {
+      return
+    }
+    const squares = []
+    for (let a = x, b = y; a <= bingoBoard.value.size && b <= bingoBoard.value.size; a += dX, b += dY) {
+      squares.push({x: a, y: b})
+    }
+
+    // TODO mark bingo cards
+    // this.$store.commit('multiverseState/toggleMultipleBingoGoalMarked', {
+    //   multiverseId: this.multiverse.id,
+    //   goals: squares,
+    // })
+  })
+
 
 </script>
 

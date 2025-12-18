@@ -5,14 +5,8 @@
 
       <div class="text-center mb-1">
         <v-btn text @click="centerBoard">
-          <template v-if="showBoard">
-            <v-icon left>mdi-image-filter-center-focus-strong-outline</v-icon>
-            Center on screen
-          </template>
-          <template v-else>
-            <v-icon left>mdi-eye-outline</v-icon>
-            Show board
-          </template>
+          <v-icon left>mdi-image-filter-center-focus-strong-outline</v-icon>
+          Center on screen
         </v-btn>
         <v-btn v-if="isElectron" :disabled="bingoOverlayEnabled" text @click="enableBingoOverlay">
           <template v-if="bingoOverlayEnabled">
@@ -69,58 +63,56 @@
 
     <!--   TODO set obsMode   -->
     <div ref="boardContainer" :class="{ 'px-1': !boardSettingObsMode }" class="board-container">
-      <template v-if="showBoard">
-        <wotw-bingo-board
-          :edge-labels="boardSettingEdgeLabels"
-          :is-spectating="isSpectating"
-          :multiverse-id="multiverse.id"
-          :hidden-universes="hiddenUniverses"
-          :highlighted-universe="highlightedUniverseId"
-          :own-universe-id="ownUniverseId"
-          :card-attention-effect="boardSettingCardAttentionEffect"
-          :spectator-display-all="boardSettingSpectatorDisplayAll"
-          class="board"
-        />
-        <div class="sidebar px-5">
-          <transition-group class="bingo-universes" name="list">
-            <div
-              v-for="(bingoUniverse, index) in sortedBingoUniverses"
-              :key="bingoUniverse.universeId"
-              :style="{ zIndex: sortedBingoUniverses.length - index }"
-              class="relative"
-            >
-              <wotw-bingo-universe-view
-                :bingo-universe="bingoUniverse"
-                :is-spectating="isSpectating"
-                :universe="multiverse.universes.find((u) => u.id === bingoUniverse.universeId)"
-                :universe-hidden="hiddenUniverses.includes(bingoUniverse.universeId)"
-                @click="toggleUniverseVisibility(bingoUniverse.universeId)"
-                @click.native.ctrl.capture.stop="toggleUniverseVisibility(bingoUniverse.universeId, true)"
-              />
-            </div>
-            <v-switch
-              v-if="isSpectating"
-              key="spectatorMode"
-              v-model="boardSettingSpectatorDisplayAll"
-              label="Show all cards"
-              inset
+      <wotw-bingo-board
+        :edge-labels="boardSettingEdgeLabels"
+        :is-spectating="isSpectating"
+        :multiverse-id="multiverse.id"
+        :hidden-universe-ids="hiddenUniverseIds"
+        :highlighted-universe-id="highlightedUniverseId"
+        :own-universe-id="ownUniverseId"
+        :card-attention-effect="boardSettingCardAttentionEffect"
+        :spectator-display-all="boardSettingSpectatorDisplayAll"
+        class="board"
+      />
+      <div class="sidebar px-5">
+        <transition-group class="bingo-universes" name="list">
+          <div
+            v-for="(bingoUniverse, index) in sortedBingoUniverses"
+            :key="bingoUniverse.universeId"
+            :style="{ zIndex: sortedBingoUniverses.length - index }"
+            class="relative"
+          >
+            <wotw-bingo-universe-view
+              :bingo-universe="bingoUniverse"
+              :is-spectating="isSpectating"
+              :universe="multiverse.universes.find((u) => u.id === bingoUniverse.universeId)"
+              :universe-hidden="hiddenUniverseIds.includes(bingoUniverse.universeId)"
+              @click="toggleUniverseVisibility(bingoUniverse.universeId)"
+              @click.native.ctrl.capture.stop="toggleUniverseVisibility(bingoUniverse.universeId, true)"
             />
-            <div
-              v-if="!boardSettingHideSpectators && multiverse.spectators.length > 0"
-              key="spectators"
-              class="mt-4"
-            >
-              <div class="text-caption">Spectators</div>
+          </div>
+          <v-switch
+            v-if="isSpectating"
+            key="spectatorMode"
+            v-model="boardSettingSpectatorDisplayAll"
+            label="Show all cards"
+            inset
+          />
+          <div
+            v-if="!boardSettingHideSpectators && multiverse.spectators.length > 0"
+            key="spectators"
+            class="mt-4"
+          >
+            <div class="text-caption">Spectators</div>
 
-              <rando-discord-avatar v-for="spectator in multiverse.spectators" :key="spectator.id" :user="spectator">
-                <v-tooltip location="top" activator="parent">
-                  <span>{{ spectator.name }}</span>
-                </v-tooltip>
-              </rando-discord-avatar>
-            </div>
-          </transition-group>
-        </div>
-      </template>
+            <rando-discord-avatar v-for="spectator in multiverse.spectators" :key="spectator.id" :user="spectator">
+              <v-tooltip location="top" activator="parent">
+                <span>{{ spectator.name }}</span>
+              </v-tooltip>
+            </rando-discord-avatar>
+          </div>
+        </transition-group>
+      </div>
     </div>
 
     <v-dialog v-model="boardSettingsOpen" max-width="500">
@@ -135,13 +127,6 @@
           v-model="boardSettingEdgeLabels"
           hint="Show coordinates around the board"
           label="Edge Labels"
-          persistent-hint
-        />
-
-        <v-checkbox
-          v-model="boardSettingHighlightOwnUniverse"
-          hint="Reserve bottom left parts of bingo squares for your team. Greatly improves overview of your progress."
-          label="Highlight own team"
           persistent-hint
         />
 
@@ -177,7 +162,10 @@
 </template>
 
 <script lang="ts" setup>
+  import {ref} from 'vue'
   import type {MultiverseInfo, BingoUniverseInfo, WorldInfo} from '@shared/types/http-api'
+
+  const boardContainer = ref<null | HTMLElement>(null)
 
   const isElectron = useIsElectron()
   const router = useRouter()
@@ -186,14 +174,14 @@
   const embedUrlCopied = ref(false)
   const embedUrlLoading = ref(false)
   const boardSettingsOpen = ref(false)
+  // TODO load bingo board settings
   const boardSettingEdgeLabels = ref(false)
-  const boardSettingHighlightOwnUniverse = ref(true)
   const boardSettingHideSpectators = ref(false)
   const boardSettingCardAttentionEffect = ref(true)
   const boardSettingSpectatorDisplayAll = ref(false)
   const spectateDialogOpen = ref(false)
   const spectateLoading = ref(false)
-  const hiddenUniverses = ref<number[]>([]) // Array of team IDs
+  const hiddenUniverseIds = ref<number[]>([]) // Array of team IDs
   const bingothonTokenLoading = ref(false)
   const bingothonTokenCopied = ref(false)
   const bingoOverlayEnabled = ref(false)
@@ -212,11 +200,10 @@
   }>()
 
   const centerBoard = (() => {
-    // this.$refs.boardContainer.scrollIntoView({
-    //   behavior: showBoard.value ? 'smooth' : 'auto',
-    //   block: 'start',
-    // })
-    showBoard.value = true
+    boardContainer.value?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
   })
 
   const sortedBingoUniverses = computed(() => {
@@ -228,8 +215,8 @@
     const universes = props.multiverse.universes
     return [...props.bingoUniverses.filter((b) => universes.some((u) => u.id === b.universeId))].sort(
       (a, b) => {
-        const aRank = hiddenUniverses.value.includes(a.universeId) || props.isSpectating ? 0 : a.rank
-        const bRank = hiddenUniverses.value.includes(b.universeId) || props.isSpectating ? 0 : b.rank
+        const aRank = hiddenUniverseIds.value.includes(a.universeId) || props.isSpectating ? 0 : a.rank
+        const bRank = hiddenUniverseIds.value.includes(b.universeId) || props.isSpectating ? 0 : b.rank
 
         const rankDifference = bRank - aRank
 
@@ -243,40 +230,39 @@
   })
 
   const highlightedUniverseId = computed(() => {
-    if (!boardSettingHighlightOwnUniverse.value || props.multiverse.universes.length <= 1) {
+    if (props.multiverse.universes.length <= 1) {
       return null
     }
     return ownUniverseId.value
   })
 
   const ownUniverse = computed(() => {
-    if (!ownWorld.value) {
+    if (!props.ownWorld) {
       return null
     }
 
-    return multiverse.value.universes.find((universe) =>
-      universe.worlds.find((world) => world.id === ownWorld?.value.id),
+    return props.multiverse.universes.find((universe) =>
+      universe.worlds.find((world) => world.id === props.ownWorld?.id),
     )
   })
   const ownUniverseId = computed(() => {
-    return 0
-    // return ownUniverse?.value.id
+    return ownUniverse.value?.id ?? null
   })
 
   const toggleUniverseVisibility = ((universeId: number, exclusive = false) => {
     if (exclusive) {
       if (
-        hiddenUniverses.value.length === sortedBingoUniverses.value.length - 1 &&
-        !hiddenUniverses.value.includes(universeId)
+        hiddenUniverseIds.value.length === sortedBingoUniverses.value.length - 1 &&
+        !hiddenUniverseIds.value.includes(universeId)
       ) {
-        hiddenUniverses.value = []
+        hiddenUniverseIds.value = []
       } else {
-        hiddenUniverses.value = sortedBingoUniverses.value.map((b) => b.universeId).filter((u) => u !== universeId)
+        hiddenUniverseIds.value = sortedBingoUniverses.value.map((b) => b.universeId).filter((u) => u !== universeId)
       }
-    } else if (hiddenUniverses.value.includes(universeId)) {
-      hiddenUniverses.value = hiddenUniverses.value.filter((u) => u !== universeId)
+    } else if (hiddenUniverseIds.value.includes(universeId)) {
+      hiddenUniverseIds.value = hiddenUniverseIds.value.filter((u) => u !== universeId)
     } else {
-      hiddenUniverses.value.push(universeId)
+      hiddenUniverseIds.value.push(universeId)
     }
   })
 

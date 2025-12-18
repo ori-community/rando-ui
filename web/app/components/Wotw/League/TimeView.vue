@@ -19,8 +19,8 @@
   import {formatTime} from "assets/utils/formatTime";
 
   withDefaults(defineProps<{
-    time: number | null,
-    originalTime: number | null,
+    time?: number | null,
+    originalTime?: number | null,
   }>(), {
     time: null,
     originalTime: null,

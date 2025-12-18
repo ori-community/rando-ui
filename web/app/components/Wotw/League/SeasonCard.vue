@@ -44,35 +44,19 @@
   import type {PropType} from 'vue'
   import {formatDateEpoch} from "assets/utils/formatsDates";
 
-  const props = defineProps({
-    season: {
-      type: Object as PropType<LeagueSeasonInfo>,
-      required: true,
-    },
-    mode: {
-      type: String,
-      default: MODE_TYPES.Default,
-    },
-    joinedOverlay: {
-      type: Boolean,
-      default: false,
-    },
-    joinedTag: {
-      type: Boolean,
-      default: false,
-    },
-    upcomingTag: {
-      type: Boolean,
-      default: false,
-    },
-    flat: {
-      type: Boolean,
-      default: false,
-    },
-    submissionPending: {
-      type: Object,
-      default: null,
-    },
+  const props = withDefaults(defineProps<{
+    season: LeagueSeasonInfo,
+    mode?: string,
+    joinedOverlay?: boolean,
+    joinedTag?: boolean,
+    upcomingTag?: boolean,
+    flat?: boolean,
+  }>(), {
+    mode: MODE_TYPES.Default,
+    joinedOverlay: false,
+    joinedTag: false,
+    upcomingTag: false,
+    flat: false,
   })
 
   const currentGameNumber = computed(() => {

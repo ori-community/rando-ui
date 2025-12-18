@@ -22,7 +22,7 @@
 
   const props = withDefaults(defineProps<{
     skill: string,
-    acquired: boolean,
+    acquired?: boolean,
     treeAcquired?: boolean,
     bonusMeltingAcquired?: boolean,
     fragmentsFound?: number,

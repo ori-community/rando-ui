@@ -97,10 +97,10 @@
   const props = withDefaults(defineProps<{
     seedFlags: string[],
     trackedValues: { [key: string]: number },
-    showWillowHearts: boolean,
-    heartCount: number,
-    showTimer: boolean,
-    time: number,
+    showWillowHearts?: boolean,
+    heartCount?: number,
+    showTimer?: boolean,
+    time?: number,
   }>(), {
     showWillowHearts: false,
     heartCount: 0,

@@ -64,13 +64,15 @@ export type RandoAction =
 
 export type Action = VanillaAction & RandoAction
 
-type ControllerBinding = number[][]
+type UnityKeycode = number
+
+type ControllerBinding = UnityKeycode[][]
 
 export type ControllerBindings = {
   [key in Action]: ControllerBinding
 }
 
-export type KeyboardBinding = {keys: number[], respects_modifiers?: boolean}[]
+export type KeyboardBinding = {keys: UnityKeycode[], respects_modifiers?: boolean}[]
 
 export type KeyboardBindings = {
   [key in RandoAction]: KeyboardBinding

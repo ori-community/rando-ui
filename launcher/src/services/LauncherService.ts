@@ -197,6 +197,7 @@ export class LauncherService {
       }
     }
 
+    await SettingsService.instance.flushSettings()
     const settings = await SettingsService.instance.getSettings()
 
     const defaultExec = execa({

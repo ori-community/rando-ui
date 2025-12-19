@@ -2,7 +2,7 @@ import {publicProcedure, router} from "@launcher/api/trpc"
 import {z} from "zod"
 import {app, BrowserWindow, shell} from "electron"
 import fs from "fs"
-import {getUserDataPath} from "@launcher/paths"
+import {getRandomizerUserDataPath, getUserDataPath} from "@launcher/paths"
 
 export const auth = router({
   /**
@@ -53,9 +53,9 @@ export const auth = router({
    */
   getClientJwt: publicProcedure
     .query(async () => {
-      const jwtFilePath = getUserDataPath(".jwt")
+      const jwtFilePath = getRandomizerUserDataPath(".jwt")
       if (fs.existsSync(jwtFilePath)) {
-        return await fs.promises.readFile(getUserDataPath(".jwt"), {encoding: "utf8"})
+        return await fs.promises.readFile(getRandomizerUserDataPath(".jwt"), {encoding: "utf8"})
       }
 
       return null
@@ -67,12 +67,12 @@ export const auth = router({
     .input(z.string().nullable())
     .query(async ({input}) => {
       if (input === null) {
-        const jwtFilePath = getUserDataPath(".jwt")
+        const jwtFilePath = getRandomizerUserDataPath(".jwt")
         if (fs.existsSync(jwtFilePath)) {
           await fs.promises.unlink(jwtFilePath)
         }
       } else {
-        await fs.promises.writeFile(getUserDataPath(".jwt"), input, { encoding: "utf8" })
+        await fs.promises.writeFile(getRandomizerUserDataPath(".jwt"), input, { encoding: "utf8" })
       }
     }),
 })

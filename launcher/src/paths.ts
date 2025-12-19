@@ -6,7 +6,7 @@ export function getUserDataPath(relativePath = "."): string {
     return path.join(process.cwd(), "development-user-data", relativePath)
   }
 
-  return path.join(app.getPath("userData"), "randomizer", relativePath)
+  return path.join(app.getPath("userData"), relativePath)
 }
 
 export function getInstallDataPath(relativePath = "."): string {
@@ -15,4 +15,13 @@ export function getInstallDataPath(relativePath = "."): string {
   }
 
   return path.join(path.dirname(app.getPath("exe")), relativePath)
+}
+
+// Wrappers for well-known directories:
+export function getRandomizerUserDataPath(relativePath = ".") {
+  return getUserDataPath(path.join("randomizer", relativePath))
+}
+
+export function getLogsUserDataPath(relativePath = ".") {
+  return getUserDataPath(path.join("logs", relativePath))
 }

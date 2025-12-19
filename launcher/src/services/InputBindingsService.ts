@@ -1,5 +1,5 @@
 import fs from "fs"
-import {getUserDataPath} from "@launcher/paths"
+import {getRandomizerUserDataPath, getUserDataPath} from "@launcher/paths"
 import type {ControllerBindings, KeyboardBindings} from "@shared/types/input-bindings"
 
 const getDefaultControllerBindings = (): ControllerBindings => ({
@@ -143,11 +143,11 @@ const getDefaultKeyboardBindings = (): KeyboardBindings => ({
 
 export class BindingsService {
   static getControllerBindingsPath() {
-    return getUserDataPath("controller_bindings.json")
+    return getRandomizerUserDataPath("controller_bindings.json")
   }
 
   static getKeyboardBindingsPath() {
-    return getUserDataPath("keyboard_bindings.json")
+    return getRandomizerUserDataPath("keyboard_bindings.json")
   }
 
   static async makeSureControllerBindingsFileExists() {

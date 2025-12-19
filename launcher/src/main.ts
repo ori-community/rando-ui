@@ -3,7 +3,7 @@ import path from "path"
 // eslint-disable-next-line import/no-unresolved
 import {createIPCHandler} from "electron-trpc/main"
 import {appRouter} from "@launcher/api/api"
-import {getUserDataPath} from "@launcher/paths"
+import {getLogsUserDataPath, getRandomizerUserDataPath, getUserDataPath} from "@launcher/paths"
 import fs from "fs"
 import {RandoIPCService} from "@launcher/services/RandoIPCService"
 import {LocalTrackerWebSocketService} from "@launcher/services/LocalTrackerWebSocketService"
@@ -13,7 +13,7 @@ import log from "electron-log/main"
 // Otherwise, Chromium will pollute it...
 app.setPath("sessionData", path.join(app.getPath("userData"), "launcher"))
 
-log.transports.file.resolvePathFn = () => getUserDataPath("launcher.log")
+log.transports.file.resolvePathFn = () => getUserDataPath("logs/launcher.log")
 
 let mainWindow: BrowserWindow | null = null
 
@@ -23,9 +23,9 @@ export function getMainWindow(): BrowserWindow | null {
 
 const createWindow = async () => {
   // Create user data directory
-  if (!fs.existsSync(getUserDataPath())) {
-    await fs.promises.mkdir(getUserDataPath(), {recursive: true})
-  }
+  await fs.promises.mkdir(getUserDataPath(), {recursive: true})
+  await fs.promises.mkdir(getRandomizerUserDataPath(), {recursive: true})
+  await fs.promises.mkdir(getLogsUserDataPath(), {recursive: true})
 
   // Create the browser window.
   mainWindow = new BrowserWindow({

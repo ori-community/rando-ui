@@ -1,5 +1,5 @@
 import {EventEmitter} from "events"
-import {getUserDataPath} from "@launcher/paths"
+import {getRandomizerUserDataPath, getUserDataPath} from "@launcher/paths"
 import fs from "fs"
 import {merge} from "lodash"
 import log from "electron-log/main"
@@ -107,7 +107,7 @@ export class SettingsService {
    * the default settings are loaded.
    */
   private async loadSettingsToCache() {
-    const settingsFilePath = getUserDataPath("settings.json")
+    const settingsFilePath = getRandomizerUserDataPath("settings.json")
     let settingsObject: Settings = SettingsService.getDefaultSettings()
 
     if (fs.existsSync(settingsFilePath)) {
@@ -166,7 +166,7 @@ export class SettingsService {
    * Flush settings to disk immediately.
    */
   public async flushSettings() {
-    const settingsFilePath = getUserDataPath("settings.json")
+    const settingsFilePath = getRandomizerUserDataPath("settings.json")
 
     if (this.settingsFlushTimeoutId !== null) {
       clearTimeout(this.settingsFlushTimeoutId)

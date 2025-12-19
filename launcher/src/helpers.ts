@@ -14,7 +14,13 @@ export const isProcessRunning = async (processName: string) => {
     return false
   }
 
-  const tasklistProcess = await execa(`tasklist /FO CSV /NH /FI "IMAGENAME eq ${processName}"`)
+  const tasklistProcess = await execa(`tasklist`, [
+    "/FO",
+    "CSV",
+    "/NH",
+    "/FI",
+    `IMAGENAME eq ${processName}`,
+  ])
 
   const parser = parseCsv(tasklistProcess.stdout)
 

@@ -32,6 +32,28 @@ export const launcher = router({
    */
   launchOrFocusRandomizer: publicProcedure
     .query(async () => {
-      await LauncherService.launchOrFocusRandomizer()
+      return await LauncherService.launchOrFocusRandomizer()
+    }),
+  /**
+   * @see LauncherService.getGameLaunchMethodsAvailableOnPlatform
+   */
+  getGameLaunchMethodsAvailableOnPlatform: publicProcedure
+    .query(async () => {
+      return await LauncherService.getGameLaunchMethodsAvailableOnPlatform()
+    }),
+  /**
+   * @see LauncherService.getModloaderMethodsAvailableOnPlatform
+   */
+  getModloaderMethodsAvailableOnPlatform: publicProcedure
+    .query(async () => {
+      return await LauncherService.getModloaderMethodsAvailableOnPlatform()
+    }),
+  /**
+   * @see LauncherService.getModloaderMethodsAvailableOnForGameLaunchMethod
+   */
+  getModloaderMethodsAvailableOnForGameLaunchMethod: publicProcedure
+    .input(z.string())
+    .query(async ({input}) => {
+      return await LauncherService.getModloaderMethodsAvailableOnForGameLaunchMethod(input as Settings['GameLaunchMethod'])
     }),
 })

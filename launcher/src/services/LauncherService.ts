@@ -25,6 +25,9 @@ export class LauncherService {
     throw new Error("The launcher is only supported on Windows and Linux systems")
   }
 
+  /**
+   * Returns the available game launch methods on the current platform
+   */
   static async getGameLaunchMethodsAvailableOnPlatform(): Promise<Settings["GameLaunchMethod"][]> {
     switch (this.getPlatform()) {
       case "windows":
@@ -34,12 +37,29 @@ export class LauncherService {
     }
   }
 
+  /**
+   * Returns the available Modloader methods on the current platform
+   */
   static async getModloaderMethodsAvailableOnPlatform(): Promise<Settings["ModloaderMethod"][]> {
     switch (this.getPlatform()) {
       case "windows":
         return ["inject", "proxy"]
       case "linux":
         return ["proxy"]
+    }
+  }
+
+  /**
+   * Returns the available Modloader methods on the current platform
+   */
+  static async getModloaderMethodsAvailableOnForGameLaunchMethod(gameLaunchMethod: Settings["GameLaunchMethod"]): Promise<Settings["ModloaderMethod"][]> {
+    switch (gameLaunchMethod) {
+      case "steam":
+        return ["proxy", "inject"]
+      case "microsoft-store":
+        return ["inject"]
+      case "standalone":
+        return ["proxy", "inject"]
     }
   }
 
@@ -64,9 +84,6 @@ export class LauncherService {
         }
         break
       case "microsoft-store":
-        if (settings.ModloaderMethod === "proxy") {
-          errors.push("proxy-and-microsoft-store-incompatible")
-        }
         break
       case "standalone":
         gameBinaryNeedsToBeValid = true
@@ -90,14 +107,19 @@ export class LauncherService {
     }
 
     const gameLaunchMethodsAvailable = await this.getGameLaunchMethodsAvailableOnPlatform()
-    const modloaderMethodsAvailable = await this.getModloaderMethodsAvailableOnPlatform()
+    const modloaderMethodsAvailableOnPlatform = await this.getModloaderMethodsAvailableOnPlatform()
+    const modloaderMethodsAvailableForGameLaunchMethod = await this.getModloaderMethodsAvailableOnForGameLaunchMethod(settings.GameLaunchMethod)
 
     if (!gameLaunchMethodsAvailable.includes(settings.GameLaunchMethod)) {
       errors.push("game-launch-method-not-available-on-current-platform")
     }
 
-    if (!modloaderMethodsAvailable.includes(settings.ModloaderMethod)) {
+    if (!modloaderMethodsAvailableOnPlatform.includes(settings.ModloaderMethod)) {
       errors.push("modloader-method-not-available-on-current-platform")
+    }
+
+    if (!modloaderMethodsAvailableForGameLaunchMethod.includes(settings.ModloaderMethod)) {
+      errors.push("modloader-method-not-available-for-game-launch-method")
     }
 
     return errors
@@ -108,8 +130,12 @@ export class LauncherService {
    * Use `isProxyModloaderUpToDate` to check whether it exists and is up to date.
    */
   static async installOrUpdateProxyModloader() {
+    if (await LauncherService.isProxyModloaderUpToDate()) {
+      return
+    }
+
     const settings = await SettingsService.instance.getSettings()
-    const sourceProxyFileName = getInstallDataPath("winhttp.dll")
+    const sourceProxyFileName = getInstallDataPath("client/winhttp.dll")
     const targetProxyFileName = path.join(path.dirname(settings.GameBinaryPath), "winhttp.dll")
 
     await execa("Start-Process", [
@@ -134,7 +160,7 @@ export class LauncherService {
    */
   static async isProxyModloaderUpToDate() {
     const settings = await SettingsService.instance.getSettings()
-    const sourceProxyFileName = getInstallDataPath("winhttp.dll")
+    const sourceProxyFileName = getInstallDataPath("client/winhttp.dll")
     const targetProxyFileName = path.join(path.dirname(settings.GameBinaryPath), "winhttp.dll")
 
     if (!fs.existsSync(targetProxyFileName)) {
@@ -175,6 +201,8 @@ export class LauncherService {
 
     const defaultExec = execa({
       stdio: "inherit",
+    })
+    const defaultExecDetached = defaultExec({
       detached: true,
     })
     const powershellExec = defaultExec({
@@ -184,14 +212,15 @@ export class LauncherService {
     if (settings.ModloaderMethod === "inject") {
       const injectorPathWithWindowsSlashes = getInstallDataPath("client/Injector.exe").replaceAll("/", "\\")
 
-      const startArguments = settings.DeveloperMode
-        ? ["-FilePath", injectorPathWithWindowsSlashes]
-        : ["-WindowStyle", "Hidden", "-FilePath", injectorPathWithWindowsSlashes, "-ArgumentList", "/nowait"]
+      const startArguments = ["-FilePath", injectorPathWithWindowsSlashes, "-ArgumentList", `"-m",\`"${getInstallDataPath("client")}\`"`]
+      if (!settings.DeveloperMode) {
+        startArguments.push("-WindowStyle", "Hidden")
+      }
 
       log.info("Starting Injector with start arguments:", startArguments)
       powershellExec("start", startArguments)
 
-      await waitForProcess('injector.exe', 10)
+      await waitForProcess("injector.exe", 10)
     }
 
     const gameArguments: string[] = []
@@ -202,25 +231,25 @@ export class LauncherService {
 
     switch (settings.GameLaunchMethod) {
       case "steam":
-        defaultExec(settings.SteamBinaryPath, ["-applaunch", "1057090", ...gameArguments])
-        await waitForProcess('oriwotw.exe', 60)
-        break;
+        defaultExecDetached(settings.SteamBinaryPath, ["-applaunch", "1057090", ...gameArguments])
+        await waitForProcess("oriwotw.exe", 60)
+        break
       case "microsoft-store":
         powershellExec("explorer.exe", ["shell:AppsFolder\\Microsoft.Patagonia_8wekyb3d8bbwe!App"]).unref()
-        await waitForProcess('oriandthewillofthewisps-pc.exe')
-        break;
+        await waitForProcess("oriandthewillofthewisps-pc.exe")
+        break
       case "standalone":
         switch (this.getPlatform()) {
           case "windows":
-            defaultExec(settings.GameBinaryPath, gameArguments)
-            await waitForProcess('oriwotw.exe', 60)
-            break;
+            defaultExecDetached(settings.GameBinaryPath, gameArguments)
+            await waitForProcess("oriwotw.exe", 60)
+            break
           case "linux":
             // TODO
-            break;
+            break
         }
 
-        break;
+        break
     }
 
     if (settings.LaunchWithTracker) {

@@ -6,5 +6,9 @@ export function getUserDataPath(relativePath = "."): string {
 }
 
 export function getInstallDataPath(relativePath = "."): string {
+  if (process.env.NODE_ENV === "development") {
+    return path.join(process.cwd(), "development-install-dir", relativePath)
+  }
+
   return path.join(path.dirname(app.getPath("exe")), relativePath)
 }

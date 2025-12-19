@@ -15,6 +15,12 @@ app.setPath("sessionData", path.join(app.getPath("userData"), "launcher"))
 
 log.transports.file.resolvePathFn = () => getUserDataPath("launcher.log")
 
+let mainWindow: BrowserWindow | null = null
+
+export function getMainWindow(): BrowserWindow | null {
+  return mainWindow
+}
+
 const createWindow = async () => {
   // Create user data directory
   if (!fs.existsSync(getUserDataPath())) {
@@ -22,7 +28,7 @@ const createWindow = async () => {
   }
 
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     show: false,

@@ -85,48 +85,38 @@
         />
       </div>
       <div class="mb-8">
-        <h3>Launch Settings</h3>
-        <template v-if="isWindows">
-          <div class="mt-3">
-            <v-label>Game Distribution Service</v-label>
-          </div>
-          <v-radio-group
-            v-model="settings.UseMicrosoftStore.value"
-            row
-            class="mt-0"
-            messages="Select the game distribution service depending on which version of the game you have"
-          >
-            <v-radio label="Steam" :value="false"/>
-            <v-radio label="Microsoft Store" :value="true"/>
-          </v-radio-group>
+        <h3>Launcher Setup</h3>
 
-          <v-text-field
-            v-model="settings.GameOrSteamBinaryPath.value"
-            readonly
-            class="mt-5"
-            label="Steam path (steam.exe)"
-            append-icon="mdi-folder-search-outline"
-            :disabled="settings.UseMicrosoftStore.value"
-            hide-details
-            @click:append="selectSteamPath"
-          />
-          <div v-if="steamPathWarning && !settings.UseMicrosoftStore.value" class="mb-2 mt-2 filepath-warning">
-            {{ steamPathWarning }}
-          </div>
-        </template>
+        <div>
+          Current method:
+          <strong>
+            {{ gameLaunchMethodsMetadata[settings.GameLaunchMethod.value].name }}
+            <v-tooltip location="top" activator="parent" max-width="400">
+              <component :is="gameLaunchMethodsMetadata[settings.GameLaunchMethod.value].descriptionComponent" />
+            </v-tooltip>
+          </strong>
+          +
+          <strong>
+            {{ modloaderMethodsMetadata[settings.ModloaderMethod.value].name }}
+            <v-tooltip location="top" activator="parent" max-width="400">
+              <component :is="modloaderMethodsMetadata[settings.ModloaderMethod.value].descriptionComponent" />
+            </v-tooltip>
+          </strong>
+        </div>
 
-        <template v-if="isLinux">
-          <v-text-field
-            v-model="settings.GameOrSteamBinaryPath.value"
-            readonly
-            class="mt-5"
-            label="Game Binary path (oriwotw.exe)"
-            append-icon="mdi-folder-search-outline"
-            hide-details
-            @click:append="selectGameBinaryPath"
-          />
-          <div v-if="gameBinaryWarning" class="mb-2 mt-2 filepath-warning">{{ gameBinaryWarning }}</div>
-        </template>
+        <v-dialog>
+          <template #activator="{ props: activatorProps }">
+            <v-btn v-bind="activatorProps" color="accent" flat class="mt-4">
+              <v-icon start>mdi-restore</v-icon>
+              Change setup
+            </v-btn>
+          </template>
+          <template #default="{ isActive }">
+            <v-card class="pa-4">
+              <wotw-settings-setup-wizard @setup-finished="isActive.value = false" />
+            </v-card>
+          </template>
+        </v-dialog>
       </div>
     </v-col>
     <v-col cols="12" md="6">
@@ -230,11 +220,11 @@
           @click="resetLocalTrackerPosition"
         >
           <template v-if="localTrackerPositionReset">
-            <v-icon left>mdi-check</v-icon>
+            <v-icon start>mdi-check</v-icon>
             Tracker position reset
           </template>
           <template v-else>
-            <v-icon left>mdi-restore</v-icon>
+            <v-icon start>mdi-restore</v-icon>
             Reset tracker position
           </template>
         </v-btn>
@@ -285,7 +275,8 @@
 </template>
 
 <script lang="ts" setup>
-  const platform = await usePlatform()
+  import {gameLaunchMethodsMetadata, modloaderMethodsMetadata} from '~/assets/uiMetadata'
+
   const settingsStore = useSettingsStore()
   const settings = storeToRefs(settingsStore)
   const electronApi = useElectronApi()
@@ -295,44 +286,11 @@
   const ctrlPressed = ref(false)
   const localTrackerPositionReset = ref(false)
 
-  const isLinux = computed(() => {
-    return platform === 'linux'
-  })
-
-  const isWindows = computed(() => {
-    return platform === 'windows'
-  })
-
-  // TODO: Remove these warnings and use electronApi.launcher.validateSetup instead to show warnings.
-  // TODO: Replace GameOrSteamBinaryPath etc. with GameLaunchMethod, ModloaderMethod, GameBinaryPath, SteamBinaryPath.
-  //       These should not be single settings items but rather a wizard/assistant dialog.
-
-  const steamPathWarning = computed(() => {
-    const filename = getBaseName(settings.GameOrSteamBinaryPath.value)
-
-    switch (filename?.toLowerCase()) {
-      case 'steam.exe':
-        return null
-      case 'oriwotw.exe':
-        return 'Warning! Depending on your Steam settings, your controller might not work. Please select steam.exe.'
-      default:
-        return 'Warning! Make sure to select the Steam executable, usually this is steam.exe'
-    }
-  })
-
-  const gameBinaryWarning = computed(() => {
-    const filename = getBaseName(settings.GameOrSteamBinaryPath.value)
-
-    if (filename?.toLowerCase() !== 'oriwotw.exe') {
-      return 'Warning! Make sure to select the game executable (oriwotw.exe)'
-    }
-    return null
-  })
-
   onMounted(() => {
     document.addEventListener('keyup', onKeyUp)
     document.addEventListener('keydown', onKeyDown)
   })
+
   onUnmounted(() => {
     document.removeEventListener('keyup', onKeyUp)
     document.removeEventListener('keydown', onKeyDown)
@@ -356,30 +314,6 @@
     settings.ServerTLS.value = true
   })
 
-  const getBaseName = ((path: string) => {
-    return path?.match(/[\\/]([^\\/]*)$/)?.[1] ?? ''
-  })
-
-  // TODO split selection to separate settings
-  const selectSteamPath = (async () => {
-    const newPath = await electronApi?.systemDialogs.pickFile.query({
-      defaultPath: settings.GameOrSteamBinaryPath.value,
-      filters: [{name: 'Executables', extensions: ['exe']}],
-    })
-    if (newPath) {
-      settings.GameOrSteamBinaryPath.value = newPath
-    }
-  })
-
-  const selectGameBinaryPath = (async () => {
-    const newPath = await electronApi?.systemDialogs.pickFile.query({
-      defaultPath: settings.GameOrSteamBinaryPath.value,
-      filters: [{name: 'Executables', extensions: ['exe']}],
-    })
-    if (newPath) {
-      settings.GameOrSteamBinaryPath.value = newPath
-    }
-  })
   const onKeyUp = ((event: KeyboardEvent) => {
     if (event.key === 'Control') {
       ctrlPressed.value = false

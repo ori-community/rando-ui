@@ -1,6 +1,7 @@
 import {publicProcedure, router} from "@launcher/api/trpc"
 import {z} from "zod"
 import {dialog} from "electron"
+import {getMainWindow} from "@launcher/main"
 
 export const systemDialogs = router({
   pickFile: publicProcedure
@@ -14,7 +15,7 @@ export const systemDialogs = router({
       })
     )
     .query(async ({input}): Promise<string | null> => {
-      const result = await dialog.showOpenDialog({
+      const result = await dialog.showOpenDialog(getMainWindow(), {
         defaultPath: input.defaultPath,
         properties: ['openFile'],
         filters: input.filters,

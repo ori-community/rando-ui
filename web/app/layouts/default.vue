@@ -1,6 +1,9 @@
 <template>
   <v-app>
     <div id="backdrop" class="backdrop"/>
+
+    <wotw-launcher-helper-dialogs />
+
     <v-container class="toolbar">
       <rando-page-toolbar/>
     </v-container>

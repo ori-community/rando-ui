@@ -23,6 +23,7 @@
     "@mdi/font": "^7.4.47",
     "@pinia/nuxt": "^0.11.2",
     "@trpc/client": "^10.45.2",
+    "@vueuse/core": "^14.1.0",
     "axios": "^1.12.2",
     "commonmark": "^0.31.2",
     "date-fns": "^4.1.0",

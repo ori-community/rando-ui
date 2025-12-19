@@ -8,7 +8,18 @@ export type LaunchSetupValidationError =
 
 export type LaunchResult = {
   launchedSuccessfully: true,
-} | {
-  launchedSuccessfully: false,
-  setupValidationErrors: LaunchSetupValidationError[],
-}
+} | (
+  {
+    launchedSuccessfully: false,
+  } & (
+    {
+      errorType: "setup_validation_errors",
+      setupValidationErrors: LaunchSetupValidationError[],
+    } | {
+      errorType: "unknown_error",
+      errorMessage: string,
+    }
+  )
+)
+
+export type UnsuccessfulLaunchResult = LaunchResult & {launchedSuccessfully: false}

@@ -115,13 +115,21 @@
     setupFinished: [],
   }>()
 
+  const props = withDefaults(
+    defineProps<{
+      loadDefaultsFromSettings?: boolean,
+    }>(), {
+      loadDefaultsFromSettings: true,
+    }
+  )
+
   const settingsStore = useSettingsStore()
   const settings = storeToRefs(settingsStore)
   const electronApi = useElectronApi()
   const availableGameLaunchMethods = ref<Settings['GameLaunchMethod'][]>([])
   const availableModloaderMethods = ref<Settings['ModloaderMethod'][]>([])
-  const gameLaunchMethod = ref<Settings['GameLaunchMethod'] | null>(null)
-  const modloaderMethod = ref<Settings['ModloaderMethod'] | null>(null)
+  const gameLaunchMethod = ref<Settings['GameLaunchMethod'] | null>(props.loadDefaultsFromSettings ? settings.GameLaunchMethod.value : null)
+  const modloaderMethod = ref<Settings['ModloaderMethod'] | null>(props.loadDefaultsFromSettings ? settings.ModloaderMethod.value : null)
   const steamBinaryPath = ref("")
   const gameBinaryPath = ref("")
   const setupLoading = ref(false)

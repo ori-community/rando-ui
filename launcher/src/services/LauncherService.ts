@@ -193,6 +193,7 @@ export class LauncherService {
     if (setupValidationErrors.length > 0) {
       return {
         launchedSuccessfully: false,
+        errorType: "setup_validation_errors",
         setupValidationErrors,
       }
     }
@@ -213,7 +214,7 @@ export class LauncherService {
     if (settings.ModloaderMethod === "inject") {
       const injectorPathWithWindowsSlashes = getInstallDataPath("client/Injector.exe").replaceAll("/", "\\")
 
-      const startArguments = ["-FilePath", injectorPathWithWindowsSlashes, "-ArgumentList", `"-i",\`"${getInstallDataPath()}\`","-u",\`"${getUserDataPath()}"\``]
+      const startArguments = ["-FilePath", injectorPathWithWindowsSlashes, "-ArgumentList", `"-i",\`"${getInstallDataPath()}\`","-u",\`"${getUserDataPath()}\`"`]
       if (!settings.DeveloperMode) {
         startArguments.push("-WindowStyle", "Hidden")
       }

@@ -200,7 +200,10 @@
       }
 
       setupErrorMessages.value = (await electronApi.launcher.validateSetup.query()).map(e => launchSetupValidationErrorMessages[e])
-      emits("setupFinished")
+
+      if (setupErrorMessages.value.length === 0) {
+        emits("setupFinished")
+      }
     } catch (e) {
       setupErrorMessages.value = [String(e)]
     }

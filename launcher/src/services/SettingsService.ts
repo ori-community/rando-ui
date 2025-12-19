@@ -32,7 +32,7 @@ export class SettingsService {
   public static getDefaultGameBinaryPath() {
     switch (LauncherService.getPlatform()) {
       case "windows":
-        return "C:\\Program Files (x86)\\Steam\\common\\Ori and the Will of the Wisps\\oriwotw.exe"
+        return "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Ori and the Will of the Wisps\\oriwotw.exe"
       case "linux":
         return `/home/${process.env.USER ?? "user"}/.steam/steam/steamapps/common/Ori and the Will of the Wisps/oriwotw.exe`
     }
@@ -154,7 +154,7 @@ export class SettingsService {
 
     this.settingsCache[key] = value
     this.settingsCacheDirty = true
-    log.info("Setting changed:", key, value)
+    log.info("Setting changed:", key, "=", value)
     this.events.emit("settingChanged", key, value)
 
     if (this.settingsFlushTimeoutId === null) {

@@ -3,7 +3,7 @@ import {SettingsService} from "@launcher/services/SettingsService"
 import fs from "node:fs"
 import {execa} from "execa"
 import path from "node:path"
-import {getInstallDataPath} from "@launcher/paths"
+import {getInstallDataPath, getUserDataPath} from "@launcher/paths"
 import {fromFile as hashFile} from "hasha"
 import {Settings} from "@shared/types/settings"
 import os from "node:os"
@@ -212,7 +212,7 @@ export class LauncherService {
     if (settings.ModloaderMethod === "inject") {
       const injectorPathWithWindowsSlashes = getInstallDataPath("client/Injector.exe").replaceAll("/", "\\")
 
-      const startArguments = ["-FilePath", injectorPathWithWindowsSlashes, "-ArgumentList", `"-m",\`"${getInstallDataPath("client")}\`"`]
+      const startArguments = ["-FilePath", injectorPathWithWindowsSlashes, "-ArgumentList", `"-i",\`"${getInstallDataPath()}\`","-u",\`"${getUserDataPath()}"\``]
       if (!settings.DeveloperMode) {
         startArguments.push("-WindowStyle", "Hidden")
       }
@@ -226,7 +226,8 @@ export class LauncherService {
     const gameArguments: string[] = []
 
     if (settings.ModloaderMethod === "proxy") {
-      gameArguments.push("-m", getInstallDataPath("client"))
+      gameArguments.push("-i", getInstallDataPath())
+      gameArguments.push("-u", getUserDataPath())
     }
 
     switch (settings.GameLaunchMethod) {

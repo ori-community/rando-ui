@@ -7,6 +7,7 @@ import {namedHookWithTaskFn} from "@electron-forge/plugin-base"
 import {execa} from "execa"
 import packageJson from "./package.json"
 import path from "node:path"
+import fs from "node:fs"
 
 /** Native modules that need to be copied into the ASAR */
 export const nativeExtraModules = ["focus-ori", "zeromq", "hasha"]
@@ -32,7 +33,17 @@ const config: ForgeConfig = {
             }
 
             // @ts-ignore
-            return execa("npm", ["install", `${packageName}@${packageJson.dependencies[packageName]}`, "-g", "--prefix", resourcesPath])
+            const version = packageJson.dependencies[packageName] as string
+
+            // Manually copy "file:" dependencies to resolve symlinks
+            if (version.startsWith("file:")) {
+              return fs.promises.cp(version.substring("file:".length), path.join(resourcesPath, "node_modules", packageName), {
+                recursive: true,
+                dereference: true,
+              })
+            }
+
+            return execa("npm", ["install", `${packageName}@${version}`, "-g", "--prefix", resourcesPath])
           })
         )
       },

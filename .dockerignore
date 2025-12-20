@@ -1,0 +1,6 @@
+launcher
+**/node_modules
+web/.env
+web/.nuxt
+web/.output
+web/dist

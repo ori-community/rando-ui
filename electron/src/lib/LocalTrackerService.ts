@@ -109,11 +109,11 @@ export class LocalTrackerService {
       }
 
       this.window.on(
-        'moved',
+        'move',
         debounce(() => this.saveWindowRect(), 500),
       )
       this.window.on(
-        'resized',
+        'resize',
         debounce(() => this.saveWindowRect(), 500),
       )
 

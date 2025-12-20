@@ -1,8 +1,5 @@
 import {publicProcedure, router} from "@launcher/api/trpc"
-import {SettingsService} from "@launcher/services/SettingsService"
-import {Setting, SettingKey, Settings} from "@shared/types/settings"
 import {z} from "zod"
-import {observable} from "@trpc/server/observable"
 import {LauncherService} from "@launcher/services/LauncherService"
 
 export const launcher = router({

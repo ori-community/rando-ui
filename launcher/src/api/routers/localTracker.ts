@@ -1,6 +1,4 @@
 import {publicProcedure, router} from "@launcher/api/trpc"
-import {observable} from "@trpc/server/observable"
-import {LocalTrackerWebSocketService} from "@launcher/services/LocalTrackerWebSocketService"
 import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
 import {SettingsService} from "@launcher/services/SettingsService"
 

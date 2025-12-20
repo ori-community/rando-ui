@@ -1,10 +1,9 @@
 import {builtinModules} from "node:module"
 import type {ConfigEnv, Plugin, UserConfig} from "vite"
-import pkg from "./package.json"
 import {fileURLToPath} from "url"
+import {nativeExtraModules} from "./forge.config"
 
-export const builtins = ["electron", "focus-ori", ...builtinModules.map((m) => [m, `node:${m}`]).flat()]
-export const external = [...builtins, ...Object.keys("dependencies" in pkg ? (pkg.dependencies as Record<string, unknown>) : {})]
+export const externals = ["electron", ...nativeExtraModules, ...builtinModules.map((m) => [m, `node:${m}`]).flat()]
 
 export function getBaseViteConfig(env: ConfigEnv): UserConfig {
   return {
@@ -20,7 +19,7 @@ export function getBaseViteConfig(env: ConfigEnv): UserConfig {
     build: {
       minify: false,
       rollupOptions: {
-        external,
+        external: externals,
       },
     },
   }

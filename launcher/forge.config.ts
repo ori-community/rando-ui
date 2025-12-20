@@ -1,12 +1,43 @@
-import type {ForgeConfig} from "@electron-forge/shared-types"
+import {ForgeConfig} from "@electron-forge/shared-types"
 import {MakerZIP} from "@electron-forge/maker-zip"
 import {VitePlugin} from "@electron-forge/plugin-vite"
 import {FusesPlugin} from "@electron-forge/plugin-fuses"
 import {FuseV1Options, FuseVersion} from "@electron/fuses"
+import {namedHookWithTaskFn} from "@electron-forge/plugin-base"
+import {execa} from "execa"
+import packageJson from "./package.json"
+import path from "node:path"
+
+/** Native modules that need to be copied into the ASAR */
+export const nativeExtraModules = ["focus-ori", "zeromq", "hasha"]
 
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    ignore: (file: string) => {
+      if (!file) return false
+
+      // Include vite output, UI and resources
+      return !["/.vite", "/web-build", "/resources"].some(f => file.startsWith(f))
+    },
+    icon: path.join(__dirname, "resources/icon"),
+  },
+  hooks: {
+    packageAfterCopy: namedHookWithTaskFn<"packageAfterCopy">(
+      async (_listrTask, _resolvedForgeConfig, resourcesPath, _electronVersion, _platform, _arch) => {
+        await Promise.all(
+          nativeExtraModules.map((packageName) => {
+            if (!Object.hasOwn(packageJson.dependencies, packageName)) {
+              throw new Error(`Failed to package module '${packageName}': It was not found in package.json dependencies`)
+            }
+
+            // @ts-ignore
+            return execa("npm", ["install", `${packageName}@${packageJson.dependencies[packageName]}`, "-g", "--prefix", resourcesPath])
+          })
+        )
+      },
+      "Installing native extra dependencies",
+    ),
   },
   rebuildConfig: {},
   makers: [

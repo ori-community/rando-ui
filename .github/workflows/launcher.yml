@@ -47,7 +47,7 @@ jobs:
       - name: Archive artifacts
         uses: actions/upload-artifact@v6
         with:
-          name: launcher
+          name: launcher-${{ matrix.os }}
           retention-days: 7
           path: |
             ./launcher/out/*

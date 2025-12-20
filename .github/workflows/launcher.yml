@@ -1,0 +1,53 @@
+name: launcher
+
+on:
+  push:
+    branches:
+    - '*'
+
+jobs:
+  build_launcher:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-2022 ]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout 🛎
+        uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache-dependency-path: |
+            ./launcher/package-lock.json
+            ./shared/package-lock.json
+          cache: npm
+
+      - run: npm ci
+        working-directory: ./launcher
+
+      - run: npm ci
+        working-directory: ./shared
+
+      - name: Resolve symlinks in launcher/node_modules
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
+          set -x
+          for link in $(find . -maxdepth 1 -type l); do
+            source="$(readlink -e $link)"
+            rm -rf "$link"
+            cp -r --dereference "$source" "$link"
+          done
+        working-directory: ./launcher/node_modules
+
+      - run: npm run package
+        working-directory: ./launcher
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: launcher
+          retention-days: 7
+          path: |
+            ./launcher/out/*

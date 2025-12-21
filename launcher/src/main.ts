@@ -67,7 +67,6 @@ const createWindow = async () => {
       absolutePath = path.join(webBuildBasePath, "index.html")
     }
 
-    console.log(`file://${absolutePath}`)
     return net.fetch(`file://${absolutePath}`)
   })
 
@@ -93,12 +92,13 @@ const createWindow = async () => {
 
   if (process.env.NODE_ENV === "development") {
     await mainWindow.loadURL("http://localhost:3000")
+
+    // Open the DevTools.
+    mainWindow.webContents.openDevTools()
   } else {
     await mainWindow.loadURL("app://bundle/")
   }
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools()
   mainWindow.maximize()
 
   await RandoIPCService.startIPCServer()

@@ -135,22 +135,38 @@ export class LauncherService {
     }
 
     const settings = await SettingsService.instance.getSettings()
-    const sourceProxyFileName = getInstallDataPath("client/winhttp.dll")
-    const targetProxyFileName = path.join(path.dirname(settings.GameBinaryPath), "winhttp.dll")
+    const sourceProxyFileName = await fs.promises.realpath(getInstallDataPath("client/winhttp.dll"))
+    const targetProxyFileName = path.join(await fs.promises.realpath(path.join(path.dirname(settings.GameBinaryPath))), "winhttp.dll")
 
-    await execa("Start-Process", [
-      "powershell",
-      "-ArgumentList",
-      `"New-Item -Path '${targetProxyFileName}' -ItemType SymbolicLink -Value '${sourceProxyFileName}' -Force; sleep 2;"`,
-      "-Verb",
-      "RunAs",
-      "-Wait",
-      "-WindowStyle",
-      "Hidden",
-    ], {
-      shell: "powershell",
-      windowsHide: true,
-    })
+    switch (this.getPlatform()) {
+      case "windows":
+        await execa("Start-Process", [
+          "powershell",
+          "-ArgumentList",
+          `"New-Item -Path '${targetProxyFileName}' -ItemType SymbolicLink -Value '${sourceProxyFileName}' -Force; sleep 2;"`,
+          "-Verb",
+          "RunAs",
+          "-Wait",
+          "-WindowStyle",
+          "Hidden",
+        ], {
+          shell: "powershell",
+          windowsHide: true,
+        })
+        break;
+      case "linux":
+        await fs.promises.rm(targetProxyFileName, {force: true})
+
+        if (process.env.WOTW_RANDOMIZER_APPIMAGE_ROOT) {
+          // Always copy when running in AppImage because the mountpoint will likely
+          // be different every time
+          await fs.promises.copyFile(sourceProxyFileName, targetProxyFileName)
+        } else {
+          await fs.promises.symlink(sourceProxyFileName, targetProxyFileName)
+        }
+
+        break;
+    }
   }
 
   /**
@@ -160,8 +176,8 @@ export class LauncherService {
    */
   static async isProxyModloaderUpToDate() {
     const settings = await SettingsService.instance.getSettings()
-    const sourceProxyFileName = getInstallDataPath("client/winhttp.dll")
-    const targetProxyFileName = path.join(path.dirname(settings.GameBinaryPath), "winhttp.dll")
+    const sourceProxyFileName = await fs.promises.realpath(getInstallDataPath("client/winhttp.dll"))
+    const targetProxyFileName = path.join(await fs.promises.realpath(path.join(path.dirname(settings.GameBinaryPath))), "winhttp.dll")
 
     if (!fs.existsSync(targetProxyFileName)) {
       return false
@@ -248,7 +264,39 @@ export class LauncherService {
             await waitForProcess("oriwotw.exe", 60)
             break
           case "linux":
-            // TODO
+            const wineprefixLocation = getUserDataPath("wineprefix")
+
+            if (process.env.WOTW_RANDOMIZER_APPIMAGE_ROOT) {
+              // We are running as AppImage and have access to our own wine and DXVK.
+              log.info("Detected running inside AppImage")
+
+              if (!fs.existsSync(wineprefixLocation)) {
+                log.info("Creating Wineprefix with bundled Wine and DXVK")
+
+                // Create a new wineprefix
+                await defaultExec("wine", ["hostname"], {
+                  env: {
+                    WINEPREFIX: wineprefixLocation,
+                  },
+                })
+
+                // Install DXVK
+                await fs.promises.cp(
+                  path.join(process.env.WOTW_RANDOMIZER_APPIMAGE_ROOT, "/opt/dxvk/x64"),
+                  path.join(wineprefixLocation, "drive_c/windows/system32"), {
+                    force: true,
+                    recursive: true,
+                  }
+                )
+              }
+            }
+
+            defaultExecDetached("wine", [settings.GameBinaryPath, ...gameArguments], {
+              env: {
+                WINEPREFIX: wineprefixLocation,
+                WINEDLLOVERRIDES: "winhttp.dll=n,b",
+              },
+            })
             break
         }
 

@@ -1,6 +1,7 @@
 import {parse as parseCsv} from "csv-parse"
 import os from "os"
 import {execa} from "execa"
+import log from "electron-log/main"
 
 export const getElectronUrl = (to: string) => {
   return process.env.NODE_ENV === "development"
@@ -10,7 +11,7 @@ export const getElectronUrl = (to: string) => {
 
 export const isProcessRunning = async (processName: string) => {
   if (os.platform() !== "win32") {
-    console.log("isProcessRunning used on unsupported OS")
+    log.error("isProcessRunning used on unsupported OS")
     return false
   }
 

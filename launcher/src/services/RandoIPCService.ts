@@ -61,11 +61,16 @@ export class RandoIPCService {
     return socket !== null && !socket.closed && peerConnected
   }
 
+  static stopIPCServerIfStarted() {
+    if (socket !== null) {
+      socket.close()
+      socket = null
+    }
+  }
+
   static async startIPCServer() {
     try {
-      if (socket !== null) {
-        socket.close()
-      }
+      this.stopIPCServerIfStarted()
 
       peerConnected = false
       socket = new zmq.Dealer({

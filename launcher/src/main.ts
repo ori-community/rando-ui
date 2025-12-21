@@ -114,6 +114,10 @@ app.on("ready", async () => {
   }
 })
 
+app.on("quit", () => {
+  RandoIPCService.stopIPCServerIfStarted()
+})
+
 app.on("window-all-closed", () => {
   app.quit()
 })

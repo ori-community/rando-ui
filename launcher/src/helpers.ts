@@ -5,7 +5,7 @@ import {execa} from "execa"
 export const getElectronUrl = (to: string) => {
   return process.env.NODE_ENV === "development"
     ? `http://localhost:3000${to}`
-    : `app://./index.html#${to}`
+    : `app://bundle${to}`
 }
 
 export const isProcessRunning = async (processName: string) => {

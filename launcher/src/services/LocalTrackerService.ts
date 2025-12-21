@@ -84,7 +84,7 @@ export class LocalTrackerService {
         paintWhenInitiallyHidden: true,
       })
 
-      if (process.env.WEBPACK_DEV_SERVER_URL) {
+      if (process.env.NODE_ENV === "development") {
         this.window.webContents.openDevTools()
       }
 

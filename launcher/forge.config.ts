@@ -26,26 +26,45 @@ const config: ForgeConfig = {
   hooks: {
     packageAfterCopy: namedHookWithTaskFn<"packageAfterCopy">(
       async (_listrTask, _resolvedForgeConfig, resourcesPath, _electronVersion, _platform, _arch) => {
-        await Promise.all(
-          nativeExtraModules.map((packageName) => {
-            if (!Object.hasOwn(packageJson.dependencies, packageName)) {
-              throw new Error(`Failed to package module '${packageName}': It was not found in package.json dependencies`)
-            }
+        const nativeExtraNpmModules: string[] = []
+        const nativeExtraFileModules: string[] = []
 
-            // @ts-ignore
-            const version = packageJson.dependencies[packageName] as string
+        for (const nativeExtraModule of nativeExtraModules) {
+          // @ts-ignore
+          const version = packageJson.dependencies[nativeExtraModule] as string
 
-            // Manually copy "file:" dependencies to resolve symlinks
-            if (version.startsWith("file:")) {
-              return fs.promises.cp(version.substring("file:".length), path.join(resourcesPath, "node_modules", packageName), {
-                recursive: true,
-                dereference: true,
-              })
-            }
+          if (version.startsWith("file:")) {
+            nativeExtraFileModules.push(nativeExtraModule)
+          } else {
+            nativeExtraNpmModules.push(nativeExtraModule)
+          }
+        }
 
-            return execa("npm", ["install", `${packageName}@${version}`, "-g", "--prefix", resourcesPath])
+        for (const nativeExtraNpmModule of nativeExtraNpmModules) {
+          if (!Object.hasOwn(packageJson.dependencies, nativeExtraNpmModule)) {
+            throw new Error(`Failed to package module '${nativeExtraNpmModule}': It was not found in package.json dependencies`)
+          }
+
+          // @ts-ignore
+          const version = packageJson.dependencies[nativeExtraNpmModule] as string
+
+          await execa("npm", ["install", `${nativeExtraNpmModule}@${version}`, "--prefix", resourcesPath])
+        }
+
+        const nodeModulesPath = path.join(resourcesPath, "node_modules")
+        for (const nativeExtraFileModule of nativeExtraFileModules) {
+          // @ts-ignore
+          const version = packageJson.dependencies[nativeExtraFileModule] as string
+
+          await fs.promises.mkdir(nodeModulesPath, {
+            recursive: true
           })
-        )
+
+          await fs.promises.cp(version.substring("file:".length), path.join(nodeModulesPath, nativeExtraFileModule), {
+            recursive: true,
+            dereference: true,
+          })
+        }
       },
       "Installing native extra dependencies",
     ),

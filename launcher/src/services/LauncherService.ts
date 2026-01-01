@@ -3,7 +3,7 @@ import {SettingsService} from "@launcher/services/SettingsService"
 import fs from "node:fs"
 import {execa} from "execa"
 import path from "node:path"
-import {getInstallDataPath, getUserDataPath} from "@launcher/paths"
+import {getInstallDataPath, getRandomizerUserDataPath, getUserDataPath} from "@launcher/paths"
 import {fromFile as hashFile} from "hasha"
 import {Settings} from "@shared/types/settings"
 import os from "node:os"
@@ -176,7 +176,7 @@ export class LauncherService {
           shell: "powershell",
           windowsHide: true,
         })
-        break;
+        break
       case "linux":
         await fs.promises.rm(targetProxyFileName, {force: true})
 
@@ -188,7 +188,7 @@ export class LauncherService {
           await fs.promises.symlink(sourceProxyFileName, targetProxyFileName)
         }
 
-        break;
+        break
     }
   }
 
@@ -213,16 +213,23 @@ export class LauncherService {
   }
 
   /**
+   * Sets the seed source for new games. (aka writes to .newgameseedsource)
+   */
+  static async setNewGameSeedSource(seedSource: string) {
+    await fs.promises.writeFile(getRandomizerUserDataPath(".newgameseedsource"), seedSource, {encoding: "utf-8"})
+  }
+
+  /**
    * Launches the randomizer or brings the game window into focus if it's
    * already running.
    */
-  static async launchOrFocusRandomizer(): Promise<LaunchResult> {
+  static async launchOrFocusRandomizer(seedSource: string | undefined = undefined): Promise<LaunchResult> {
     // This is just a wrapper around _launchOrFocusRandomizer that also updates
     // isLaunching and makes sure it gets reset properly.
 
     try {
       this.isLaunching = true
-      const response = await this._launchOrFocusRandomizer()
+      const response = await this._launchOrFocusRandomizer(seedSource)
       this.events.emit("onLaunchResult", response)
       this.isLaunching = false
       return response
@@ -237,7 +244,11 @@ export class LauncherService {
     }
   }
 
-  private static async _launchOrFocusRandomizer(): Promise<LaunchResult> {
+  private static async _launchOrFocusRandomizer(seedSource: string | undefined): Promise<LaunchResult> {
+    if (seedSource !== undefined) {
+      await this.setNewGameSeedSource(seedSource)
+    }
+
     if (RandoIPCService.isConnected()) {
       await RandoIPCService.emit("load_new_game_source")
 
@@ -330,7 +341,7 @@ export class LauncherService {
                   path.join(wineprefixLocation, "drive_c/windows/system32"), {
                     force: true,
                     recursive: true,
-                  }
+                  },
                 )
               }
             }

@@ -30,18 +30,18 @@ export const useLauncherHelper = (): LauncherHelper => {
       })
     }
 
-    const launch = async (): Promise<LaunchResult> => {
+    const launch = async (newGameSeedSource: string | undefined = undefined): Promise<LaunchResult> => {
       const launchWrapper = async(): Promise<LaunchResult> => {
         if (!electronApi) {
           return {
             launchedSuccessfully: false,
             errorType: "unknown_error",
-            errorMessage: "Electron API was not available",
+            errorMessage: "Electron API is unavailable",
           }
         }
 
         try {
-          return await electronApi.launcher.launchOrFocusRandomizer.query()
+          return await electronApi.launcher.launchOrFocusRandomizer.query(newGameSeedSource)
         } catch (e) {
           return {
             launchedSuccessfully: false,

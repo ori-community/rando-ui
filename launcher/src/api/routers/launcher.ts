@@ -31,8 +31,9 @@ export const launcher = router({
    * @see LauncherService.launchOrFocusRandomizer
    */
   launchOrFocusRandomizer: publicProcedure
-    .query(async () => {
-      return await LauncherService.launchOrFocusRandomizer()
+    .input(z.string().optional())
+    .query(async ({input}) => {
+      return await LauncherService.launchOrFocusRandomizer(input)
     }),
   /**
    * @see LauncherService.getGameLaunchMethodsAvailableOnPlatform

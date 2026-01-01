@@ -5,31 +5,6 @@
       <div class="mb-8">
         <h3>Map</h3>
         <rando-settings-checkbox
-          v-model="settings.HideQuestFilter.value"
-          label="Hide Quest Filter"
-          description="Never show the Quests filter in the in-game map"
-        />
-        <rando-settings-checkbox
-          v-model="settings.HideWarpFilter.value"
-          label="Hide Warp Filter"
-          description="Never show the Warp filter in the in-game map"
-        />
-        <rando-settings-checkbox
-          v-model="settings.HideCollectableFilter.value"
-          label="Hide Collectibles Filter"
-          description="Never show the Collectables filter in the in-game map"
-        />
-        <rando-settings-checkbox
-          v-model="settings.AlwaysShowWarps.value"
-          label="Always Show Warps"
-          description="Always show Spirit Wells on the in-game map, no matter what filter"
-        />
-        <rando-settings-checkbox
-          v-model="settings.AlwaysShowKeystoneDoors.value"
-          label="Always Show Keystone Doors"
-          description="Always show Keystone Doors on the in-game map, no matter what filter"
-        />
-        <rando-settings-checkbox
           v-model="settings.ShowTransparentOutOfLogicIcons.value"
           label="Show Out-of-Logic Items"
           description="Show transparent out of logic icons on the In-Logic map"
@@ -54,35 +29,69 @@
         />
       </div>
       <div class="mb-8">
-        <h3>Miscellaneous</h3>
+        <h3>Tracker</h3>
+
         <rando-settings-checkbox
-          v-model="settings.ShowStatsAfterFinish.value"
-          label="Show Stats after Finish"
-          description="Show stats in the launcher after finishing a game"
+          v-model="settings.LaunchWithTracker.value"
+          label="Launch with Game"
+          description="Automatically open the item tracker when launching the randomizer"
         />
+
         <rando-settings-checkbox
-          v-model="settings.FunnyMoney.value"
-          label="Random Currency Names"
-          description='Bored of seeing "X Spirit Light"? This setting is for you!'
+          v-model="settings.LocalTrackerShowTimer.value"
+          label="Show Timer"
+          description="Shows the timer for the current game"
         />
+
         <rando-settings-checkbox
-          v-model="settings.AlwaysShowKeystones.value"
-          label="Always Show Keystones"
-          description="Keep your keystone count visible while playing"
+          v-model="settings.LocalTrackerAlwaysOnTop.value"
+          label="Always on Top"
+          description="Show the Item Tracker on top of other windows"
         />
+
         <rando-settings-checkbox
-          v-model="settings.ShowAllSecrets.value"
-          label="Disable always showing secret areas"
-          description="By default, the randomizer shows all secrets without having the Sense Shard equipped"
+          v-model="settings.LocalTrackerTransparent.value"
+          label="Transparent Window"
+          description="Make the Item Tracker transparent"
         />
-        <rando-settings-slider
-          v-model="settings.CameraShakeIntensity.value"
-          :min="0"
-          :max="2"
-          :step="0.1"
-          label="Camera Shake Intensity"
-          description="Sets the intensity of camera shakes in the game"
+
+        <rando-settings-checkbox
+          v-model="settings.LocalTrackerIgnoreMouse.value"
+          label="Ignore Mouse"
+          description="This is helpful if you want to show the tracker above the game. Note that you cannot move/resize the tracker with this option enabled"
         />
+
+        <rando-settings-checkbox
+          v-model="settings.LocalTrackerShowWillowHearts.value"
+          label="Show Willow Hearts"
+          description="Shows the amount of destroyed willow hearts"
+        />
+
+        <v-expand-transition>
+          <rando-settings-checkbox
+            v-if="settings.LocalTrackerShowWillowHearts.value"
+            v-model="settings.LocalTrackerHideHeartsUntilFirstHeart.value"
+            label="Hide counter until first heart is destroyed"
+            description="Only shows the amount of willow hearts when at least one heart is destroyed"
+          />
+        </v-expand-transition>
+
+        <v-btn
+          depressed
+          color="accent"
+          class="mt-5"
+          :disabled="localTrackerPositionReset"
+          @click="resetLocalTrackerPosition"
+        >
+          <template v-if="localTrackerPositionReset">
+            <v-icon start>mdi-check</v-icon>
+            Tracker position reset
+          </template>
+          <template v-else>
+            <v-icon start>mdi-restore</v-icon>
+            Reset tracker position
+          </template>
+        </v-btn>
       </div>
       <div class="mb-8">
         <h3>Launcher Setup</h3>
@@ -165,69 +174,35 @@
         />
       </div>
       <div class="mb-8">
-        <h3>Tracker</h3>
-
+        <h3>Miscellaneous</h3>
         <rando-settings-checkbox
-          v-model="settings.LaunchWithTracker.value"
-          label="Launch with Game"
-          description="Automatically open the item tracker when launching the randomizer"
+          v-model="settings.ShowStatsAfterFinish.value"
+          label="Show Stats after Finish"
+          description="Show stats in the launcher after finishing a game"
         />
-
         <rando-settings-checkbox
-          v-model="settings.LocalTrackerShowTimer.value"
-          label="Show Timer"
-          description="Shows the timer for the current game"
+          v-model="settings.FunnyMoney.value"
+          label="Random Currency Names"
+          description='Bored of seeing "X Spirit Light"? This setting is for you!'
         />
-
         <rando-settings-checkbox
-          v-model="settings.LocalTrackerAlwaysOnTop.value"
-          label="Always on Top"
-          description="Show the Item Tracker on top of other windows"
+          v-model="settings.AlwaysShowKeystones.value"
+          label="Always Show Keystones"
+          description="Keep your keystone count visible while playing"
         />
-
         <rando-settings-checkbox
-          v-model="settings.LocalTrackerTransparent.value"
-          label="Transparent Window"
-          description="Make the Item Tracker transparent"
+          v-model="settings.ShowAllSecrets.value"
+          label="Disable always showing secret areas"
+          description="By default, the randomizer shows all secrets without having the Sense Shard equipped"
         />
-
-        <rando-settings-checkbox
-          v-model="settings.LocalTrackerIgnoreMouse.value"
-          label="Ignore Mouse"
-          description="This is helpful if you want to show the tracker above the game. Note that you cannot move/resize the tracker with this option enabled"
+        <rando-settings-slider
+          v-model="settings.CameraShakeIntensity.value"
+          :min="0"
+          :max="2"
+          :step="0.1"
+          label="Camera Shake Intensity"
+          description="Sets the intensity of camera shakes in the game"
         />
-
-        <rando-settings-checkbox
-          v-model="settings.LocalTrackerShowWillowHearts.value"
-          label="Show Willow Hearts"
-          description="Shows the amount of destroyed willow hearts"
-        />
-
-        <v-expand-transition>
-          <rando-settings-checkbox
-            v-if="settings.LocalTrackerShowWillowHearts.value"
-            v-model="settings.LocalTrackerHideHeartsUntilFirstHeart.value"
-            label="Hide counter until first heart is destroyed"
-            description="Only shows the amount of willow hearts when at least one heart is destroyed"
-          />
-        </v-expand-transition>
-
-        <v-btn
-          depressed
-          color="accent"
-          class="mt-5"
-          :disabled="localTrackerPositionReset"
-          @click="resetLocalTrackerPosition"
-        >
-          <template v-if="localTrackerPositionReset">
-            <v-icon start>mdi-check</v-icon>
-            Tracker position reset
-          </template>
-          <template v-else>
-            <v-icon start>mdi-restore</v-icon>
-            Reset tracker position
-          </template>
-        </v-btn>
       </div>
       <div ref="developerSettingsContainer" class="mb-8">
         <template v-if="settings.DeveloperMode.value">

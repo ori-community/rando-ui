@@ -16,6 +16,20 @@ export const useLauncherHelper = (): LauncherHelper => {
     const onLaunchResultKey: EventBusKey<LaunchResult> = Symbol("launcher-helper-on-launch-result")
     const onLaunchResult = useEventBus(onLaunchResultKey)
 
+    if (electronApi) {
+      electronApi.launcher.isLaunching.subscribe(undefined, {
+        onData(value) {
+          isLaunching.value = value
+        },
+      })
+
+      electronApi.launcher.onLaunchResult.subscribe(undefined, {
+        onData(value) {
+          onLaunchResult.emit(value)
+        },
+      })
+    }
+
     const launch = async (): Promise<LaunchResult> => {
       const launchWrapper = async(): Promise<LaunchResult> => {
         if (!electronApi) {
@@ -37,11 +51,7 @@ export const useLauncherHelper = (): LauncherHelper => {
         }
       }
 
-      isLaunching.value = true
-      const result = await launchWrapper()
-      onLaunchResult.emit(result)
-      isLaunching.value = false
-      return result
+      return await launchWrapper()
     }
 
     instance = {isLaunching, launch, onLaunchResult}

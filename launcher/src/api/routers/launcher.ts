@@ -1,6 +1,9 @@
 import {publicProcedure, router} from "@launcher/api/trpc"
 import {z} from "zod"
 import {LauncherService} from "@launcher/services/LauncherService"
+import {observable} from "@trpc/server/observable"
+import {LaunchResult} from "@shared/types/launcher"
+import {Settings} from "@shared/types/settings"
 
 export const launcher = router({
   /**
@@ -52,5 +55,36 @@ export const launcher = router({
     .input(z.string())
     .query(async ({input}) => {
       return await LauncherService.getModloaderMethodsAvailableOnForGameLaunchMethod(input as Settings['GameLaunchMethod'])
+    }),
+  /**
+   * Subscribe to get the isLaunching state of LauncherService
+   * Will emit its current value on subscription.
+   */
+  isLaunching: publicProcedure
+    .subscription(() => {
+      return observable<boolean>((emit) => {
+        const onIsLaunchingChanged = (value: boolean) => emit.next(value)
+        LauncherService.events.on("isLaunchingChanged", onIsLaunchingChanged)
+
+        emit.next(LauncherService.isLaunching)
+
+        return () => {
+          LauncherService.events.off("isLaunchingChanged", onIsLaunchingChanged)
+        }
+      })
+    }),
+  /**
+   * Subscribe to get LaunchResults when LauncherService launches the game or fails to do so.
+   */
+  onLaunchResult: publicProcedure
+    .subscription(() => {
+      return observable<LaunchResult>((emit) => {
+        const onLaunchResult = (value: LaunchResult) => emit.next(value)
+        LauncherService.events.on("onLaunchResult", onLaunchResult)
+
+        return () => {
+          LauncherService.events.off("onLaunchResult", onLaunchResult)
+        }
+      })
     }),
 })

@@ -12,8 +12,31 @@ import log from "electron-log/main"
 import {waitForProcess} from "@launcher/helpers"
 import {RandoIPCService} from "@launcher/services/RandoIPCService"
 import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
+import {EventEmitter} from "events"
+
+type LauncherEvent = {
+  /** Emitted when the isLaunching property changed */
+  isLaunchingChanged: [boolean],
+
+  /** Emitted when a LaunchResult is ready */
+  onLaunchResult: [LaunchResult],
+}
 
 export class LauncherService {
+  public static readonly events: EventEmitter<LauncherEvent> = new EventEmitter()
+
+  /** Internal state. Use isLaunching instead. */
+  private static _isLaunching: boolean = false
+
+  public static get isLaunching(): boolean {
+    return this._isLaunching
+  }
+
+  private static set isLaunching(value: boolean) {
+    this._isLaunching = value
+    LauncherService.events.emit("isLaunchingChanged", value)
+  }
+
   static getPlatform(): LauncherPlatform {
     switch (os.platform()) {
       case "linux":
@@ -194,6 +217,27 @@ export class LauncherService {
    * already running.
    */
   static async launchOrFocusRandomizer(): Promise<LaunchResult> {
+    // This is just a wrapper around _launchOrFocusRandomizer that also updates
+    // isLaunching and makes sure it gets reset properly.
+
+    try {
+      this.isLaunching = true
+      const response = await this._launchOrFocusRandomizer()
+      this.events.emit("onLaunchResult", response)
+      this.isLaunching = false
+      return response
+    } catch (e) {
+      this.events.emit("onLaunchResult", {
+        launchedSuccessfully: false,
+        errorType: "unknown_error",
+        errorMessage: "An unknown error occurred: " + String(e),
+      })
+      this.isLaunching = false
+      throw e
+    }
+  }
+
+  private static async _launchOrFocusRandomizer(): Promise<LaunchResult> {
     if (RandoIPCService.isConnected()) {
       await RandoIPCService.emit("load_new_game_source")
 

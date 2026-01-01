@@ -3,7 +3,7 @@ import type {ConfigEnv, Plugin, UserConfig} from "vite"
 import {fileURLToPath} from "url"
 import {nativeExtraModules} from "./forge.config"
 
-export const externals = ["electron", ...nativeExtraModules, ...builtinModules.map((m) => [m, `node:${m}`]).flat()]
+export const externals = ["electron", "utf-8-validate", ...nativeExtraModules, ...builtinModules.map((m) => [m, `node:${m}`]).flat()]
 
 export function getBaseViteConfig(env: ConfigEnv): UserConfig {
   return {

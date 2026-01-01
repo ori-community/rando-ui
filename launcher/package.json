@@ -40,6 +40,7 @@
     "@trpc/server": "^10.45.2",
     "@types/lodash": "^4.17.17",
     "@types/ws": "^8.18.1",
+    "bufferutil": "^4.1.0",
     "csv-parse": "^6.1.0",
     "electron-log": "^5.4.1",
     "electron-trpc": "^0.7.1",

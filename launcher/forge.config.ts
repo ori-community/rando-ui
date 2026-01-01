@@ -10,7 +10,7 @@ import path from "node:path"
 import fs from "node:fs"
 
 /** Native modules that need to be copied into the ASAR */
-export const nativeExtraModules = ["focus-ori", "zeromq", "hasha"]
+export const nativeExtraModules = ["focus-ori", "zeromq", "hasha", "bufferutil", "ws"]
 
 const config: ForgeConfig = {
   packagerConfig: {

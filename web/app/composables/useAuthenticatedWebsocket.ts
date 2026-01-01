@@ -82,9 +82,14 @@ export class AuthenticatedWebSocketConnection extends TypedEventTarget<Authentic
         console.error("WebSocket failed to connect:", event)
       })
 
-      ws.addEventListener("close", () => {
+      ws.addEventListener("close", (event) => {
         // If this is not the currently active WebSocket, don't try to reconnect
         if (ws !== this.#ws) {
+          return
+        }
+
+        // Don't try to reconnect if the server kicked us out with VIOLATED_POLICY
+        if (event.code === 1008) {
           return
         }
 

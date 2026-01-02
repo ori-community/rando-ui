@@ -3,7 +3,7 @@ import {type EventBusKey, useEventBus, type UseEventBusReturn} from "@vueuse/cor
 
 type LauncherHelper = {
   isLaunching: Ref<boolean>,
-  launch: () => Promise<LaunchResult>,
+  launch: (newGameSeedSource?: string | undefined) => Promise<LaunchResult>,
   onLaunchResult: UseEventBusReturn<LaunchResult, unknown>,
 }
 

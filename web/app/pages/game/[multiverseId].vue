@@ -72,10 +72,10 @@
         <rando-throttled-spinner>
           <div v-if="userStore.isLoggedIn && multiverseReady">
             <div class="text-center mb-3">
-              <wotw-race-timer
+              <wotw-multiverse-race-timer
                 v-if="isRaceRunning"
-                :starting-at="normalGameHandlerState.raceStartingAt"
-                :finished-time="normalGameHandlerState.finishedTime ?? null"
+                :starting-at="normalGameHandlerState?.raceStartingAt"
+                :finished-time="normalGameHandlerState?.finishedTime ?? null"
               />
               <template v-else-if="isRaceModeEnabled">
                 <h3>Waiting for all players to be ready...</h3>
@@ -93,7 +93,7 @@
                 :world-finished-times="normalGameHandlerState?.worldFinishedTimes"
                 :universe-finished-times="normalGameHandlerState?.universeFinishedTimes"
               />
-              <wotw-race-result-view v-if="hasRace" :race="multiverse.race"/>
+              <wotw-multiverse-race-result-view v-if="hasRace" :race="multiverse.race"/>
             </div>
 
             <div v-if="devtoolsEnabled" class="mt-5">

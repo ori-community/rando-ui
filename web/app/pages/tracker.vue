@@ -43,9 +43,13 @@
 
 <script setup lang="ts">
 
+  import {ResetTracker, TrackerFlagsUpdate, TrackerTimerStateUpdate, TrackerUpdate} from "@shared/proto/messages";
+  import {decodePacket} from "@shared/proto/ProtoUtil";
+
   definePageMeta({
     layout: 'plain'
   })
+
   const route = useRoute()
   const isElectron = useIsElectron()
   let settingsStore = null
@@ -56,7 +60,6 @@
     settings = storeToRefs(settingsStore)
   }
 
-  // import { decodePacket } from '~/assets/proto/ProtoUtil'
   // import { ResetTracker, TrackerFlagsUpdate, TrackerTimerStateUpdate, TrackerUpdate } from '~/assets/proto/messages'
   // import { applyTransparentWindowStyles, isOBS } from '~/assets/lib/obs'
   // import { isElectron } from '~/assets/lib/isElectron'
@@ -68,7 +71,7 @@
   const connectedOnce = ref(false)
   const hideConnectingScreen = ref(false)
   const trackedValues = ref<{ [key: string]: number }>({})
-  const seedFlags = ref([])
+  const seedFlags = ref<string[]>([])
   const showDone = ref(true)
   const timerUpdateIntervalId = ref(null)
   const timerStartTimestamp = ref(0)
@@ -78,23 +81,25 @@
   const timerShouldRun = ref(false)
   const appliedDelay = ref(0)
   const delayQueued = ref(false)
+  const webSocket = ref<WebSocket | null>(null)
 
   useHead({title: 'Item Tracker'})
 
-  //   computed: { // TODO tracker source for remote
-  //     trackerSource() {
-  //       const source = this.$route.query.source
-  //
-  //       if (!source) {
-  //         return 'ws://127.0.0.1:31410'
-  //       }
-  //
-  //       if (/^wss?:\/\//.test(source)) {
-  //         return source
-  //       }
-  //
-  //       return `${this.$paths.WS_BASE_URL}/remote-tracker/${source}`
-  //     },
+  const trackerSource = computed(() => {
+    const source = route.query.source
+
+    if (!source || Array.isArray(source)) {
+      return 'ws://127.0.0.1:31410'
+    }
+
+    if (/^wss?:\/\//.test(source)) {
+      return source
+    }
+
+    // TODO tracker source for remote
+    // return `${this.$paths.WS_BASE_URL}/remote-tracker/${source}`
+    return null
+  })
   const isOBS = (() => {
     return false
   }) // TODO isOBS
@@ -188,98 +193,98 @@
   onUnmounted(() => {
     tryDisconnect()
   })
-  //   methods: {
+
   const connect = (() => { // TODO connect tracker
-    //       if (!this.trackerSource) {
-    //         return
-    //       }
-    //
-    //       console.log(`tracker: Trying to connect to ${this.trackerSource}...`)
-    //
-    //       this.tryDisconnect()
-    //       this.ws = new WebSocket(this.trackerSource)
-    //
-    //       this.ws.addEventListener('close', () => {
-    //         console.log(`tracker: Connection lost. Will retry in 2s...`)
-    //         this.connected = false
-    //         this.receivedPacket = false
-    //         setTimeout(this.connect, 2000)
-    //       })
-    //
-    //       this.ws.addEventListener('open', () => {
-    //         console.log(`tracker: Connected`)
-    //         this.connected = true
-    //         this.connectedOnce = true
-    //       })
-    //
-    //       this.ws.addEventListener('message', async (event) => {
-    //         const packet = await decodePacket(event.data)
-    //
-    //         if (!packet) {
-    //           return
-    //         }
-    //
-    //         const handlePacket = () => {
-    //           switch (packet.$type) {
-    //             case TrackerUpdate.$type:
-    //               this.$set(this.trackedValues, packet.id, packet.value)
-    //               this.receivedPacket = true
-    //               break
-    //             case TrackerFlagsUpdate.$type:
-    //               this.seedFlags = packet.flags
-    //               this.receivedPacket = true
-    //               break
-    //             case TrackerTimerStateUpdate.$type:
-    //               this.inGameTime = packet.inGameTime
-    //               this.asyncLoadingTime = packet.asyncLoadingTime
-    //               this.timerShouldRun = packet.timerShouldRun
-    //               this.receivedPacket = true
-    //               break
-    //             case ResetTracker.$type:
-    //               this.trackedValues = {}
-    //               this.seedFlags = []
-    //               this.displayedTime = 0
-    //               this.inGameTime = 0
-    //               this.asyncLoadingTime = 0
-    //               break
-    //           }
-    //         }
-    //
-    //         if (this.appliedDelay > 0) {
-    //           setTimeout(handlePacket, this.appliedDelay * 1000)
-    //         } else {
-    //           handlePacket()
-    //
-    //           if (!this.delayQueued && this.requestedDelay > 0) {
-    //             this.delayQueued = true
-    //
-    //             // Let all packets process immediately for one second from the first packet received
-    //             setTimeout(() => {
-    //               this.appliedDelay = this.requestedDelay
-    //             }, 1000)
-    //           }
-    //         }
-    //       })
+    if (!trackerSource.value) {
+      return
+    }
+
+    console.log(`tracker: Trying to connect to ${trackerSource.value}...`)
+
+    tryDisconnect()
+    webSocket.value = new WebSocket(trackerSource.value)
+
+    webSocket.value.addEventListener('close', () => {
+      console.log(`tracker: Connection lost. Will retry in 2s...`)
+      connected.value = false
+      receivedPacket.value = false
+      setTimeout(connect, 2000)
+    })
+
+    webSocket.value.addEventListener('open', () => {
+      console.log(`tracker: Connected`)
+      connected.value = true
+      connectedOnce.value = true
+    })
+
+    webSocket.value.addEventListener('message', async (event) => {
+      const packet = await decodePacket(event.data)
+
+      if (!packet) {
+        return
+      }
+
+      const handlePacket = () => {
+        switch (packet.$type) {
+          case TrackerUpdate.$type:
+            trackedValues.value[packet.id] = packet.value
+            receivedPacket.value = true
+            break
+          case TrackerFlagsUpdate.$type:
+            seedFlags.value = packet.flags
+            receivedPacket.value = true
+            break
+          case TrackerTimerStateUpdate.$type:
+            inGameTime.value = packet.inGameTime
+            asyncLoadingTime.value = packet.asyncLoadingTime
+            timerShouldRun.value = packet.timerShouldRun
+            receivedPacket.value = true
+            break
+          case ResetTracker.$type:
+            trackedValues.value = {}
+            seedFlags.value = []
+            displayedTime.value = 0
+            inGameTime.value = 0
+            asyncLoadingTime.value = 0
+            break
+        }
+      }
+
+      if (appliedDelay.value > 0) {
+        setTimeout(handlePacket, appliedDelay.value * 1000)
+      } else {
+        handlePacket()
+
+        if (!delayQueued.value && requestedDelay.value > 0) {
+          delayQueued.value = true
+
+          // Let all packets process immediately for one second from the first packet received
+          setTimeout(() => {
+            appliedDelay.value = requestedDelay.value
+          }, 1000)
+        }
+      }
+    })
   })
   const tryDisconnect = (() => { // TODO tracker disconnect
-    //       try {
-    //         this.ws?.close()
-    //       } catch (e) {
-    //         console.error(e)
-    //       }
+    try {
+      webSocket.value?.close()
+    } catch (e) {
+      console.error(e)
+    }
   })
   const updateTimerStartTimestamp = (() => {
     timerStartTimestamp.value = (Date.now() / 1000.0) - inGameTime.value - requestedDelay.value
     updateTimer()
   })
   const updateTimer = (() => {
-    if (!this.connected) {
+    if (!connected.value) {
       return
     }
 
-    if (this.trackedValues.game_finished) {
+    if (trackedValues.value.game_finished) {
       displayedTime.value = Math.max(inGameTime.value, 0)
-    } else if (this.timerShouldRun) {
+    } else if (timerShouldRun.value) {
       displayedTime.value = Math.max((Date.now() / 1000.0) - timerStartTimestamp.value, 0)
     }
   })

@@ -94,6 +94,8 @@
 
 <script setup lang="ts">
 
+  // TODO tracking doors
+
   const props = withDefaults(defineProps<{
     seedFlags: string[],
     trackedValues: { [key: string]: number },
@@ -127,9 +129,7 @@
 
     return true
   })
-  onMounted(() => {
-    console.log('hallo')
-  })
+  
 </script>
 <style lang="scss" scoped>
   .skills {

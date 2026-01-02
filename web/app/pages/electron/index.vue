@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <div class="text-center">
-      <v-btn :loading="isLaunching" @click="launch">Lauch</v-btn>
+      <v-btn :loading="isLaunching" @click="launch()">Lauch</v-btn>
     </div>
   </v-container>
 </template>

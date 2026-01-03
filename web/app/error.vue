@@ -5,23 +5,23 @@
         <img alt="" src="@shared/images/ori_shy.png">
         <h1 class="mb-4">Something went oribly wrong.</h1>
 
+        <div
+          v-if="error.statusCode !== 404"
+          class="mb-3">Press
+          <v-kbd>Ctrl</v-kbd>
+          +
+          <v-kbd>R</v-kbd>
+          to reload or
+        </div>
         <v-btn
-          v-if="error.statusCode === 404"
           :to="homeRoute"
           prepend-icon="mdi-home"
           color="accent"
           variant="flat"
-          class="mb-2"
+          class="mb-5"
         >
           Go home
         </v-btn>
-        <div v-else class="mb-3">Press
-          <v-kbd>Ctrl</v-kbd>
-          +
-          <v-kbd>R</v-kbd>
-          to reload.
-        </div>
-
         <v-expand-transition>
           <div v-if="showError" class="error-container">
             <v-code class="error-code">{{ error.stack }}</v-code>

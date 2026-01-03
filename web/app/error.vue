@@ -24,7 +24,10 @@
         </v-btn>
         <v-expand-transition>
           <div v-if="showError" class="error-container">
-            <v-code class="error-code">{{ error.stack }}</v-code>
+            <v-code class="error-code">{{ error.stack }}
+              <v-spacer/>
+              <v-btn class="mt-3 mb-1" @click="copyToClipboard">Copy to clipboard</v-btn>
+            </v-code>
           </div>
           <v-btn v-else variant="text" @click="showError = true">Show error</v-btn>
         </v-expand-transition>
@@ -52,6 +55,13 @@
       name: "index",
     },
   )
+
+  const copyToClipboard = (() => {
+    if (props.error.stack) {
+      navigator.clipboard.writeText(props.error.stack)
+    }
+  })
+
 </script>
 
 <style lang="scss" scoped>

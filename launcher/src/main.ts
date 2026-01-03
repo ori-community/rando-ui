@@ -116,8 +116,6 @@ if (!app.requestSingleInstanceLock()) {
       const commandLineArgumentHandler = async (args: string[]) => {
         const lastArg = args[args.length - 1]
 
-        console.log(lastArg)
-
         if (lastArg.endsWith(".wotwr") && fs.existsSync(lastArg)) {
           // We got a seed!
           await LauncherService.launchOrFocusRandomizer(`file:${fs.realpathSync(lastArg)}`)

@@ -10,6 +10,7 @@ import {LocalTrackerWebSocketService} from "@launcher/services/LocalTrackerWebSo
 import log from "electron-log/main"
 import os from "node:os"
 import {LauncherService} from "@launcher/services/LauncherService"
+import {SeedgenServerService} from "@launcher/services/SeedgenServerService"
 
 // Override session data path to have a clean app data directory.
 // Otherwise, Chromium will pollute it...
@@ -107,6 +108,7 @@ if (!app.requestSingleInstanceLock()) {
 
     await RandoIPCService.startIPCServer()
     LocalTrackerWebSocketService.start()
+    SeedgenServerService.start()
   }
 
   app.on("ready", async () => {

@@ -1,36 +1,16 @@
 <template>
-  <div class="copyable-info" @click="copy">
-    {{ value }}
-    <v-tooltip
-      :value="showTooltip"
-      activator="parent"
-      location="right"
-      transition="slide-x-transition"
-      :open-on-click="false"
-      :open-on-hover="false"
-      :open-on-focus="false"
-    >
-      <span>Copied!</span>
-    </v-tooltip>
-  </div>
+  <rando-copy-to-clipboard v-slot="{ copyToClipboard }" :value="value" :timeout=1000>
+    <div class="copyable-info" @click="copyToClipboard">
+      {{ value }}
+    </div>
+  </rando-copy-to-clipboard>
 
 </template>
 
 <script lang="ts" setup>
-  const props = defineProps<{
+  defineProps<{
     value: string,
   }>()
-
-  const showTooltip = ref(false)
-
-  const copy = (() => {
-    showTooltip.value = true
-    navigator.clipboard.writeText(props.value)
-    setTimeout(() => {
-      showTooltip.value = false
-    }, 1000)
-  })
-
 </script>
 
 <style lang="scss" scoped>

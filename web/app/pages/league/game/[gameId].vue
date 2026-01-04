@@ -2,7 +2,15 @@
   <v-container>
     <rando-throttled-spinner>
       <div v-if="leagueSeason !== null && leagueGame !== null">
-        <h1 class="text-center mt-12">Game #{{ leagueGame.gameNumber }}</h1>
+        <div class="text-center mt-12">
+          <rando-copy-to-clipboard
+            v-slot="{ copyToClipboard }"
+            :show-tooltip="true"
+            tooltip-text="Copied id"
+            :value="leagueGame.id.toString()">
+            <h1 @click="copyToClipboard">Game #{{ leagueGame.gameNumber }}</h1>
+          </rando-copy-to-clipboard>
+        </div>
         <h2 class="text-center mb-6">{{ leagueSeason.name }}</h2>
         <div class="d-flex justify-center align-center">
           <v-tooltip v-if="!isElectron" bottom>

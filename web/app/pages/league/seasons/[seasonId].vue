@@ -163,7 +163,7 @@
             <div class="starting-date-content">
               <div>Starting at</div>
               <span class="starting-date">
-                 formatDateEpoch(leagueSeason?.nextContinuationAt, 'P p') }}
+                 {{ formatDateEpoch(leagueSeason?.nextContinuationAt, 'P p') }}
               </span>
               <div>
                 <template v-if="isJoined">Be prepared!</template>
@@ -290,9 +290,10 @@
     LeagueGameSubmissionInfo,
     LeagueSeasonInfo,
     LeagueSeasonMembershipInfo
-  } from "@shared/types/league";
-  import type {DataTableHeader} from "vuetify/framework";
-  import {renderMarkdown} from "assets/utils/markdown";
+  } from "@shared/types/league"
+  import type {DataTableHeader} from "vuetify/framework"
+  import {renderMarkdown} from "assets/utils/markdown"
+  import {formatDateEpoch} from "~/assets/utils/formatsDates"
 
   const trainingSeedLaunchButton = useTemplateRef('trainingSeedLaunchButton')
 

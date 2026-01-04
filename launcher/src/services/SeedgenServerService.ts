@@ -5,6 +5,7 @@ import log from "electron-log"
 
 
 type SeedgenExecaOptions = {
+  detached: true,
   env: {
     RANDOMIZER_USER_DATA_DIR: string,
   },
@@ -23,9 +24,9 @@ export class SeedgenServerService {
     return this._process !== null && this._process.exitCode === null
   }
 
-  static start(restartIfRunning = false) {
+  static async makeSureSeedgenServerIsRunning(forceRestart = false) {
     if (this.isRunning()) {
-      if (!restartIfRunning) {
+      if (!forceRestart) {
         return
       }
 
@@ -33,53 +34,54 @@ export class SeedgenServerService {
       this._process = null
     }
 
-    const logInfo = function* (line: string) {
-      log.info("Seedgen: " + line)
-    }
-    const logError = function* (line: string) {
-      log.error("Seedgen: " + line)
-    }
+    await new Promise<void>((resolve, reject) => {
+      const logInfo = function* (line: string) {
+        log.info("Seedgen: " + line)
+      }
 
-    const seedgenExec = execa<SeedgenExecaOptions>({
-      env: {
-        RANDOMIZER_USER_DATA_DIR: getUserDataPath(),
-      },
-      stdout: {
-        transform: logInfo,
-      },
-      stderr: {
-        transform: logError,
-      },
+      const logError = function* (line: string) {
+        log.error("Seedgen: " + line)
+
+        if (line.startsWith("Listening on")) {
+          resolve()
+        }
+      }
+
+      const seedgenExec = execa<SeedgenExecaOptions>({
+        detached: true,
+        env: {
+          RANDOMIZER_USER_DATA_DIR: getUserDataPath(),
+        },
+        stdout: {
+          transform: logInfo,
+        },
+        stderr: {
+          transform: logError,
+        },
+      })
+
+      log.info("Starting seedgen server")
+
+      const seedgenCliArguments = [
+        "http-server",
+        "--inactivity-timeout",
+        "5m",
+      ]
+
+      switch (LauncherService.getPlatform()) {
+        case "windows":
+          this._process = seedgenExec(getInstallDataPath("seedgen/wotw-seedgen.exe"), seedgenCliArguments)
+          break
+        case "linux":
+          this._process = seedgenExec(getInstallDataPath("seedgen/wotw-seedgen"), seedgenCliArguments)
+          break
+      }
+
+      this._process
+        .catch((err: Error) => {
+          log.error("Seedgen server failed:", err)
+          reject(err)
+        })
     })
-
-    log.info("Starting seedgen server")
-
-    switch (LauncherService.getPlatform()) {
-      case "windows":
-        this._process = seedgenExec(getInstallDataPath("seedgen/wotw-seedgen.exe"), ["http-server"])
-        break
-      case "linux":
-        this._process = seedgenExec(getInstallDataPath("seedgen/wotw-seedgen"), ["http-server"])
-        break
-    }
-
-    this._process
-      .catch((err: Error) => {
-        log.error("Seedgen server failed:", err)
-      })
-      .finally(() => {
-        setTimeout(
-          () => {
-            if (!this.isRunning()) {
-              SeedgenServerService.start(true)
-            }
-          },
-          // Exit Code 0 means it exited because an external http server was already running.
-          // In that case we don't need to try to restart very soon.
-          this._process.exitCode === 0
-            ? 30000
-            : 2000,
-        )
-      })
   }
 }

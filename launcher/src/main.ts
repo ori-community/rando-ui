@@ -108,7 +108,6 @@ if (!app.requestSingleInstanceLock()) {
 
     await RandoIPCService.startIPCServer()
     LocalTrackerWebSocketService.start()
-    SeedgenServerService.start()
   }
 
   app.on("ready", async () => {

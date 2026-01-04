@@ -1,8 +1,11 @@
 <template>
   <v-container>
     <div class="text-center">
-      <v-btn :loading="isLaunching" @click="launch()">Lauch</v-btn>
-      <v-btn :loading="isLaunching" @click="selectAndLaunchFile()">Saatauswahl</v-btn>
+      <div class="buttons justify-center">
+        <rando-launch-button hint="This is a hint" icon="mdi-leek">Lauch</rando-launch-button>
+        <rando-launch-button hint="This is also a hint" icon="mdi-seed" :handle="selectAndLaunchFile">Saatauswahl
+        </rando-launch-button>
+      </div>
     </div>
   </v-container>
 </template>
@@ -11,7 +14,7 @@
 
   const electronApi = useElectronApi()
 
-  const {isLaunching, launch} = useLauncherHelper()
+  const {launch} = useLauncherHelper()
   const selectAndLaunchFile = (async () => {
     const newPath = await electronApi?.systemDialogs.pickFile.query({
       filters: [{name: 'Seedfiles', extensions: ['wotwr']}],
@@ -21,3 +24,10 @@
     }
   })
 </script>
+
+<style lang="scss" scoped>
+  .buttons {
+    display: flex;
+    gap: 0.4em;
+  }
+</style>

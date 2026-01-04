@@ -42,6 +42,15 @@
               <v-icon start>mdi-radar</v-icon>
               Tracker
             </v-list-item>
+            <!-- TODO disable when tracker already running -->
+            <v-list-item
+              size="x-large"
+              variant="text"
+              @click="showRemoteTrackerDialog = true"
+            >
+              <v-icon start>mdi-leak</v-icon>
+              Create Web Tracker
+            </v-list-item>
           </v-list>
         </v-menu>
       </div>
@@ -118,6 +127,11 @@
       </v-card-text>
     </v-card>
   </v-dialog>
+  <v-dialog v-model="showRemoteTrackerDialog" max-width="500px">
+    <wotw-tracker-remote-tracker-selection
+      :user-is-logged-in="userStore.isLoggedIn"
+      @created="showRemoteTrackerDialog = false"/>
+  </v-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -133,6 +147,8 @@
   const editedNickname = ref('')
   const showEditNicknameDialog = ref(false)
   const RenameRequestInProgress = ref(false)
+  const showRemoteTrackerDialog = ref(false)
+
   const randomGreetingTemplate = computed(() => {
     const templates = [
       'Hi, #!',
@@ -156,6 +172,9 @@
 
 
   const randomGreeting = ((username: string) => {
+    if (!randomGreetingTemplate.value) {
+      return username
+    }
     return randomGreetingTemplate.value.replace('#', username)
   })
 
@@ -170,6 +189,7 @@
       return
     }
 
+    // TODO use global baseURL variable
     const shortLivedJwt = await electronApi.auth.startOAuthFlow.query({
       apiBaseUrl: "https://wotw.orirando.com/api",
     })

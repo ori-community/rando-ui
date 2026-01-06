@@ -9,31 +9,29 @@
     >
     <v-icon v-else start>{{ displayedIcon }}</v-icon>
     <slot>{{ isLeek ? "lauch" : "launch" }}</slot>
-    <v-tooltip v-if="hint" location="bottom" activator="parent">
-      <span>{{ hint }}</span>
-    </v-tooltip>
   </v-btn>
 </template>
 
 <script lang="ts" setup>
 
-  import type {LaunchResult} from "@shared/types/launcher";
+  const emit = defineEmits<{
+    (e: 'click', event: Event): void
+  }>()
 
   const props = withDefaults(defineProps<{
     disabled?: boolean,
     icon?: string | null,
-    hint?: string | null,
-    handle?: (() => Promise<void>) | (() => Promise<LaunchResult>) | null,
+    showConfetti?: boolean,
   }>(), {
     disabled: false,
     icon: null,
-    hint: null,
-    handle: null,
+    showConfetti: false,
   })
 
   const isLeek = ref(false) // funny (display lauch / leek)
+  const hasBeenClicked = ref(false)
 
-  const {isLaunching, launch} = useLauncherHelper()
+  const {isLaunching} = useLauncherHelper()
   const displayedIcon = computed(() => {
     if (props.icon) {
       return props.icon
@@ -43,13 +41,24 @@
     }
     return null
   })
-  const onClick = ((_event: MouseEvent) => {
-    if (props.handle) {
-      props.handle()
-    } else {
-      launch()
-    }
-    // TODO optional confetti
+  const onClick = (async (event: Event) => {
+    hasBeenClicked.value = true
+    emit('click', event)
+  })
+
+  watch(
+    () => isLaunching.value, (newValue, oldValue) => {
+      if (oldValue && !newValue && hasBeenClicked.value) {
+        hasBeenClicked.value = false
+        if (props.showConfetti) {
+          shootConfetti()
+        }
+      }
+    })
+
+  const shootConfetti = (() => {
+    // TODO confetti
+    console.log("Insert confetti here")
   })
 
   onMounted(() => {

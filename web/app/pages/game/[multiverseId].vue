@@ -22,34 +22,22 @@
         </div>
 
         <div class="text-center my-6">
-          <v-btn v-if="!isElectron" color="accent" size="x-large" @click="openInLauncher">
-            <v-icon start>mdi-launch</v-icon>
-            Open in Launcher
+          <rando-launch-button v-if="!isElectron" icon="mdi-launch" label="Open in Launcher" @click="openInLauncher">
             <v-tooltip location="bottom" activator="parent">
               <span><kbd>Ctrl</kbd> + Click to close this window</span>
             </v-tooltip>
-          </v-btn>
-          <v-btn
+          </rando-launch-button>
+          <rando-launch-button
             v-else-if="!isSpectating"
             :disabled="!ownWorld"
-            size="x-large"
-            color="accent"
-            :loading="launching"
             @click="launch()">
-            <img
-              class="launch-icon"
-              :class="{ disabled: !ownWorld }"
-              src="@shared/images/launch.png"
-              alt=""
-            >
-            Launch
             <v-tooltip location="bottom" activator="parent">
             <span v-if="!multiverseReady || multiverse.universes.length > 0"
             >Create or join a world to launch the game</span
             >
               <span v-else>Create a universe to launch the game</span>
             </v-tooltip>
-          </v-btn>
+          </rando-launch-button>
 
           <div class="mt-4">
             <v-btn v-if="canEnableRaceMode" variant="text" @click="enableRaceModeDialogOpen = true">
@@ -433,10 +421,12 @@
   })
 
 
-  const openInLauncher = ((event: KeyboardEvent) => {
+  const openInLauncher = ((event: MouseEvent) => {
     window.open(launcherUrl.value, '_self')
 
     if (event.ctrlKey) {
+      console.log("CONTROL")
+      return
       setTimeout(() => {
         window.close()
       }, 500)

@@ -1,5 +1,5 @@
 <template>
-  <v-btn color="accent" size="x-large" :disabled="disabled" :loading="isLaunching" @click="onClick">
+  <v-btn color="accent" size="x-large" :disabled="disabled" :loading="isLaunching && hasBeenClicked" @click="onClick">
     <img
       v-if="!displayedIcon"
       class="launch-icon"
@@ -8,21 +8,23 @@
       alt=""
     >
     <v-icon v-else start>{{ displayedIcon }}</v-icon>
-    <slot>{{ isLeek ? "lauch" : "launch" }}</slot>
+    {{ displayedLabel }}
   </v-btn>
 </template>
 
 <script lang="ts" setup>
 
   const emit = defineEmits<{
-    (e: 'click', event: Event): void
+    (e: 'click', event: MouseEvent): void
   }>()
 
   const props = withDefaults(defineProps<{
+    label?: string | null,
     disabled?: boolean,
     icon?: string | null,
     showConfetti?: boolean,
   }>(), {
+    label: null,
     disabled: false,
     icon: null,
     showConfetti: false,
@@ -41,7 +43,13 @@
     }
     return null
   })
-  const onClick = (async (event: Event) => {
+  const displayedLabel = computed(() => {
+    if (props.label) {
+      return props.label
+    }
+    return isLeek.value ? "lauch" : "launch"
+  })
+  const onClick = (async (event: MouseEvent) => {
     hasBeenClicked.value = true
     emit('click', event)
   })

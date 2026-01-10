@@ -62,7 +62,7 @@
             <div class="text-center mb-3">
               <wotw-multiverse-race-timer
                 v-if="isRaceRunning"
-                :starting-at="normalGameHandlerState?.raceStartingAt"
+                :starting-at="normalGameHandlerState?.raceStartingAt ?? null"
                 :finished-time="normalGameHandlerState?.finishedTime ?? null"
               />
               <template v-else-if="isRaceModeEnabled">
@@ -81,7 +81,7 @@
                 :world-finished-times="normalGameHandlerState?.worldFinishedTimes"
                 :universe-finished-times="normalGameHandlerState?.universeFinishedTimes"
               />
-              <wotw-multiverse-race-result-view v-if="hasRace" :race="multiverse.race"/>
+              <wotw-multiverse-race-result-view v-if="hasRace" :race="multiverse.race!"/>
             </div>
 
             <div v-if="devtoolsEnabled" class="mt-5">

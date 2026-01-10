@@ -8,15 +8,15 @@
         :key="team.id"
         class="team"
       >
-        <place-badge :place="team.finishedTime === 0.0 ? 'F' : index + 1"/>
+        <rando-place-badge :place="team.finishedTime === 0.0 ? 'F' : index + 1"/>
         <v-card
-          color="background lighten-1"
+          color="background-lighten-1"
           elevation="0"
           class="pa-4"
         >
           <div class="team-members">
             <div v-for="member in team.members" :key="member.user.id" class="team-member">
-              <wotw-player-view :user="member.user"/>
+              <wotw-multiverse-player-view :user="member.user"/>
               <div class="member-time">{{ member.finishedTime !== 0.0 ? formatTime(member.finishedTime) : 'DNF' }}</div>
             </div>
           </div>
@@ -33,14 +33,16 @@
 </template>
 
 <script lang="ts" setup>
-  import type {RaceInfo} from "@shared/proto/messages";
+  import {formatTime} from "assets/utils/formatTime"
+  import type {RaceInfo, RaceTeamInfo} from "@shared/types/http-api"
 
   const props = defineProps<{
     race: RaceInfo,
   }>()
 
   const sortedRaceTeams = computed(() => {
-    const teams = structuredClone(props.race.teams)
+    // TODO clonedeep
+    const teams: RaceTeamInfo[] = JSON.parse(JSON.stringify(props.race.teams))
 
     const compareFinishedTime = (a: number | null | undefined, b: number | null | undefined) => {
       if (a === 0.0 || a === null || a === undefined) {
@@ -71,40 +73,43 @@
     flex-direction: column;
     gap: 0.5em;
 
-    .team {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 0.4em;
-      align-items: flex-start;
+  }
 
-      .team-members {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5em;
+  .team {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.4em;
+    align-items: flex-start;
 
-        .team-member {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 3em;
 
-          .member-time {
-            opacity: 0.5;
-          }
-        }
+  }
+
+  .team-members {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+
+    .team-member {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 3em;
+
+      .member-time {
+        opacity: 0.5;
       }
+    }
+  }
 
-      .team-info {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
+  .team-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
 
-        .team-time {
-          text-align: right;
-          font-size: 1.5em;
-          line-height: 1.0;
-        }
-      }
+    .team-time {
+      text-align: right;
+      font-size: 1.5em;
+      line-height: 1.0;
     }
   }
 </style>

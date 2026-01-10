@@ -206,7 +206,7 @@
           font-size: 5vw;
 
           &.completed {
-            color: var(--v-success-base);
+            color: rgb(var(--v-theme-success));
           }
 
           .fraction {
@@ -274,7 +274,7 @@
 
         &.completed,
         .completed {
-          color: var(--v-success-base);
+          color: rgb(var(--v-theme-success));
         }
 
         &.highlight,
@@ -295,5 +295,5 @@
     margin-left: 1vw;
     overflow: hidden;
     border-radius: 50%;
-    border: 0.5vw solid var(--v-accent-base);
+    border: 0.5vw solid rgb(var(--v-theme-accent));
   }</style>

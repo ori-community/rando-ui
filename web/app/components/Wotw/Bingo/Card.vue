@@ -11,7 +11,7 @@
         'bottom-marked': markedNeighborMask & 0b0001,
       }"
     >
-      <v-card elevation="0" class="front" :style="cardStyle" color="background lighten-1">
+      <v-card elevation="0" class="front" :style="cardStyle" color="background-lighten-1">
         <div class="content d-flex flex-column">
           <template v-if="!!square">
             <div class="square-text pa-2" :class="{ expand: !hasGoals }">{{ square.text }}</div>
@@ -26,9 +26,9 @@
             </template>
           </template>
         </div>
-        <div class="attention-effect" :class="{ active: attentionEffectActive }"/>
+        <div class="attention-effect" :class="{ active: attentionEffect }"/>
       </v-card>
-      <v-card elevation="0" class="back" color="background lighten-1">
+      <v-card elevation="0" class="back" color="background-lighten-1">
         <img alt="" src="@shared/images/ori_think.png" class="ori-think">
       </v-card>
     </div>
@@ -80,7 +80,7 @@
     if (props.square === null || props.square.completedBy.length === 0) {
       return {}
     }
-    
+
     const highlightSplitPercentage = props.isLockout
       ? 20
       : 33

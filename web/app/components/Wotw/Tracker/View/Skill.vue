@@ -138,7 +138,7 @@
     }
 
     .completed {
-      color: var(--v-success-base);
+      color: rgb(var(--v-theme-success));
     }
 
     .fragments {

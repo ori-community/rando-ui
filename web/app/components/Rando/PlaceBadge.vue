@@ -13,17 +13,16 @@
   </div>
 </template>
 
-<script language="ts" setup>
-  const props = defineProps({
-    place: {
-      type: [Number, null],
-      default: 1,
-    },
-    size: {
-      type: Number,
-      default: 64,
-    },
+<script lang="ts" setup>
+
+  const props = withDefaults(defineProps<{
+    place?: string | number | null,
+    size?: number,
+  }>(), {
+    place: 1,
+    size: 64
   })
+
   const icon = computed(() => {
     switch (Number(props.place)) {
       case 1:

@@ -37,25 +37,22 @@
       </v-alert>
     </div>
     <div v-else class="action-buttons mt-4">
-      <v-tooltip :disabled="canCreateUniverse" bottom>
-        <span> You ran out of space in your multiverse. </span>
-        <template #activator="{ on }">
-          <div class="d-inline-block" v-on="on">
-            <v-btn :disabled="loading || !canCreateUniverse" large text @click="createWorld()">
-              <v-icon left>mdi-plus</v-icon>
-              New Universe
-            </v-btn>
-          </div>
-        </template>
-      </v-tooltip>
-
+      <div class="d-inline-block">
+        <v-btn :disabled="loading || !canCreateUniverse" large text @click="createWorld()">
+          <v-icon left>mdi-plus</v-icon>
+          New Universe
+        </v-btn>
+        <v-tooltip :disabled="canCreateUniverse" location="bottom" activator="parent">
+          <span> You ran out of space in your multiverse. </span>
+        </v-tooltip>
+      </div>
       <slot name="additional-buttons"/>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import type {MultiverseInfo} from "@shared/types/http-api";
+  import type {MultiverseInfo} from "@shared/types/http-api"
 
   // TODO isOBS
   // const isOBS = () => !!window?.obsstudio?.pluginVersion
@@ -73,7 +70,6 @@
     raceStartingAt: null,
     playerInGameTimes: () => ({}),
     playerFinishedTimes: () => ({}),
-    worldFinishedTimes: () => ({}),
     worldFinishedTimes: () => ({}),
     universeFinishedTimes: () => ({}),
   })

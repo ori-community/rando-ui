@@ -2,7 +2,7 @@
   <div class="universe-view-container">
     <v-fab-transition>
       <div v-if="place !== null" class="badge-container">
-        <place-badge class="badge" :place="place"/>
+        <rando-place-badge class="badge" :place="place"/>
       </div>
     </v-fab-transition>
     <v-card class="universe-view">
@@ -10,7 +10,7 @@
       <v-card-title class="card-title">
         <div>
           {{ universe.name }}
-          <copyable-info v-if="devtoolsEnabled" :value="universe.id"/>
+          <rando-copyable-info v-if="devtoolsEnabled" :value="universe.id.toString()"/>
           <span v-if="finishedAt !== null" class="finished-time" :class="{forfeited: finishedAt === 0.0}">{{
               finishedAt !== 0.0 ? formatTime(finishedAt) : 'DNF'
             }}</span>
@@ -33,12 +33,17 @@
             :seed-spoiler-downloaded-by-ids="seedSpoilerDownloadedByIds"
             :connected-user-ids="connectedUserIds"
             :race-ready-user-ids="raceReadyUserIds"
-            @join="$emit('join-world', world.id)"
+            @join="emits('join-world', world.id)"
           />
         </v-scroll-y-reverse-transition>
       </v-card-text>
-      <v-btn v-if="canJoin && canCreateWorld" :disabled="disabled" block color="accent" tile
-             @click="$emit('new-world')">
+      <v-btn
+        v-if="canJoin && canCreateWorld"
+        :disabled="disabled"
+        block
+        color="accent"
+        tile
+        @click="emits('new-world')">
         New World
       </v-btn>
     </v-card>
@@ -47,23 +52,23 @@
 
 <script lang="ts" setup>
 
-  import type {UniverseInfo} from "@shared/proto/messages"
+  import type {UniverseInfo} from "@shared/types/http-api"
   import {formatTime} from "assets/utils/formatTime"
-  
+
   const props = withDefaults(defineProps<{
     canCreateWorld?: boolean,
     canJoin?: boolean,
-    connectedUserIds?: number[],
+    connectedUserIds?: string[],
     disabled?: boolean,
     finishedAt?: number | null,
     hideColor?: boolean,
     isSpectating?: boolean,
-    place?: number | null,
+    place?: number | string | null,
     playerFinishedTimes?: { [key: number]: number },
     playerInGameTimes?: { [key: number]: number },
-    raceReadyUserIds?: number[],
+    raceReadyUserIds?: string[],
     raceStartingAt?: number | null,
-    seedSpoilerDownloadedByIds?: number[],
+    seedSpoilerDownloadedByIds?: string[],
     universe: UniverseInfo,
     worldFinishedTimes?: { [key: number]: number },
   }>(), {
@@ -82,6 +87,8 @@
     seedSpoilerDownloadedByIds: () => ([]),
     worldFinishedTimes: () => ({}),
   })
+
+  const emits = defineEmits(["join-world", "new-world"])
 
   const hasMultipleWorlds = computed(() => {
     return props.universe.worlds.length > 1
@@ -119,13 +126,13 @@
   }
 
   .finished-time {
-    color: var(--v-success-base);
+    color: rgb(var(--v-theme-success));
     font-size: 0.7em;
     line-height: 1;
     padding-right: 2em;
 
     &.forfeited {
-      color: var(--v-error-base);
+      color: rgb(var(--v-theme-error));
     }
   }
 </style>

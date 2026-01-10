@@ -45,6 +45,6 @@
 
 <style lang='scss'>
   .v-badge .v-badge__badge::after {
-    border-color: var(--v-background-lighten2) !important;
+    border-color: rgb(var(--v-background-lighten2)) !important;
   }
 </style>

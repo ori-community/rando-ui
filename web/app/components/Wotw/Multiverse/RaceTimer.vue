@@ -9,7 +9,7 @@
   import {formatTime} from "assets/utils/formatTime"
 
   const props = withDefaults(defineProps<{
-    startingAt: number,
+    startingAt: number | null,
     finishedTime?: number | null
   }>(), {
     finishedTime: null,
@@ -31,6 +31,9 @@
 
 
   const updateTimerText = (() => {
+    if (props.startingAt === null) {
+      return null
+    }
 
     // TODO + Server offset
     // const parts = formatTime(props.finishedTime !== null ? props.finishedTime : (Date.now() + this.offset - props.startingAt) / 1000).split(

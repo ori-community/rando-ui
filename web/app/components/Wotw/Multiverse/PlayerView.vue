@@ -1,11 +1,16 @@
 <template>
   <div class='player-view'>
-    <rando-discord-avatar :user='user' class='mr-1' :connected="isConnected" :race-ready="showGreenCheckmark"
-                          v-bind='$attrs'/>
+    <rando-discord-avatar
+      :user='user'
+      class='mr-1'
+      :connected="isConnected"
+      :race-ready="showGreenCheckmark"
+      v-bind='$attrs'
+    />
     <div>
       <div class="name-and-points">
         {{ user.name }}
-        <copyable-info v-if="devtoolsEnabled" :value="user.id"/>
+        <rando-copyable-info v-if="devtoolsEnabled" :value="user.id.toString()"/>
       </div>
       <slot/>
     </div>
@@ -13,10 +18,10 @@
 </template>
 
 <script lang="ts" setup>
-  import type {UniverseInfo} from "@shared/proto/messages";
+  import type {UserInfo} from "@shared/types/http-api"
 
   withDefaults(defineProps<{
-    user: UniverseInfo,
+    user: UserInfo,
     isConnected?: boolean,
     showGreenCheckmark?: boolean,
   }>(), {

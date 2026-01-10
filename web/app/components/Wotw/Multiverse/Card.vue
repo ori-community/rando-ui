@@ -15,7 +15,7 @@
       <div v-if="multiverseMetadata.hasBingoBoard" class="ml-2">
         <div>
           <v-icon large>mdi-grid</v-icon>
-          <v-tooltip bottom open-delay="250">
+          <v-tooltip location="bottom" activator="parent" open-delay="250">
             <span>Bingo</span>
           </v-tooltip>
         </div>
@@ -26,7 +26,7 @@
       <div class="avatars">
         <div v-for="user in multiverseMetadata.members" :key="user.id" class="avatar">
           <rando-discord-avatar :user="user"/>
-          <v-tooltip bottom open-delay="250">
+          <v-tooltip location="bottom" activator="parent" open-delay="250">
             <span>{{ user.name }}</span>
           </v-tooltip>
         </div>

@@ -595,7 +595,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: var(--v-background-lighten1);
+      background: rgb(var(--v-theme-background-lighten1));
       opacity: 0.6;
     }
 

@@ -1,11 +1,11 @@
 <template>
-  <v-card ref="worldView" class="world-view" outlined color="background lighten-2">
+  <v-card ref="worldView" class="world-view" outlined color="background-lighten-2">
     <v-sheet :color="world.color" class="flex-shrink-0" height="0.5em"/>
     <v-card-title class="d-flex">
       <div class="world-title">
         <div>
           {{ world.name }}
-          <copyable-info v-if="devtoolsEnabled" :value="world.id"/>
+          <rando-copyable-info v-if="devtoolsEnabled" :value="world.id.toString()"/>
           <span v-if="finishedAt !== null && showWorldFinishedTime" class="finished-time">{{
               formatTime(finishedAt)
             }}</span>
@@ -24,18 +24,23 @@
           :race-ready="raceReadyUserIds.includes(membership.user.id)"
         >
           <div class="player-info" title="Loading time">
-            <v-tooltip v-if="seedSpoilerDownloadedByIds.includes(membership.user.id)" bottom>
-              <template #activator="{on}">
-                <v-icon x-small v-on="on">mdi-eye-outline</v-icon>
-              </template>
-              <span>Has seen spoiler</span>
-            </v-tooltip>
-            <span v-if="hasMultiplePlayers && hasOwnProperty(playerFinishedTimes, membership.id)" class="finished-time"
-                  :class="{forfeited: playerFinishedTimes[membership.id] === 0.0}" title="Finished time">{{
+            <div v-if="seedSpoilerDownloadedByIds.includes(membership.user.id)">
+              <v-icon size="x-small">mdi-eye-outline</v-icon>
+              <v-tooltip
+                location="bottom"
+                activator="parent">
+                <span>Has seen spoiler</span>
+              </v-tooltip>
+            </div>
+            <span
+              v-if="hasMultiplePlayers && membership.id in playerFinishedTimes"
+              class="finished-time"
+              :class="{forfeited: playerFinishedTimes[membership.id] === 0.0}"
+              title="Finished time">{{
                 playerFinishedTimes[membership.id] !== 0.0 ? formatTime(playerFinishedTimes[membership.id]) : 'DNF'
               }}</span>
             <span
-              v-else-if="raceStartingAt > 0 && hasOwnProperty(playerInGameTimes, membership.id) && !hasOwnProperty(playerFinishedTimes, membership.id)"
+              v-else-if="raceStartingAt && raceStartingAt > 0 && membership.id in playerInGameTimes && !(membership.id in playerFinishedTimes)"
               class="loading-time" title="Loading time">{{
                 formatTime(playerInGameTimes[membership.id] - (now() - raceStartingAt) / 1000.0, 1, false, true)
               }}</span>
@@ -43,26 +48,26 @@
         </wotw-multiverse-player-view>
       </v-scroll-x-transition>
     </v-card-text>
-    <div class="spacer"></div>
-    <v-btn v-if="canJoinInternal" :disabled="disabled" block color="accent" tile @click="$emit('join')"> Join</v-btn>
+    <div class="spacer"/>
+    <v-btn v-if="canJoinInternal" :disabled="disabled" block color="accent" tile @click="emits('join')"> Join</v-btn>
   </v-card>
 </template>
 
 <script lang="ts" setup>
 
-  import type {WorldInfo} from "@shared/proto/messages"
+  import type {WorldInfo} from "@shared/types/http-api"
   import {formatTime} from "assets/utils/formatTime"
 
   const props = withDefaults(defineProps<{
     canJoin?: boolean,
-    connectedUserIds?: number[],
+    connectedUserIds?: string[],
     disabled?: boolean,
     finishedAt?: number | null,
     playerFinishedTimes?: { [key: number]: number },
     playerInGameTimes?: { [key: number]: number },
-    raceReadyUserIds?: number[],
+    raceReadyUserIds?: string[],
     raceStartingAt?: number | null,
-    seedSpoilerDownloadedByIds?: number[],
+    seedSpoilerDownloadedByIds?: string[],
     showWorldFinishedTime?: boolean,
     world: WorldInfo,
   }>(), {
@@ -79,6 +84,9 @@
   })
 
   const userStore = useUserStore()
+  const isElectron = useIsElectron()
+
+  const emits = defineEmits(["join"])
 
   const canJoinInternal = computed(() => {
     return props.canJoin && !props.world.memberships.some(m => m.user?.id === userStore.user?.id)
@@ -134,10 +142,10 @@
   }
 
   .finished-time {
-    color: var(--v-success-base);
+    color: rgb(var(--v-theme-success));
 
     &.forfeited {
-      color: var(--v-error-base);
+      color: rgb(var(--v-theme-error));
     }
   }
 </style>

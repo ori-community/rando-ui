@@ -4,30 +4,28 @@
       <h2 class="text-center mb-3 mt-8">Bingo board</h2>
 
       <div class="text-center mb-1">
-        <v-btn text @click="centerBoard">
-          <v-icon left>mdi-image-filter-center-focus-strong-outline</v-icon>
+        <v-btn variant="text" @click="centerBoard">
+          <v-icon start>mdi-image-filter-center-focus-strong-outline</v-icon>
           Center on screen
         </v-btn>
-        <v-btn v-if="isElectron" :disabled="bingoOverlayEnabled" text @click="enableBingoOverlay">
+        <v-btn v-if="isElectron" :disabled="bingoOverlayEnabled" variant="text" @click="enableBingoOverlay">
           <template v-if="bingoOverlayEnabled">
-            <v-icon left>mdi-check</v-icon>
+            <v-icon start>mdi-check</v-icon>
             Overlay enabled
           </template>
           <template v-else>
-            <v-icon left>mdi-semantic-web</v-icon>
+            <v-icon start>mdi-semantic-web</v-icon>
             Enable Overlay
           </template>
         </v-btn>
-        <v-btn text :disabled="isSpectating" @click="spectateDialogOpen = true">
-          <v-icon left>mdi-monitor-eye</v-icon>
+        <v-btn variant="text" :disabled="isSpectating" @click="spectateDialogOpen = true">
+          <v-icon start>mdi-monitor-eye</v-icon>
           Spectate
         </v-btn>
 
         <v-menu offset-y :close-on-content-click="!embedUrlLoading && !bingothonTokenLoading">
           <template #activator="{ props }">
-            <v-btn icon class="ml-2" v-bind="props">
-              <v-icon>mdi-dots-vertical</v-icon>
-            </v-btn>
+            <v-btn variant="text" icon="mdi-dots-vertical" class="ml-2" v-bind="props"/>
           </template>
           <v-list>
             <v-list-item @click="boardSettingsOpen = true">
@@ -36,22 +34,22 @@
             </v-list-item>
             <v-list-item :disabled="embedUrlCopied || embedUrlLoading" @click="createEmbedUrl">
               <template v-if="embedUrlCopied">
-                <v-icon left>mdi-check</v-icon>
+                <v-icon start>mdi-check</v-icon>
                 URL Copied
               </template>
               <template v-else>
-                <v-icon left>mdi-semantic-web</v-icon>
+                <v-icon start>mdi-semantic-web</v-icon>
                 <template v-if="embedUrlLoading">Generating URL...</template>
                 <template v-else>Embed (OBS)</template>
               </template>
             </v-list-item>
             <v-list-item :disabled="bingothonTokenCopied || bingothonTokenLoading" @click="createBingothonToken">
               <template v-if="bingothonTokenCopied">
-                <v-icon left>mdi-check</v-icon>
+                <v-icon start>mdi-check</v-icon>
                 Token Copied
               </template>
               <template v-else>
-                <v-icon left>mdi-key</v-icon>
+                <v-icon start>mdi-key</v-icon>
                 <template v-if="bingothonTokenLoading">Generating Token...</template>
                 <template v-else>Create Bingothon Token</template>
               </template>
@@ -75,41 +73,43 @@
         class="board"
       />
       <div class="sidebar px-5">
-        <transition-group class="bingo-universes" name="list">
-          <div
-            v-for="(bingoUniverse, index) in sortedBingoUniverses"
-            :key="bingoUniverse.universeId"
-            :style="{ zIndex: sortedBingoUniverses.length - index }"
-            class="relative"
-          >
-            <wotw-bingo-universe-view
-              :bingo-universe="bingoUniverse"
-              :is-spectating="isSpectating"
-              :universe="multiverse.universes.find((u) => u.id === bingoUniverse.universeId)"
-              :universe-hidden="hiddenUniverseIds.includes(bingoUniverse.universeId)"
-              @click="toggleUniverseVisibility(bingoUniverse.universeId)"
-              @click.native.ctrl.capture.stop="toggleUniverseVisibility(bingoUniverse.universeId, true)"
+        <transition-group name="list">
+          <div class="bingo-universes">
+            <div
+              v-for="(bingoUniverse, index) in sortedBingoUniverses"
+              :key="bingoUniverse.universeId"
+              :style="{ zIndex: sortedBingoUniverses.length - index }"
+              class="relative"
+            >
+              <wotw-bingo-universe-view
+                :bingo-universe="bingoUniverse"
+                :is-spectating="isSpectating"
+                :universe="multiverse.universes.find((u) => u.id === bingoUniverse.universeId)"
+                :universe-hidden="hiddenUniverseIds.includes(bingoUniverse.universeId)"
+                @click="toggleUniverseVisibility(bingoUniverse.universeId)"
+                @click.native.ctrl.capture.stop="toggleUniverseVisibility(bingoUniverse.universeId, true)"
+              />
+            </div>
+            <v-switch
+              v-if="isSpectating"
+              key="spectatorMode"
+              v-model="boardSettingSpectatorDisplayAll"
+              label="Show all cards"
+              inset
             />
-          </div>
-          <v-switch
-            v-if="isSpectating"
-            key="spectatorMode"
-            v-model="boardSettingSpectatorDisplayAll"
-            label="Show all cards"
-            inset
-          />
-          <div
-            v-if="!boardSettingHideSpectators && multiverse.spectators.length > 0"
-            key="spectators"
-            class="mt-4"
-          >
-            <div class="text-caption">Spectators</div>
+            <div
+              v-if="!boardSettingHideSpectators && multiverse.spectators.length > 0"
+              key="spectators"
+              class="mt-4"
+            >
+              <div class="text-caption">Spectators</div>
 
-            <rando-discord-avatar v-for="spectator in multiverse.spectators" :key="spectator.id" :user="spectator">
-              <v-tooltip location="top" activator="parent">
-                <span>{{ spectator.name }}</span>
-              </v-tooltip>
-            </rando-discord-avatar>
+              <rando-discord-avatar v-for="spectator in multiverse.spectators" :key="spectator.id" :user="spectator">
+                <v-tooltip location="top" activator="parent">
+                  <span>{{ spectator.name }}</span>
+                </v-tooltip>
+              </rando-discord-avatar>
+            </div>
           </div>
         </transition-group>
       </div>
@@ -341,6 +341,10 @@
 </script>
 
 <style lang="scss" scoped>
+  .top-buttons {
+    gap: 0.3em;
+  }
+
   .board-container {
     display: flex;
     min-height: 100vh;

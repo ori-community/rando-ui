@@ -112,7 +112,7 @@ export class LauncherService {
     }
 
     if (!fs.existsSync(`${RANDOMIZER_BASE_PATH}/Injector.exe`)) {
-      throw new Error(`Injector.exe not found. Your antivirus software has probably eaten it. You might need to add an exception for it to run the randomizer.`)
+      throw new Error(`Injector.exe not found. Your antivirus software has probably eaten it. You might need to add an exception for it. Reinstall the randomizer afterwards.`)
     }
 
     if (await this.isRandomizerRunning()) {

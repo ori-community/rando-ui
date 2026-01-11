@@ -25,10 +25,12 @@
     </v-scroll-y-reverse-transition>
 
     <div v-if="isSpectating" class="text-center mt-4">
-      <v-alert class="d-inline-block" color="info darken">
-        <v-icon left>mdi-monitor-eye</v-icon>
-        You are spectating this game.
-      </v-alert>
+      <template v-if="showSpectatingWarning">
+        <v-alert class="d-inline-block" color="info darken">
+          <v-icon left>mdi-monitor-eye</v-icon>
+          You are spectating this game.
+        </v-alert>
+      </template>
     </div>
     <div v-else-if="multiverse.locked" class="text-center mt-4">
       <v-alert class="d-inline-block" color="info darken">
@@ -65,6 +67,7 @@
     playerFinishedTimes?: { [key: number]: number },
     worldFinishedTimes?: { [key: number]: number },
     universeFinishedTimes?: { [key: number]: number },
+    showSpectatingWarning?: boolean,
   }>(), {
     isSpectating: false,
     raceStartingAt: null,
@@ -72,6 +75,7 @@
     playerFinishedTimes: () => ({}),
     worldFinishedTimes: () => ({}),
     universeFinishedTimes: () => ({}),
+    showSpectatingWarning: true,
   })
 
   const loading = ref(false)

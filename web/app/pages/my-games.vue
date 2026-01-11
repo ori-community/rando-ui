@@ -3,19 +3,87 @@
     <h1 class="text-center mt-12 mb-6">My Games</h1>
 
     <rando-throttled-spinner>
-      <template v-if="multiverses !== null">
-        <div v-for="group of multiversesByPeriod" :key="group.period">
-          <h2 class="mt-10 mb-3">{{ group.period }}</h2>
-          <div class="games-container">
-            <wotw-multiverse-card
-              v-for="multiverseMetadata in group.multiverses"
-              :key="multiverseMetadata.id"
-              :multiverse-metadata="multiverseMetadata"
-            />
+      <template v-if="multiverses !== null && !fetchingGames">
+        <div class="games-container mt-8">
+          <div class="timeline">
+            <v-timeline truncate-line="start" side="end" density="comfortable">
+              <template v-for="group of multiversesByPeriod" :key="group.period">
+                <v-timeline-item hide-dot>
+                  <h2>{{ group.period }}</h2>
+                </v-timeline-item>
+                <v-timeline-item
+                  v-for="multiverseMetadata in group.multiverses"
+                  :key="multiverseMetadata.id"
+                  class="game-container"
+                  :dot-color="multiverse && multiverse.id == multiverseMetadata.id ? 'secondary' : 'primary'"
+                  @click="(event: MouseEvent) => showMultiverse(event, multiverseMetadata.id)"
+                >
+                  <template #opposite>
+                    <div class="multiverse-id-container">
+                      <div>
+                        <span class="hashtag">#</span><span class="multiverse-id">{{ multiverseMetadata.id }}</span>
+                      </div>
+                    </div>
+                  </template>
+                  <template #icon>
+                    <v-icon>{{ multiverseMetadata.hasBingoBoard ? 'mdi-grid' : '' }}</v-icon>
+                    <v-tooltip location="bottom" activator="parent" open-delay="500">
+                      <span><kbd>Ctrl</kbd> + Click to open Multiverse</span>
+                    </v-tooltip>
+                  </template>
+                  <div class="avatars ml-5">
+                    <div v-for="user in multiverseMetadata.members" :key="user.id" class="avatar">
+                      <rando-discord-avatar :user="user"/>
+                      <v-tooltip location="bottom" activator="parent" open-delay="250">
+                        <span>{{ user.name }}</span>
+                      </v-tooltip>
+                    </div>
+                  </div>
+
+                </v-timeline-item>
+              </template>
+            </v-timeline>
+          </div>
+
+          <div v-if="multiverse && !loadingMultiverse" class="multiverse-view-container mt-4">
+            <div class="d-flex justify-center align-center mb-6">
+              <h1 class="text-center mx-4">Game <small>#</small>{{ multiverse.id }}</h1>
+              <v-btn icon variant="text" :to="{ name: 'game-multiverseId', params: { multiverseId: multiverse.id } }">
+                <v-icon>mdi-chevron-right</v-icon>
+              </v-btn>
+            </div>
+            <div class="multiverse-view text-center">
+              <wotw-multiverse-view
+                v-if="multiverse"
+                :multiverse="multiverse"
+                :is-spectating="true"
+                :show-spectating-warning="false"
+              />
+            </div>
+            <div v-if="multiverse.hasBingoBoard" class="board-container">
+              <div class="d-flex justify-center">
+                <v-btn variant="text" class="mb-3" @click="centerBoard">
+                  <v-icon start>mdi-image-filter-center-focus-strong-outline</v-icon>
+                  Center on screen
+                </v-btn>
+              </div>
+              <div ref="boardRef">
+                <wotw-bingo-board
+                  class="board"
+                  :edge-labels="false"
+                  :is-spectating="false"
+                  :multiverse-id="multiverse.id"
+                  :highlighted-universe-id="null"
+                  :own-universe-id="null"
+                  :card-attention-effect="false"
+                  :spectator-display-all="false"
+                />
+              </div>
+            </div>
           </div>
         </div>
         <div v-if="multiversesByPeriod.length === 0" class="text-center">
-          <img class="ori-image" src="@shared/images/ori_thumb.png" alt="">
+          <img class="ori-image" src="../../../shared/images/ori_thumb.png" alt="">
           <div>You haven't played any online games yet</div>
         </div>
       </template>
@@ -24,16 +92,21 @@
 </template>
 
 <script lang="ts" setup>
-  import type {MultiverseMetadataInfoMessage} from "@shared/proto/messages"
+  import type {MultiverseInfo, MultiverseMetadataInfo} from "@shared/types/http-api";
+  import type {Ref} from "vue";
 
   type PeriodGroup = {
     period: string,
-    multiverses: Array<MultiverseMetadataInfoMessage>,
+    multiverses: Array<MultiverseMetadataInfo>,
   }
-  const multiverses = ref<Array<MultiverseMetadataInfoMessage>>([])
-
   const {axios} = useAxios()
+  const route = useRoute()
+  const router = useRouter()
 
+  const multiverses = ref<Array<MultiverseMetadataInfo>>([])
+  const fetchingGames = ref(false)
+  const multiverse = ref<Ref<MultiverseInfo> | null>(null)
+  const loadingMultiverse = ref(false)
   const multiversesByPeriod = computed(() => {
 
     const periodGroups: Array<PeriodGroup> = new Array<PeriodGroup>()
@@ -52,7 +125,7 @@
     const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1)
 
     // function to add to group and create period-group if missing
-    const addToGroup = function (obj: MultiverseMetadataInfoMessage, period: string) {
+    const addToGroup = function (obj: MultiverseMetadataInfo, period: string) {
       const index = periodGroups.findIndex(g => g.period === period)
       if (index < 0) {
         periodGroups.push({
@@ -97,27 +170,136 @@
 
     return periodGroups
   })
+  const boardRef = ref<HTMLElement | null>(null)
 
   onMounted(() => {
     fetchMultiverses()
+    updateMultiverse()
   })
 
-
   const fetchMultiverses = (async () => {
+    fetchingGames.value = true
     multiverses.value = (await axios.get('/multiverses/own')).data
+    fetchingGames.value = false
+  })
+
+  watch(() => (route.query.game), () => {
+    updateMultiverse()
+  })
+
+  const updateMultiverse = (async () => {
+    if (!route.query.game) {
+      multiverse.value = null
+      return
+    }
+    const id: number = Number(route.query.game)
+
+    loadingMultiverse.value = true
+    const {multiverse: m} = await useMultiverse(id)
+    multiverse.value = m.value
+    loadingMultiverse.value = false
+
+  })
+
+  const showMultiverse = ((event: MouseEvent, id: number) => {
+    if (event.ctrlKey) {
+      openMultiversePage(id)
+      return
+    }
+
+    router.push({
+      query: {
+        ...route.query,
+        game: id
+      }
+    })
+
+  })
+
+  const openMultiversePage = ((id: number) => {
+    router.push({
+      name: 'game-multiverseId',
+      params: {multiverseId: id}
+    })
+  })
+
+  const centerBoard = (() => {
+    boardRef.value?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
   })
 
 </script>
 
 <style lang="scss" scoped>
   .games-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    grid-auto-rows: 1fr;
+    display: flex;
+    flex-direction: row;
     gap: 1em;
+  }
+
+  .timeline {
+    min-width: 20em;
+    height: fit-content;
+  }
+
+  .game-container {
+    cursor: pointer;
+  }
+
+  .multiverse-id-container {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+
+    .hashtag {
+      font-size: 1em;
+      opacity: 0.75;
+    }
+
+    .multiverse-id {
+      font-size: 1.5em;
+      font-weight: 900;
+    }
+  }
+
+  .avatars {
+    text-align: left;
+    white-space: nowrap;
+
+    .avatar {
+      display: inline-block;
+      margin-left: -16px;
+      transition: margin 175ms;
+    }
+
+    &:hover {
+      .avatar:nth-child(n+2) {
+        margin-left: 0.2em;
+      }
+    }
+  }
+
+  .multiverse-view-container {
+    width: 100%;
+  }
+
+  .board-container {
+    min-height: 100vh;
+
+    .board {
+      flex-grow: 0;
+      flex-shrink: 0;
+      height: 100vh;
+      width: 100vh;
+      margin-left: auto;
+      margin-right: auto;
+    }
   }
 
   .ori-image {
     height: 3em;
   }
+
 </style>

@@ -17,8 +17,7 @@
       </template>
       <template v-for="x in bingoBoard.size" :key="`${x}${y}`">
         <wotw-bingo-card
-          :force-flip="x + y > unveilProgress"
-          :square="getSquare(x, y)"
+          :square="getSquare(x, y) ?? null"
           :universe-colors="universeColors"
           :hidden-universe-ids="hiddenUniverseIds"
           :highlighted-universe-id="highlightedUniverseId"
@@ -55,16 +54,18 @@
 
   const markedCards = ref<string[]>([])
 
-  const props = defineProps<{
+  const props = withDefaults(defineProps<{
     edgeLabels: boolean,
     isSpectating: boolean,
     multiverseId: number,
-    hiddenUniverseIds: number[],
+    hiddenUniverseIds?: number[],
     highlightedUniverseId: number | null,
     ownUniverseId: number | null,
     cardAttentionEffect: boolean,
     spectatorDisplayAll: boolean,
-  }>()
+  }>(), {
+    hiddenUniverseIds: () => [],
+  })
 
   const {multiverse, bingoBoard} = await useMultiverse(props.multiverseId)
 
@@ -121,7 +122,7 @@
       return cardTable.value?.[x]?.[y] != null
     }
 
-    if (props.spectatorDisplayAll) {
+    if (props.spectatorDisplayAll || !props.hiddenUniverseIds) {
       return true
     }
 

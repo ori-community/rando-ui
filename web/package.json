@@ -28,8 +28,10 @@
     "commonmark": "^0.31.2",
     "date-fns": "^4.1.0",
     "electron-trpc": "^0.7.1",
+    "konva": "^10.0.12",
     "sass-embedded": "^1.93.2",
     "superjson": "^2.2.2",
-    "typescript-event-target": "^1.1.1"
+    "typescript-event-target": "^1.1.1",
+    "vue-konva": "^3.3.0"
   }
 }

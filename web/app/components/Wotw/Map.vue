@@ -24,14 +24,13 @@
   import {ref, onMounted} from 'vue'
   import Konva from "konva";
   import {Stage as KStage, Layer as KLayer, Image as KImage} from "vue-konva"
-  import type {MapPoint, MapTile} from "@shared/types/map"
 
   const stageRef = ref<{ getNode: () => Konva.Stage } | null>(null)
   const layerRef = ref<{ getNode: () => Konva.Layer } | null>(null)
   const containerRef = ref<HTMLElement | null>(null)
-  const mapTiles = ref<MapTile[]>([])
+  const mapTiles = ref<Konva.ImageConfig[]>([])
   const emit = defineEmits<{
-    (e: 'mouseclick' | 'mousemove', event: MouseEvent, point: MapPoint): void
+    (e: 'mouseclick' | 'mousemove', event: MouseEvent, point: Konva.Vector2d): void
   }>()
 
   const stageConfig = ref<{
@@ -147,7 +146,7 @@
     const layer = layerRef.value?.getNode()
     const position = layer.getRelativePointerPosition()
     if (position) {
-      const point: MapPoint = {x: position.x, y: position.y}
+      const point: Konva.Vector2d = {x: position.x, y: position.y}
       emit(eventName, event, point)
     }
   })
@@ -213,7 +212,7 @@
     })
   })
 
-  const zoomOn = ((points: MapPoint[]) => {
+  const zoomOn = ((points: Konva.Vector2d[]) => {
     if (!points || !points[0] || points.length === 0) {
       return
     }

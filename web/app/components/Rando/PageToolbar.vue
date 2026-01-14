@@ -27,9 +27,6 @@
         <v-icon :start="!mdAndDown">mdi-cog-outline</v-icon>
         <span v-if="!mdAndDown">Settings</span>
       </v-btn>
-      <v-btn v-if="isElectron" key="map" size="x-large" variant="text" to="/map">
-        <v-icon>mdi-map</v-icon>
-      </v-btn>
       <!--  MENU  -->
       <div key="electron-menu">
         <v-menu offset-y>
@@ -52,6 +49,10 @@
             >
               <v-icon start>mdi-leak</v-icon>
               Create Web Tracker
+            </v-list-item>
+            <v-list-item size="x-large" variant="text" @click="openToolsWindow">
+              <v-icon start>mdi-tools</v-icon>
+              Tools
             </v-list-item>
           </v-list>
         </v-menu>
@@ -228,6 +229,10 @@
 
   const openLocalTrackerWindow = (async () => {
     await electronApi?.localTracker.openWindow.query()
+  })
+
+  const openToolsWindow = (async () => {
+    await electronApi?.toolsWindow.openWindow.query()
   })
 
 </script>

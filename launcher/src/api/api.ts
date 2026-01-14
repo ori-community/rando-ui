@@ -7,6 +7,7 @@ import {randoIpc} from "@launcher/api/routers/randoIpc"
 import {seedgenServer} from "@launcher/api/routers/seedgenServer"
 import {settings} from "@launcher/api/routers/settings"
 import {systemDialogs} from "@launcher/api/routers/systemDialogs"
+import {toolsWindow} from "@launcher/api/routers/toolsWindow"
 import {updater} from "@launcher/api/routers/updater"
 
 export const appRouter = router({
@@ -18,6 +19,7 @@ export const appRouter = router({
   seedgenServer,
   settings,
   systemDialogs,
+  toolsWindow,
   updater,
 })
 

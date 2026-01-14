@@ -1,10 +1,14 @@
 <template>
-  <v-container>
-    <wotw-map/>
-  </v-container>
+  <wotw-map/>
 </template>
 
 <script lang="ts" setup>
+
+  definePageMeta({
+    layout: 'plain'
+  })
+
+  useHead({title: "Tools"})
 
 </script>
 

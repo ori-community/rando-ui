@@ -36,7 +36,10 @@ export class ToolsWindowService {
       })
 
       await this.window.loadURL(getElectronUrl(`/electron/tools`))
+    } else {
+      this.window.focus()
     }
+
   }
 
 }

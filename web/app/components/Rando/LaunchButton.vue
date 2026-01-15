@@ -1,5 +1,11 @@
 <template>
-  <v-btn color="accent" size="x-large" :disabled="disabled" :loading="isLaunching && hasBeenClicked" @click="onClick">
+  <v-btn
+    ref="buttonRef"
+    color="accent"
+    size="x-large"
+    :disabled="disabled"
+    :loading="isLaunching && hasBeenClicked"
+    @click="onClick">
     <img
       v-if="!displayedIcon"
       class="launch-icon"
@@ -13,6 +19,8 @@
 </template>
 
 <script lang="ts" setup>
+
+  import {confettiFromElement} from "~/assets/utils/confetti";
 
   const emit = defineEmits<{
     (e: 'click', event: MouseEvent): void
@@ -32,7 +40,7 @@
 
   const isLeek = ref(false) // funny (display lauch / leek)
   const hasBeenClicked = ref(false)
-
+  const buttonRef = ref<{ $el: HTMLElement } | null>(null)
   const {isLaunching} = useLauncherHelper()
   const displayedIcon = computed(() => {
     if (props.icon) {
@@ -56,6 +64,7 @@
 
   watch(
     () => isLaunching.value, (newValue, oldValue) => {
+      console.log("isLaunching changed", newValue)
       if (oldValue && !newValue && hasBeenClicked.value) {
         hasBeenClicked.value = false
         if (props.showConfetti) {
@@ -65,8 +74,10 @@
     })
 
   const shootConfetti = (() => {
-    // TODO confetti
-    console.log("Insert confetti here")
+    if (!buttonRef.value) {
+      return
+    }
+    confettiFromElement(buttonRef.value.$el, {disableForReducedMotion: true})
   })
 
   onMounted(() => {

@@ -67,7 +67,7 @@
           <!-- TODO fix row highlighting -->
           <!-- LEADERBOARD -->
           <v-card class="overflow-x-auto leaderboard-container">
-            <h2 ref="leaderboardTitle" class="text-center mt-5 mb-5">Leaderboard</h2>
+            <h2 ref="leaderboardTitleRef" class="text-center mt-5 mb-5">Leaderboard</h2>
             <rando-throttled-spinner>
               <v-data-table
                 v-if="sortedMembers"
@@ -270,7 +270,7 @@
         </p>
         <div class="dialog-buttons mt-8 mb-2">
           <v-btn
-            ref="trainingSeedLaunchButton"
+            ref="trainingSeedLaunchButtonRef"
             size="x-large"
             color="accent"
             :loading="trainingSeedLoading"
@@ -294,6 +294,7 @@
   import type {DataTableHeader} from "vuetify/framework"
   import {renderMarkdown} from "assets/utils/markdown"
   import {formatDateEpoch} from "~/assets/utils/formatsDates"
+  import {confettiFromElement} from "~/assets/utils/confetti";
 
   const trainingSeedLaunchButton = useTemplateRef('trainingSeedLaunchButton')
 
@@ -320,6 +321,8 @@
     {title: 'Your Points', value: 'userMetadata.ownSubmission.rankingData.points', align: 'start'},
     {title: 'Your Time', value: 'userMetadata.ownSubmission.rankingData.time', align: 'end'},
   ]
+  const leaderboardTitleRef = ref<{ $el: HTMLElement } | null>(null)
+  const trainingSeedLaunchButtonRef = ref<{ $el: HTMLElement } | null>(null)
 
   const isJoined = computed(() => {
     if (!userStore.isLoggedIn) return false
@@ -423,10 +426,11 @@
     }
 
     setTimeout(() => {
-      // TODO CONFETTI
-      // confettiFromElement(this.$refs.leaderboardTitle, {
-      //   startVelocity: 30,
-      // })
+      if (leaderboardTitleRef.value) {
+        confettiFromElement(leaderboardTitleRef.value.$el, {
+          startVelocity: 30,
+        })
+      }
     }, 75)
 
     showSeasonRules.value = false
@@ -466,10 +470,11 @@
     // })
     // await this.$router.push({ name: 'game-multiverseId', params: { multiverseId } })
 
-    // TODO CONFETTI
-    // confettiFromElement(trainingSeedLaunchButton, {
-    //   startVelocity: 30,
-    // })
+    if (trainingSeedLaunchButtonRef.value) {
+      confettiFromElement(trainingSeedLaunchButtonRef.value.$el, {
+        startVelocity: 30,
+      })
+    }
     trainingSeedLoading.value = false
     trainingSeedDialogOpen.value = false
   })

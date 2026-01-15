@@ -1,5 +1,5 @@
 <template>
-  <v-card ref="worldView" class="world-view" outlined color="background-lighten-2">
+  <v-card ref="worldViewRef" class="world-view" outlined color="background-lighten-2">
     <v-sheet :color="world.color" class="flex-shrink-0" height="0.5em"/>
     <v-card-title class="d-flex">
       <div class="world-title">
@@ -57,6 +57,7 @@
 
   import type {WorldInfo} from "@shared/types/http-api"
   import {formatTime} from "assets/utils/formatTime"
+  import {confettiFromElement} from "~/assets/utils/confetti";
 
   const props = withDefaults(defineProps<{
     canJoin?: boolean,
@@ -85,6 +86,7 @@
 
   const userStore = useUserStore()
   const isElectron = useIsElectron()
+  const worldViewRef = ref<{ $el: HTMLElement } | null>(null)
 
   const emits = defineEmits(["join"])
 
@@ -96,12 +98,10 @@
   })
 
   watch(() => props.finishedAt, (value) => {
-    if (value) {
-      // TODO confetti
-      // confettiFromElement(this.$refs.worldView.$el, {
-      //   disableForReducedMotion: true,
-      //   zIndex: 100000,
-      // })
+    if (value && worldViewRef.value) {
+      confettiFromElement(worldViewRef.value.$el, {
+        disableForReducedMotion: true
+      })
     }
   })
 

@@ -20,7 +20,7 @@
           <wotw-tracker-teleporters v-if="showTeleporters" :tracked-values="trackedValues"/>
         </div>
         <div class="done-label">
-          <div ref="hype" class="hype">
+          <div ref="hypeRef" class="hype">
             <img src="@shared/images/ori_hype.png" alt="">
           </div>
         </div>
@@ -45,6 +45,7 @@
 
   import {ResetTracker, TrackerFlagsUpdate, TrackerTimerStateUpdate, TrackerUpdate} from "@shared/proto/messages";
   import {decodePacket} from "@shared/proto/ProtoUtil";
+  import {confettiFromElement} from "~/assets/utils/confetti";
 
   definePageMeta({
     layout: 'plain'
@@ -63,7 +64,6 @@
   // import { ResetTracker, TrackerFlagsUpdate, TrackerTimerStateUpdate, TrackerUpdate } from '~/assets/proto/messages'
   // import { applyTransparentWindowStyles, isOBS } from '~/assets/lib/obs'
   // import { isElectron } from '~/assets/lib/isElectron'
-  // import { confettiFromElement } from '~/assets/lib/confettiFromElement'
   // import { hasSettings } from '~/assets/lib/hasSettings'
 
   const connected = ref(false)
@@ -82,6 +82,7 @@
   const appliedDelay = ref(0)
   const delayQueued = ref(false)
   const webSocket = ref<WebSocket | null>(null)
+  const hypeRef = ref<{ $el: HTMLElement } | null>(null)
 
   useHead({title: 'Item Tracker'})
 
@@ -155,9 +156,11 @@
   watch(() => trackedValues.value.game_finished, (value) => {
     if (value) {
       setTimeout(() => {
-        // confettiFromElement(this.$refs.hype, {
-        //   startVelocity: 30,
-        // }) TODO CONFETTI
+        if (hypeRef.value) {
+          confettiFromElement(hypeRef.value.$el, {
+            startVelocity: 30,
+          })
+        }
       }, 75)
 
       showDone.value = true

@@ -1,0 +1,5 @@
+apis:
+  wotw-seedgen@v1:
+    root: https://seedgen-api.wotw.orirando.com/docs/wotw-seedgen-openapi.json
+    x-openapi-ts:
+      output: ./types/seedgen.d.ts

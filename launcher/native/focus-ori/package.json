@@ -2,7 +2,10 @@
   "name": "focus-ori",
   "version": "1.0.1",
   "main": "index.js",
-  "os": ["win32", "linux"],
+  "os": [
+    "win32",
+    "linux"
+  ],
   "dependencies": {
     "node-gyp": "^12.1.0"
   },

@@ -6,7 +6,10 @@ export default defineNuxtConfig({
   devtools: {enabled: true},
   ssr: false,
 
-  css: ["@/assets/vuetify/globals.scss"],
+  css: [
+    "@/assets/vuetify/globals.scss",
+    "@/assets/utils/style.scss",
+  ],
 
   runtimeConfig: {
     public: {

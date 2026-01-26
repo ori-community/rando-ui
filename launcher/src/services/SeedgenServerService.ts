@@ -19,6 +19,7 @@ type SeedgenExecaOptions = {
 
 export class SeedgenServerService {
   private static _process: ResultPromise<SeedgenExecaOptions> | null = null
+  private static _currentStartupPromise: Promise<void> | null = null
 
   /**
    * Returns whether a seedgen process that has been started by this process is running
@@ -36,6 +37,7 @@ export class SeedgenServerService {
   static async ensureRunning(forceRestart = false, readyTimeoutMs = 10000) {
     if (this.#isSeedgenProcessRunning()) {
       if (!forceRestart) {
+        await this._currentStartupPromise
         return
       }
 
@@ -43,7 +45,7 @@ export class SeedgenServerService {
       this._process = null
     }
 
-    await Promise.race([
+    this._currentStartupPromise = Promise.race([
       new Promise<void>((_resolve, reject) => setTimeout(reject, readyTimeoutMs)),
       new Promise<void>((resolve, reject) => {
         const logInfo = function* (line: string) {
@@ -90,10 +92,18 @@ export class SeedgenServerService {
 
         this._process
           .catch((err: Error) => {
+            // Seedgen HTTP server was started outside the launcher
+            if (this._process.exitCode === 2) {
+              resolve()
+              return
+            }
+
             log.error("Seedgen server failed:", err)
             reject(err)
           })
       }),
     ])
+
+    await this._currentStartupPromise
   }
 }

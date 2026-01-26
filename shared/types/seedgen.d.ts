@@ -4,1179 +4,1193 @@
  */
 
 export interface paths {
-  "/generate": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * Generate a seed
-     * @description Response will be in CBOR format
-     *
-     *     ```cddl
-     *     universe = {
-     *         worlds: [ +bstr ],
-     *         ? json_spoiler: tstr,
-     *         ? text_spoiler: tstr,
-     *     }
-     *     ```
-     */
-    post: {
-      parameters: {
-        query?: {
-          json_spoiler?: boolean | null;
-          text_spoiler?: boolean | null;
+    "/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["UniverseSettings"];
+        get?: never;
+        put?: never;
+        /**
+         * Generate a seed
+         * @description Response will be in CBOR format
+         *
+         *     ```cddl
+         *     universe = {
+         *         worlds: [ +bstr ],
+         *         ? json_spoiler: tstr,
+         *         ? text_spoiler: tstr,
+         *     }
+         *     ```
+         */
+        post: {
+            parameters: {
+                query?: {
+                    json_spoiler?: boolean | null;
+                    text_spoiler?: boolean | null;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UniverseSettings"];
+                };
+            };
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/octet-stream": number[];
+                    };
+                };
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+            };
         };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/octet-stream": number[];
-          };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/logic/graph": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": string;
-          };
+        /** Get the logic graph */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Graph"];
+                    };
+                };
+            };
         };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/logic/graph": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get the logic graph */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["Graph"];
-          };
+    "/logic/map-icons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/logic/map-icons": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get a list of logically relevant map icons */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["MapIcons"];
-          };
+        /** Get a list of logically relevant map icons */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MapIcons"];
+                    };
+                };
+            };
         };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/logic/reach-check": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Get a list of reachable nodes */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["ReachCheckBody"];
+    "/logic/reach-check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["ReachCheck"];
-          };
+        get?: never;
+        put?: never;
+        /** Get a list of reachable nodes */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReachCheckBody"];
+                };
+            };
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ReachCheck"];
+                    };
+                };
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+            };
         };
-        400: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": string;
-          };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/logic/relevant-uber-states": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": string;
-          };
+        /** Get a list of logically relevant UberStates */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RelevantUberStates"];
+                    };
+                };
+            };
         };
-        500: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": string;
-          };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/presets/universe/apply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/logic/relevant-uber-states": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get a list of logically relevant UberStates */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["RelevantUberStates"];
-          };
+        get?: never;
+        put?: never;
+        /** Apply a universe preset to universe settings */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ApplyBody"];
+                };
+            };
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UniverseSettings"];
+                    };
+                };
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+            };
         };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/presets/universe/apply": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Apply a universe preset to universe settings */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["ApplyBody"];
+    "/presets/universe/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["UniverseSettings"];
-          };
+        /** Get a list of available universe presets */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HashMap_String_UniversePreset"];
+                    };
+                };
+            };
         };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": string;
-          };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/presets/world/apply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/presets/universe/list": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get a list of available universe presets */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["HashMap_String_UniversePreset"];
-          };
+        get?: never;
+        put?: never;
+        /**
+         * Apply world presets to world settings.
+         *     If no settings are given, presets are applied on top of the default world settings.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ApplyBody"];
+                };
+            };
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["WorldSettings"];
+                    };
+                };
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+            };
         };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/presets/world/apply": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Apply a world preset to world settings */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["ApplyBody"];
+    "/presets/world/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["WorldSettings"];
-          };
+        /** Get a list of available world presets */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HashMap_String_WorldPreset"];
+                    };
+                };
+            };
         };
-        422: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "text/plain": string;
-          };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/settings/difficulties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/presets/world/list": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get a list of available world presets */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["HashMap_String_WorldPreset"];
-          };
+        /** Get the sorted list of difficulties in ascending order */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["DifficultyInfo"][];
+                    };
+                };
+            };
         };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/settings/difficulties": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get the list of difficulties */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["DifficultyInfo"][];
-          };
+    "/settings/tricks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/settings/tricks": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get the list of tricks */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["TrickInfo"][];
-          };
+        /** Get the list of tricks */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TrickInfo"][];
+                    };
+                };
+            };
         };
-      };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/settings/universe/inline-snippets": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Inline all snippets originating from the data directory */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["UniverseSettings"];
+    "/settings/universe/inline-snippets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["UniverseSettings"];
-          };
+        get?: never;
+        put?: never;
+        /** Inline all snippets originating from the data directory */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UniverseSettings"];
+                };
+            };
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UniverseSettings"];
+                    };
+                };
+            };
         };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/settings/world/default": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get the default world settings */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["WorldSettings"];
-          };
+    "/settings/world/default": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/settings/world/inline-snippets": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /** Inline all snippets originating from the data directory */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["WorldSettings"];
+        /** Get the default world settings */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["WorldSettings"];
+                    };
+                };
+            };
         };
-      };
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["WorldSettings"];
-          };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/settings/world/inline-snippets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/settings/world/random": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get random world settings */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["WorldSettings"];
-          };
+        get?: never;
+        put?: never;
+        /** Inline all snippets originating from the data directory */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["WorldSettings"];
+                };
+            };
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["WorldSettings"];
+                    };
+                };
+            };
         };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/snippets/info": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /** Get detailed info about available snippets */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": components["schemas"]["SnippetInfo"][];
-          };
+    "/settings/world/random": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
+        /** Get random world settings */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["WorldSettings"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
+    "/snippets/info": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get detailed info about available snippets */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HashMap_String_Metadata"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    Anchor: {
-      can_spawn: boolean;
-      connections: components["schemas"]["Connection"][];
-      door?: null | components["schemas"]["Door"];
-      identifier: string;
-      position?: null | components["schemas"]["Position"];
-      refills: components["schemas"]["Refill"][];
-      teleport_restriction: components["schemas"]["Requirement"];
-    };
-    ApplyBody: {
-      /** @description Preset to apply */
-      preset: components["schemas"]["WorldPreset"];
-      /** @description Current settings */
-      settings: components["schemas"]["WorldSettings"];
-    };
-    /**
-     * @description Comparison Operations performed on numbers
-     * @enum {integer}
-     */
-    Comparator: 0 | 1 | 2 | 3 | 4 | 5;
-    ConfigDefault: {
-      Boolean: boolean;
-    } | {
-      /** Format: int32 */
-      Integer: number;
-    } | {
-      /** Format: float */
-      Float: number;
-    };
-    Connection: {
-      /** @description Whether this connection was implicitly generated by seedgen, e.g. door connections */
-      implicitly_generated: boolean;
-      requirement: components["schemas"]["Requirement"];
-      to: number;
-    };
-    /**
-     * @description The logical difficulty to expect in a seed
-     *
-     *     This represents how demanding the required core movement should be
-     *     Difficulties don't include glitches by default, these are handled separately with [`Trick`]s
-     *
-     *     See the [Paths wiki page](https://wiki.orirando.com/seedgen/paths) for more information
-     * @enum {string}
-     */
-    Difficulty: "Moki" | "Gorlek" | "Kii" | "Unsafe";
-    DifficultyInfo: {
-      description: string;
-      name: components["schemas"]["Difficulty"];
-    };
-    Door: {
-      id: components["schemas"]["i32"];
-      requirement: components["schemas"]["Requirement"];
-      target: string;
-    };
-    Graph: {
-      default_door_connections: components["schemas"]["HashMap_i32_i32"];
-      nodes: components["schemas"]["Node"][];
-    };
-    GreaterOneU8: number;
-    HashMap_String_ConfigValue: {
-      [key: string]: {
-        default: components["schemas"]["ConfigDefault"];
-        description: string;
-      };
-    };
-    HashMap_String_HashMap_String_String: {
-      [key: string]: {
-        [key: string]: string;
-      };
-    };
-    HashMap_String_Source: {
-      [key: string]: {
+    schemas: {
+        Anchor: {
+            can_spawn: boolean;
+            connections: components["schemas"]["Connection"][];
+            door?: null | components["schemas"]["Door"];
+            identifier: string;
+            position?: null | components["schemas"]["Position"];
+            refills: components["schemas"]["Refill"][];
+            teleport_restriction: components["schemas"]["Requirement"];
+        };
+        ApplyBody: {
+            /** @description Presets to apply */
+            presets: components["schemas"]["WorldPreset"][];
+            settings?: null | components["schemas"]["WorldSettings"];
+        };
         /**
-         * @description The contents of the file, which will be referenced for better error messages.
+         * @description Comparison Operations performed on numbers
+         * @enum {integer}
+         */
+        Comparator: 0 | 1 | 2 | 3 | 4 | 5;
+        ConfigDefault: {
+            /** @enum {string} */
+            type: "Boolean";
+            value: boolean;
+        } | {
+            /** @enum {string} */
+            type: "Integer";
+            /** Format: int32 */
+            value: number;
+        } | {
+            /** @enum {string} */
+            type: "Float";
+            /** Format: float */
+            value: number;
+        };
+        Connection: {
+            /** @description Whether this connection was implicitly generated by seedgen, e.g. door connections */
+            implicitly_generated: boolean;
+            requirement: components["schemas"]["Requirement"];
+            to: number;
+        };
+        /**
+         * @description The logical difficulty to expect in a seed
          *
-         *     This should be the same contents you were parsing, otherwise error messages will reference arbitrary spans in your source and possibly panic.
-         */
-        content: string;
-        /**
-         * @description An identifier to be used in error messages that should allow the reader to determine which file the error originated from.
+         *     This represents how demanding the required core movement should be
+         *     Difficulties don't include glitches by default, these are handled separately with [`Trick`]s
          *
-         *     This might be the file path relative to the workspace root, or just the filename.
+         *     See the [Paths wiki page](https://wiki.orirando.com/seedgen/paths) for more information
+         * @enum {string}
          */
-        id: string;
-      };
-    };
-    HashMap_String_UniversePreset: {
-      [key: string]: components["schemas"]["UniversePresetSettings"] & {
+        Difficulty: "Moki" | "Gorlek" | "Kii" | "Unsafe";
+        DifficultyInfo: {
+            description: string;
+            name: components["schemas"]["Difficulty"];
+        };
+        Door: {
+            id: components["schemas"]["i32"];
+            requirement: components["schemas"]["Requirement"];
+            target: string;
+        };
+        Graph: {
+            default_door_connections: components["schemas"]["HashMap_i32_i32"];
+            nodes: components["schemas"]["Node"][];
+        };
+        GreaterOneU8: number;
+        HashMap_String_ConfigValue: {
+            [key: string]: {
+                default: components["schemas"]["ConfigDefault"];
+                description?: string | null;
+                name: string;
+            };
+        };
+        HashMap_String_HashMap_String_String: {
+            [key: string]: {
+                [key: string]: string;
+            };
+        };
+        HashMap_String_Metadata: {
+            [key: string]: {
+                category?: string | null;
+                config: components["schemas"]["HashMap_String_ConfigValue"];
+                description?: string | null;
+                hidden: boolean;
+                name?: string | null;
+            };
+        };
+        HashMap_String_Source: {
+            [key: string]: {
+                /**
+                 * @description The contents of the file, which will be referenced for better error messages.
+                 *
+                 *     This should be the same contents you were parsing, otherwise error messages will reference arbitrary spans in your source and possibly panic.
+                 */
+                content: string;
+                /**
+                 * @description An identifier to be used in error messages that should allow the reader to determine which file the error originated from.
+                 *
+                 *     This might be the file path relative to the workspace root, or just the filename.
+                 */
+                id: string;
+            };
+        };
+        HashMap_String_UniversePreset: {
+            [key: string]: components["schemas"]["UniversePresetSettings"] & {
+                /**
+                 * Format: int32
+                 * @description Assets version this preset is compatible with
+                 */
+                assetsVersion?: number;
+                info?: null | components["schemas"]["PresetInfo"];
+            };
+        };
+        HashMap_String_WorldPreset: {
+            [key: string]: components["schemas"]["WorldPresetSettings"] & {
+                /**
+                 * Format: int32
+                 * @description Assets version this preset is compatible with
+                 */
+                assetsVersion?: number;
+                info?: null | components["schemas"]["PresetInfo"];
+            };
+        };
+        HashMap_i32_i32: {
+            [key: string]: number;
+        };
+        HashSet_String: string[];
+        HashSet_Trick: ("SwordSentryJump" | "HammerSentryJump" | "ShurikenBreak" | "SentryBreak" | "HammerBreak" | "SpearBreak" | "SentryBurn" | "RemoveKillPlane" | "LaunchSwap" | "SentrySwap" | "FlashSwap" | "BlazeSwap" | "WaveDash" | "GrenadeJump" | "SwordJump" | "AerialHammerJump" | "GlideJump" | "GlideHammerJump" | "CoyoteHammerJump" | "WallHammerJump" | "GroundedHammerJump" | "HammerExtension" | "GrenadeRedirect" | "SentryRedirect" | "PauseFloat" | "SpearJump" | "GlideBashChain" | "DoubleJumpBashChain" | "DashBashChain" | "LaunchBashChain" | "Unpopular")[];
+        InlineSnippets: {
+            snippets: components["schemas"]["HashMap_String_Source"];
+        };
+        /** @description Information about a pickup location */
+        LocDataEntry: {
+            /** @description Unique identifier for this pickup location which is used in `areas.wotw` */
+            identifier: string;
+            /** @description Vanilla map icon */
+            map_icon: components["schemas"]["MapIcon"];
+            map_position?: null | components["schemas"]["Position"];
+            position?: null | components["schemas"]["Position"];
+            /**
+             * @description `UberIdentifier` where this pickup location's corresponding world state is stored
+             *
+             *     pickup locations are either stored as booleans or as integers where being above a certain value means the pickup is collected
+             */
+            uber_identifier: components["schemas"]["UberIdentifier"];
+            /**
+             * Format: int32
+             * @description `None` if `uber_identifier` holds a boolean value. Otherwise, has the minimum integer value at which this pickup is collected
+             */
+            value?: number | null;
+            /** @description Map zone containing this pickup location */
+            zone: components["schemas"]["Zone"];
+        };
         /**
-         * Format: int32
-         * @description Assets version this preset is compatible with
+         * @description Icons used in the map
+         * @enum {integer}
          */
-        assetsVersion?: number;
-        info?: null | components["schemas"]["PresetInfo"];
-      };
-    };
-    HashMap_String_WorldPreset: {
-      [key: string]: components["schemas"]["WorldPresetSettings"] & {
+        MapIcon: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 40 | 41 | 42 | 43 | 44 | 50 | 51 | 52 | 53 | 54 | 55 | 56 | 57 | 58 | 59 | 60 | 61 | 62 | 63 | 64 | 65 | 66 | 67 | 68 | 69 | 70 | 71 | 72 | 73 | 74 | 75 | 76 | 77 | 78 | 100 | 101 | 102 | 103 | 104 | 105 | 106 | 107 | 108 | 109 | 110 | 111 | 112 | 113 | 114 | 115 | 116 | 117;
+        MapIconCondition: {
+            comparator: components["schemas"]["Comparator"];
+            uberIdentifier: components["schemas"]["UberIdentifier"];
+            /** Format: float */
+            value: number;
+        };
+        MapIconInfo: {
+            icon: components["schemas"]["MapIcon"];
+            label: string;
+            positions: components["schemas"]["Position"][];
+            visibleIfAny: components["schemas"]["MapIconCondition"][];
+        };
+        MapIcons: {
+            /**
+             * Format: int64
+             * @description Hash of `map_icons`
+             */
+            hash: number;
+            /** @description List of logically relevant map icons */
+            mapIcons: components["schemas"]["MapIconInfo"][];
+        };
+        Metadata: {
+            category?: string | null;
+            config: components["schemas"]["HashMap_String_ConfigValue"];
+            description?: string | null;
+            hidden: boolean;
+            name?: string | null;
+        };
+        Node: {
+            Anchor: components["schemas"]["Anchor"];
+        } | {
+            Pickup: components["schemas"]["LocDataEntry"];
+        } | {
+            State: components["schemas"]["StateDataEntry"];
+        } | {
+            LogicalState: string;
+        };
+        /** @description `x`/`y` position */
+        Position: {
+            /** Format: float */
+            x: number;
+            /** Format: float */
+            y: number;
+        };
         /**
-         * Format: int32
-         * @description Assets version this preset is compatible with
+         * @description Special groups to display a preset in
+         * @enum {string}
          */
-        assetsVersion?: number;
-        info?: null | components["schemas"]["PresetInfo"];
-      };
+        PresetGroup: "Base";
+        /** @description Information for the user about a [`UniversePreset`] or [`WorldPreset`] */
+        PresetInfo: {
+            /** @description Extended description */
+            description?: string | null;
+            group?: null | components["schemas"]["PresetGroup"];
+            /** @description Display name */
+            name?: string | null;
+        };
+        ReachCheck: {
+            /**
+             * Format: int64
+             * @description Current hash of logically relevant map icons
+             */
+            map_icons_hash: number;
+            /** @description List of indices into logically reachable map icons */
+            reachable: number[];
+            /**
+             * Format: int64
+             * @description Current hash of logically relevant UberStates
+             */
+            relevant_uber_states_hash: number;
+        };
+        ReachCheckBody: {
+            /** @description seedgen_info.json contents from within the seed */
+            seedgen_info: string;
+            /** @description Current values of logically relevant UberStates */
+            uber_states: [
+                [
+                    number,
+                    number
+                ],
+                number
+            ][];
+        };
+        Refill: {
+            requirement: components["schemas"]["Requirement"];
+            value: components["schemas"]["RefillValue"];
+        };
+        RefillValue: "Full" | "Checkpoint" | {
+            /** Format: float */
+            Health: number;
+        } | {
+            /** Format: float */
+            Energy: number;
+        };
+        RelevantUberStates: {
+            /**
+             * Format: int64
+             * @description Hash of `identifiers`
+             */
+            hash: number;
+            /** @description List of logically relevant UberStates */
+            identifiers: components["schemas"]["UberIdentifier"][];
+        };
+        Requirement: "Free" | "Impossible" | {
+            Difficulty: components["schemas"]["Difficulty"];
+        } | "NormalGameDifficulty" | {
+            Trick: components["schemas"]["Trick"];
+        } | {
+            Skill: components["schemas"]["Skill"];
+        } | {
+            EnergySkill: Record<string, never>[];
+        } | {
+            NonConsumingEnergySkill: components["schemas"]["Skill"];
+        } | {
+            SpiritLight: number;
+        } | {
+            GorlekOre: number;
+        } | {
+            Keystone: number;
+        } | {
+            Shard: components["schemas"]["Shard"];
+        } | {
+            Teleporter: components["schemas"]["Teleporter"];
+        } | "Water" | {
+            State: number;
+        } | {
+            /** Format: float */
+            Damage: number;
+        } | {
+            /** Format: float */
+            Danger: number;
+        } | {
+            Combat: [
+                "Mantis" | "Slug" | "WeakSlug" | "BombSlug" | "CorruptSlug" | "SneezeSlug" | "ShieldSlug" | "Lizard" | "Bat" | "Hornbug" | "Skeeto" | "SmallSkeeto" | "Bee" | "Nest" | "Crab" | "SpinCrab" | "Tentacle" | "Balloon" | "Miner" | "MaceMiner" | "ShieldMiner" | "CrystalMiner" | "ShieldCrystalMiner" | "Sandworm" | "Spiderling" | "EnergyRefill",
+                number
+            ][];
+        } | {
+            /** Format: float */
+            Boss: number;
+        } | {
+            /** Format: float */
+            BreakWall: number;
+        } | {
+            /** Format: float */
+            ShurikenBreak: number;
+        } | {
+            /** Format: float */
+            SentryBreak: number;
+        } | {
+            And: components["schemas"]["Requirement"][];
+        } | {
+            Or: components["schemas"]["Requirement"][];
+        };
+        /**
+         * @description Spirit Shards
+         * @enum {integer}
+         */
+        Shard: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47;
+        /**
+         * @description Skills, sometimes also called Abilities
+         *
+         *     Currently excludes unused skills
+         * @enum {integer}
+         */
+        Skill: 0 | 3 | 5 | 8 | 14 | 15 | 23 | 51 | 57 | 62 | 74 | 77 | 97 | 98 | 100 | 101 | 102 | 104 | 106 | 108 | 109 | 115 | 116 | 118 | 119 | 120 | 121;
+        /** @description The Spawn location, which may either be fixed or randomly decided during seed generation */
+        Spawn: {
+            /** @description Spawn in a specific location, described by the anchor name from the logic file */
+            Set: string;
+        } | "Random" | "FullyRandom";
+        /** @description Information about an obtainable world state */
+        StateDataEntry: {
+            /** @description Unique identifier for this world state which is used in `areas.wotw` */
+            identifier: string;
+            /**
+             * @description `UberIdentifier` where this world state is stored
+             *
+             *     world states are either stored as booleans or as integers where being above a certain value means the world state is completed
+             */
+            uber_identifier: components["schemas"]["UberIdentifier"];
+            /**
+             * Format: int32
+             * @description `None` if `uber_identifier` holds a boolean value. Otherwise, has the minimum integer value at which this world state is completed
+             */
+            value?: number | null;
+        };
+        /**
+         * @description Spirit Wells which exist in the base game
+         * @enum {integer}
+         */
+        Teleporter: 16 | 1 | 5 | 17 | 3 | 0 | 7 | 8 | 4 | 6 | 2 | 13 | 9 | 10 | 11 | 14 | 12 | 15;
+        /**
+         * @description A Trick that can be logically required
+         *
+         *     This includes mostly Glitches but also other techniques that can be toggled for logic, such as damage boosting
+         *
+         *     See the [Paths wiki page](https://wiki.orirando.com/seedgen/paths) for more information
+         * @enum {string}
+         */
+        Trick: "SwordSentryJump" | "HammerSentryJump" | "ShurikenBreak" | "SentryBreak" | "HammerBreak" | "SpearBreak" | "SentryBurn" | "RemoveKillPlane" | "LaunchSwap" | "SentrySwap" | "FlashSwap" | "BlazeSwap" | "WaveDash" | "GrenadeJump" | "SwordJump" | "AerialHammerJump" | "GlideJump" | "GlideHammerJump" | "CoyoteHammerJump" | "WallHammerJump" | "GroundedHammerJump" | "HammerExtension" | "GrenadeRedirect" | "SentryRedirect" | "PauseFloat" | "SpearJump" | "GlideBashChain" | "DoubleJumpBashChain" | "DashBashChain" | "LaunchBashChain" | "Unpopular";
+        TrickInfo: {
+            description: string;
+            min_difficulty: components["schemas"]["Difficulty"];
+            name: components["schemas"]["Trick"];
+        };
+        UberIdentifier: [
+            number,
+            number
+        ];
+        /**
+         * @description A collection of settings that can be applied to existing settings
+         *
+         *     Use [`UniversePreset::apply`] to merge a `UniversePreset` into existing [`UniverseSettings`]
+         *
+         *     # Examples
+         *
+         *     ```
+         *     # use wotw_seedgen_data::assets::UniversePreset;
+         *     use wotw_seedgen_data::{assets::{NoPresetAccess, UniversePresetSettings, WorldPresetSettings}, Spawn, UniverseSettings};
+         *
+         *     let mut universe_settings = UniverseSettings::new("seed".to_string());
+         *
+         *     let preset = UniversePreset {
+         *         assets_version: 1,
+         *         info: None,
+         *         settings: UniversePresetSettings {
+         *             world_settings: Some(vec![
+         *                 WorldPresetSettings {
+         *                     spawn: Some(Spawn::Random),
+         *                     ..Default::default()
+         *                 }
+         *             ]),
+         *             ..Default::default()
+         *         }
+         *     };
+         *
+         *     preset.apply(&mut universe_settings, &NoPresetAccess);
+         *     assert_eq!(universe_settings.world_settings[0].spawn, Spawn::Random);
+         *     ```
+         *
+         *     [`UniverseSettings`]: wotw_seedgen_settings::UniverseSettings
+         */
+        UniversePreset: components["schemas"]["UniversePresetSettings"] & {
+            /**
+             * Format: int32
+             * @description Assets version this preset is compatible with
+             */
+            assetsVersion?: number;
+            info?: null | components["schemas"]["PresetInfo"];
+        };
+        /**
+         * @description Settings to apply to [`UniverseSettings`]
+         *
+         *     Mostly used inside a [`UniversePreset`] which offers compability features
+         */
+        UniversePresetSettings: {
+            includes?: null | components["schemas"]["HashSet_String"];
+            /** @description The seed that determines all randomness */
+            seed?: string | null;
+            /** @description The individual settings for each world of the seed */
+            worldSettings?: components["schemas"]["WorldPresetSettings"][] | null;
+        };
+        /**
+         * @description A representation of all the relevant settings when generating a seed
+         *
+         *     Using the same settings will result in generating the same seed (as long as the same seedgen version and snippets are used)
+         *
+         *     # Examples
+         *
+         *     ```
+         *     # use wotw_seedgen_data::UniverseSettings;
+         *     use wotw_seedgen_data::WorldSettings;
+         *
+         *     let universe_settings = UniverseSettings::new("seed".to_string());
+         *
+         *     assert_eq!(universe_settings.world_count(), 1);
+         *     assert_eq!(universe_settings.world_settings[0], WorldSettings::default());
+         *     assert_eq!(universe_settings.seed, "seed");
+         *     ```
+         */
+        UniverseSettings: {
+            /** @description The seed that determines all randomness */
+            seed: string;
+            /**
+             * @description The individual settings for each world of the seed
+             *
+             *     This should never be empty
+             */
+            worldSettings: components["schemas"]["WorldSettings"][];
+        };
+        /**
+         * @description A collection of settings that can be applied to one world of existing settings
+         *
+         *     Use [`WorldPreset::apply`] to merge a `WorldPreset` into existing [`WorldSettings`]
+         *
+         *     # Examples
+         *
+         *     ```
+         *     # use wotw_seedgen_data::assets::WorldPreset;
+         *     use wotw_seedgen_data::{assets::{NoPresetAccess, WorldPresetSettings}, Spawn, WorldSettings};
+         *
+         *     let mut world_settings = WorldSettings::default();
+         *
+         *     let world_preset = WorldPreset {
+         *         assets_version: 1,
+         *         info: None,
+         *         settings: WorldPresetSettings {
+         *             spawn: Some(Spawn::Random),
+         *             ..Default::default()
+         *         }
+         *     };
+         *
+         *     world_preset.apply(&mut world_settings, &NoPresetAccess);
+         *     assert_eq!(world_settings.spawn, Spawn::Random);
+         *     ```
+         *
+         *     [`WorldSettings`]: wotw_seedgen_settings::WorldSettings
+         */
+        WorldPreset: components["schemas"]["WorldPresetSettings"] & {
+            /**
+             * Format: int32
+             * @description Assets version this preset is compatible with
+             */
+            assetsVersion?: number;
+            info?: null | components["schemas"]["PresetInfo"];
+        };
+        /**
+         * @description Settings to apply to [`WorldSettings`]
+         *
+         *     Mostly used inside a [`WorldPreset`] which offers compability features
+         */
+        WorldPresetSettings: {
+            difficulty?: null | components["schemas"]["Difficulty"];
+            /** @description Logically assume hard in-game difficulty */
+            hard?: boolean | null;
+            includes?: null | components["schemas"]["HashSet_String"];
+            randomizeDoors?: null | components["schemas"]["GreaterOneU8"];
+            snippetConfig?: null | components["schemas"]["HashMap_String_HashMap_String_String"];
+            /** @description Names of snippets to use */
+            snippets?: string[] | null;
+            spawn?: null | components["schemas"]["Spawn"];
+            tricks?: null | components["schemas"]["HashSet_Trick"];
+        };
+        /**
+         * @description Seed settings bound to a specific world of a seed
+         *
+         *     See the [Multiplayer wiki page](https://wiki.orirando.com/features/multiplayer) for an explanation of worlds
+         */
+        WorldSettings: {
+            /** @description Logically expected difficulty */
+            difficulty: components["schemas"]["Difficulty"];
+            /** @description Logically assume hard in-game difficulty */
+            hard: boolean;
+            /** @description Additional inline snippets that don't exist on the filesystem */
+            inlineSnippets: components["schemas"]["InlineSnippets"];
+            randomizeDoors?: null | components["schemas"]["GreaterOneU8"];
+            /** @description Configuration to pass to snippets */
+            snippetConfig: components["schemas"]["HashMap_String_HashMap_String_String"];
+            /** @description Names of snippets to use */
+            snippets: string[];
+            /** @description Spawn destination */
+            spawn: components["schemas"]["Spawn"];
+            /** @description Logically expected tricks */
+            tricks: components["schemas"]["HashSet_Trick"];
+        };
+        /**
+         * @description World zones as indicated on the map
+         * @enum {integer}
+         */
+        Zone: 0 | 1 | 2 | 3 | 7 | 6 | 8 | 4 | 9 | 10 | 11 | 5 | 14 | 12 | 13;
+        /** Format: int32 */
+        i32: number;
     };
-    HashMap_i32_i32: {
-      [key: string]: number;
-    };
-    HashSet_String: string[];
-    HashSet_Trick: ("SwordSentryJump" | "HammerSentryJump" | "ShurikenBreak" | "SentryBreak" | "HammerBreak" | "SpearBreak" | "SentryBurn" | "RemoveKillPlane" | "LaunchSwap" | "SentrySwap" | "FlashSwap" | "BlazeSwap" | "WaveDash" | "GrenadeJump" | "SwordJump" | "AerialHammerJump" | "GlideJump" | "GlideHammerJump" | "CoyoteHammerJump" | "WallHammerJump" | "GroundedHammerJump" | "HammerExtension" | "GrenadeRedirect" | "SentryRedirect" | "PauseFloat" | "SpearJump" | "GlideBashChain" | "DoubleJumpBashChain" | "DashBashChain" | "LaunchBashChain" | "Unpopular")[];
-    InlineSnippets: {
-      snippets: components["schemas"]["HashMap_String_Source"];
-    };
-    /** @description Information about a pickup location */
-    LocDataEntry: {
-      /** @description Unique identifier for this pickup location which is used in `areas.wotw` */
-      identifier: string;
-      /** @description Vanilla map icon */
-      map_icon: components["schemas"]["MapIcon"];
-      map_position?: null | components["schemas"]["Position"];
-      position?: null | components["schemas"]["Position"];
-      /**
-       * @description `UberIdentifier` where this pickup location's corresponding world state is stored
-       *
-       *     pickup locations are either stored as booleans or as integers where being above a certain value means the pickup is collected
-       */
-      uber_identifier: components["schemas"]["UberIdentifier"];
-      /**
-       * Format: int32
-       * @description `None` if `uber_identifier` holds a boolean value. Otherwise, has the minimum integer value at which this pickup is collected
-       */
-      value?: number | null;
-      /** @description Map zone containing this pickup location */
-      zone: components["schemas"]["Zone"];
-    };
-    /**
-     * @description Icons used in the map
-     * @enum {integer}
-     */
-    MapIcon: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 40 | 41 | 42 | 43 | 44 | 50 | 51 | 52 | 53 | 54 | 55 | 56 | 57 | 58 | 59 | 60 | 61 | 62 | 63 | 64 | 65 | 66 | 67 | 68 | 69 | 70 | 71 | 72 | 73 | 74 | 75 | 76 | 77 | 78 | 100 | 101 | 102 | 103 | 104 | 105 | 106 | 107 | 108 | 109 | 110 | 111 | 112 | 113 | 114 | 115 | 116 | 117;
-    MapIconCondition: {
-      comparator: components["schemas"]["Comparator"];
-      uberIdentifier: components["schemas"]["UberIdentifier"];
-      /** Format: float */
-      value: number;
-    };
-    MapIconInfo: {
-      icon: components["schemas"]["MapIcon"];
-      label: string;
-      positions: components["schemas"]["Position"][];
-      visibleIfAny: components["schemas"]["MapIconCondition"][];
-    };
-    MapIcons: {
-      /**
-       * Format: int64
-       * @description Hash of `map_icons`
-       */
-      hash: number;
-      /** @description List of logically relevant map icons */
-      mapIcons: components["schemas"]["MapIconInfo"][];
-    };
-    Metadata: {
-      category?: string | null;
-      config: components["schemas"]["HashMap_String_ConfigValue"];
-      description?: string | null;
-      hidden: boolean;
-      name?: string | null;
-    };
-    Node: {
-      Anchor: components["schemas"]["Anchor"];
-    } | {
-      Pickup: components["schemas"]["LocDataEntry"];
-    } | {
-      State: components["schemas"]["StateDataEntry"];
-    } | {
-      LogicalState: string;
-    };
-    /** @description `x`/`y` position */
-    Position: {
-      /** Format: float */
-      x: number;
-      /** Format: float */
-      y: number;
-    };
-    /**
-     * @description Special groups to display a preset in
-     * @enum {string}
-     */
-    PresetGroup: "Base";
-    /** @description Information for the user about a [`UniversePreset`] or [`WorldPreset`] */
-    PresetInfo: {
-      /** @description Extended description */
-      description?: string | null;
-      group?: null | components["schemas"]["PresetGroup"];
-      /** @description Display name */
-      name?: string | null;
-    };
-    ReachCheck: {
-      /**
-       * Format: int64
-       * @description Current hash of logically relevant map icons
-       */
-      map_icons_hash: number;
-      /** @description List of indices into logically reachable map icons */
-      reachable: number[];
-      /**
-       * Format: int64
-       * @description Current hash of logically relevant UberStates
-       */
-      relevant_uber_states_hash: number;
-    };
-    ReachCheckBody: {
-      /** @description seedgen_info.json contents from within the seed */
-      seedgen_info: string;
-      /** @description Current values of logically relevant UberStates */
-      uber_states: [
-        [
-          number,
-          number
-        ],
-        number
-      ][];
-    };
-    Refill: {
-      requirement: components["schemas"]["Requirement"];
-      value: components["schemas"]["RefillValue"];
-    };
-    RefillValue: "Full" | "Checkpoint" | {
-      /** Format: float */
-      Health: number;
-    } | {
-      /** Format: float */
-      Energy: number;
-    };
-    RelevantUberStates: {
-      /**
-       * Format: int64
-       * @description Hash of `identifiers`
-       */
-      hash: number;
-      /** @description List of logically relevant UberStates */
-      identifiers: components["schemas"]["UberIdentifier"][];
-    };
-    Requirement: "Free" | "Impossible" | {
-      Difficulty: components["schemas"]["Difficulty"];
-    } | "NormalGameDifficulty" | {
-      Trick: components["schemas"]["Trick"];
-    } | {
-      Skill: components["schemas"]["Skill"];
-    } | {
-      EnergySkill: Record<string, never>[];
-    } | {
-      NonConsumingEnergySkill: components["schemas"]["Skill"];
-    } | {
-      SpiritLight: number;
-    } | {
-      GorlekOre: number;
-    } | {
-      Keystone: number;
-    } | {
-      Shard: components["schemas"]["Shard"];
-    } | {
-      Teleporter: components["schemas"]["Teleporter"];
-    } | "Water" | {
-      State: number;
-    } | {
-      /** Format: float */
-      Damage: number;
-    } | {
-      /** Format: float */
-      Danger: number;
-    } | {
-      Combat: [
-          "Mantis" | "Slug" | "WeakSlug" | "BombSlug" | "CorruptSlug" | "SneezeSlug" | "ShieldSlug" | "Lizard" | "Bat" | "Hornbug" | "Skeeto" | "SmallSkeeto" | "Bee" | "Nest" | "Crab" | "SpinCrab" | "Tentacle" | "Balloon" | "Miner" | "MaceMiner" | "ShieldMiner" | "CrystalMiner" | "ShieldCrystalMiner" | "Sandworm" | "Spiderling" | "EnergyRefill",
-        number
-      ][];
-    } | {
-      /** Format: float */
-      Boss: number;
-    } | {
-      /** Format: float */
-      BreakWall: number;
-    } | {
-      /** Format: float */
-      ShurikenBreak: number;
-    } | {
-      /** Format: float */
-      SentryBreak: number;
-    } | {
-      And: components["schemas"]["Requirement"][];
-    } | {
-      Or: components["schemas"]["Requirement"][];
-    };
-    /**
-     * @description Spirit Shards
-     * @enum {integer}
-     */
-    Shard: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47;
-    /**
-     * @description Skills, sometimes also called Abilities
-     *
-     *     Currently excludes unused skills
-     * @enum {integer}
-     */
-    Skill: 0 | 3 | 5 | 8 | 14 | 15 | 23 | 51 | 57 | 62 | 74 | 77 | 97 | 98 | 100 | 101 | 102 | 104 | 106 | 108 | 109 | 115 | 116 | 118 | 119 | 120 | 121;
-    SnippetInfo: {
-      identifier: string;
-      metadata: components["schemas"]["Metadata"];
-    };
-    /** @description The Spawn location, which may either be fixed or randomly decided during seed generation */
-    Spawn: {
-      /** @description Spawn in a specific location, described by the anchor name from the logic file */
-      Set: string;
-    } | "Random" | "FullyRandom";
-    /** @description Information about an obtainable world state */
-    StateDataEntry: {
-      /** @description Unique identifier for this world state which is used in `areas.wotw` */
-      identifier: string;
-      /**
-       * @description `UberIdentifier` where this world state is stored
-       *
-       *     world states are either stored as booleans or as integers where being above a certain value means the world state is completed
-       */
-      uber_identifier: components["schemas"]["UberIdentifier"];
-      /**
-       * Format: int32
-       * @description `None` if `uber_identifier` holds a boolean value. Otherwise, has the minimum integer value at which this world state is completed
-       */
-      value?: number | null;
-    };
-    /**
-     * @description Spirit Wells which exist in the base game
-     * @enum {integer}
-     */
-    Teleporter: 16 | 1 | 5 | 17 | 3 | 0 | 7 | 8 | 4 | 6 | 2 | 13 | 9 | 10 | 11 | 14 | 12 | 15;
-    /**
-     * @description A Trick that can be logically required
-     *
-     *     This includes mostly Glitches but also other techniques that can be toggled for logic, such as damage boosting
-     *
-     *     See the [Paths wiki page](https://wiki.orirando.com/seedgen/paths) for more information
-     * @enum {string}
-     */
-    Trick: "SwordSentryJump" | "HammerSentryJump" | "ShurikenBreak" | "SentryBreak" | "HammerBreak" | "SpearBreak" | "SentryBurn" | "RemoveKillPlane" | "LaunchSwap" | "SentrySwap" | "FlashSwap" | "BlazeSwap" | "WaveDash" | "GrenadeJump" | "SwordJump" | "AerialHammerJump" | "GlideJump" | "GlideHammerJump" | "CoyoteHammerJump" | "WallHammerJump" | "GroundedHammerJump" | "HammerExtension" | "GrenadeRedirect" | "SentryRedirect" | "PauseFloat" | "SpearJump" | "GlideBashChain" | "DoubleJumpBashChain" | "DashBashChain" | "LaunchBashChain" | "Unpopular";
-    TrickInfo: {
-      description: string;
-      min_difficulty: components["schemas"]["Difficulty"];
-      name: components["schemas"]["Trick"];
-    };
-    UberIdentifier: [
-      number,
-      number
-    ];
-    /**
-     * @description A collection of settings that can be applied to existing settings
-     *
-     *     Use [`UniversePreset::apply`] to merge a `UniversePreset` into existing [`UniverseSettings`]
-     *
-     *     # Examples
-     *
-     *     ```
-     *     # use wotw_seedgen_data::assets::UniversePreset;
-     *     use wotw_seedgen_data::{assets::{NoPresetAccess, UniversePresetSettings, WorldPresetSettings}, Spawn, UniverseSettings};
-     *
-     *     let mut universe_settings = UniverseSettings::new("seed".to_string());
-     *
-     *     let preset = UniversePreset {
-     *         assets_version: 1,
-     *         info: None,
-     *         settings: UniversePresetSettings {
-     *             world_settings: Some(vec![
-     *                 WorldPresetSettings {
-     *                     spawn: Some(Spawn::Random),
-     *                     ..Default::default()
-     *                 }
-     *             ]),
-     *             ..Default::default()
-     *         }
-     *     };
-     *
-     *     preset.apply(&mut universe_settings, &NoPresetAccess);
-     *     assert_eq!(universe_settings.world_settings[0].spawn, Spawn::Random);
-     *     ```
-     *
-     *     [`UniverseSettings`]: wotw_seedgen_settings::UniverseSettings
-     */
-    UniversePreset: components["schemas"]["UniversePresetSettings"] & {
-      /**
-       * Format: int32
-       * @description Assets version this preset is compatible with
-       */
-      assetsVersion?: number;
-      info?: null | components["schemas"]["PresetInfo"];
-    };
-    /**
-     * @description Settings to apply to [`UniverseSettings`]
-     *
-     *     Mostly used inside a [`UniversePreset`] which offers compability features
-     */
-    UniversePresetSettings: {
-      includes?: null | components["schemas"]["HashSet_String"];
-      /** @description The seed that determines all randomness */
-      seed?: string | null;
-      /** @description The individual settings for each world of the seed */
-      worldSettings?: components["schemas"]["WorldPresetSettings"][] | null;
-    };
-    /**
-     * @description A representation of all the relevant settings when generating a seed
-     *
-     *     Using the same settings will result in generating the same seed (as long as the same seedgen version and snippets are used)
-     *
-     *     # Examples
-     *
-     *     ```
-     *     # use wotw_seedgen_data::UniverseSettings;
-     *     use wotw_seedgen_data::WorldSettings;
-     *
-     *     let universe_settings = UniverseSettings::new("seed".to_string());
-     *
-     *     assert_eq!(universe_settings.world_count(), 1);
-     *     assert_eq!(universe_settings.world_settings[0], WorldSettings::default());
-     *     assert_eq!(universe_settings.seed, "seed");
-     *     ```
-     */
-    UniverseSettings: {
-      /** @description The seed that determines all randomness */
-      seed: string;
-      /**
-       * @description The individual settings for each world of the seed
-       *
-       *     This should never be empty
-       */
-      worldSettings: components["schemas"]["WorldSettings"][];
-    };
-    /**
-     * @description A collection of settings that can be applied to one world of existing settings
-     *
-     *     Use [`WorldPreset::apply`] to merge a `WorldPreset` into existing [`WorldSettings`]
-     *
-     *     # Examples
-     *
-     *     ```
-     *     # use wotw_seedgen_data::assets::WorldPreset;
-     *     use wotw_seedgen_data::{assets::{NoPresetAccess, WorldPresetSettings}, Spawn, WorldSettings};
-     *
-     *     let mut world_settings = WorldSettings::default();
-     *
-     *     let world_preset = WorldPreset {
-     *         assets_version: 1,
-     *         info: None,
-     *         settings: WorldPresetSettings {
-     *             spawn: Some(Spawn::Random),
-     *             ..Default::default()
-     *         }
-     *     };
-     *
-     *     world_preset.apply(&mut world_settings, &NoPresetAccess);
-     *     assert_eq!(world_settings.spawn, Spawn::Random);
-     *     ```
-     *
-     *     [`WorldSettings`]: wotw_seedgen_settings::WorldSettings
-     */
-    WorldPreset: components["schemas"]["WorldPresetSettings"] & {
-      /**
-       * Format: int32
-       * @description Assets version this preset is compatible with
-       */
-      assetsVersion?: number;
-      info?: null | components["schemas"]["PresetInfo"];
-    };
-    /**
-     * @description Settings to apply to [`WorldSettings`]
-     *
-     *     Mostly used inside a [`WorldPreset`] which offers compability features
-     */
-    WorldPresetSettings: {
-      difficulty?: null | components["schemas"]["Difficulty"];
-      /** @description Logically assume hard in-game difficulty */
-      hard?: boolean | null;
-      includes?: null | components["schemas"]["HashSet_String"];
-      randomizeDoors?: null | components["schemas"]["GreaterOneU8"];
-      snippetConfig?: null | components["schemas"]["HashMap_String_HashMap_String_String"];
-      /** @description Names of snippets to use */
-      snippets?: string[] | null;
-      spawn?: null | components["schemas"]["Spawn"];
-      tricks?: null | components["schemas"]["HashSet_Trick"];
-    };
-    /**
-     * @description Seed settings bound to a specific world of a seed
-     *
-     *     See the [Multiplayer wiki page](https://wiki.orirando.com/features/multiplayer) for an explanation of worlds
-     */
-    WorldSettings: {
-      /** @description Logically expected difficulty */
-      difficulty: components["schemas"]["Difficulty"];
-      /** @description Logically assume hard in-game difficulty */
-      hard: boolean;
-      /** @description Additional inline snippets that don't exist on the filesystem */
-      inlineSnippets: components["schemas"]["InlineSnippets"];
-      randomizeDoors?: null | components["schemas"]["GreaterOneU8"];
-      /** @description Configuration to pass to snippets */
-      snippetConfig: components["schemas"]["HashMap_String_HashMap_String_String"];
-      /** @description Names of snippets to use */
-      snippets: string[];
-      /** @description Spawn destination */
-      spawn: components["schemas"]["Spawn"];
-      /** @description Logically expected tricks */
-      tricks: components["schemas"]["HashSet_Trick"];
-    };
-    /**
-     * @description World zones as indicated on the map
-     * @enum {integer}
-     */
-    Zone: 0 | 1 | 2 | 3 | 7 | 6 | 8 | 4 | 9 | 10 | 11 | 5 | 14 | 12 | 13;
-    /** Format: int32 */
-    i32: number;
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type Anchor = components['schemas']['Anchor'];
 export type ApplyBody = components['schemas']['ApplyBody'];
@@ -1190,6 +1204,7 @@ export type Graph = components['schemas']['Graph'];
 export type GreaterOneU8 = components['schemas']['GreaterOneU8'];
 export type HashMapStringConfigValue = components['schemas']['HashMap_String_ConfigValue'];
 export type HashMapStringHashMapStringString = components['schemas']['HashMap_String_HashMap_String_String'];
+export type HashMapStringMetadata = components['schemas']['HashMap_String_Metadata'];
 export type HashMapStringSource = components['schemas']['HashMap_String_Source'];
 export type HashMapStringUniversePreset = components['schemas']['HashMap_String_UniversePreset'];
 export type HashMapStringWorldPreset = components['schemas']['HashMap_String_WorldPreset'];
@@ -1215,7 +1230,6 @@ export type RelevantUberStates = components['schemas']['RelevantUberStates'];
 export type Requirement = components['schemas']['Requirement'];
 export type Shard = components['schemas']['Shard'];
 export type Skill = components['schemas']['Skill'];
-export type SnippetInfo = components['schemas']['SnippetInfo'];
 export type Spawn = components['schemas']['Spawn'];
 export type StateDataEntry = components['schemas']['StateDataEntry'];
 export type Teleporter = components['schemas']['Teleporter'];

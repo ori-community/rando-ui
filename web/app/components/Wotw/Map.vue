@@ -1,59 +1,67 @@
 <template>
-  <div ref="containerRef">
-    <k-stage
-      ref="stageRef"
-      :config="stageConfig"
-      @wheel="onStageWheel"
-      @mouse-move="(e: MouseEvent) => emitMousePosition(e, 'mousemove')"
-      @click="(e: MouseEvent) => emitMousePosition(e, 'mouseclick')"
-    >
-      <k-layer ref="layerRef" class="overflow-hidden">
-        <k-image
-          v-for="(tile, index) in mapTiles"
-          :key="index"
-          :config="tile"
-          class="overflow-hidden"
-        />
-      </k-layer>
-      <slot/>
-    </k-stage>
+  <div class="relative">
+    <div ref="containerRef" class="konva-container fill-height">
+      <k-stage
+        ref="stageRef"
+        :config="stageConfig"
+        @wheel="onStageWheel"
+        @mouse-move="(e: MouseEvent) => emitMousePosition(e, 'mousemove')"
+        @click="(e: MouseEvent) => emitMousePosition(e, 'mouseclick')"
+      >
+        <k-layer
+          ref="layerRef"
+          :config="layerConfig"
+          :draggable="true"
+          @dragmove="emitTransformchange()"
+        >
+          <k-group
+            ref="groupRef"
+            :config="groupConfig"
+          >
+            <!-- invisible rect for dragging -->
+            <k-rect :x="-5000" :y="-8000" :width="11000" :height="8000"/>
+
+            <k-image
+              v-for="(tile, index) in mapTiles"
+              :key="index"
+              :config="tile"
+            />
+            <slot/>
+          </k-group>
+        </k-layer>
+        <div>
+          <slot name="overlay"/>
+        </div>
+      </k-stage>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
   import {ref, onMounted} from 'vue'
-  import Konva from "konva";
-  import {Stage as KStage, Layer as KLayer, Image as KImage} from "vue-konva"
+  import Konva from "konva"
+  import {Stage as KStage, Group as KGroup, Layer as KLayer, Image as KImage, Rect as KRect} from "vue-konva"
+  import {type NodeTransform, GetMapTransform} from "~/assets/utils/mapHelper"
 
   const stageRef = ref<{ getNode: () => Konva.Stage } | null>(null)
   const layerRef = ref<{ getNode: () => Konva.Layer } | null>(null)
+  const groupRef = ref<{ getNode: () => Konva.Group } | null>(null)
+  const imageNode = ref(null)
+
   const containerRef = ref<HTMLElement | null>(null)
   const mapTiles = ref<Konva.ImageConfig[]>([])
   const emit = defineEmits<{
-    (e: 'mouseclick' | 'mousemove', event: MouseEvent, point: Konva.Vector2d): void
+    (e: 'mouseclick' | 'mousemove', event: MouseEvent, point: Konva.Vector2d): void,
+    (e: 'transformChanged', transform: NodeTransform): void,
   }>()
 
-  const stageConfig = ref<{
-    width: number,
-    height: number,
-    x: number,
-    y: number,
-    scale: {
-      x: number,
-      y: number,
-    }
-    draggable: boolean,
-  }>({
-    width: window.innerWidth,
-    height: window.innerHeight,
-    x: 1000,
-    y: -2880,
-    scale: {
-      x: 0.75,
-      y: -0.75,
-    },
-    draggable: true,
-  })
+  withDefaults(defineProps<{
+    draggable?: boolean,
+  }>(), {draggable: true})
+
+  const stageConfig = ref({width: 0, height: 0})
+  const layerConfig = ref({x: 1000, y: -2880, scale: {x: 0.75, y: -0.75}})
+  const groupConfig = ref({x: 0, y: 0})
 
   const constants = computed(() => ({
     tilesX: 36,
@@ -78,13 +86,10 @@
     }
   })
 
-  const images = import.meta.glob('@shared/images/map/tile-*.png', {eager: true})
-  onMounted(async () => {
-
-    const observer = new ResizeObserver(() => updateStageSize())
-    if (containerRef.value) {
-      observer.observe(containerRef.value)
-    }
+  const images = import.meta.glob('@shared/images/map/tiles/tile-*.png', {eager: true})
+  onMounted(() => {
+    updateStageSize()
+    window.addEventListener('resize', updateStageSize)
 
     for (let x = 0; x < constants.value.tilesX; x++) {
       for (let y = 0; y < constants.value.tilesY; y++) {
@@ -93,29 +98,51 @@
     }
   })
 
+  onBeforeUnmount(() => {
+    window.removeEventListener('resize', updateStageSize)
+  });
+
   const updateStageSize = (() => {
     if (!containerRef.value) {
       return
     }
-    console.log("updateStageSize")
     stageConfig.value.width = containerRef.value.clientWidth
     stageConfig.value.height = containerRef.value.clientHeight
+    emitTransformchange()
+  })
+
+  const emitTransformchange = (() => {
+    const stageNode = stageRef.value?.getNode()
+    const layerNode = layerRef.value?.getNode()
+    if (!stageNode || !layerNode) {
+      return
+    }
+    let transform = GetMapTransform(stageNode, layerNode)
+    if (transform.width === 0 || transform.height === 0) {
+      transform = {
+        ...transform,
+        height: stageConfig.value.height,
+        width: stageConfig.value.width,
+      }
+    }
+    emit('transformChanged', transform)
   })
 
   const onStageWheel = ((e: WheelEvent) => {
 
     const scaleBy = 0.96
     const stage = stageRef.value?.getNode()
+    const layer = layerRef.value?.getNode()
     const pointer = stage?.getPointerPosition()
-    const oldScale = stage?.scaleX()
+    const oldScale = layer?.scaleX()
 
-    if (!stage || !pointer || !oldScale) {
+    if (!layer || !pointer || !oldScale) {
       return
     }
 
     const mousePointTo = {
-      x: (pointer.x - stage.x()) / oldScale,
-      y: (pointer.y - stage.y()) / oldScale,
+      x: (pointer.x - layer.x()) / oldScale,
+      y: (pointer.y - layer.y()) / oldScale,
     }
 
     // how to scale? Zoom in? Or zoom out?
@@ -129,14 +156,15 @@
 
     const newScale = direction > 0 ? oldScale * scaleBy : oldScale / scaleBy
 
-    stage.scale({x: newScale, y: -newScale})
+    layer.scale({x: newScale, y: -newScale})
 
     const newPos = {
       x: pointer.x - mousePointTo.x * newScale,
       y: pointer.y - mousePointTo.y * newScale,
     }
 
-    stage.position(newPos)
+    layer.position(newPos)
+    emitTransformchange()
   })
 
   const emitMousePosition = ((event: MouseEvent, eventName: "mouseclick" | "mousemove") => {
@@ -165,6 +193,10 @@
           x: constants.value.tileScale,
           y: -constants.value.tileScale,
         },
+        filters: [Konva.Filters.RGB],
+        red: 100,
+        green: 2,
+        blue: 3,
       })
     } catch (e: any) {
       console.log(e)
@@ -276,5 +308,12 @@
 </script>
 
 <style lang="scss" scoped>
+  .konva-container:deep(.konvajs-content) {
+    position: absolute !important;
+  }
 
+  .map-container {
+    width: 100%;
+    height: 100%;
+  }
 </style>

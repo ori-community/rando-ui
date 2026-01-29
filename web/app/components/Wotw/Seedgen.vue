@@ -14,20 +14,23 @@
       <template v-else>Add World</template>
     </v-tab>
   </v-tabs>
-  <v-card class="pa-3">
+  <v-card>
     <v-skeleton-loader
       v-if="universePresets === null || worldPresets === null || difficulties === null || snippetsInfo === null"
+      class="ma-3"
       type="article"
     />
     <template v-else>
       <v-window :model-value="selectedWorldIndex ?? universeSettings.worldSettings.length" :show-arrows="false">
-        <v-window-item v-for="nth in universeSettings.worldSettings.length" :key="nth - 1">
+        <v-window-item v-for="nth in universeSettings.worldSettings.length" :key="nth - 1" class="pa-3">
           <wotw-seedgen-world-settings
             v-model="universeSettings.worldSettings[nth - 1]!"
             :snippets-info="snippetsInfo"
+            :difficulties="difficulties"
+            :tricks="tricks"
           />
         </v-window-item>
-        <v-window-item :key="universeSettings.worldSettings.length">
+        <v-window-item :key="universeSettings.worldSettings.length" class="pa-3">
           <wotw-seedgen-world-setup
             :grouped-world-preset-ids="groupedWorldPresetIds"
             :world-presets="worldPresets"
@@ -45,7 +48,7 @@
     DifficultyInfo,
     HashMapStringUniversePreset,
     HashMapStringWorldPreset, HashMapStringMetadata,
-    UniverseSettings, WorldPreset, WorldSettings,
+    UniverseSettings, WorldPreset, WorldSettings, TrickInfo,
   } from '@shared/types/seedgen'
   import type {GroupedPresetIds, Presets} from '~/assets/types/components/seedgen'
   import {useSeedgenAxios} from '~/composables/useSeedgenAxios'
@@ -59,6 +62,7 @@
   const universePresets = ref<HashMapStringUniversePreset | null>(null)
   const worldPresets = ref<HashMapStringWorldPreset | null>(null)
   const difficulties = ref<DifficultyInfo[]>([])
+  const tricks = ref<TrickInfo[]>([])
   const selectedWorldIndex = ref<number | null>(null)
   const snippetsInfo = ref<HashMapStringMetadata | null>(null)
 
@@ -67,7 +71,7 @@
       await electronApi.seedgenServer.ensureRunning.query()
     }
 
-    await Promise.all([updateUniversePresets(), updateWorldPresets(), updateDifficulties(), updateSnippetsInfo()])
+    await Promise.all([updateUniversePresets(), updateWorldPresets(), updateDifficulties(), updateTricks(), updateSnippetsInfo()])
   })
 
   const difficultyValuesByName = computed(() => difficulties.value.reduce((map, difficultyInfo: DifficultyInfo, index) => {
@@ -155,6 +159,10 @@
 
   async function updateDifficulties() {
     difficulties.value = (await seedgenAxios.get("/settings/difficulties")).data
+  }
+
+  async function updateTricks() {
+    tricks.value = (await seedgenAxios.get("/settings/tricks")).data
   }
 
   async function updateSnippetsInfo() {

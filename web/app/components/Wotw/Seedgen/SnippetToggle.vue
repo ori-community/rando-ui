@@ -9,6 +9,7 @@
       {{ snippetMetadata.name ?? snippetIdentifier }}
       <v-tooltip
         v-if="!!snippetMetadata.description"
+        content-class="bg-surface-light"
         open-delay="500"
         max-width="350"
         activator="parent"

@@ -30,6 +30,7 @@ export const useSettingsStore = defineStore("settings", () => {
     ShowStatsAfterFinish: ref<boolean>(false),
     ShowAllSecrets: ref<boolean>(false),
     DisableAutoAim: ref<boolean>(false),
+    EnableAutomaticCutsceneSkipping: ref<boolean>(false),
     EnableMinimap: ref<boolean>(false),
     EnableNativeControllerSupport: ref<boolean>(false),
     ShowTransparentOutOfLogicIcons: ref<boolean>(false),

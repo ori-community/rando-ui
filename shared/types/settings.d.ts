@@ -17,6 +17,7 @@ export type Settings = {
   ShowStatsAfterFinish: boolean,
   ShowAllSecrets: boolean,
   DisableAutoAim: boolean,
+  EnableAutomaticCutsceneSkipping: boolean,
   EnableMinimap: boolean,
   EnableNativeControllerSupport: boolean,
   ShowTransparentOutOfLogicIcons: boolean,

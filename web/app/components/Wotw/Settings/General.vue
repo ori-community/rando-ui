@@ -130,7 +130,12 @@
     </v-col>
     <v-col cols="12" md="6">
       <div class="mb-8">
-        <h3>Control Options</h3>
+        <h3>Gameplay Options</h3>
+        <rando-settings-checkbox
+          v-model="settings.EnableAutomaticCutsceneSkipping.value"
+          label="Automatic Cutscene Skipping"
+          description="Automatically skip cutscenes whenever the 'Skip Cutscene' action is available"
+        />
         <rando-settings-checkbox
           v-model="settings.GrappleMouseControl.value"
           label="Grapple Mouse Aiming"

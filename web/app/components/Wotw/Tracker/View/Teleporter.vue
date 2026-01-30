@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="teleporter" :class="{ active }">
-      <img class="teleporter-image" src="@shared/images/tracker/teleporter_alt.png" alt="">
+      <img class="teleporter-image" src="@shared/images/map/teleporter_alt.png" alt="">
     </div>
     <div class="teleporter-name">{{ name }}</div>
   </div>

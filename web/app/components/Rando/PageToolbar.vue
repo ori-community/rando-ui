@@ -194,7 +194,7 @@
 
     // TODO use global baseURL variable
     const shortLivedJwt = await electronApi.auth.startOAuthFlow.query({
-      apiBaseUrl: "https://wotw.orirando.com/api",
+      apiBaseUrl: await useWebApiBaseUrl(),
     })
 
     axios.defaults.headers.common['Authorization'] = `Bearer ${shortLivedJwt}`

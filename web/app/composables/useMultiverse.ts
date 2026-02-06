@@ -4,6 +4,7 @@ import {withoutProtoType} from "@shared/proto/ProtoUtil"
 import {base64ToUint8Array} from "~/assets/utils/base64ToUint8Array"
 import type {BingoBoard, BingoData, BingoUniverseInfo, MultiverseInfo, SeedInfo} from "@shared/types/http-api"
 import {Proto} from "@shared/proto"
+import {useWebApiBaseUrl} from "~/composables/useWebApiBaseUrl"
 
 type MultiverseRefs = {
   multiverse: Ref<MultiverseInfo>,
@@ -96,8 +97,7 @@ class MultiverseConnection {
   }
 
   async #connectWebSocket(): Promise<void> {
-    const runtimeConfig = useRuntimeConfig()
-    this.#webSocket = await useAuthenticatedWebsocket(combineURLs(runtimeConfig.public.webApiBaseUrl, `/multiverses/${this.multiverseId}/subscribe`))
+    this.#webSocket = await useAuthenticatedWebsocket(combineURLs(await useWebApiBaseUrl(), `/multiverses/${this.multiverseId}/subscribe`))
     this.#webSocket.addEventListener("message", async ({message}) => {
       const multiverseRef = await this.multiverseRef
 

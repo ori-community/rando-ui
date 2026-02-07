@@ -9,6 +9,6 @@ export class VersionService {
       return "develop"
     }
 
-    return await fs.promises.readFile(versionFilePath, {encoding: "utf8"})
+    return (await fs.promises.readFile(versionFilePath, {encoding: "utf8"})).trim()
   }
 }

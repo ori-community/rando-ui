@@ -99,6 +99,14 @@ class MultiverseConnection {
   async #connectWebSocket(): Promise<void> {
     const {apiBaseUrl} = await useBaseUrls()
     this.#webSocket = await useAuthenticatedWebsocket(combineURLs(apiBaseUrl, `/multiverses/${this.multiverseId}/subscribe`))
+
+    // The multiverse connection might have been closed during websocket authentication,
+    // so let's close it again if we don't have any referencing usages anymore.
+    if (this.#connectionReferenceCount <= 0) {
+      this.#webSocket.close()
+      return
+    }
+
     this.#webSocket.addEventListener("message", async ({message}) => {
       const multiverseRef = await this.multiverseRef
 
@@ -149,13 +157,14 @@ export async function useMultiverse(id: MaybeRefOrGetter<number>): Promise<Multi
   })
 
   async function setupMultiverseCache(): Promise<MultiverseRefs> {
-    if (currentConnection != null) {
+    if (currentConnection !== null) {
       disposeCurrentConnection()
     }
 
     const idValue = toValue(id)
 
     let connection = multiverseConnections.get(idValue)
+    console.log(multiverseConnections)
     if (connection === undefined) {
       connection = new MultiverseConnection(idValue)
       multiverseConnections.set(idValue, connection)

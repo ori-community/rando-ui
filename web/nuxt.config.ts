@@ -1,4 +1,3 @@
-import vuetify, {transformAssetUrls} from "vite-plugin-vuetify"
 import {resolve} from "path"
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -11,14 +10,19 @@ export default defineNuxtConfig({
     "@/assets/utils/style.scss",
   ],
 
-  runtimeConfig: {
-    public: {
-      webApiBaseUrl: "https://wotw.orirando.com/api"
-    }
+  vuetify: {
+    moduleOptions: {
+      disableVuetifyStyles: true,
+      styles: {
+        configFile: "./assets/vuetify/components.scss",
+      },
+    },
   },
 
-  build: {
-    transpile: ["vuetify"],
+  runtimeConfig: {
+    public: {
+      webApiBaseUrl: "https://wotw.orirando.com/api",
+    },
   },
 
   alias: {
@@ -27,27 +31,7 @@ export default defineNuxtConfig({
     "@web": resolve(__dirname, "../web"),
   },
 
-  modules: [
-    "@nuxt/eslint",
-    "@pinia/nuxt",
-    (_options, nuxt) => {
-      nuxt.hooks.hook("vite:extendConfig", (config) => {
-        config.plugins?.push(vuetify({
-          autoImport: true, styles: {
-            configFile: "./assets/vuetify/components.scss",
-          },
-        }))
-      })
-    },
-  ],
-
-  vite: {
-    vue: {
-      template: {
-        transformAssetUrls,
-      },
-    },
-  },
+  modules: ["@nuxt/eslint", "@pinia/nuxt", "vuetify-nuxt-module"],
 
   compatibilityDate: "2024-07-28",
 })

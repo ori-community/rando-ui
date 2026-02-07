@@ -1,5 +1,5 @@
 export const useIsElectron = () => {
-  return window.__isElectron === true
+  return window?.__isElectron === true
 }
 
 declare global {

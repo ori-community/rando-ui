@@ -12,8 +12,6 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      // This Em Dash was written by human
-      titleTemplate: "%s — Ori and the Will of the Wisps Randomizer",
     },
   },
 

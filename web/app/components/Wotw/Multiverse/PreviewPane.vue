@@ -40,9 +40,7 @@
     multiverseId: number,
   }>()
 
-  const idAsNumber = computed(() => Number(props.multiverseId))
-
-  const {multiverse, seed, bingoBoard, bingoUniverses} = await useMultiverse(idAsNumber)
+  const {multiverse} = await useMultiverse(() => props.multiverseId)
 </script>
 
 <style lang="scss" scoped>

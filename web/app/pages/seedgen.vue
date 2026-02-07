@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-
+  useHead({title: "Seed Generator"})
 </script>
 
 <style lang="scss" scoped>

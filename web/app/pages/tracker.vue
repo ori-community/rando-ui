@@ -42,7 +42,6 @@
 </template>
 
 <script setup lang="ts">
-
   import {ResetTracker, TrackerFlagsUpdate, TrackerTimerStateUpdate, TrackerUpdate} from "@shared/proto/messages";
   import {decodePacket} from "@shared/proto/ProtoUtil";
   import {confettiFromElement} from "~/assets/utils/confetti";

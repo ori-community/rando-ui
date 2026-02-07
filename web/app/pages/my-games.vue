@@ -61,6 +61,8 @@
 <script lang="ts" setup>
   import type {MultiverseMetadataInfo} from "@shared/types/http-api"
 
+  useHead({title: "My Games"})
+
   type PeriodGroup = {
     period: string,
     multiverses: MultiverseMetadataInfo[],

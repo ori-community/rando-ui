@@ -5,13 +5,17 @@ function getBaseUrlFromSettings(settings: Settings): string {
     ? "https"
     : "http"
 
-  return `${protocol}://${settings.ServerHost}/api`
+  return `${protocol}://${settings.ServerHost}`
 }
 
-export const useWebApiBaseUrl = async () => {
+export const useBaseUrls = async () => {
   const electronApi = useElectronApi()
 
-  return electronApi !== null
+  const baseUrl = electronApi !== null
     ? getBaseUrlFromSettings(await electronApi.settings.getSettings.query())
-    : useRuntimeConfig().public.webApiBaseUrl
+    : useRuntimeConfig().public.baseUrl
+  const apiBaseUrl = `${baseUrl}/api`
+  const uiBaseUrl = baseUrl
+
+  return {apiBaseUrl, uiBaseUrl}
 }

@@ -10,6 +10,13 @@ export default defineNuxtConfig({
     "@/assets/utils/style.scss",
   ],
 
+  app: {
+    head: {
+      // This Em Dash was written by human
+      titleTemplate: "%s — Ori and the Will of the Wisps Randomizer",
+    },
+  },
+
   vuetify: {
     moduleOptions: {
       disableVuetifyStyles: true,
@@ -21,7 +28,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      webApiBaseUrl: "https://wotw.orirando.com/api",
+      baseUrl: "https://wotw.orirando.com",
     },
   },
 

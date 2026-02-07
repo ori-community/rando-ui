@@ -1,5 +1,5 @@
 import axios, {type AxiosError, type AxiosInstance} from "axios"
-import {useWebApiBaseUrl} from "~/composables/useWebApiBaseUrl"
+import {useBaseUrls} from "~/composables/useBaseUrls"
 
 let axiosInstance: AxiosInstance | null = null
 
@@ -21,11 +21,13 @@ export const useAxios = () => {
 
     axiosInstance.interceptors.request.use(async (config) => {
       if (!config.baseURL) {
-        config.baseURL = await useWebApiBaseUrl()
+        const {apiBaseUrl} = await useBaseUrls()
+
+        config.baseURL = apiBaseUrl
 
         // Cache the base URL for upcoming requests
         if (axiosInstance) {
-          axiosInstance.defaults.baseURL = await useWebApiBaseUrl()
+          axiosInstance.defaults.baseURL = apiBaseUrl
         }
       }
 

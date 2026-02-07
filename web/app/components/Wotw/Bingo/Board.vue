@@ -5,7 +5,7 @@
       <wotw-bingo-edge-label
         v-for="x in bingoBoard.size"
         :key="`${x}-top`"
-        :label="alphabet[x - 1]"
+        :label="alphabet[x - 1]!"
         @click="selectLine(x, 1, 0, 1)"
       />
       <wotw-bingo-edge-label label="Y" @click="selectLine(1, bingoBoard.size, 1, -1)"/>
@@ -49,7 +49,6 @@
 </template>
 
 <script lang="ts" setup>
-
   import type {BingoSquare} from "@shared/types/http-api";
 
   const markedCards = ref<string[]>([])

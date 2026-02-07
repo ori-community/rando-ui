@@ -39,15 +39,40 @@ const packetIdMap: PacketIdMap = {
   105: Proto.TrackerTimerStateUpdate,
 }
 
+/**
+ * This type recursively (objects and arrays) removes properties named `$type`.
+ * It specifically ignores the Uint8Array type.
+ */
 export type WithoutProtoType<T> =
   T extends Uint8Array
     ? T
     : T extends any[]
-      ? WithoutProtoType<T[0]>[]
+      ? WithoutProtoType<T[number]>[]
       : T extends object
         ? { [P in keyof T as P extends "$type" ? never : P]: WithoutProtoType<T[P]> }
         : T
 
+/**
+ * This type recursively (objects and arrays) removes null from union types
+ * object | null. This is necessary because the Protobuf specification
+ * does not have required object fields, thus any object field is generated
+ * as T | null. Since we do not care about that backward compatibility
+ * in Protobuf, we remove the nullability here to make life easier.
+ */
+export type AsJsonApiType<T> =
+  WithoutProtoType<
+    T extends any[]
+      ? AsJsonApiType<T[number]>[]
+      : T extends object
+        ? {
+            [P in keyof T]: AsJsonApiType<
+              T[P] extends (object | null)
+                ? Exclude<T[P], null>
+                : T[P]
+            >
+          }
+        : T
+  >
 
 export const blobToArray = async (blob: any) => {
   if (typeof window !== "undefined") {
@@ -88,7 +113,7 @@ export function makePacket<T>(type: MessageFns<T, string>, content: Omit<T, "$ty
  * Returns a deep copy of the message with all $type fields removed
  * @param message
  */
-export function withoutProtoType<T extends PacketType>(message: T): WithoutProtoType<T> {
+export function protobufToJsonApiType<T extends PacketType>(message: T): AsJsonApiType<T> {
   const clonedObject = klona(message)
 
   const removeTypeRecursively = (value: any) => {
@@ -102,5 +127,5 @@ export function withoutProtoType<T extends PacketType>(message: T): WithoutProto
 
   removeTypeRecursively(clonedObject)
 
-  return clonedObject as WithoutProtoType<T>
+  return clonedObject as AsJsonApiType<T>
 }

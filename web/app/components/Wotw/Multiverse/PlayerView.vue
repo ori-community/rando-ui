@@ -19,6 +19,7 @@
 
 <script lang="ts" setup>
   import type {UserInfo} from "@shared/types/http-api"
+  import {useDevtoolsStore} from "~/stores/devtools"
 
   withDefaults(defineProps<{
     user: UserInfo,
@@ -28,6 +29,8 @@
     isConnected: false,
     showGreenCheckmark: false,
   })
+
+  const {devtoolsEnabled} = storeToRefs(useDevtoolsStore())
 </script>
 
 <style lang="scss" scoped>

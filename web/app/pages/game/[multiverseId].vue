@@ -4,17 +4,18 @@
       <div>
         <div class="d-flex justify-center align-center mt-12 mb-6">
           <v-btn class="ml-2" :disabled="!canLock || lockGameLoading" icon variant="text" @click="toggleGameLock">
-            <v-icon :class="multiverse?.locked ? 'lock-animation' : 'unlock-animation'"
-            >{{ multiverse?.locked ? 'mdi-lock' : 'mdi-lock-open-outline' }}
+            <v-icon
+              :class="multiverse?.locked ? 'lock-animation' : 'unlock-animation'"
+            >{{ multiverse?.locked ? "mdi-lock" : "mdi-lock-open-outline" }}
             </v-icon>
             <v-tooltip location="top" open-delay="500" activator="parent">
-              <span v-if="canLock">{{ multiverse?.locked ? 'Unlock' : 'Lock' }} this game</span>
-              <span v-else>This game is {{ multiverse?.locked ? 'locked' : 'unlocked' }}</span>
+              <span v-if="canLock">{{ multiverse?.locked ? "Unlock" : "Lock" }} this game</span>
+              <span v-else>This game is {{ multiverse?.locked ? "locked" : "unlocked" }}</span>
             </v-tooltip>
           </v-btn>
           <h1 class="text-center mx-4">Game <small>#</small>{{ multiverse.id }}</h1>
           <v-btn icon :disabled="gameLinkCopied" variant="text" @click="copyGameLink">
-            <v-icon>{{ gameLinkCopied ? 'mdi-clipboard-check-outline' : 'mdi-link' }}</v-icon>
+            <v-icon>{{ gameLinkCopied ? "mdi-clipboard-check-outline" : "mdi-link" }}</v-icon>
             <v-tooltip location="top" open-delay="500" activator="parent">
               <span>Copy game link</span>
             </v-tooltip>
@@ -30,11 +31,10 @@
           <rando-launch-button
             v-else-if="!isSpectating"
             :disabled="!ownWorld"
-            @click="onLaunchButtonPressed()">
+            @click="onLaunchButtonPressed()"
+          >
             <v-tooltip location="bottom" activator="parent">
-            <span v-if="!multiverseReady || multiverse.universes.length > 0"
-            >Create or join a world to launch the game</span
-            >
+              <span v-if="multiverse.universes.length > 0">Create or join a world to launch the game</span>
               <span v-else>Create a universe to launch the game</span>
             </v-tooltip>
           </rando-launch-button>
@@ -58,7 +58,7 @@
         </div>
 
         <rando-throttled-spinner>
-          <div v-if="userStore.isLoggedIn && multiverseReady">
+          <div v-if="userStore.isLoggedIn">
             <div class="text-center mb-3">
               <wotw-multiverse-race-timer
                 v-if="isRaceRunning"
@@ -71,7 +71,7 @@
               </template>
             </div>
 
-            <div :class="{ 'two-columns': hasRace }">
+            <div :class="{ 'two-columns': !!multiverse.race }">
               <wotw-multiverse-view
                 :is-spectating="isSpectating"
                 :multiverse="multiverse"
@@ -81,16 +81,16 @@
                 :world-finished-times="normalGameHandlerState?.worldFinishedTimes"
                 :universe-finished-times="normalGameHandlerState?.universeFinishedTimes"
               />
-              <wotw-multiverse-race-result-view v-if="hasRace" :race="multiverse.race!"/>
+              <wotw-multiverse-race-result-view v-if="!!multiverse.race" :race="multiverse.race" />
             </div>
 
             <div v-if="devtoolsEnabled" class="mt-5">
               <v-card class="pa-4">
                 <h3>Dispatch custom event</h3>
-                <v-text-field v-model="devDebugEventName" label="Event"/>
+                <v-text-field v-model="devDebugEventName" label="Event" />
 
                 <div class="d-flex">
-                  <v-spacer/>
+                  <v-spacer />
                   <v-btn depressed color="accent" @click="dispatchDebugEvent"> Dispatch</v-btn>
                 </div>
               </v-card>
@@ -109,7 +109,7 @@
     </v-container>
 
     <wotw-bingo-board-view
-      v-if="userStore.isLoggedIn && multiverseReady && !!bingoBoard"
+      v-if="userStore.isLoggedIn && !!bingoBoard"
       :multiverse="multiverse"
       :bingo-universes="bingoUniverses"
       :is-spectating="isSpectating"
@@ -121,14 +121,15 @@
         <h2>Enable race mode</h2>
 
         Players will be blocked from starting new games until everyone is ready. To signal yourself ready, select an
-        empty save file and choose the difficulty.<br/>
+        empty save file and choose the difficulty.<br>
         Once the race starts, the game will be locked.
 
         <div class="d-flex justify-end">
           <v-btn :disabled="enableRaceModeLoading" class="mr-1" text @click="enableRaceModeDialogOpen = false">
             Cancel
           </v-btn>
-          <v-btn :loading="enableRaceModeLoading" color="accent" depressed @click="enableRaceMode"
+          <v-btn
+            :loading="enableRaceModeLoading" color="accent" depressed @click="enableRaceMode"
           >Enable race mode
           </v-btn>
         </div>
@@ -158,7 +159,8 @@
           <v-btn :disabled="downloadSpoilerLoading" class="mr-1" text @click="downloadSpoilerDialogOpen = false">
             Cancel
           </v-btn>
-          <v-btn :loading="downloadSpoilerLoading" color="error" depressed @click="downloadSpoiler"
+          <v-btn
+            :loading="downloadSpoilerLoading" color="error" depressed @click="downloadSpoiler"
           >Show Spoiler
           </v-btn>
         </div>
@@ -170,16 +172,14 @@
         <v-toolbar color="secondary">
           <v-toolbar-title>Spoiler</v-toolbar-title>
           <div class="ml-3">
-            <v-tooltip v-for="user in multiverse.seedSpoilerDownloadedBy ?? []" :key="user.id" bottom>
-              <span>{{ user.name }}</span>
-              <template #activator="{ on }">
-                <span v-on="on">
-                  <rando-discord-avatar :user="user"/>
-                </span>
-              </template>
-            </v-tooltip>
+            <rando-discord-avatar
+              v-for="user in multiverse.seedSpoilerDownloadedBy"
+              :key="user.id"
+              v-tooltip="user.name"
+              :user="user"
+            />
           </div>
-          <v-spacer/>
+          <v-spacer />
           <div class="mr-3">
             <v-text-field
               ref="spoilerSearchInput"
@@ -203,50 +203,35 @@
 <script lang="ts" setup>
   // TODO OBS
   // import { applyTransparentWindowStyles, isOBS } from '~/assets/lib/obs'
-  import {Proto} from '@shared/proto'
-  import {
-    MultiverseInfoMessage_GameHandlerType as GameHandlerType,
-    NormalGameHandlerState
-  } from "@shared/proto/messages";
-
-  // TODO this still needed?
-  // import { hasOwnProperty } from '~/assets/lib/hasOwnProperty'
+  import {Proto} from "@shared/proto"
+  import {useDevtoolsStore} from "~/stores/devtools"
 
   const userStore = useUserStore()
   const isElectron = useIsElectron()
-  const electronApi = useElectronApi()
   const {axios} = useAxios()
   const route = useRoute()
   const authStore = useAuthStore()
   const {multiverse, seed, bingoBoard, bingoUniverses} = await useMultiverse(Number(route.params.multiverseId))
   const {launch} = useLauncherHelper()
+  const {devtoolsEnabled} = storeToRefs(useDevtoolsStore())
 
-  const loading = ref(false)
   const gameLinkCopied = ref(false)
-  const multiverseReady = ref(false)
   const downloadSpoilerDialogOpen = ref(false)
   const downloadSpoilerLoading = ref(false)
   const viewSpoilerDialogOpen = ref(false)
-  const spoilerText = ref('')
-  const spoilerSearchQuery = ref('')
+  const spoilerText = ref("")
+  const spoilerSearchQuery = ref("")
   const enableRaceModeDialogOpen = ref(false)
   const enableRaceModeLoading = ref(false)
   const forfeitDialogOpen = ref(false)
   const forfeitLoading = ref(false)
-  const seedgenResultVisible = ref(false)
-  const hideSeedgenResultCompletely = ref(false)
   const lockGameLoading = ref(false)
-  const devDebugEventName = ref('')
+  const devDebugEventName = ref("")
   const title = computed(() => {
     return `Game ${multiverse.value.id}`
   })
 
-  const canCreateUniverse = computed(() => {
-    return multiverse.value.universes.length < 8
-  })
   const ownWorld = computed(() => {
-
-
     for (const universe of multiverse.value.universes) {
       const world = universe.worlds.find(w => w.memberships.find(m => m.user?.id === userStore.user?.id))
 
@@ -268,22 +253,20 @@
   const launcherUrl = computed(() => {
     return `ori-rando://game/${multiverse.value.id}`
   })
-  const isBingoBoardOverlay = computed(() => {
-    return route.query.isBingoBoardOverlay === 'true'
-  })
+  // const isBingoBoardOverlay = computed(() => {
+  //   return route.query.isBingoBoardOverlay === "true"
+  // })
   const isPlayer = computed(() => {
-    return (
-      multiverse?.value.universes.some(
-        (u) => u.worlds.some((w) => w.memberships.some((m) => m.user?.id === userStore.user?.id))
-      ) ?? false
-    )
+    return multiverse?.value.universes.some(
+      (u) => u.worlds.some((w) => w.memberships.some((m) => m.user?.id === userStore.user?.id)),
+    ) ?? false
   })
   const canLock = computed(() => {
     return isPlayer.value && multiverse.value.isLockable
   })
 
   const normalGameHandlerState = computed(() => {
-    if (!multiverseReady.value || multiverse.value.gameHandlerType !== GameHandlerType.Normal) {
+    if (multiverse.value.gameHandlerType !== Proto.MultiverseInfoMessage_GameHandlerType.Normal) {
       return null
     }
 
@@ -303,18 +286,13 @@
 
     return normalGameHandlerState.value.raceModeEnabled
   })
-  const hasRace = computed(() => {
-    return !!multiverse?.value.race
-  })
-  const canEnableRaceMode = (() => {
-
-      if (!normalGameHandlerState.value) {
-        return false
-      }
-
-      return !normalGameHandlerState.value.raceModeEnabled && isPlayer.value
+  const canEnableRaceMode = computed(() => {
+    if (!normalGameHandlerState.value) {
+      return false
     }
-  )
+
+    return !normalGameHandlerState.value.raceModeEnabled && isPlayer.value
+  })
   const ownWorldFinished = computed(() => {
     if (!normalGameHandlerState.value || !ownWorld.value) {
       return false
@@ -343,21 +321,16 @@
   const canDownloadSpoiler = computed(() => {
     return hasSeed.value && (!isRaceRunning.value || ownWorldFinished.value)
   })
-  // TODO was userLoaded. Verify
-  watch(() => userStore.isLoggedIn, async () => {
+
+  watch(() => userStore.user, async (value) => {
+    if (value === undefined) {
+      return
+    }
+
+    // When the initial user status has been loaded, check
+    // whether we are supposed to log in with some other JWT
     if (route.query.jwt) {
       await authStore.setJwt(route.query.jwt.toString())
-      await userStore.updateUser()
-    }
-  }, {immediate: true})
-  watch(() => userStore.isLoggedIn, async (value) => {
-    if (value) {
-      // TODO multiverseState
-      // await this.$store.dispatch('multiverseState/fetchMultiverse', multiverse.value.id)
-      // await this.$store.dispatch('multiverseState/connectMultiverse', {
-      //   multiverseId: multiverse.value.id,
-      // })
-      multiverseReady.value = true
     }
   }, {immediate: true})
 
@@ -373,17 +346,6 @@
   //     this.$store.dispatch('multiverseState/fetchBingoBoard', this.multiverseId)
   //   }
   // },
-  watch(() => multiverseReady.value, (value) => {
-    if (value && bingoBoard.value) {
-      // TODO OBS
-      // this.$nextTick(() => {
-      //   if (isOBS() || this.isBingoBoardOverlay) {
-      //     applyTransparentWindowStyles()
-      //     this.centerBoard()
-      //   }
-      // })
-    }
-  }, {immediate: true})
 
   watch(() => spoilerSearchQuery.value, (value) => {
     const range = document.createRange()
@@ -404,50 +366,51 @@
       //   ...JSON.parse(window.localStorage.getItem('boardSettings')),
       // }
     } catch (e) {
-      console.error('Could not load board settings', e)
+      console.error("Could not load board settings", e)
     }
 
     // TODO whats this?
     //  this.$store.dispatch('time/syncTime')
   })
 
-  const copyGameLink = (async () => {
-    const url = new URL(`/game/${multiverse.value.id}`, this.$paths.UI_BASE_URL)
+  async function copyGameLink() {
+    const {uiBaseUrl} = await useBaseUrls()
+    const url = new URL(`/game/${multiverse.value.id}`, uiBaseUrl)
     await navigator.clipboard.writeText(url.toString())
     gameLinkCopied.value = true
 
     setTimeout(() => {
       gameLinkCopied.value = false
     }, 3000)
-  })
+  }
 
-
-  const openInLauncher = ((event: MouseEvent) => {
-    window.open(launcherUrl.value, '_self')
+  function openInLauncher(event: MouseEvent) {
+    window.open(launcherUrl.value, "_self")
 
     if (event.ctrlKey) {
-      console.log("CONTROL")
-      return
       setTimeout(() => {
         window.close()
       }, 500)
     }
-  })
-  const dispatchDebugEvent = (async () => {
+  }
+
+  async function dispatchDebugEvent() {
     try {
       await axios.post(`/multiverses/${multiverse.value.id}/debug-event/${devDebugEventName.value}`)
     } catch (e) {
       console.error(e)
     }
-  })
-  const dispatchEvent = (async (event: string) => {
+  }
+
+  async function dispatchEvent(event: string) {
     try {
       await axios.post(`/multiverses/${multiverse.value.id}/event/${event}`)
     } catch (e) {
       console.error(e)
     }
-  })
-  const toggleGameLock = (async () => {
+  }
+
+  async function toggleGameLock() {
     if (lockGameLoading.value) {
       return
     }
@@ -461,37 +424,39 @@
     }
 
     lockGameLoading.value = false
-  })
-  const onLaunchButtonPressed = (async () => {
+  }
+
+  async function onLaunchButtonPressed() {
     await launch(`server:${multiverse.value.id}`)
-  })
-  const enableRaceMode = (async () => {
+  }
+
+  async function enableRaceMode() {
     enableRaceModeLoading.value = true
-    await dispatchEvent('enableRaceMode')
+    await dispatchEvent("enableRaceMode")
     enableRaceModeLoading.value = false
     enableRaceModeDialogOpen.value = false
-  })
-  const forfeit = (async () => {
+  }
+
+  async function forfeit() {
     forfeitLoading.value = true
-    await dispatchEvent('forfeit')
+    await dispatchEvent("forfeit")
     forfeitLoading.value = false
     forfeitDialogOpen.value = false
-  })
-  const downloadSpoiler = (async () => {
+  }
+
+  async function downloadSpoiler() {
     downloadSpoilerLoading.value = true
     spoilerText.value = await axios.get(`/seeds/${multiverse.value.seedId}/spoiler`, {
       headers: {
-        Accept: 'text/plain',
+        Accept: "text/plain",
       },
     })
     downloadSpoilerLoading.value = false
     downloadSpoilerDialogOpen.value = false
     viewSpoilerDialogOpen.value = true
-  })
-
+  }
 
   useHead({title})
-
 </script>
 
 <style lang="scss" scoped>

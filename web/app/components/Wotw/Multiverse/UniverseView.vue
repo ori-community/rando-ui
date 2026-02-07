@@ -1,8 +1,8 @@
 <template>
   <div class="universe-view-container">
     <v-fab-transition>
-      <div v-if="place !== null" class="badge-container">
-        <rando-place-badge class="badge" :place="place"/>
+      <div v-if="rank !== null" class="badge-container">
+        <rando-place-badge class="badge" :place="rank"/>
       </div>
     </v-fab-transition>
     <v-card class="universe-view">
@@ -51,9 +51,9 @@
 </template>
 
 <script lang="ts" setup>
-
   import type {UniverseInfo} from "@shared/types/http-api"
-  import {formatTime} from "assets/utils/formatTime"
+  import {formatTime} from "@web/app/assets/utils/formatTime"
+  import {useDevtoolsStore} from "~/stores/devtools"
 
   const props = withDefaults(defineProps<{
     canCreateWorld?: boolean,
@@ -63,7 +63,7 @@
     finishedAt?: number | null,
     hideColor?: boolean,
     isSpectating?: boolean,
-    place?: number | string | null,
+    rank?: number | string | null,
     playerFinishedTimes?: { [key: number]: number },
     playerInGameTimes?: { [key: number]: number },
     raceReadyUserIds?: string[],
@@ -79,7 +79,7 @@
     finishedAt: null,
     hideColor: false,
     isSpectating: false,
-    place: null,
+    rank: null,
     playerFinishedTimes: () => ({}),
     playerInGameTimes: () => ({}),
     raceReadyUserIds: () => ([]),
@@ -90,6 +90,7 @@
 
   const emits = defineEmits(["join-world", "new-world"])
 
+  const {devtoolsEnabled} = storeToRefs(useDevtoolsStore())
   const hasMultipleWorlds = computed(() => {
     return props.universe.worlds.length > 1
   })

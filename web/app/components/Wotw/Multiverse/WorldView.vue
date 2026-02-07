@@ -10,7 +10,7 @@
               formatTime(finishedAt)
             }}</span>
         </div>
-        <wotw-seed-button v-if="!!world.seedId && !isElectron" :world-seed-id="world.seedId"/>
+<!--        <wotw-seed-button v-if="!!world.seedId && !isElectron" :world-seed-id="world.seedId"/>-->
       </div>
     </v-card-title>
     <v-card-text>
@@ -32,18 +32,22 @@
                 <span>Has seen spoiler</span>
               </v-tooltip>
             </div>
-            <span
-              v-if="hasMultiplePlayers && membership.id in playerFinishedTimes"
-              class="finished-time"
-              :class="{forfeited: playerFinishedTimes[membership.id] === 0.0}"
-              title="Finished time">{{
-                playerFinishedTimes[membership.id] !== 0.0 ? formatTime(playerFinishedTimes[membership.id]) : 'DNF'
-              }}</span>
-            <span
-              v-else-if="raceStartingAt && raceStartingAt > 0 && membership.id in playerInGameTimes && !(membership.id in playerFinishedTimes)"
-              class="loading-time" title="Loading time">{{
-                formatTime(playerInGameTimes[membership.id] - (now() - raceStartingAt) / 1000.0, 1, false, true)
-              }}</span>
+            <template v-if="Object.hasOwn(playerFinishedTimes, membership.id)">
+              <span
+                v-if="hasMultiplePlayers"
+                class="finished-time"
+                :class="{forfeited: playerFinishedTimes[membership.id] === 0.0}"
+                title="Finished time"
+              >
+                {{ playerFinishedTimes[membership.id] !== 0.0 ? formatTime(playerFinishedTimes[membership.id]!) : "DNF" }}
+              </span>
+              <span
+                v-else-if="raceStartingAt && raceStartingAt > 0 && membership.id in playerInGameTimes && !(membership.id in playerFinishedTimes)"
+                class="loading-time" title="Loading time"
+              >
+                {{ formatTime(playerInGameTimes[membership.id]! - (now() - raceStartingAt) / 1000.0, 1, false, true) }}
+              </span>
+            </template>
           </div>
         </wotw-multiverse-player-view>
       </v-scroll-x-transition>
@@ -54,10 +58,10 @@
 </template>
 
 <script lang="ts" setup>
-
   import type {WorldInfo} from "@shared/types/http-api"
-  import {formatTime} from "assets/utils/formatTime"
+  import {formatTime} from "@web/app/assets/utils/formatTime"
   import {confettiFromElement} from "~/assets/utils/confetti";
+  import {useDevtoolsStore} from "~/stores/devtools"
 
   const props = withDefaults(defineProps<{
     canJoin?: boolean,
@@ -87,6 +91,7 @@
   const userStore = useUserStore()
   const isElectron = useIsElectron()
   const worldViewRef = ref<{ $el: HTMLElement } | null>(null)
+  const {devtoolsEnabled} = storeToRefs(useDevtoolsStore())
 
   const emits = defineEmits(["join"])
 

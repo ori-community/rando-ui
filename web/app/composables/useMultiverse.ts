@@ -1,10 +1,9 @@
 import type {Ref} from "vue"
 import combineURLs from "~/assets/utils/combileURLs"
-import {withoutProtoType} from "@shared/proto/ProtoUtil"
+import {protobufToJsonApiType} from "@shared/proto/ProtoUtil"
 import {base64ToUint8Array} from "~/assets/utils/base64ToUint8Array"
 import type {BingoBoard, BingoData, BingoUniverseInfo, MultiverseInfo, SeedInfo} from "@shared/types/http-api"
 import {Proto} from "@shared/proto"
-import {useBaseUrls} from "~/composables/useBaseUrls"
 
 type MultiverseRefs = {
   multiverse: Ref<MultiverseInfo>,
@@ -112,7 +111,7 @@ class MultiverseConnection {
 
       switch (message.$type) {
         case Proto.MultiverseInfoMessage.$type: {
-          multiverseRef.value = withoutProtoType(message)
+          multiverseRef.value = protobufToJsonApiType(message)
           break
         }
         case Proto.SyncBoardMessage.$type: {
@@ -120,11 +119,11 @@ class MultiverseConnection {
             return
           }
 
-          this.bingoBoardRef.value = withoutProtoType(message.board)
+          this.bingoBoardRef.value = protobufToJsonApiType(message.board)
           break
         }
         case Proto.SyncBingoUniversesMessage.$type: {
-          this.bingoUniversesRef.value = message.bingoUniverses.map(u => withoutProtoType(u))
+          this.bingoUniversesRef.value = message.bingoUniverses.map(u => protobufToJsonApiType(u))
           break
         }
       }
@@ -164,7 +163,6 @@ export async function useMultiverse(id: MaybeRefOrGetter<number>): Promise<Multi
     const idValue = toValue(id)
 
     let connection = multiverseConnections.get(idValue)
-    console.log(multiverseConnections)
     if (connection === undefined) {
       connection = new MultiverseConnection(idValue)
       multiverseConnections.set(idValue, connection)

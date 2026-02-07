@@ -15,7 +15,7 @@
                   v-for="multiverseMetadata in group.multiverses"
                   :key="multiverseMetadata.id"
                   class="game-container"
-                  :dot-color="multiverse && multiverse.id == multiverseMetadata.id ? 'secondary' : 'primary'"
+                  :dot-color="route.query.game == multiverseMetadata.id ? 'primary' : 'secondary'"
                   @click="(event: MouseEvent) => showMultiverse(event, multiverseMetadata.id)"
                 >
                   <template #opposite>
@@ -26,14 +26,14 @@
                     </div>
                   </template>
                   <template #icon>
-                    <v-icon>{{ multiverseMetadata.hasBingoBoard ? 'mdi-grid' : '' }}</v-icon>
+                    <v-icon>{{ multiverseMetadata.hasBingoBoard ? "mdi-grid" : "" }}</v-icon>
                     <v-tooltip location="bottom" activator="parent" open-delay="500">
                       <span><kbd>Ctrl</kbd> + Click to open Multiverse</span>
                     </v-tooltip>
                   </template>
                   <div class="avatars ml-5">
                     <div v-for="user in multiverseMetadata.members" :key="user.id" class="avatar">
-                      <rando-discord-avatar :user="user"/>
+                      <rando-discord-avatar :user="user" />
                       <v-tooltip location="bottom" activator="parent" open-delay="250">
                         <span>{{ user.name }}</span>
                       </v-tooltip>
@@ -45,41 +45,8 @@
             </v-timeline>
           </div>
 
-          <div v-if="multiverse && !loadingMultiverse" class="multiverse-view-container mt-4">
-            <div class="d-flex justify-center align-center mb-6">
-              <h1 class="text-center mx-4">Game <small>#</small>{{ multiverse.id }}</h1>
-              <v-btn icon variant="text" :to="{ name: 'game-multiverseId', params: { multiverseId: multiverse.id } }">
-                <v-icon>mdi-chevron-right</v-icon>
-              </v-btn>
-            </div>
-            <div class="multiverse-view text-center">
-              <wotw-multiverse-view
-                v-if="multiverse"
-                :multiverse="multiverse"
-                :is-spectating="true"
-                :show-spectating-warning="false"
-              />
-            </div>
-            <div v-if="multiverse.hasBingoBoard" class="board-container">
-              <div class="d-flex justify-center">
-                <v-btn variant="text" class="mb-3" @click="centerBoard">
-                  <v-icon start>mdi-image-filter-center-focus-strong-outline</v-icon>
-                  Center on screen
-                </v-btn>
-              </div>
-              <div ref="boardRef">
-                <wotw-bingo-board
-                  class="board"
-                  :edge-labels="false"
-                  :is-spectating="false"
-                  :multiverse-id="multiverse.id"
-                  :highlighted-universe-id="null"
-                  :own-universe-id="null"
-                  :card-attention-effect="false"
-                  :spectator-display-all="false"
-                />
-              </div>
-            </div>
+          <div v-if="route.query.game" class="multiverse-view-container mt-4">
+            <wotw-multiverse-preview-pane :multiverse-id="Number(route.query.game)" />
           </div>
         </div>
         <div v-if="multiversesByPeriod.length === 0" class="text-center">
@@ -92,23 +59,19 @@
 </template>
 
 <script lang="ts" setup>
-  import type {MultiverseInfo, MultiverseMetadataInfo} from "@shared/types/http-api";
-  import type {Ref} from "vue";
+  import type {MultiverseMetadataInfo} from "@shared/types/http-api"
 
   type PeriodGroup = {
     period: string,
-    multiverses: Array<MultiverseMetadataInfo>,
+    multiverses: MultiverseMetadataInfo[],
   }
   const {axios} = useAxios()
   const route = useRoute()
   const router = useRouter()
 
-  const multiverses = ref<Array<MultiverseMetadataInfo>>([])
-  const fetchingGames = ref(false)
-  const multiverse = ref<Ref<MultiverseInfo> | null>(null)
-  const loadingMultiverse = ref(false)
+  const multiverses = ref<MultiverseMetadataInfo[]>([])
+  const fetchingGames = ref(true)
   const multiversesByPeriod = computed(() => {
-
     const periodGroups: Array<PeriodGroup> = new Array<PeriodGroup>()
 
     // set dates that separate periods
@@ -130,7 +93,7 @@
       if (index < 0) {
         periodGroups.push({
           period,
-          multiverses: [obj]
+          multiverses: [obj],
         })
       } else {
         periodGroups[index]?.multiverses.push(obj)
@@ -145,22 +108,22 @@
       // assing multiverses by date to groups
       switch (true) {
         case multiverseDate.toDateString() === today.toDateString():
-          addToGroup(multiverse, 'Today')
+          addToGroup(multiverse, "Today")
           break
         case multiverseDate.toDateString() === yesterday.toDateString():
-          addToGroup(multiverse, 'Yesterday')
+          addToGroup(multiverse, "Yesterday")
           break
         case multiverseDate >= thisWeekStart:
-          addToGroup(multiverse, 'This Week')
+          addToGroup(multiverse, "This Week")
           break
         case multiverseDate >= lastWeekStart:
-          addToGroup(multiverse, 'Last Week')
+          addToGroup(multiverse, "Last Week")
           break
         case multiverseDate >= thisMonthStart:
-          addToGroup(multiverse, 'This Month')
+          addToGroup(multiverse, "This Month")
           break
         case multiverseDate >= lastMonthStart:
-          addToGroup(multiverse, 'Last Month')
+          addToGroup(multiverse, "Last Month")
           break
         default:
           addToGroup(multiverse, multiverseDate.getFullYear().toString())
@@ -174,31 +137,12 @@
 
   onMounted(() => {
     fetchMultiverses()
-    updateMultiverse()
   })
 
   const fetchMultiverses = (async () => {
     fetchingGames.value = true
-    multiverses.value = (await axios.get('/multiverses/own')).data
+    multiverses.value = (await axios.get("/multiverses/own")).data
     fetchingGames.value = false
-  })
-
-  watch(() => (route.query.game), () => {
-    updateMultiverse()
-  })
-
-  const updateMultiverse = (async () => {
-    if (!route.query.game) {
-      multiverse.value = null
-      return
-    }
-    const id: number = Number(route.query.game)
-
-    loadingMultiverse.value = true
-    const {multiverse: m} = await useMultiverse(id)
-    multiverse.value = m.value
-    loadingMultiverse.value = false
-
   })
 
   const showMultiverse = ((event: MouseEvent, id: number) => {
@@ -210,26 +154,24 @@
     router.push({
       query: {
         ...route.query,
-        game: id
-      }
+        game: id,
+      },
     })
-
   })
 
   const openMultiversePage = ((id: number) => {
     router.push({
-      name: 'game-multiverseId',
-      params: {multiverseId: id}
+      name: "game-multiverseId",
+      params: {multiverseId: id},
     })
   })
 
   const centerBoard = (() => {
     boardRef.value?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
+      behavior: "smooth",
+      block: "start",
     })
   })
-
 </script>
 
 <style lang="scss" scoped>

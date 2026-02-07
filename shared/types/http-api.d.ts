@@ -1,16 +1,16 @@
-import {WithoutProtoType} from "../proto/ProtoUtil"
+import {AsJsonApiType, WithoutProtoType} from "../proto/ProtoUtil"
 import {Proto} from "../proto"
 
-type UserInfo = WithoutProtoType<Proto.UserInfo>
-type MultiverseInfo = WithoutProtoType<Proto.MultiverseInfoMessage>
-type BingoBoard = WithoutProtoType<Proto.BingoBoardMessage>
-type BingoUniverseInfo = WithoutProtoType<Proto.BingoUniverseInfo>
-type BingoSquare = WithoutProtoType<Proto.BingoSquare>
-type MultiverseMetadataInfo = WithoutProtoType<Proto.MultiverseMetadataInfoMessage>
-type WorldInfo = WithoutProtoType<Proto.WorldInfo>
-type RaceInfo = WithoutProtoType<Proto.RaceInfo>
-type RaceTeamInfo = WithoutProtoType<Proto.RaceTeamInfo>
-type UniverseInfo = WithoutProtoType<Proto.UniverseInfo>
+type UserInfo = AsJsonApiType<Proto.UserInfo>
+type MultiverseInfo = AsJsonApiType<Proto.MultiverseInfoMessage>
+type BingoBoard = AsJsonApiType<Proto.BingoBoardMessage>
+type BingoUniverseInfo = AsJsonApiType<Proto.BingoUniverseInfo>
+type BingoSquare = AsJsonApiType<Proto.BingoSquare>
+type MultiverseMetadataInfo = AsJsonApiType<Proto.MultiverseMetadataInfoMessage>
+type WorldInfo = AsJsonApiType<Proto.WorldInfo>
+type RaceInfo = AsJsonApiType<Proto.RaceInfo>
+type RaceTeamInfo = AsJsonApiType<Proto.RaceTeamInfo>
+type UniverseInfo = AsJsonApiType<Proto.UniverseInfo>
 
 type BingoData = {
   board: BingoBoard,

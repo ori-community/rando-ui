@@ -30,7 +30,7 @@
           <rando-launch-button
             v-else-if="!isSpectating"
             :disabled="!ownWorld"
-            @click="launch()">
+            @click="onLaunchButtonPressed()">
             <v-tooltip location="bottom" activator="parent">
             <span v-if="!multiverseReady || multiverse.universes.length > 0"
             >Create or join a world to launch the game</span
@@ -219,6 +219,7 @@
   const route = useRoute()
   const authStore = useAuthStore()
   const {multiverse, seed, bingoBoard, bingoUniverses} = await useMultiverse(Number(route.params.multiverseId))
+  const {launch} = useLauncherHelper()
 
   const loading = ref(false)
   const gameLinkCopied = ref(false)
@@ -461,13 +462,8 @@
 
     lockGameLoading.value = false
   })
-  const launch = (async () => {
-    if (ownWorld.value?.seedId) {
-      // TODO awaiting launcher
-      // await electronApi.invoke('launcher.setNewGameSeedSource', `server:${multiverse.value.id}`)
-    }
-    // TODO awaiting launcher
-    // await this.$store.dispatch('electron/launch')
+  const onLaunchButtonPressed = (async () => {
+    await launch(`server:${multiverse.value.id}`)
   })
   const enableRaceMode = (async () => {
     enableRaceModeLoading.value = true

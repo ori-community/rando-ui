@@ -18,7 +18,7 @@
       {{ !!presetInfo ? presetInfo.name : presetId }}
     </v-btn>
 
-    <v-tooltip v-if="!!presetInfo" location="bottom" activator="parent" max-width="300">
+    <v-tooltip v-if="!!presetInfo" location="bottom" activator="parent" max-width="300" open-delay="500">
       <span>
         {{ presetInfo.description }}
       </span>

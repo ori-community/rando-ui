@@ -4,7 +4,7 @@ import {withoutProtoType} from "@shared/proto/ProtoUtil"
 import {base64ToUint8Array} from "~/assets/utils/base64ToUint8Array"
 import type {BingoBoard, BingoData, BingoUniverseInfo, MultiverseInfo, SeedInfo} from "@shared/types/http-api"
 import {Proto} from "@shared/proto"
-import {useWebApiBaseUrl} from "~/composables/useWebApiBaseUrl"
+import {useBaseUrls} from "~/composables/useBaseUrls"
 
 type MultiverseRefs = {
   multiverse: Ref<MultiverseInfo>,
@@ -97,7 +97,8 @@ class MultiverseConnection {
   }
 
   async #connectWebSocket(): Promise<void> {
-    this.#webSocket = await useAuthenticatedWebsocket(combineURLs(await useWebApiBaseUrl(), `/multiverses/${this.multiverseId}/subscribe`))
+    const {apiBaseUrl} = await useBaseUrls()
+    this.#webSocket = await useAuthenticatedWebsocket(combineURLs(apiBaseUrl, `/multiverses/${this.multiverseId}/subscribe`))
     this.#webSocket.addEventListener("message", async ({message}) => {
       const multiverseRef = await this.multiverseRef
 
@@ -134,6 +135,13 @@ export async function useMultiverse(id: MaybeRefOrGetter<number>): Promise<Multi
       multiverseConnections.delete(currentConnection?.multiverseId)
     }
     currentConnection = null
+  }
+
+  // Prevent footgun
+  if (import.meta.dev) {
+    if (!getCurrentScope()) {
+      throw new Error("useMultiverse() can only be used within effect scopes, e.g. the setup function.")
+    }
   }
 
   onScopeDispose(() => {

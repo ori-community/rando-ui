@@ -94,7 +94,7 @@ export function withoutProtoType<T extends PacketType>(message: T): WithoutProto
   const removeTypeRecursively = (value: any) => {
     if (Array.isArray(value)) {
       value.forEach(removeTypeRecursively)
-    } else if (typeof value === "object" && value.$type) {
+    } else if (typeof value === "object" && value !== null && value.$type) {
       delete value.$type
       Object.values(value).forEach(removeTypeRecursively)
     }

@@ -170,7 +170,7 @@ export class LauncherService {
         await execa("Start-Process", [
           "powershell",
           "-ArgumentList",
-          `"New-Item -Path '${powershellEscape(targetProxyFileName)}' -ItemType SymbolicLink -Value '${powershellEscape(sourceProxyFileName)}' -Force; sleep 20;"`,
+          `"New-Item -Path '${powershellEscape(targetProxyFileName)}' -ItemType SymbolicLink -Value '${powershellEscape(sourceProxyFileName)}' -Force; sleep 2;"`,
           "-Verb",
           "RunAs",
           "-Wait",

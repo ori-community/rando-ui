@@ -17,7 +17,6 @@
             :time="displayedTime"
             :show-timer="showTimer"
           />
-          <wotw-tracker-teleporters v-if="showTeleporters" :tracked-values="trackedValues"/>
         </div>
         <div class="done-label">
           <div ref="hypeRef" class="hype">

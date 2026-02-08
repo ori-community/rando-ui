@@ -19,7 +19,7 @@ class MultiverseConnection {
   readonly bingoBoardRef: Ref<BingoBoard | null> = ref(null)
   readonly bingoUniversesRef: Ref<BingoUniverseInfo[]> = ref([])
 
-  #connectionReferenceCount: number = 0
+  #connectionReferenceCount: number = 1
   #webSocket: AuthenticatedWebSocketConnection | null = null
 
   constructor(multiverseId: number) {
@@ -164,10 +164,15 @@ export async function useMultiverse(id: MaybeRefOrGetter<number>): Promise<Multi
 
     let connection = multiverseConnections.get(idValue)
     if (connection === undefined) {
+      // Don't need to increment reference count here because the initial
+      // counter is at 1 to prevent race conditions
       connection = new MultiverseConnection(idValue)
       multiverseConnections.set(idValue, connection)
+    } else {
+      connection.incrementRefCount()
     }
 
+    currentConnection = connection
     const multiverseRef = await connection.multiverseRef
 
     if (!composableRefs) {
@@ -178,9 +183,6 @@ export async function useMultiverse(id: MaybeRefOrGetter<number>): Promise<Multi
         bingoUniverses: ref(connection.bingoUniversesRef.value),
       }
     }
-
-    connection.incrementRefCount()
-    currentConnection = connection
 
     watchEffect(() => {
       composableRefs.multiverse.value = multiverseRef.value

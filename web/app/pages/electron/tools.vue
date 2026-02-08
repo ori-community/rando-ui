@@ -1,24 +1,14 @@
 <template>
-  <div class="fill-height">
-
-    <!--    <v-tabs v-model="tab" class="flex-shrink-1 flex-grow-0" height="28">-->
-    <!--      <v-tab value="hierarchy">Hierarchy</v-tab>-->
-    <!--      <v-tab value="uberstates">Uberstate Log</v-tab>-->
-    <!--      <v-tab value="map">Paths</v-tab>-->
-    <!--      &lt;!&ndash;   TODO show TAS if dev (dev because feature unfinished)   &ndash;&gt;-->
-    <!--    </v-tabs>-->
-    <!--    <v-divider/>-->
-    <!--    <v-tabs-window v-model="tab">-->
-    <!--        <v-tabs-window-item value="hierarchy">-->
-    <!--          <wotw-tools-hierarchy/>-->
-    <!--        </v-tabs-window-item>-->
-    <!--        <v-tabs-window-item value="uberstates">-->
-    <!--          <wotw-tools-uberstate-log/>-->
-    <!--        </v-tabs-window-item>-->
-    <!--        <v-tabs-window-item value="map">-->
-    <wotw-tools-areas-map/>
-    <!--        </v-tabs-window-item>-->
-    <!--    </v-tabs-window>-->
+  <div class="fill-height d-flex flex-column">
+    <v-tabs v-model="tab" height="28">
+      <v-tab value="map">Paths</v-tab>
+      <v-tab value="hierarchy">Hierarchy</v-tab>
+      <v-tab value="uberstates">Uberstate Log</v-tab>
+      <!--   TODO show TAS if dev (dev because feature unfinished)   -->
+    </v-tabs>
+    <wotw-tools-hierarchy v-if="tab === 'hierarchy'"/>
+    <wotw-tools-uberstate-log v-else-if="tab === 'uberstates'"/>
+    <wotw-tools-areas-map v-else-if="tab === 'map'"/>
   </div>
 </template>
 
@@ -30,7 +20,7 @@
 
   useHead({title: "Tools"})
 
-  const tab = ref(1)
+  const tab = ref("map")
 
 </script>
 

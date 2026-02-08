@@ -1,6 +1,7 @@
 import {publicProcedure, router} from "../trpc"
 import {RandoIPCService} from "@launcher/services/RandoIPCService"
 import {observable} from "@trpc/server/observable"
+import {z} from "zod"
 
 export const randoIpc = router({
   /**
@@ -26,6 +27,44 @@ export const randoIpc = router({
         return () => {
           RandoIPCService.events.off("connectionStateChanged", onConnectionStateChanged)
         }
+      })
+    }),
+
+  /**
+   * Fetch the children of a game object in the hierarchy
+   */
+  getGameObjectChildren: publicProcedure
+    .input(z.object({
+      path: z.string(),
+      instanceId: z.number().nullable(),
+    }))
+    .query(async ({input}) => {
+      return RandoIPCService.getGameObjectChildren(input.path, input.instanceId)
+    }),
+
+  /**
+   * Fetch a game object in the hierarchy
+   */
+  getGameObject: publicProcedure
+    .input(z.object({
+      path: z.string(),
+      instanceId: z.number(),
+    }))
+    .query(async ({input}) => {
+      return RandoIPCService.getGameObject(input.path, input.instanceId)
+    }),
+
+  setGameObjectActive: publicProcedure
+    .input(z.object({
+      path: z.string(),
+      instanceId: z.number(),
+      active: z.boolean(),
+    }))
+    .query(async ({input}) => {
+      return await RandoIPCService.emit("set_game_object_active", {
+        path: input.path,
+        instance_id: input.instanceId,
+        value: input.active,
       })
     }),
 })

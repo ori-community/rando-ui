@@ -1,7 +1,7 @@
 <template>
-  <div class="fill-height">
+  <div class="d-flex flex-column flex-grow-1 relative">
     <wotw-map
-      class="fill-height"
+      class="flex-grow-1 flex-shrink-1"
       @mouseclick="(_event, point) => console.log(point)"
       @transform-changed="(transform) => mapTransform = transform"
     >

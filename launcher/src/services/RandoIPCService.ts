@@ -290,4 +290,33 @@ export class RandoIPCService {
   static async setUberState(group: number, state: number, value: number): Promise<void> {
     await this.emit("set_uberstate", {group, state, value})
   }
+
+  static async getGameObject(path: string, instanceId: number) {
+    return await this.request("get_game_object", {path, instance_id: instanceId}) as {
+      active: boolean,
+      active_self: boolean,
+      children_count: number,
+      instance_id: number,
+      name: string,
+      path: string,
+      type: string
+    }
+  }
+
+  static async getGameObjectChildren(path: string, instanceId: number) {
+    return await this.request("get_children", {path, instance_id: instanceId}) as Array<{
+      active: boolean,
+      active_self: boolean,
+      children_count: number,
+      instance_id: number,
+      name: string,
+      path: string,
+      type: string
+    }>
+  }
+
+  static async setGameObjectActive(path: number, instanceId: number, active: boolean): Promise<void> {
+    await this.emit("set_game_object_active", {path, instance_id: instanceId, value: active})
+  }
+
 }

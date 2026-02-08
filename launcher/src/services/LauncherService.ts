@@ -161,12 +161,16 @@ export class LauncherService {
     const sourceProxyFileName = await fs.promises.realpath(getInstallDataPath("client/winhttp.dll"))
     const targetProxyFileName = path.join(await fs.promises.realpath(path.join(path.dirname(settings.GameBinaryPath))), "winhttp.dll")
 
+    const powershellEscape = (value: string) => {
+      return value.replaceAll(/([\[\]])/g, "``$1")
+    }
+
     switch (this.getPlatform()) {
       case "windows":
         await execa("Start-Process", [
           "powershell",
           "-ArgumentList",
-          `"New-Item -Path '${targetProxyFileName}' -ItemType SymbolicLink -Value '${sourceProxyFileName}' -Force; sleep 2;"`,
+          `"New-Item -Path '${powershellEscape(targetProxyFileName)}' -ItemType SymbolicLink -Value '${powershellEscape(sourceProxyFileName)}' -Force; sleep 20;"`,
           "-Verb",
           "RunAs",
           "-Wait",

@@ -1,10 +1,10 @@
 <template>
-  <v-badge :model-value='connected' color='green' location="bottom right" bordered dot offset-x='4'>
-    <v-avatar :color='raceReady ? "success" : "accent"' :size='Number($attrs.Size) || "32"' v-bind='$attrs'>
+  <v-badge :model-value="connected" color="green" location="bottom right" bordered dot >
+    <v-avatar :color='raceReady ? "success" : "accent"' :size='Number($attrs.Size) || "32"' v-bind="$attrs">
       <v-icon v-if="raceReady">mdi-check</v-icon>
-      <v-img v-else-if='discordAvatarUrl !== null' :src='discordAvatarUrl'>
+      <v-img v-else-if="discordAvatarUrl !== null" :src="discordAvatarUrl">
         <template #placeholder>
-          <div class='d-flex align-center justify-center fill-height'>
+          <div class="d-flex align-center justify-center fill-height">
             <v-icon :size='Number($attrs.Size) * 0.6 || "19"'>mdi-account</v-icon>
           </div>
         </template>
@@ -14,8 +14,8 @@
 </template>
 
 <script lang="ts" setup>
-  import type {UserInfo} from "@shared/types/user"
-  import {type PropType} from 'vue'
+  import type {UserInfo} from "@shared/types/http-api"
+  import type {PropType} from "vue"
 
   const props = defineProps({
     user: {
@@ -33,17 +33,17 @@
       default: false,
     },
   })
+
   const discordAvatarUrl = computed(() => {
     if (!props.user.avatarId) {
       return null
     }
 
     return `https://cdn.discordapp.com/avatars/${props.user.id}/${props.user.avatarId}.png`
-
   })
 </script>
 
-<style lang='scss'>
+<style lang="scss">
   .v-badge .v-badge__badge::after {
     border-color: rgb(var(--v-background-lighten2)) !important;
   }

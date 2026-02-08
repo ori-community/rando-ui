@@ -15,8 +15,9 @@
                   v-for="multiverseMetadata in group.multiverses"
                   :key="multiverseMetadata.id"
                   class="game-container"
-                  :dot-color="route.query.game == multiverseMetadata.id ? 'primary' : 'secondary'"
-                  @click="(event: MouseEvent) => showMultiverse(event, multiverseMetadata.id)"
+                  :dot-color="Number(route.query.game) === multiverseMetadata.id ? 'primary' : 'secondary'"
+                  @click="router.push({query: {...route.query, game: multiverseMetadata.id}})"
+                  @dblclick="router.push({name: 'game-multiverseId', params: {multiverseId: multiverseMetadata.id}})"
                 >
                   <template #opposite>
                     <div class="multiverse-id-container">
@@ -28,7 +29,7 @@
                   <template #icon>
                     <v-icon>{{ multiverseMetadata.hasBingoBoard ? "mdi-grid" : "" }}</v-icon>
                     <v-tooltip location="bottom" activator="parent" open-delay="500">
-                      <span><kbd>Ctrl</kbd> + Click to open Multiverse</span>
+                      <span>Double click to open Multiverse</span>
                     </v-tooltip>
                   </template>
                   <div class="avatars ml-5">
@@ -145,27 +146,6 @@
     fetchingGames.value = true
     multiverses.value = (await axios.get("/multiverses/own")).data
     fetchingGames.value = false
-  })
-
-  const showMultiverse = ((event: MouseEvent, id: number) => {
-    if (event.ctrlKey) {
-      openMultiversePage(id)
-      return
-    }
-
-    router.push({
-      query: {
-        ...route.query,
-        game: id,
-      },
-    })
-  })
-
-  const openMultiversePage = ((id: number) => {
-    router.push({
-      name: "game-multiverseId",
-      params: {multiverseId: id},
-    })
   })
 
   const centerBoard = (() => {

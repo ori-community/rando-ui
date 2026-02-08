@@ -18,12 +18,11 @@
         <wotw-multiverse-player-view
           v-for="membership in world.memberships"
           :key="membership.id"
-          class="mb-1"
           :user="membership.user"
           :connected="connectedUserIds.includes(membership.user.id)"
           :race-ready="raceReadyUserIds.includes(membership.user.id)"
         >
-          <div class="player-info" title="Loading time">
+          <div class="player-info">
             <div v-if="seedSpoilerDownloadedByIds.includes(membership.user.id)">
               <v-icon size="x-small">mdi-eye-outline</v-icon>
               <v-tooltip

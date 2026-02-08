@@ -1,18 +1,16 @@
 <template>
-  <div class='player-view'>
+  <div class="player-view gap-10">
     <rando-discord-avatar
-      :user='user'
-      class='mr-1'
-      :connected="isConnected"
+      :user="user"
+      :connected="connected"
       :race-ready="showGreenCheckmark"
-      v-bind='$attrs'
     />
-    <div>
+    <div class="d-block text-left">
       <div class="name-and-points">
         {{ user.name }}
-        <rando-copyable-info v-if="devtoolsEnabled" :value="user.id.toString()"/>
+        <rando-copyable-info v-if="devtoolsEnabled" :value="user.id.toString()" />
       </div>
-      <slot/>
+      <slot />
     </div>
   </div>
 </template>
@@ -23,10 +21,10 @@
 
   withDefaults(defineProps<{
     user: UserInfo,
-    isConnected?: boolean,
+    connected?: boolean,
     showGreenCheckmark?: boolean,
   }>(), {
-    isConnected: false,
+    connected: false,
     showGreenCheckmark: false,
   })
 
@@ -38,7 +36,6 @@
     display: flex;
     align-items: center;
     line-height: 1;
-    gap: 0.1em;
 
     .name-and-points {
       display: flex;

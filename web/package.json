@@ -26,6 +26,7 @@
     "@pinia/nuxt": "^0.11.3",
     "@trpc/client": "^10.45.4",
     "@types/file-saver": "^2.0.7",
+    "@types/textfit": "^2.4.5",
     "@vueuse/core": "^14.2.0",
     "axios": "^1.13.4",
     "canvas-confetti": "^1.9.4",
@@ -37,6 +38,7 @@
     "konva": "^10.2.0",
     "sass-embedded": "^1.97.3",
     "superjson": "^2.2.6",
+    "textfit": "^2.4.0",
     "typescript-event-target": "^1.1.2",
     "vue-konva": "^3.3.0"
   }

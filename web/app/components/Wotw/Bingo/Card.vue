@@ -11,8 +11,8 @@
         'bottom-marked': markedNeighborMask & 0b0001,
       }"
     >
-      <v-card elevation="0" class="front" :style="cardStyle" color="background-lighten-1">
-        <div class="content d-flex flex-column">
+      <v-card elevation="0" class="front" :class="{fitted: textWasFitted}" :style="cardStyle" color="background-lighten-1">
+        <div ref="autoTextSizeContainerElement" class="position-relative fill d-flex flex-column">
           <template v-if="!!square">
             <div class="square-text pa-2" :class="{ expand: !hasGoals }">{{ square.text }}</div>
             <template v-if="hasGoals">
@@ -36,8 +36,8 @@
 </template>
 
 <script lang="ts" setup>
-
-  import type {BingoUniverseInfo, BingoSquare} from "@shared/types/http-api";
+  import type {BingoSquare} from "@shared/types/http-api";
+  import textfit from "textfit"
 
   const props = withDefaults(defineProps<{
     attentionEffect?: boolean,
@@ -62,6 +62,40 @@
   })
 
   const emit = defineEmits(["click"])
+  const autoTextSizeContainerElement = ref<HTMLElement | null>(null)
+  const textWasFitted = ref(false)
+  const textFitObserver = new ResizeObserver(async () => {
+    if (autoTextSizeContainerElement.value === null) {
+      return
+    }
+
+    textWasFitted.value = false
+
+    await nextTick()
+
+    textfit(autoTextSizeContainerElement.value, {
+      multiLine: true,
+      maxFontSize: 22,
+    })
+
+    textWasFitted.value = true
+  })
+
+  onMounted(() => {
+    if (autoTextSizeContainerElement.value === null) {
+      return
+    }
+
+    textFitObserver.observe(autoTextSizeContainerElement.value)
+  })
+
+  onBeforeUnmount(() => {
+    if (autoTextSizeContainerElement.value === null) {
+      return
+    }
+
+    textFitObserver.unobserve(autoTextSizeContainerElement.value)
+  })
 
   const cardShouldBeFlipped = computed(() => {
     return props.forceFlip || !props.square
@@ -70,7 +104,7 @@
     if (!props.square) {
       return false
     }
-    return props.square.goals.length === 1 && props.square.goals[0].text.length <= 16
+    return props.square.goals.length === 1 && props.square.goals[0]!.text.length <= 16
   })
   const hasGoals = computed(() => {
     if (!props.square) return false
@@ -136,7 +170,6 @@
       background: `linear-gradient(to bottom left, ${stops.join(', ')})`,
     }
   })
-
 </script>
 
 <style lang="scss" scoped>
@@ -214,8 +247,15 @@
       }
 
       .front {
-        .content {
+        &.fitted {
+          &:deep(.textFitted) {
+            display: contents !important;
+          }
+        }
+
+        .fill {
           height: 100%;
+          width: 100%;
         }
 
         .square-text {

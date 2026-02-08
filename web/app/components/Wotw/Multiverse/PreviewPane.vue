@@ -41,5 +41,8 @@
 </script>
 
 <style lang="scss" scoped>
-
+  .board {
+    max-height: 100vh;
+    margin: 0 auto;
+  }
 </style>

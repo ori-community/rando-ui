@@ -73,7 +73,8 @@
 
             <div :class="{ 'two-columns': !!multiverse.race }">
               <wotw-multiverse-view
-                :is-spectating="isSpectating"
+                :preview="isSpectating"
+                :show-spectator-notice="isSpectating"
                 :multiverse="multiverse"
                 :race-starting-at="normalGameHandlerState?.raceStartingAt"
                 :player-in-game-times="normalGameHandlerState?.playerInGameTimes"
@@ -108,7 +109,7 @@
       </div>
     </v-container>
 
-    <wotw-bingo-board-view
+    <wotw-bingo-view
       v-if="userStore.isLoggedIn && !!bingoBoard"
       :multiverse="multiverse"
       :bingo-universes="bingoUniverses"

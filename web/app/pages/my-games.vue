@@ -6,7 +6,7 @@
       <template v-if="multiverses !== null && !fetchingGames">
         <div class="games-container mt-8">
           <div class="timeline">
-            <v-timeline truncate-line="start" side="end" density="comfortable">
+            <v-timeline truncate-line="start" side="end" size="small" align="center" density="comfortable">
               <template v-for="group of multiversesByPeriod" :key="group.period">
                 <v-timeline-item hide-dot>
                   <h2>{{ group.period }}</h2>
@@ -15,6 +15,8 @@
                   v-for="multiverseMetadata in group.multiverses"
                   :key="multiverseMetadata.id"
                   class="game-container"
+                  :class="{selected: Number(route.query.game) === multiverseMetadata.id}"
+                  :fill-dot="Number(route.query.game) === multiverseMetadata.id"
                   :dot-color="Number(route.query.game) === multiverseMetadata.id ? 'primary' : 'secondary'"
                   @click="router.push({query: {...route.query, game: multiverseMetadata.id}})"
                   @dblclick="router.push({name: 'game-multiverseId', params: {multiverseId: multiverseMetadata.id}})"
@@ -26,13 +28,7 @@
                       </div>
                     </div>
                   </template>
-                  <template #icon>
-                    <v-icon>{{ multiverseMetadata.hasBingoBoard ? "mdi-grid" : "" }}</v-icon>
-                    <v-tooltip location="bottom" activator="parent" open-delay="500">
-                      <span>Double click to open Multiverse</span>
-                    </v-tooltip>
-                  </template>
-                  <div class="avatars ml-5">
+                  <div class="avatars">
                     <div v-for="user in multiverseMetadata.members" :key="user.id" class="avatar">
                       <rando-discord-avatar :user="user" />
                       <v-tooltip location="bottom" activator="parent" open-delay="250">
@@ -40,14 +36,23 @@
                       </v-tooltip>
                     </div>
                   </div>
-
                 </v-timeline-item>
               </template>
             </v-timeline>
           </div>
-
-          <div v-if="route.query.game" class="multiverse-view-container mt-4">
-            <wotw-multiverse-preview-pane :multiverse-id="Number(route.query.game)" />
+          <v-divider vertical />
+          <div class="multiverse-view-container mt-4">
+            <v-scroll-x-reverse-transition leave-absolute>
+              <div v-if="route.query.game">
+                <wotw-multiverse-preview-pane :multiverse-id="Number(route.query.game)" />
+              </div>
+              <div v-else class="text-center">
+                <div class="pt-6">
+                  Select a game to preview.<br>
+                  Double click a game to open directly.
+                </div>
+              </div>
+            </v-scroll-x-reverse-transition>
           </div>
         </div>
         <div v-if="multiversesByPeriod.length === 0" class="text-center">
@@ -170,12 +175,22 @@
 
   .game-container {
     cursor: pointer;
+
+
+    &.selected,
+    &:hover {
+      & .multiverse-id-container {
+        opacity: 1.0;
+      }
+    }
   }
 
   .multiverse-id-container {
     display: flex;
     flex-direction: column;
     line-height: 1;
+    opacity: 0.5;
+    transition: opacity 150ms;
 
     .hashtag {
       font-size: 1em;
@@ -191,22 +206,19 @@
   .avatars {
     text-align: left;
     white-space: nowrap;
+    display: flex;
 
     .avatar {
-      display: inline-block;
-      margin-left: -16px;
-      transition: margin 175ms;
-    }
-
-    &:hover {
-      .avatar:nth-child(n+2) {
-        margin-left: 0.2em;
-      }
+      display: flex;
+      width: 16px;
     }
   }
 
   .multiverse-view-container {
+    position: sticky;
+    top: 2em;
     width: 100%;
+    height: 100%;
   }
 
   .board-container {
@@ -225,5 +237,4 @@
   .ori-image {
     height: 3em;
   }
-
 </style>

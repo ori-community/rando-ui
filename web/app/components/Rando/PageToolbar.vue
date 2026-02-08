@@ -69,7 +69,7 @@
           <v-menu offset-y left nudge-bottom="6">
             <template #activator="{ props }">
               <v-btn x-large class="ma-0 mr-1" icon v-bind="props">
-                <rando-discord-avatar v-if="userStore.user" :user="userStore.user" size="48"/>
+                <rando-discord-avatar v-if="userStore.user" :user="userStore.user" :size="48"/>
               </v-btn>
             </template>
             <v-list>
@@ -182,19 +182,20 @@
   })
 
   const login = (async () => {
+    const {apiBaseUrl} = await useBaseUrls()
+
     if (!electronApi) {
       authStore.redirectPath = route.fullPath
 
-      const url = new URL(axios.defaults.baseURL ?? "")
+      const url = new URL(apiBaseUrl)
       url.pathname += "/login"
       url.searchParams.set("redirect", `${window.location.origin}/auth/callback`)
       window.location.href = url.href
       return
     }
 
-    // TODO use global baseURL variable
     const shortLivedJwt = await electronApi.auth.startOAuthFlow.query({
-      apiBaseUrl: await useWebApiBaseUrl(),
+      apiBaseUrl,
     })
 
     axios.defaults.headers.common['Authorization'] = `Bearer ${shortLivedJwt}`

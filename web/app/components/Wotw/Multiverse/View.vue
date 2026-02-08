@@ -4,7 +4,7 @@
       <wotw-multiverse-universe-view
         v-for="universe in multiverse.universes"
         :key="universe.id"
-        :can-join="!isSpectating && !multiverse.locked"
+        :can-join="!preview && !multiverse.locked"
         :can-create-world="multiverse.seedId === null && !multiverse.locked"
         :disabled="loading"
         :hide-color="multiverse.universes.length < 2 && !multiverse.hasBingoBoard"
@@ -24,8 +24,8 @@
       />
     </v-scroll-y-reverse-transition>
 
-    <div v-if="isSpectating" class="text-center mt-4">
-      <template v-if="showSpectatingWarning">
+    <div v-if="preview" class="text-center mt-4">
+      <template v-if="showSpectatorNotice">
         <v-alert class="d-inline-block" color="info darken">
           <v-icon left>mdi-monitor-eye</v-icon>
           You are spectating this game.
@@ -60,22 +60,22 @@
   // const isOBS = () => !!window?.obsstudio?.pluginVersion
 
   const props = withDefaults(defineProps<{
-    isSpectating?: boolean,
+    preview?: boolean,
     multiverse: MultiverseInfo,
     raceStartingAt?: number | null,
     playerInGameTimes?: { [key: number]: number },
     playerFinishedTimes?: { [key: number]: number },
     worldFinishedTimes?: { [key: number]: number },
     universeFinishedTimes?: { [key: number]: number },
-    showSpectatingWarning?: boolean,
+    showSpectatorNotice?: boolean,
   }>(), {
-    isSpectating: false,
+    preview: false,
     raceStartingAt: null,
     playerInGameTimes: () => ({}),
     playerFinishedTimes: () => ({}),
     worldFinishedTimes: () => ({}),
     universeFinishedTimes: () => ({}),
-    showSpectatingWarning: true,
+    showSpectatorNotice: false,
   })
 
   const loading = ref(false)

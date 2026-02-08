@@ -26,7 +26,6 @@
           :marked-neighbor-mask="getMarkedNeighborMask(x, y)"
           :own-universe-id="ownUniverseId"
           :attention-effect="cardAttentionEffect"
-          @click='$store.commit("multiverseState/toggleBingoGoalMarked", {multiverseId: multiverse.id, x, y})'
         />
       </template>
 
@@ -40,7 +39,7 @@
       <wotw-bingo-edge-label
         v-for="x in bingoBoard.size"
         :key="`${x}-bottom`"
-        :label="alphabet[x - 1]"
+        :label="alphabet[x - 1]!"
         @click="selectLine(x, 1, 0, 1)"
       />
       <wotw-bingo-edge-label label="X" @click="selectLine(1, 1, 1, 1)"/>
@@ -49,24 +48,29 @@
 </template>
 
 <script lang="ts" setup>
-  import type {BingoSquare} from "@shared/types/http-api";
+  import type {BingoSquare, MultiverseInfo, BingoBoard} from "@shared/types/http-api";
 
   const markedCards = ref<string[]>([])
 
   const props = withDefaults(defineProps<{
-    edgeLabels: boolean,
-    isSpectating: boolean,
-    multiverseId: number,
+    edgeLabels?: boolean,
+    isSpectating?: boolean,
+    multiverse: MultiverseInfo,
+    bingoBoard: BingoBoard,
     hiddenUniverseIds?: number[],
-    highlightedUniverseId: number | null,
-    ownUniverseId: number | null,
-    cardAttentionEffect: boolean,
-    spectatorDisplayAll: boolean,
+    highlightedUniverseId?: number | null,
+    ownUniverseId?: number | null,
+    cardAttentionEffect?: boolean,
+    spectatorDisplayAll?: boolean,
   }>(), {
     hiddenUniverseIds: () => [],
+    edgeLabels: false,
+    isSpectating: false,
+    highlightedUniverseId: null,
+    ownUniverseId: null,
+    cardAttentionEffect: false,
+    spectatorDisplayAll: false
   })
-
-  const {multiverse, bingoBoard} = await useMultiverse(props.multiverseId)
 
   const alphabet = computed(() => {
     return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -74,26 +78,23 @@
   const gridStyle = computed(() => {
     if (props.edgeLabels) {
       return {
-        gridTemplateColumns: `auto repeat(${bingoBoard.value?.size ?? 1}, minmax(0, 1fr)) auto`,
-        gridTemplateRows: `auto repeat(${bingoBoard.value?.size ?? 1}, minmax(0, 1fr)) auto`,
+        gridTemplateColumns: `auto repeat(${props.bingoBoard.size ?? 1}, minmax(0, 1fr)) auto`,
+        gridTemplateRows: `auto repeat(${props.bingoBoard.size ?? 1}, minmax(0, 1fr)) auto`,
       }
     } else {
       return {
-        gridTemplateColumns: `repeat(${bingoBoard.value?.size ?? 1}, minmax(0, 1fr))`,
-        gridTemplateRows: `repeat(${bingoBoard.value?.size ?? 1}, minmax(0, 1fr))`,
+        gridTemplateColumns: `repeat(${props.bingoBoard.size ?? 1}, minmax(0, 1fr))`,
+        gridTemplateRows: `repeat(${props.bingoBoard.size ?? 1}, minmax(0, 1fr))`,
       }
     }
   })
   const cardTable = computed(() => {
-    if (!bingoBoard.value) {
-      return null
-    }
-    const boardSize = bingoBoard.value.size + 1
+    const boardSize = props.bingoBoard.size + 1
     const squares: (BingoSquare | null)[][] =
       Array.from({length: boardSize}, () =>
         Array.from({length: boardSize}, () => null)
       )
-    for (const positionedSquare of bingoBoard.value.squares) {
+    for (const positionedSquare of props.bingoBoard.squares) {
       if (!positionedSquare.position) {
         continue
       }
@@ -101,15 +102,17 @@
     }
     return squares
   })
+
   const universeColors = computed(() => {
     const colorMap: string[] = []
-    for (const universe of multiverse.value.universes) {
+    for (const universe of props.multiverse.universes) {
       colorMap[universe.id] = universe.color
     }
     return colorMap
   })
+
   const highlightedUniverseId = computed(() => {
-    if (multiverse.value.universes.length <= 1) {
+    if (props.multiverse.universes.length <= 1) {
       return null
     }
 
@@ -153,11 +156,8 @@
   })
 
   const selectLine = ((x: number, y: number, dX: number, dY: number) => {
-    if (!bingoBoard.value) {
-      return
-    }
     const squares = []
-    for (let a = x, b = y; a <= bingoBoard.value.size && b <= bingoBoard.value.size; a += dX, b += dY) {
+    for (let a = x, b = y; a <= props.bingoBoard.size && b <= props.bingoBoard.size; a += dX, b += dY) {
       squares.push({x: a, y: b})
     }
 
@@ -167,8 +167,6 @@
     //   goals: squares,
     // })
   })
-
-
 </script>
 
 <style lang="scss" scoped>
@@ -176,6 +174,7 @@
     display: grid;
     flex-grow: 1;
     grid-gap: 0.4em;
+    aspect-ratio: 1;
 
     .edge-label {
       display: flex;

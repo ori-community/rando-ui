@@ -64,7 +64,8 @@
       <wotw-bingo-board
         :edge-labels="boardSettingEdgeLabels"
         :is-spectating="isSpectating"
-        :multiverse-id="multiverse.id"
+        :multiverse="multiverse"
+        :bingo-board="bingoBoard"
         :hidden-universe-ids="hiddenUniverseIds"
         :highlighted-universe-id="highlightedUniverseId"
         :own-universe-id="ownUniverseId"
@@ -87,7 +88,7 @@
                 :universe="multiverse.universes.find((u) => u.id === bingoUniverse.universeId)"
                 :universe-hidden="hiddenUniverseIds.includes(bingoUniverse.universeId)"
                 @click="toggleUniverseVisibility(bingoUniverse.universeId)"
-                @click.native.ctrl.capture.stop="toggleUniverseVisibility(bingoUniverse.universeId, true)"
+                @click.ctrl.capture.stop="toggleUniverseVisibility(bingoUniverse.universeId, true)"
               />
             </div>
             <v-switch
@@ -194,6 +195,7 @@
 
   const props = defineProps<{
     multiverse: MultiverseInfo,
+    bingoBoard: BingoBoard,
     bingoUniverses: BingoUniverseInfo[],
     isSpectating: boolean,
     ownWorld: WorldInfo | null,

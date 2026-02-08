@@ -460,6 +460,7 @@
     const {data: multiverseId}: {data: string} = await axios.post("/multiverses", {
       seedId: seed.seedId,
       bingoConfig: bingoCreationConfig,
+      raceMode: enableRaceMode.value,
     })
 
     // Delay a bit to give the dialog a chance to hide...

@@ -40,11 +40,6 @@
           </rando-launch-button>
 
           <div class="mt-4">
-            <v-btn v-if="canEnableRaceMode" variant="text" @click="enableRaceModeDialogOpen = true">
-              <v-icon start>mdi-timer-play-outline</v-icon>
-              Enable race mode
-            </v-btn>
-
             <v-btn v-if="canForfeit" variant="text" @click="forfeitDialogOpen = true">
               <v-icon start>mdi-cancel</v-icon>
               Forfeit
@@ -117,26 +112,6 @@
       :is-spectating="isSpectating"
       :own-world="ownWorld"
     />
-
-    <v-dialog v-model="enableRaceModeDialogOpen" :persistent="enableRaceModeLoading" max-width="500">
-      <v-card class="pa-5 relative">
-        <h2>Enable race mode</h2>
-
-        Players will be blocked from starting new games until everyone is ready. To signal yourself ready, select an
-        empty save file and choose the difficulty.<br>
-        Once the race starts, the game will be locked.
-
-        <div class="d-flex justify-end">
-          <v-btn :disabled="enableRaceModeLoading" class="mr-1" text @click="enableRaceModeDialogOpen = false">
-            Cancel
-          </v-btn>
-          <v-btn
-            :loading="enableRaceModeLoading" color="accent" depressed @click="enableRaceMode"
-          >Enable race mode
-          </v-btn>
-        </div>
-      </v-card>
-    </v-dialog>
 
     <v-dialog v-model="forfeitDialogOpen" :persistent="forfeitLoading" max-width="400">
       <v-card class="pa-5 relative">
@@ -223,8 +198,6 @@
   const viewSpoilerDialogOpen = ref(false)
   const spoilerText = ref("")
   const spoilerSearchQuery = ref("")
-  const enableRaceModeDialogOpen = ref(false)
-  const enableRaceModeLoading = ref(false)
   const forfeitDialogOpen = ref(false)
   const forfeitLoading = ref(false)
   const lockGameLoading = ref(false)
@@ -287,13 +260,6 @@
     }
 
     return normalGameHandlerState.value.raceModeEnabled
-  })
-  const canEnableRaceMode = computed(() => {
-    if (!normalGameHandlerState.value) {
-      return false
-    }
-
-    return !normalGameHandlerState.value.raceModeEnabled && isPlayer.value
   })
   const ownWorldFinished = computed(() => {
     if (!normalGameHandlerState.value || !ownWorld.value) {
@@ -430,13 +396,6 @@
 
   async function onLaunchButtonPressed() {
     await launch(`server:${multiverse.value.id}`)
-  }
-
-  async function enableRaceMode() {
-    enableRaceModeLoading.value = true
-    await dispatchEvent("enableRaceMode")
-    enableRaceModeLoading.value = false
-    enableRaceModeDialogOpen.value = false
   }
 
   async function forfeit() {

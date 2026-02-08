@@ -40,7 +40,7 @@
     </div>
     <div v-else class="action-buttons mt-4">
       <div class="d-inline-block">
-        <v-btn :disabled="loading || !canCreateUniverse" large text @click="createWorld()">
+        <v-btn :disabled="loading || !canCreateUniverse" large variant="text" @click="createWorld()">
           <v-icon left>mdi-plus</v-icon>
           New Universe
         </v-btn>
@@ -118,15 +118,10 @@
 
   const join = (async (worldId: number) => {
     await axios.post(`/multiverses/${props.multiverse.id}/worlds/${worldId}`)
-    await this.$store.dispatch('multiverseState/connectMultiverse', {
-      multiverseId: props.multiverse.id,
-      reconnect: true,
-    })
-    this.$store.commit('user/setCurrentMultiverseId', props.multiverse.id)
   })
+
   const createWorld = (async (universeId: number | null = null) => {
     await axios.post(`/multiverses/${props.multiverse.id}/${universeId}/worlds`)
-    this.$store.commit('user/setCurrentMultiverseId', props.multiverse.id)
   })
 </script>
 

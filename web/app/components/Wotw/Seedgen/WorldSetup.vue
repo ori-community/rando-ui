@@ -1,5 +1,5 @@
 <template>
-  <h2 class="mb-2">Start over and select a base preset</h2>
+  <h2 class="mb-2">Select a base preset</h2>
   <template v-if="selectedBasePreset === null">
     <wotw-seedgen-preset-button
       v-for="presetId in groupedWorldPresetIds['Base']"

@@ -783,9 +783,7 @@ export interface components {
         };
         HashSet_String: string[];
         HashSet_Trick: ("SwordSentryJump" | "HammerSentryJump" | "ShurikenBreak" | "SentryBreak" | "HammerBreak" | "SpearBreak" | "SentryBurn" | "RemoveKillPlane" | "LaunchSwap" | "SentrySwap" | "FlashSwap" | "BlazeSwap" | "WaveDash" | "GrenadeJump" | "SwordJump" | "AerialHammerJump" | "GlideJump" | "GlideHammerJump" | "CoyoteHammerJump" | "WallHammerJump" | "GroundedHammerJump" | "HammerExtension" | "GrenadeRedirect" | "SentryRedirect" | "PauseFloat" | "SpearJump" | "GlideBashChain" | "DoubleJumpBashChain" | "DashBashChain" | "LaunchBashChain" | "Unpopular")[];
-        InlineSnippets: {
-            snippets: components["schemas"]["HashMap_String_Source"];
-        };
+        InlineSnippets: components["schemas"]["HashMap_String_Source"];
         /** @description Information about a pickup location */
         LocDataEntry: {
             /** @description Unique identifier for this pickup location which is used in `areas.wotw` */

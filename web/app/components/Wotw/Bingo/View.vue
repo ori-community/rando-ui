@@ -60,7 +60,7 @@
     </v-container>
 
     <!--   TODO set obsMode   -->
-    <div ref="boardContainer" :class="{ 'px-1': !boardSettingObsMode }" class="board-container">
+    <div ref="boardContainer" :class="{ 'px-1': true/* boardSettingObsMode */ }" class="board-container">
       <wotw-bingo-board
         :edge-labels="boardSettingEdgeLabels"
         :is-spectating="isSpectating"
@@ -74,45 +74,43 @@
         class="board"
       />
       <div class="sidebar px-5">
-        <transition-group name="list">
-          <div class="bingo-universes">
-            <div
-              v-for="(bingoUniverse, index) in sortedBingoUniverses"
-              :key="bingoUniverse.universeId"
-              :style="{ zIndex: sortedBingoUniverses.length - index }"
-              class="relative"
-            >
-              <wotw-bingo-universe-view
-                :bingo-universe="bingoUniverse"
-                :is-spectating="isSpectating"
-                :universe="multiverse.universes.find((u) => u.id === bingoUniverse.universeId)"
-                :universe-hidden="hiddenUniverseIds.includes(bingoUniverse.universeId)"
-                @click="toggleUniverseVisibility(bingoUniverse.universeId)"
-                @click.ctrl.capture.stop="toggleUniverseVisibility(bingoUniverse.universeId, true)"
-              />
-            </div>
-            <v-switch
-              v-if="isSpectating"
-              key="spectatorMode"
-              v-model="boardSettingSpectatorDisplayAll"
-              label="Show all cards"
-              inset
+        <div class="bingo-universes">
+          <div
+            v-for="(bingoUniverse, index) in sortedBingoUniverses"
+            :key="bingoUniverse.universeId"
+            :style="{ zIndex: sortedBingoUniverses.length - index }"
+            class="relative"
+          >
+            <wotw-bingo-universe-view
+              :bingo-universe="bingoUniverse"
+              :is-spectating="isSpectating"
+              :universe="multiverse.universes.find((u) => u.id === bingoUniverse.universeId)!"
+              :universe-hidden="hiddenUniverseIds.includes(bingoUniverse.universeId)"
+              @click="toggleUniverseVisibility(bingoUniverse.universeId)"
+              @click.ctrl.capture.stop="toggleUniverseVisibility(bingoUniverse.universeId, true)"
             />
-            <div
-              v-if="!boardSettingHideSpectators && multiverse.spectators.length > 0"
-              key="spectators"
-              class="mt-4"
-            >
-              <div class="text-caption">Spectators</div>
-
-              <rando-discord-avatar v-for="spectator in multiverse.spectators" :key="spectator.id" :user="spectator">
-                <v-tooltip location="top" activator="parent">
-                  <span>{{ spectator.name }}</span>
-                </v-tooltip>
-              </rando-discord-avatar>
-            </div>
           </div>
-        </transition-group>
+          <v-switch
+            v-if="isSpectating"
+            key="spectatorMode"
+            v-model="boardSettingSpectatorDisplayAll"
+            label="Show all cards"
+            inset
+          />
+          <div
+            v-if="!boardSettingHideSpectators && multiverse.spectators.length > 0"
+            key="spectators"
+            class="mt-4"
+          >
+            <div class="text-caption">Spectators</div>
+
+            <rando-discord-avatar v-for="spectator in multiverse.spectators" :key="spectator.id" :user="spectator">
+              <v-tooltip location="top" activator="parent">
+                <span>{{ spectator.name }}</span>
+              </v-tooltip>
+            </rando-discord-avatar>
+          </div>
+        </div>
       </div>
     </div>
 

@@ -80,7 +80,7 @@
         <v-card-text>
           The following tricks are ineffective on the newly selected Logic Difficulty:
           <ul class="my-2">
-            <li v-for="trick in invalidSelectedTricks" :key="trick">{{ trick }}</li>
+            <li v-for="trick in invalidSelectedTricks" :key="trick">{{ formatTrickName(trick) }}</li>
           </ul>
           Do you want to deselect these tricks?
         </v-card-text>
@@ -218,6 +218,14 @@
     return props.tricks.filter(trickInfo => getDifficultyOrder(trickInfo.min_difficulty) <= selectedDifficultyOrder).map(trickInfo => trickInfo.name)
   })
 
+  /**
+   * Formats trick names, e.g.
+   * SentryJump -> Sentry Jump
+   */
+  function formatTrickName(trickName: string) {
+    return trickName.replaceAll(/(.)([A-Z])/g, "$1 $2")
+  }
+
   const availableTrickListItems = computed(() => {
     const selectedDifficultyOrder = getDifficultyOrder(model.value.difficulty)
 
@@ -226,7 +234,7 @@
         const disabled = getDifficultyOrder(trickInfo.min_difficulty) > selectedDifficultyOrder
 
         return {
-          title: trickInfo.name,
+          title: formatTrickName(trickInfo.name),
           value: trickInfo.name,
           props: {
             disabled,

@@ -112,6 +112,7 @@
     <wotw-bingo-view
       v-if="userStore.isLoggedIn && !!bingoBoard"
       :multiverse="multiverse"
+      :bingo-board="bingoBoard"
       :bingo-universes="bingoUniverses"
       :is-spectating="isSpectating"
       :own-world="ownWorld"

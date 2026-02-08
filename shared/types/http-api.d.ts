@@ -1,4 +1,4 @@
-import {AsJsonApiType, WithoutProtoType} from "../proto/ProtoUtil"
+import {AsJsonApiType} from "../proto/ProtoUtil"
 import {Proto} from "../proto"
 
 type UserInfo = AsJsonApiType<Proto.UserInfo>
@@ -26,4 +26,19 @@ type SeedInfo = {
   worldSeedIds: number[],
   creator: UserInfo,
   config: UniversePreset
+}
+
+type SeedgenGenerateResponse = {
+  worlds: Uint8Array[],
+  textSpoiler: string | null,
+  jsonSpoiler: string | null,
+}
+
+type BingoSettings = {
+  discovery: null | number,
+  revealFirstNCompletedGoals: number,
+  lockout: boolean,
+  size: number,
+  goalType: "cards" | "lines" | "all",
+  goalAmount: number,
 }

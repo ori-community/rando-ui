@@ -20,12 +20,12 @@
   <v-card :loading="runningSeedgenActionId !== null">
     <v-skeleton-loader
       v-if="universePresets === null || worldPresets === null || difficulties === null || snippetsInfo === null"
-      class="ma-3"
+      class="ma-4"
       type="article"
     />
     <template v-else>
       <v-window :model-value="selectedWorldIndex ?? universeSettings.worldSettings.length" :show-arrows="false">
-        <v-window-item v-for="nth in universeSettings.worldSettings.length" :key="nth - 1" class="pa-3">
+        <v-window-item v-for="nth in universeSettings.worldSettings.length" :key="nth - 1" class="pa-4">
           <wotw-seedgen-world-settings
             v-model="universeSettings.worldSettings[nth - 1]!"
             :snippets-info="snippetsInfo"
@@ -44,9 +44,53 @@
     </template>
   </v-card>
 
-  <v-dialog :model-value="runningSeedgenActionId !== null" persistent max-width="600">
+  <div v-if="universeSettings.worldSettings.length > 0">
+    <v-card class="pa-4 mt-2">
+      <v-switch v-model="enableRaceMode" inset hide-details color="secondary" append-icon="mdi-timer-play-outline">
+        <template #label>
+          <div>
+            <div>Race Mode</div>
+            <div class="text-caption opacity-70">
+              Enable an in-game lobby that starts the game for all players at the same time when they are ready.
+            </div>
+          </div>
+        </template>
+      </v-switch>
+    </v-card>
+
+    <v-card class="mt-2">
+      <div class="pa-4">
+        <v-switch v-model="enableBingo" inset hide-details color="secondary" append-icon="mdi-checkerboard">
+          <template #label>
+            <div>
+              <div>Play Bingo</div>
+              <div class="text-caption opacity-70">
+                Play online bingo alone or with friends.
+                When playing with friends, players in the same universe work as one team while optionally racing players in other universes.
+              </div>
+            </div>
+          </template>
+        </v-switch>
+      </div>
+
+      <v-expand-transition>
+        <div v-if="enableBingo">
+          <v-divider />
+          <div class="pa-4">
+            <wotw-seedgen-bingo-settings v-model="bingoSettings" />
+          </div>
+        </div>
+      </v-expand-transition>
+    </v-card>
+  </div>
+
+  <v-dialog :model-value="runningSeedgenActionId !== null" persistent max-width="600" opacity="0.75">
     <v-card class="pa-16 text-center loading-text">
-      {{ generatingMessages[generatingMessageIndex] }}
+      <div class="generating-message-container">
+        <v-scroll-y-reverse-transition>
+          <div :key="generatingMessageIndex" class="generating-message">{{ generatingMessages[generatingMessageIndex] }}</div>
+        </v-scroll-y-reverse-transition>
+      </div>
       <v-progress-linear :model-value="fakeProgressValue" :max="1" class="mt-5" :class="{'no-transition': fakeProgressActive}" />
     </v-card>
   </v-dialog>
@@ -68,6 +112,7 @@
         :disabled="action.disabled || runningSeedgenActionId !== null"
         size="x-large"
         color="accent"
+        :variant="action.disabled ? 'tonal' : 'elevated'"
         @click="action.handler"
       >
         <v-icon start>{{ action.icon }}</v-icon>
@@ -84,15 +129,24 @@
   import type {
     Difficulty,
     DifficultyInfo,
+    HashMapStringMetadata,
     HashMapStringUniversePreset,
-    HashMapStringWorldPreset, HashMapStringMetadata,
-    UniverseSettings, WorldPreset, WorldSettings, TrickInfo,
-  } from '@shared/types/seedgen'
-  import type {GroupedPresetIds, Presets} from '~/assets/types/components/seedgen'
-  import {useSeedgenAxios} from '~/composables/useSeedgenAxios'
-  import {confettiFromElement} from '~/assets/utils/confetti'
+    HashMapStringWorldPreset,
+    TrickInfo,
+    UniverseSettings,
+    WorldPreset,
+    WorldSettings,
+  } from "@shared/types/seedgen"
+  import type {BingoSettings, SeedgenGenerateResponse} from "@shared/types/http-api"
+  import type {GroupedPresetIds, Presets} from "~/assets/types/components/seedgen"
+  import {useSeedgenAxios} from "~/composables/useSeedgenAxios"
+  import {confettiFromElement} from "~/assets/utils/confetti"
   import type {ComponentPublicInstance} from "vue"
   import {shuffleArray} from "~/assets/utils/shuffleArray"
+  import {saveAs} from "file-saver"
+  import {decode} from "cbor2"
+  import {useCloned} from "@vueuse/core"
+  import {clone} from "@shared/utils/clone"
 
   const isElectron = useIsElectron()
   const electronApi = useElectronApi()
@@ -108,54 +162,64 @@
   const tricks = ref<TrickInfo[]>([])
   const selectedWorldIndex = ref<number | null>(null)
   const snippetsInfo = ref<HashMapStringMetadata | null>(null)
+  const enableBingo = ref(false)
+  const enableRaceMode = ref(false)
+  const bingoSettings = ref<BingoSettings>({
+    discovery: null,
+    revealFirstNCompletedGoals: 0,
+    lockout: false,
+    size: 5,
+    goalType: "lines",
+    goalAmount: 3,
+  })
   const userStore = useUserStore()
   const generatingMessageIndex = ref(0)
   const generatingMessages = shuffleArray([
-    "Stealing back Burrow from Grom...",
-    "Looking for the next Health Fragment...",
-    "Hiding Launch...",
-    "Waking up Shriek...",
-    "Infecting Mora...",
-    "Planting seeds in the seed...",
-    "Asking Motay for assistance...",
-    "Handing out maps to Lupo...",
-    "Reviving the Moki Father...",
-    "Placing 1 Spirit Light...",
-    "Cleaning Water in Luma Pools...",
-    "Dumping Poison into the waters...",
-    "Petrifying trees in Silent Woods...",
-    "Turning off the lights in Mouldwood Depths...",
-    "Looking for Gorlek Mines...",
-    "Locking Keystone doors...",
-    "Restocking shops...",
-    "Disassembling huts into Gorlek Ore...",
-    "Tearing out plants in Wellspring Glades...",
-    "Letting Baur fall asleep...",
-    "Placing convenient Grapple Plants...",
-    "Pulling back Levers...",
-    "Distributing Wisps...",
-    "Rebuilding walls...",
-    "Filling up Kwolok's Hollow...",
-    "Blowing out candles...",
-    "Placing a snowball...",
-    "Stacking up leaf piles...",
-    "Cooking soup...",
-    "Stealing Kuro's Feather from Ku...",
-    "Separating Glide and Flap... (somehow)",
-    "Closing Midnight Burrows...",
-    "Polishing the Sword...",
-    "Stealing Tokk's Compass...",
-    "Corrupting the Wellspring...",
-    "Coloring item messages...",
-    "Deciding the first weapon...",
-    "Calculating Spirit Light amounts...",
-    "Writing hint notes to NPCs...",
-    "Placing something on Rebuild the Glades...",
-    "Flipping a coin for Sword or Hammer...",
-    "Preventing Keystone door softlocks...",
-    "Fixing strange vanilla bugs...",
-    "Dashing and Bashing...",
-    "Painting Murals in Windtorn Ruins...",
+    "Stealing back Burrow from Grom…",
+    "Looking for the next Health Fragment…",
+    "Hiding Launch…",
+    "Waking up Shriek…",
+    "Infecting Mora…",
+    "Planting seeds in the seed…",
+    "Asking Motay for assistance…",
+    "Handing out maps to Lupo…",
+    "Reviving the Moki Father…",
+    "Placing 1 Spirit Light…",
+    "Cleaning Water in Luma Pools…",
+    "Dumping Poison into the waters…",
+    "Petrifying trees in Silent Woods…",
+    "Turning off the lights in Mouldwood Depths…",
+    "Looking for Gorlek Mines…",
+    "Locking Keystone doors…",
+    "Restocking shops…",
+    "Disassembling huts into Gorlek Ore…",
+    "Tearing out plants in Wellspring Glades…",
+    "Letting Baur fall asleep…",
+    "Placing convenient Grapple Plants…",
+    "Pulling back levers…",
+    "Distributing Wisps…",
+    "Rebuilding walls…",
+    "Filling up Kwolok's Hollow…",
+    "Blowing out candles…",
+    "Placing a snowball…",
+    "Stacking up leaf piles…",
+    "Cooking soup…",
+    "Stealing Kuro's Feather from Ku…",
+    "Separating Glide and Flap… (somehow)",
+    "Closing Midnight Burrows…",
+    "Polishing the Sword…",
+    "Stealing Tokk's Compass…",
+    "Corrupting the Wellspring…",
+    "Coloring item messages…",
+    "Deciding the first weapon…",
+    "Calculating Spirit Light amounts…",
+    "Writing hint notes to NPCs…",
+    "Placing something on Rebuild the Glades…",
+    "Flipping a coin for Sword or Hammer…",
+    "Preventing Keystone Door softlocks…",
+    "Fixing strange vanilla bugs…",
+    "Dashing and Bashing…",
+    "Painting murals in Windtorn Ruins…",
   ])
 
   onMounted(async () => {
@@ -191,7 +255,8 @@
     return groupedPresetIds
   }
 
-  const groupedUniversePresetIds = computed(
+  // TODO: Show custom universe presets
+  const _groupedUniversePresetIds = computed(
     () => universePresets.value !== null
       ? groupPresets(universePresets.value)
       : {},
@@ -280,7 +345,8 @@
 
         if (previousFrameTime !== null) {
           const delta = time - previousFrameTime
-          fakeProgressValue.value += (1.0 - fakeProgressValue.value) * Math.min(delta / 1000.0 * 0.7, 1.0)
+          // Interpolate to 0.9 while exponentially becoming slower
+          fakeProgressValue.value += (0.9 - fakeProgressValue.value) * Math.min(delta / 1000.0 * 0.7, 1.0)
         }
 
         previousFrameTime = time
@@ -306,6 +372,107 @@
     queueJumpToNextGeneratingMessage()
   })
 
+  /**
+   * Generates a seed for offline use. This does not necessarily use the local
+   * seed generator.
+   */
+  async function generateOfflineSeedFromCurrentSettings() {
+    const {data}: {data: Blob} = await seedgenAxios.post("/generate", universeSettings.value, {
+      responseType: "blob",
+      params: {
+        text_spoiler: true,
+      },
+    })
+
+    const response: {
+      worlds: number[][],
+      text_spoiler: string | null,
+      json_spoiler: string | null,
+    } = decode(await data.bytes())
+
+    return {
+      worlds: response.worlds.map(numberArray => new Uint8Array(numberArray)),
+      textSpoiler: response.text_spoiler,
+      jsonSpoiler: response.json_spoiler,
+    } as SeedgenGenerateResponse
+  }
+
+  /**
+   * Generates a seed from current settings and creates a multiverse with that seed.
+   * Always uses the server-side seedgen.
+   */
+  async function generateOnlineGameFromCurrentSettings() {
+    type SeedsResponse = {
+      seedId: number,
+    }
+
+    const clonedUniverseSettings = clone(universeSettings.value)
+
+    if (enableBingo.value) {
+      const goalState = bingoSettings.value.goalType === "lines"
+        ? "bingoState.lines"
+        : "bingoState.cards"
+      const goalTargetValue = bingoSettings.value.goalAmount
+      const goalName = bingoSettings.value.goalType === "lines"
+        ? "Bingo Lines"
+        : "Bingo Cards"
+
+      for (const settings of clonedUniverseSettings.worldSettings) {
+        settings.inlineSnippets["__bingo_generated"] = {
+          id: "__bingo_generated",
+          content: `
+            !tags("Bingo")
+            !include("goal_mode_core", write_goal_progress_message, check_goals_completed, write_goals_incomplete_message, update_goals_completed)
+
+            !augment_fun(check_goals_completed, {
+                if ${goalState} < ${goalTargetValue} set_boolean("goals_completed", false)
+            })
+
+            !augment_fun(write_goals_incomplete_message, {
+                if ${goalState} < ${goalTargetValue} {
+                    set_string("color", "@")
+                    write_bingo_message()
+                    set_string("goals_incomplete_message", get_string("goals_incomplete_message") + "\\n" + get_string("bingo_message"))
+                }
+            })
+
+            on change ${goalState} update_goals_completed()
+
+            fun write_bingo_message() {
+                set_string("bingo_message", get_string("color") + "${goalName}: " + ${goalState} + "/${goalTargetValue}" + get_string("color"))
+            }
+          `
+        }
+      }
+    }
+
+    const {data: seed}: {data: SeedsResponse} = await axios.post("/seeds", universeSettings.value)
+
+    const bingoCreationConfig = enableBingo.value
+      ? {
+        discovery: bingoSettings.value.discovery,
+        revealFirstNCompletedGoals: bingoSettings.value.revealFirstNCompletedGoals,
+        lockout: bingoSettings.value.lockout,
+        size: bingoSettings.value.size,
+      }
+      : null
+
+    const {data: multiverseId}: {data: string} = await axios.post("/multiverses", {
+      seedId: seed.seedId,
+      bingoConfig: bingoCreationConfig,
+    })
+
+    // Delay a bit to give the dialog a chance to hide...
+    setTimeout(() => {
+      useRouter().push({
+        name: "game-multiverseId",
+        params: {
+          multiverseId,
+        }
+      })
+    }, 100)
+  }
+
   const seedgenActions = computed(() => {
     const actions: Omit<SeedgenAction, "id">[] = []
 
@@ -316,18 +483,24 @@
           actions.push({
             label: "Play Offline",
             icon: "mdi-play-outline",
+            disabled: enableBingo.value || enableRaceMode.value,
+            hint: (enableBingo.value || enableRaceMode.value)
+              ? "Unavailable when playing Bingo or with Race Mode enabled"
+              : undefined,
             handler: async () => {
-              // TODO
-              await new Promise(resolve => setTimeout(resolve, 2000))
+              const seed = await generateOfflineSeedFromCurrentSettings()
             },
           })
 
           actions.push({
             label: "Save",
             icon: "mdi-content-save-outline",
+            disabled: enableBingo.value || enableRaceMode.value,
+            hint: (enableBingo.value || enableRaceMode.value)
+              ? "Unavailable when playing Bingo or with Race Mode enabled"
+              : undefined,
             handler: async () => {
-              // TODO
-              await seedgenAxios.post("/generate", universeSettings.value)
+              const seed = await generateOfflineSeedFromCurrentSettings()
             },
           })
         } else {
@@ -335,8 +508,7 @@
             label: "Download",
             icon: "mdi-download-outline",
             handler: async () => {
-              // TODO
-              await seedgenAxios.post("/generate", universeSettings.value)
+              const seed = await generateOfflineSeedFromCurrentSettings()
             },
           })
         }
@@ -345,25 +517,10 @@
           label: "Play Online",
           icon: "mdi-account-multiple-outline",
           hint: userStore.isLoggedIn
-            ? "Play online co-op with and/or race against friends.\nAll items are shared in a Universe."
+            ? "Play online co-op with and/or race against friends.\nWorlds inside Universes play together. Universes compete against other Universes."
             : "You must be logged in to play online games.",
           handler: async () => {
-            type SeedsResponse = {
-              seedId: number,
-            }
-
-            const {data: seed}: {data: SeedsResponse} = await axios.post("/seeds", universeSettings.value)
-
-            const {data: multiverseId}: {data: string} = await axios.post("/multiverses", {
-              seedId: seed.seedId,
-            })
-
-            await useRouter().push({
-              name: "game-multiverseId",
-              params: {
-                multiverseId,
-              }
-            })
+            await generateOnlineGameFromCurrentSettings()
           },
         })
       } break
@@ -380,17 +537,6 @@
         })
       } break
     }
-
-    actions.push({
-      label: "Play Bingo",
-      icon: "mdi-checkerboard",
-      hint: userStore.isLoggedIn
-        ? "Play online bingo alone or with friends.\nWhen playing with friends, players in the same universe work as one team while optionally racing players in other universes."
-        : "You must be logged in to play online games.",
-      handler: async () => {
-        // TODO
-      },
-    })
 
     return actions.map((action, index) => ({
       ...action,
@@ -454,5 +600,21 @@
 
   .no-transition:deep(*) {
     transition: none !important;
+  }
+
+  .generating-message-container {
+    position: relative;
+    height: 2em;
+
+    .generating-message {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
 </style>

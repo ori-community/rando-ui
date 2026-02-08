@@ -141,7 +141,6 @@
 
     return periodGroups
   })
-  const boardRef = ref<HTMLElement | null>(null)
 
   onMounted(() => {
     fetchMultiverses()
@@ -151,13 +150,6 @@
     fetchingGames.value = true
     multiverses.value = (await axios.get("/multiverses/own")).data
     fetchingGames.value = false
-  })
-
-  const centerBoard = (() => {
-    boardRef.value?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    })
   })
 </script>
 
@@ -219,19 +211,6 @@
     top: 2em;
     width: 100%;
     height: 100%;
-  }
-
-  .board-container {
-    min-height: 100vh;
-
-    .board {
-      flex-grow: 0;
-      flex-shrink: 0;
-      height: 100vh;
-      width: 100vh;
-      margin-left: auto;
-      margin-right: auto;
-    }
   }
 
   .ori-image {

@@ -1,6 +1,6 @@
 <template>
-  <v-badge :model-value="connected" color="green" location="bottom right" bordered dot >
-    <v-avatar :color='raceReady ? "success" : "accent"' :size='Number($attrs.Size) || "32"' v-bind="$attrs">
+  <v-badge :model-value="connected" color="green" location="bottom right" bordered dot>
+    <v-avatar :color='raceReady ? "success" : "accent"' :size="size">
       <v-icon v-if="raceReady">mdi-check</v-icon>
       <v-img v-else-if="discordAvatarUrl !== null" :src="discordAvatarUrl">
         <template #placeholder>
@@ -15,24 +15,19 @@
 
 <script lang="ts" setup>
   import type {UserInfo} from "@shared/types/http-api"
-  import type {PropType} from "vue"
 
-  const props = defineProps({
-    user: {
-      type: Object as PropType<UserInfo>,
-      required: true,
+  const props = withDefaults(
+    defineProps<{
+      user: UserInfo,
+      connected?: boolean,
+      raceReady?: boolean,
+      size?: number,
+    }>(), {
+      connected: false,
+      raceReady: false,
+      size: 32,
     },
-    connected: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    raceReady: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-  })
+  )
 
   const discordAvatarUrl = computed(() => {
     if (!props.user.avatarId) {

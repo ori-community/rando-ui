@@ -3,7 +3,8 @@
     <rando-discord-avatar
       :user="user"
       :connected="connected"
-      :race-ready="showGreenCheckmark"
+      :race-ready="raceReady"
+      :size="size"
     />
     <div class="d-block text-left">
       <div class="name-and-points">
@@ -22,10 +23,12 @@
   withDefaults(defineProps<{
     user: UserInfo,
     connected?: boolean,
-    showGreenCheckmark?: boolean,
+    raceReady?: boolean,
+    size?: number,
   }>(), {
     connected: false,
-    showGreenCheckmark: false,
+    raceReady: false,
+    size: undefined,
   })
 
   const {devtoolsEnabled} = storeToRefs(useDevtoolsStore())

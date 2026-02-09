@@ -3,7 +3,7 @@ import fs from "fs"
 
 export class VersionService {
   public static async getVersion() {
-    const versionFilePath = getInstallDataPath("VERSION")
+    const versionFilePath = getInstallDataPath("randomizer_version")
 
     if (!fs.existsSync(versionFilePath)) {
       return "develop"

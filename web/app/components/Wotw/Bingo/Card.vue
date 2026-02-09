@@ -11,18 +11,22 @@
         'bottom-marked': markedNeighborMask & 0b0001,
       }"
     >
-      <v-card elevation="0" class="front" :class="{fitted: textWasFitted}" :style="cardStyle" color="background-lighten-1">
+      <v-card elevation="0" class="front pa-2" :style="cardStyle" color="background-lighten-1">
         <div ref="autoTextSizeContainerElement" class="position-relative fill d-flex flex-column">
           <template v-if="!!square">
-            <div class="square-text pa-2" :class="{ expand: !hasGoals }">{{ square.text }}</div>
             <template v-if="hasGoals">
-              <v-spacer/>
-              <div class="px-2 pt-1 pb-2 square-goals" :class="{ 'bigger-text': goalsShouldBeLarge }">
+              <div class="pb-2 position-relative">
+                <div ref="backdropElement" class="mt-n2 mx-n2 bg-background-lighten-3 backdrop"></div>
+                {{ square.text }}
+              </div>
+              <div class="pt-2 d-flex flex-grow-1 flex-column justify-center gap-4">
                 <div v-for="goal in square.goals" :key="goal.text" class="goal" :class="{ completed: goal.completed }">
                   {{ goal.text }}
                 </div>
               </div>
-              <v-spacer/>
+            </template>
+            <template v-else>
+              <div class="flex-grow-1 d-flex align-center">{{ square.text }}</div>
             </template>
           </template>
         </div>
@@ -37,7 +41,6 @@
 
 <script lang="ts" setup>
   import type {BingoSquare} from "@shared/types/http-api";
-  import textfit from "textfit"
 
   const props = withDefaults(defineProps<{
     attentionEffect?: boolean,
@@ -63,30 +66,9 @@
 
   const emit = defineEmits(["click"])
   const autoTextSizeContainerElement = ref<HTMLElement | null>(null)
-  const textWasFitted = ref(false)
-  const textFitObserver = new ResizeObserver(async () => {
-    if (autoTextSizeContainerElement.value === null) {
-      return
-    }
-
-    textWasFitted.value = false
-
-    await nextTick()
-
-    textfit(autoTextSizeContainerElement.value, {
-      multiLine: true,
-      maxFontSize: 22,
-    })
-
-    textWasFitted.value = true
-  })
-
-  onMounted(() => {
-    if (autoTextSizeContainerElement.value === null) {
-      return
-    }
-
-    textFitObserver.observe(autoTextSizeContainerElement.value)
+  const backdropElement = ref<HTMLElement | null>(null)
+  const textFitObserver = new ResizeObserver(() => {
+    updateFontSize()
   })
 
   onBeforeUnmount(() => {
@@ -97,19 +79,56 @@
     textFitObserver.unobserve(autoTextSizeContainerElement.value)
   })
 
+  async function updateFontSize() {
+    if (autoTextSizeContainerElement.value === null) {
+      return
+    }
+
+    // Hide the backdrop element because it extends outside its boundaries
+    // and would invalidate the size measurements below.
+    if (backdropElement.value !== null) {
+      backdropElement.value.style.display = "none"
+    }
+
+    for (let emScale = 1.5; emScale >= 0.2; emScale -= 0.1) {
+      autoTextSizeContainerElement.value.style.fontSize = `${emScale}em`
+
+      if (
+        autoTextSizeContainerElement.value.scrollHeight <= autoTextSizeContainerElement.value.clientHeight &&
+        autoTextSizeContainerElement.value.scrollWidth <= autoTextSizeContainerElement.value.clientWidth
+      ) {
+        break
+      }
+    }
+
+    if (backdropElement.value !== null) {
+      backdropElement.value.style.display = ""
+    }
+  }
+
+  watch(autoTextSizeContainerElement, (value) => {
+    if (value === null) {
+      return
+    }
+
+    textFitObserver.observe(value)
+  }, {immediate: true})
+
   const cardShouldBeFlipped = computed(() => {
     return props.forceFlip || !props.square
   })
-  const goalsShouldBeLarge = computed(() => {
-    if (!props.square) {
-      return false
-    }
-    return props.square.goals.length === 1 && props.square.goals[0]!.text.length <= 16
-  })
+
+  watch(() => props.square, () => {
+    nextTick(() => {
+      updateFontSize()
+    })
+  }, {deep: true, immediate: true})
+
   const hasGoals = computed(() => {
     if (!props.square) return false
     return props.square.goals.length !== 0
   })
+
   const cardStyle = computed(() => {
     if (props.square === null || props.square.completedBy.length === 0) {
       return {}
@@ -247,61 +266,19 @@
       }
 
       .front {
-        &.fitted {
-          &:deep(.textFitted) {
-            display: contents !important;
-          }
-        }
-
         .fill {
           height: 100%;
           width: 100%;
+          word-break: normal !important;
         }
 
-        .square-text {
-          border-radius: 0 !important;
-          position: relative;
-
-          &::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: white;
-            opacity: 0.15;
-          }
-
-          &.expand {
-            flex-grow: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-
-            &::before {
-              display: none;
-            }
-          }
-        }
-
-        .square-goals {
-          display: flex;
-          flex-direction: column;
-          font-size: 0.8em;
-          gap: 0.3em;
-
-          &.bigger-text {
-            font-size: 1.2em;
-          }
-
-          .goal {
-            &.completed {
-              text-decoration: line-through;
-              opacity: 0.5;
-            }
-          }
+        .backdrop {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: -1;
         }
 
         .attention-effect {

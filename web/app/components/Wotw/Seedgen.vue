@@ -446,7 +446,7 @@
       }
     }
 
-    const {data: seed}: {data: SeedsResponse} = await axios.post("/seeds", universeSettings.value)
+    const {data: seed}: {data: SeedsResponse} = await axios.post("/seeds", clonedUniverseSettings)
 
     const bingoCreationConfig = enableBingo.value
       ? {

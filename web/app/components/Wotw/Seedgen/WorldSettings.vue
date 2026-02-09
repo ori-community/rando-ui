@@ -288,7 +288,7 @@
       return !!model.value.randomizeDoors
     },
     set(value) {
-      model.value.randomizeDoors = value ? 1 : 0
+      model.value.randomizeDoors = value ? 2 : null
     }
   })
 

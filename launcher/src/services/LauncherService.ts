@@ -56,7 +56,7 @@ export class LauncherService {
       case "windows":
         return ["standalone", "steam", "microsoft-store"]
       case "linux":
-        return ["standalone"]
+        return ["standalone", "steam"]
     }
   }
 
@@ -310,7 +310,10 @@ export class LauncherService {
     switch (settings.GameLaunchMethod) {
       case "steam":
         defaultExecDetached(settings.SteamBinaryPath, ["-applaunch", "1057090", ...gameArguments])
-        await waitForProcess("oriwotw.exe", 60)
+
+        if (this.getPlatform() === "windows") {
+          await waitForProcess("oriwotw.exe", 60)
+        }
         break
       case "microsoft-store":
         powershellExec("explorer.exe", ["shell:AppsFolder\\Microsoft.Patagonia_8wekyb3d8bbwe!App"]).unref()

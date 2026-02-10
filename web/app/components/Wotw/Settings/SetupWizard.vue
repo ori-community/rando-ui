@@ -18,13 +18,21 @@
                 <template v-if="!availableGameLaunchMethods.includes(id)">(unavailable)</template>
               </v-card-title>
               <v-card-text>
-                <component :is="metadata.descriptionComponent" />
+                <component :is="metadata.descriptionComponent(platform)" />
               </v-card-text>
             </v-card>
           </v-item>
         </v-col>
       </v-row>
     </v-item-group>
+
+    <v-expand-transition>
+      <div v-if="gameLaunchMethod !== null && !!gameLaunchMethodsMetadata[gameLaunchMethod]?.alerts?.[platform]">
+        <v-alert color="warning" class="mt-3">
+          <component :is="gameLaunchMethodsMetadata[gameLaunchMethod]?.alerts?.[platform]" />
+        </v-alert>
+      </div>
+    </v-expand-transition>
   </div>
   <v-expand-transition>
     <div v-if="gameLaunchMethod !== null">
@@ -65,7 +73,7 @@
             v-model="steamBinaryPath"
             readonly
             class="mt-5"
-            label="Click to select the path to Steam (steam.exe)"
+            :label="`Click to select the path to Steam (${steamBinaryName})`"
             append-icon="mdi-folder-search-outline"
             hide-details
             @click.stop="selectSteamPath"
@@ -123,6 +131,7 @@
     }
   )
 
+  const platform = await usePlatform()
   const settingsStore = useSettingsStore()
   const settings = storeToRefs(settingsStore)
   const electronApi = useElectronApi()
@@ -134,6 +143,17 @@
   const gameBinaryPath = ref("")
   const setupLoading = ref(false)
   const setupErrorMessages = ref<string[]>([])
+
+  const steamBinaryName = computed(() => {
+    switch (platform) {
+      case "windows":
+        return "steam.exe"
+      case "linux":
+      case "other":
+      default:
+        return "usually /usr/bin/steam"
+    }
+  })
 
   watch(gameLaunchMethod, async () => {
     if (!electronApi || gameLaunchMethod.value === null) {

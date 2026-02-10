@@ -281,6 +281,11 @@
           z-index: -1;
         }
 
+        .goal.completed {
+          text-decoration: line-through;
+          opacity: 0.5;
+        }
+
         .attention-effect {
           @keyframes attention-effect {
             0% {

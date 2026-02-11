@@ -12,6 +12,7 @@ import os from "node:os"
 import {LauncherService} from "@launcher/services/LauncherService"
 import {SeedgenServerService} from "@launcher/services/SeedgenServerService"
 import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
+import {ToolsWindowService} from "@launcher/services/ToolsWindowService"
 
 // Override session data path to have a clean app data directory.
 // Otherwise, Chromium will pollute it...
@@ -94,6 +95,11 @@ if (!app.requestSingleInstanceLock()) {
       },
     })
 
+    mainWindow.on("close", () => {
+      LocalTrackerService.close()
+      ToolsWindowService.close()
+    })
+
     createIPCHandler({router: appRouter, windows: [mainWindow]})
 
     if (process.env.NODE_ENV === "development") {
@@ -151,7 +157,6 @@ if (!app.requestSingleInstanceLock()) {
   })
 
   app.on("window-all-closed", () => {
-    LocalTrackerService.close()
     app.quit()
   })
 }

@@ -11,5 +11,10 @@
 </script>
 
 <style lang="scss">
-
+  .v-application {
+    // Mainly used for transparent item trackers.
+    // The "plain" layout is only used by Electron windows anyway
+    // and these set their background color.
+    background: none !important;
+  }
 </style>

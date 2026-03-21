@@ -22,7 +22,7 @@
     "@electron/fuses": "^1.8.0",
     "@eslint/js": "^9.39.2",
     "@typescript-eslint/parser": "^8.53.1",
-    "electron": "^40.0.0",
+    "electron": "^41.0.3",
     "eslint": "^9.39.2",
     "eslint-plugin-import-x": "^4.16.1",
     "ts-node": "^10.9.2",

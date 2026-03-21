@@ -78,10 +78,12 @@ export class LocalTrackerService {
         backgroundColor: settings["LocalTrackerTransparent"]
           ? undefined
           : "#050e17",
+        backgroundMaterial: "none",
         transparent: settings["LocalTrackerTransparent"],
         frame: false,
         show: false,
         paintWhenInitiallyHidden: true,
+        resizable: true,
       })
 
       if (process.env.NODE_ENV === "development") {

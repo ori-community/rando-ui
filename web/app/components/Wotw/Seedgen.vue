@@ -418,6 +418,7 @@
         : "Bingo Cards"
 
       for (const settings of clonedUniverseSettings.worldSettings) {
+        settings.snippets.push("__bingo_generated")
         settings.inlineSnippets["__bingo_generated"] = {
           id: "__bingo_generated",
           content: `
@@ -477,50 +478,54 @@
   const seedgenActions = computed(() => {
     const actions: Omit<SeedgenAction, "id">[] = []
 
-    if (isElectron) {
-      actions.push({
-        label: "Play Offline",
-        icon: "mdi-play-outline",
-        disabled: enableBingo.value || enableRaceMode.value,
-        hint: (enableBingo.value || enableRaceMode.value)
-          ? "Unavailable when playing Bingo or with Race Mode enabled"
-          : undefined,
-        handler: async () => {
-          const seed = await generateOfflineSeedFromCurrentSettings()
-        },
-      })
+    if (universeSettings.value.worldSettings.length > 0) {
+      if (universeSettings.value.worldSettings.length === 1) {
+        if (isElectron) {
+          actions.push({
+            label: "Play Offline",
+            icon: "mdi-play-outline",
+            disabled: enableBingo.value || enableRaceMode.value,
+            hint: (enableBingo.value || enableRaceMode.value)
+              ? "Unavailable when playing Bingo or with Race Mode enabled"
+              : undefined,
+            handler: async () => {
+              const seed = await generateOfflineSeedFromCurrentSettings()
+            },
+          })
+
+          actions.push({
+            label: "Save",
+            icon: "mdi-content-save-outline",
+            disabled: enableBingo.value || enableRaceMode.value,
+            hint: (enableBingo.value || enableRaceMode.value)
+              ? "Unavailable when playing Bingo or with Race Mode enabled"
+              : undefined,
+            handler: async () => {
+              const seed = await generateOfflineSeedFromCurrentSettings()
+            },
+          })
+        } else {
+          actions.push({
+            label: "Download",
+            icon: "mdi-download-outline",
+            handler: async () => {
+              const seed = await generateOfflineSeedFromCurrentSettings()
+            },
+          })
+        }
+      }
 
       actions.push({
-        label: "Save",
-        icon: "mdi-content-save-outline",
-        disabled: enableBingo.value || enableRaceMode.value,
-        hint: (enableBingo.value || enableRaceMode.value)
-          ? "Unavailable when playing Bingo or with Race Mode enabled"
-          : undefined,
+        label: "Play Online",
+        icon: "mdi-account-multiple-outline",
+        hint: userStore.isLoggedIn
+          ? "Play online co-op with and/or race against friends.\nWorlds inside Universes play together. Universes compete against other Universes."
+          : "You must be logged in to play online games.",
         handler: async () => {
-          const seed = await generateOfflineSeedFromCurrentSettings()
-        },
-      })
-    } else {
-      actions.push({
-        label: "Download",
-        icon: "mdi-download-outline",
-        handler: async () => {
-          const seed = await generateOfflineSeedFromCurrentSettings()
+          await generateOnlineGameFromCurrentSettings()
         },
       })
     }
-
-    actions.push({
-      label: "Play Online",
-      icon: "mdi-account-multiple-outline",
-      hint: userStore.isLoggedIn
-        ? "Play online co-op with and/or race against friends.\nWorlds inside Universes play together. Universes compete against other Universes."
-        : "You must be logged in to play online games.",
-      handler: async () => {
-        await generateOnlineGameFromCurrentSettings()
-      },
-    })
 
     return actions.map((action, index) => ({
       ...action,

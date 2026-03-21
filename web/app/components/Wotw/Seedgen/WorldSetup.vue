@@ -1,46 +1,80 @@
 <template>
-  <h2 class="mb-2">Select a base preset</h2>
-  <template v-if="selectedBasePreset === null">
-    <wotw-seedgen-preset-button
-      v-for="presetId in groupedWorldPresetIds['Base']"
-      :key="presetId"
-      large
-      class="mb-2"
-      :preset-id="presetId"
-      :preset-info="(worldPresets[presetId] as WorldPreset).info"
-      @click="onBaseWorldPresetSelected(presetId)"
-    />
-  </template>
-  <div v-else class="d-flex gap-3">
-    <wotw-seedgen-preset-button
-      v-for="presetId in Object.keys(presetsWithoutGroup)"
-      :key="presetId"
-      :disabled="selectedBasePreset.preset.includes?.includes(presetId)"
-      :selected="selectedAdditionalPresets.has(presetId) || selectedBasePreset.preset.includes?.includes(presetId)"
-      :preset-id="presetId"
-      :preset-info="(worldPresets[presetId] as WorldPreset).info"
-      :description-append="selectedBasePreset.preset.includes?.includes(presetId) ? `Included in the '${selectedBasePreset.preset.info?.name ?? selectedBasePreset.id}' preset` : null"
-      @click="onAdditionalPresetSelected(presetId)"
-    />
+  <div v-if="existingWorldSettings.length > 0" class="mb-4">
+    <h2 class="mb-1">Copy Settings</h2>
+    <div>Select a world to copy settings from:</div>
+    <div class="d-flex gap-3">
+      <v-btn
+        v-for="(settings, index) in existingWorldSettings"
+        :key="index"
+        :disabled="loading"
+        variant="tonal"
+        @click="selectSettings(settings)"
+      >
+        <v-icon start>mdi-earth</v-icon>
+        {{ index + 1 }}
+      </v-btn>
+    </div>
+  </div>
 
-    <v-btn @click="finishWorldSetup">Ok</v-btn>
+  <h2 class="mb-2">Start with Presets</h2>
+  <wotw-seedgen-preset-button
+    v-for="presetId in groupedWorldPresetIds['Base']"
+    :key="presetId"
+    :selected="presetId === selectedBasePreset?.id"
+    large
+    class="mb-2"
+    :preset-id="presetId"
+    :preset-info="(worldPresets[presetId] as WorldPreset).info"
+    @click="onBaseWorldPresetSelected(presetId)"
+  />
+
+  <v-expand-transition>
+    <div v-if="selectedBasePreset !== null" class="d-flex gap-6">
+      <wotw-seedgen-preset-button
+        v-for="presetId in Object.keys(presetsWithoutGroup)"
+        :key="presetId"
+        :disabled="selectedBasePreset.preset.includes?.includes(presetId)"
+        :selected="selectedAdditionalPresets.has(presetId) || selectedBasePreset.preset.includes?.includes(presetId)"
+        :preset-id="presetId"
+        :preset-info="(worldPresets[presetId] as WorldPreset).info"
+        :description-append="selectedBasePreset.preset.includes?.includes(presetId) ? `Included in the '${selectedBasePreset.preset.info?.name ?? selectedBasePreset.id}' preset` : null"
+        @click="onAdditionalPresetSelected(presetId)"
+      />
+
+      <v-btn variant="flat" color="accent" :loading="loading" @click="finishPresetSelection">
+        <v-icon start>mdi-check</v-icon>
+        Done
+      </v-btn>
+    </div>
+  </v-expand-transition>
+
+  <div class="d-flex justify-end">
+    <v-btn size="small" color="primary" variant="text" :loading="loading" @click="startFromScratch">
+      Start from scratch
+    </v-btn>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import type {HashMapStringWorldPreset, WorldPreset} from '@shared/types/seedgen'
+  import type {HashMapStringWorldPreset, WorldPreset, WorldSettings} from "@shared/types/seedgen"
   import type {GroupedPresetIds} from '~/assets/types/components/seedgen'
+  import {clone} from "@shared/utils/clone"
 
   const {
     groupedWorldPresetIds,
     worldPresets,
+    existingWorldSettings,
+    loading = false,
   } = defineProps<{
     groupedWorldPresetIds: GroupedPresetIds,
     worldPresets: HashMapStringWorldPreset,
+    existingWorldSettings: WorldSettings[],
+    loading?: boolean,
   }>()
 
   const emit = defineEmits<{
-    setupComplete: [WorldPreset[]],
+    presetsSelected: [WorldPreset[]],
+    settingsSelected: [WorldSettings],
   }>()
 
   type WorldPresetAndId = {
@@ -56,6 +90,10 @@
   ))
 
   function onBaseWorldPresetSelected(presetId: string) {
+    if (loading) {
+      return
+    }
+
     const selectedPreset = worldPresets?.[presetId]
 
     if (!selectedPreset) {
@@ -70,6 +108,10 @@
   }
 
   function onAdditionalPresetSelected(presetId: string) {
+    if (loading) {
+      return
+    }
+
     if (selectedAdditionalPresets.value.has(presetId)) {
       selectedAdditionalPresets.value.delete(presetId)
     } else {
@@ -77,15 +119,23 @@
     }
   }
 
-  function finishWorldSetup() {
+  function finishPresetSelection() {
     if (selectedBasePreset.value === null) {
       return
     }
 
-    emit("setupComplete", [
+    emit("presetsSelected", [
       selectedBasePreset.value.preset,
       ...selectedAdditionalPresets.value.values().map(presetId => worldPresets[presetId]).filter(preset => !!preset)
     ])
+  }
+
+  function startFromScratch() {
+    emit("presetsSelected", [])
+  }
+
+  function selectSettings(settings: WorldSettings) {
+    emit("settingsSelected", clone(settings))
   }
 </script>
 

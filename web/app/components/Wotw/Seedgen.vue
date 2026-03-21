@@ -1,9 +1,26 @@
 <template>
+  <v-menu v-model="worldContextMenuOpen" :target="[worldContextMenuX, worldContextMenuY]">
+    <v-list>
+      <v-list-item @click="duplicateWorld(worldContextMenuSelectedWorldIndex)">
+        <v-icon start>mdi-content-duplicate</v-icon>
+        Duplicate
+      </v-list-item>
+      <v-list-item @click="universeSettings.worldSettings.splice(worldContextMenuSelectedWorldIndex, 1)">
+        <v-icon start>mdi-delete-outline</v-icon>
+        Delete
+      </v-list-item>
+    </v-list>
+  </v-menu>
+
   <v-tabs v-model="selectedWorldIndex" color="primary">
     <v-expand-x-transition group>
       <template v-if="universeSettings.worldSettings.length >= 2 || selectedWorldIndex === null">
         <div v-for="nth in universeSettings.worldSettings.length" :key="nth - 1">
-          <v-tab :value="nth - 1">
+          <v-tab
+            :value="nth - 1"
+            :variant="worldContextMenuOpen && worldContextMenuSelectedWorldIndex === nth - 1 ? 'tonal' : 'text'"
+            @contextmenu="event => onWorldTabContextMenu(nth - 1, event)"
+          >
             <v-icon start>mdi-earth</v-icon>
             {{ nth }}
           </v-tab>
@@ -37,7 +54,10 @@
           <wotw-seedgen-world-setup
             :grouped-world-preset-ids="groupedWorldPresetIds"
             :world-presets="worldPresets"
-            @setup-complete="onWorldSetupComplete"
+            :existing-world-settings="universeSettings.worldSettings"
+            :loading="worldSetupLoading"
+            @presets-selected="onWorldSetupPresetsSelected"
+            @settings-selected="onWorldSetupSettingsSelected"
           />
         </v-window-item>
       </v-window>
@@ -152,6 +172,11 @@
   const electronApi = useElectronApi()
   const seedgenAxios = useSeedgenAxios()
   const {axios} = useAxios()
+  const worldSetupLoading = ref(false)
+  const worldContextMenuOpen = ref(false)
+  const worldContextMenuX = ref(0.0)
+  const worldContextMenuY = ref(0.0)
+  const worldContextMenuSelectedWorldIndex = ref(0)
   const universeSettings = ref<UniverseSettings>({
     seed: String(Date.now()),
     worldSettings: [],
@@ -575,10 +600,37 @@
     snippetsInfo.value = (await seedgenAxios.get('/snippets/info')).data
   }
 
-  async function onWorldSetupComplete(presets: WorldPreset[]) {
-    const {data}: { data: WorldSettings } = await seedgenAxios.post('/presets/world/apply', {presets})
-    universeSettings.value.worldSettings.push(data)
+  async function onWorldSetupPresetsSelected(presets: WorldPreset[]) {
+    worldSetupLoading.value = true
+
+    try {
+      const {data}: { data: WorldSettings } = await seedgenAxios.post('/presets/world/apply', {presets})
+      universeSettings.value.worldSettings.push(data)
+      selectedWorldIndex.value = universeSettings.value.worldSettings.length - 1
+    } catch (e) {
+      console.error(e)
+    }
+
+    worldSetupLoading.value = false
+  }
+
+  function onWorldSetupSettingsSelected(settings: WorldSettings) {
+    universeSettings.value.worldSettings.push(settings)
     selectedWorldIndex.value = universeSettings.value.worldSettings.length - 1
+  }
+
+  function duplicateWorld(worldIndex: number) {
+    universeSettings.value.worldSettings.push(clone(universeSettings.value.worldSettings[worldIndex]!))
+
+    // Workaround for visual glitch
+    setTimeout(() => selectedWorldIndex.value = universeSettings.value.worldSettings.length - 1, 0)
+  }
+
+  function onWorldTabContextMenu(worldIndex: number, event: MouseEvent) {
+    worldContextMenuX.value = event.clientX
+    worldContextMenuY.value = event.clientY
+    worldContextMenuOpen.value = true
+    worldContextMenuSelectedWorldIndex.value = worldIndex
   }
 </script>
 

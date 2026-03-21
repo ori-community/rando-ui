@@ -3,6 +3,7 @@ import * as zmq from "zeromq"
 import {EventEmitter} from "events"
 import {LocalTrackerWebSocketService} from "@launcher/services/LocalTrackerWebSocketService"
 import log from "electron-log/main"
+import {SeedgenServerService} from "@launcher/services/SeedgenServerService"
 
 let socket: zmq.Dealer | null = null
 let receiveLoopActive = false
@@ -212,6 +213,10 @@ export class RandoIPCService {
       }
       case "league.run_submitted": {
         this.events.emit("leagueRunSubmitted")
+        break
+      }
+      case "start_seedgen_http_server": {
+        await SeedgenServerService.ensureRunning()
         break
       }
     }

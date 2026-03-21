@@ -1986,10 +1986,10 @@
   dependencies:
     "@octokit/openapi-types" "^12.11.0"
 
-"@ori-rando/wotw-seedgen-wasm-ui@^0.7.0":
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/@ori-rando/wotw-seedgen-wasm-ui/-/wotw-seedgen-wasm-ui-0.7.1.tgz#bf2564c71ffa901f446dde8021cd775071c059ad"
-  integrity sha512-M+TKQ2N4OwhbDAzLfguz+y6L3z75oMrprlAxCB7ThCLXFTJJljWjCLUZ427YAOVZf9cSnwhkM2R/8cH5wxpZxw==
+"@ori-rando/wotw-seedgen-wasm-ui@^0.7.2":
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/@ori-rando/wotw-seedgen-wasm-ui/-/wotw-seedgen-wasm-ui-0.7.2.tgz#7b3301736c2aa06af22a40bb6b5fd2559c7300ec"
+  integrity sha512-pML3gFMkZd+DQBwrUTWRkaTGteV9Wm0WrlOwVC1AVhQdaei3XLMKRbrZLR2ZK+TO6wOLCvippvf5dX/sWfnUCg==
 
 "@polka/url@^1.0.0-next.24":
   version "1.0.0-next.29"

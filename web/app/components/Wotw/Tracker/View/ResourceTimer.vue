@@ -33,16 +33,16 @@
         <div class="image">
           <img src="@shared/images/tracker/tree.png" alt="">
         </div>
-        <div class="value" :class="{ completed: treeCount === totalTreeCount }">
-          {{ treeCount }}<span class="small">/{{ totalTreeCount }}</span>
+        <div class="value" :class="{ completed: treesCount === treesRequired }">
+          {{ treesCount }}<span class="small">/{{ treesRequired }}</span>
         </div>
       </div>
       <div v-if="showWisps" class="line">
         <div class="image">
           <img src="@shared/images/tracker/wisp.png" alt="">
         </div>
-        <div class="value" :class="{ completed: wispCount === totalWispCount }">
-          {{ wispCount }}<span class="small">/{{ totalWispCount }}</span>
+        <div class="value" :class="{ completed: wispsCount === wispsRequired }">
+          {{ wispsCount }}<span class="small">/{{ wispsRequired }}</span>
         </div>
       </div>
       <div v-if="showRelics" class="line">
@@ -52,24 +52,24 @@
         </div>
         <div
           class="value"
-          :class="{ completed: relicCount === totalRelicCount, highlight: currentAreaHasUncollectedRelic }">
-          {{ relicCount }}<span class="small">/{{ totalRelicCount }}</span>
+          :class="{ completed: relicsCount === relicsRequired, highlight: currentAreaHasUncollectedRelic }">
+          {{ relicsCount }}<span class="small">/{{ relicsRequired }}</span>
         </div>
       </div>
       <div v-if="showQuests" class="line">
         <div class="image">
           <img src="@shared/images/tracker/quest.png" alt="">
         </div>
-        <div class="value" :class="{ completed: questCount === totalQuestCount }">
-          {{ questCount }}<span class="small">/{{ totalQuestCount }}</span>
+        <div class="value" :class="{ completed: questsCount === questsRequired }">
+          {{ questsCount }}<span class="small">/{{ questsRequired }}</span>
         </div>
       </div>
       <div v-if="showWillowHearts" class="line">
         <div class="image">
           <img src="@shared/images/tracker/willow_heart.png" alt="">
         </div>
-        <div class="value" :class="{ completed: heartCount === totalHeartCount }">
-          {{ heartCount }}<span class="small">/{{ totalHeartCount }}</span>
+        <div class="value" :class="{ completed: heartsCount === heartsRequired }">
+          {{ heartsCount }}<span class="small">/{{ heartsRequired }}</span>
         </div>
       </div>
 
@@ -85,27 +85,26 @@
 </template>
 
 <script setup lang="ts">
-  import {formatTime} from "assets/utils/formatTime"
+  import {formatTime} from "@/assets/utils/formatTime"
 
   const props = withDefaults(defineProps<{
     spiritLight?: number,
     gorlekOre?: number,
     gorlekOreCollected?: number,
     keystones?: number,
-    treeCount?: number,
-    totalTreeCount?: number,
-    wispCount?: number,
-    totalWispCount?: number,
+    treesCount?: number,
+    treesRequired?: number,
+    wispsCount?: number,
+    wispsRequired?: number,
     showWillowHearts?: boolean,
-    heartCount?: number,
-    totalHeartCount?: number,
-    questCount?: number,
-    totalQuestCount?: number,
+    heartsCount?: number,
+    heartsRequired?: number,
+    questsCount?: number,
+    questsRequired?: number,
     gladesRebuildProjectsDone?: boolean,
-    relicCount?: number,
-    totalRelicCount?: number,
+    relicsCount?: number,
+    relicsRequired?: number,
     currentAreaHasUncollectedRelic?: boolean,
-    flags?: string[],
     gameFinished?: boolean,
     showTimer?: boolean,
     time?: number,
@@ -114,20 +113,19 @@
     gorlekOre: 0,
     gorlekOreCollected: 0,
     keystones: 0,
-    treeCount: 0,
-    totalTreeCount: 0,
-    wispCount: 0,
-    totalWispCount: 0,
+    treesCount: 0,
+    treesRequired: 0,
+    wispsCount: 0,
+    wispsRequired: 0,
     showWillowHearts: false,
-    heartCount: 0,
-    totalHeartCount: 0,
-    questCount: 0,
-    totalQuestCount: 0,
+    heartsCount: 0,
+    heartsRequired: 0,
+    questsCount: 0,
+    questsRequired: 0,
     gladesRebuildProjectsDone: false,
-    relicCount: 0,
-    totalRelicCount: 0,
+    relicsCount: 0,
+    relicsRequired: 0,
     currentAreaHasUncollectedRelic: false,
-    flags: () => [],
     gameFinished: false,
     showTimer: true,
     time: 0,
@@ -137,24 +135,25 @@
   const fractionTimerText = ref('.0')
 
   const showTrees = computed(() => {
-    return props.flags.includes('All Trees')
+    return props.treesRequired > 0
   })
   const showWisps = computed(() => {
-    return props.flags.includes('All Wisps')
+    return props.wispsRequired > 0
   })
   const showRelics = computed(() => {
-    return props.flags.includes('Relics')
+    return props.relicsRequired > 0
   })
   const showQuests = computed(() => {
-    return props.flags.includes('All Quests')
+    return props.questsRequired > 0
   })
+
   const rows = computed(() => {
     return 2 /* SL, KS, Ore */ + Math.ceil([
-      props.showTrees,
-      props.showWisps,
-      props.showQuests,
-      props.showRelics,
-      props.showWillowHearts
+      showTrees.value,
+      showWisps.value,
+      showQuests.value,
+      showRelics.value,
+      props.showWillowHearts,
     ].filter(v => v).length / 2)
   })
   const resourcesScalingFactor = computed(() => {
@@ -168,7 +167,8 @@
       '.',
       2,
     )
-    mainTimerText.value = parts[0]
+
+    mainTimerText.value = parts[0]!
     fractionTimerText.value = '.' + parts[1]
   }, {immediate: true})
 

@@ -128,7 +128,7 @@
       'heart_redirect_puzzle',
       'heart_boulder_escape',
       'heart_lower_left',
-    ]
+    ] as const
     let count = 0
 
     for (const heart of hearts) {

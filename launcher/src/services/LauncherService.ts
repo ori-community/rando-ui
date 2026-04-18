@@ -333,23 +333,19 @@ export class LauncherService {
               log.info("Detected running inside AppImage")
 
               if (!fs.existsSync(wineprefixLocation)) {
-                log.info("Creating Wineprefix with bundled Wine and DXVK")
+                log.info("Creating Wineprefix with bundled Proton-GE... This will take a while.")
 
                 // Create a new wineprefix
-                await defaultExec("wine", ["hostname"], {
+                await defaultExec(path.join(process.env.WOTW_RANDOMIZER_APPIMAGE_ROOT, "/opt/proton-ge/protonfixes/winetricks"), [
+                  "-q",
+                  "corefonts",
+                  "dxvk",
+                  "vcrun2026",
+                ], {
                   env: {
                     WINEPREFIX: wineprefixLocation,
                   },
                 })
-
-                // Install DXVK
-                await fs.promises.cp(
-                  path.join(process.env.WOTW_RANDOMIZER_APPIMAGE_ROOT, "/opt/dxvk/x64"),
-                  path.join(wineprefixLocation, "drive_c/windows/system32"), {
-                    force: true,
-                    recursive: true,
-                  },
-                )
               }
             }
 

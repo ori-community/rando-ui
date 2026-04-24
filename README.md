@@ -10,11 +10,8 @@ This repository contains the web frontend as well as the Electron based desktop 
 
 ## Development Setup
 
-- In the `launcher` directory
+- In the directories `launcher`, `shared` and `web`
   - Run `npm install`
-- In the `web` directory
-  - Run `npm install`
-
 
 ## Run the UI
 

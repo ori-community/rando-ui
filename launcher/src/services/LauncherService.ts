@@ -328,32 +328,37 @@ export class LauncherService {
           case "linux":
             const wineprefixLocation = getUserDataPath("wineprefix")
 
+            const wineEnv: {[key: string]: string | null} = {
+              WINEPREFIX: wineprefixLocation,
+              WINEDLLOVERRIDES: "winhttp.dll=n,b",
+              WINENTSYNC: "1",
+              WINEESYNC: "1",
+              WINEFSYNC: "1",
+              __GL_SHADER_DISK_CACHE_SKIP_CLEANUP: "1",
+            }
+
             if (process.env.WOTW_RANDOMIZER_APPIMAGE_ROOT) {
-              // We are running as AppImage and have access to our own wine and DXVK.
-              log.info("Detected running inside AppImage")
+              log.info("Detected running inside AppImage, will install DXVK to the created prefix")
 
               if (!fs.existsSync(wineprefixLocation)) {
-                log.info("Creating Wineprefix with bundled Proton-GE... This will take a while.")
-
-                // Create a new wineprefix
-                await defaultExec(path.join(process.env.WOTW_RANDOMIZER_APPIMAGE_ROOT, "/opt/proton-ge/protonfixes/winetricks"), [
-                  "-q",
-                  "corefonts",
-                  "dxvk",
-                  "vcrun2026",
-                ], {
-                  env: {
-                    WINEPREFIX: wineprefixLocation,
-                  },
+                defaultExecDetached("wineboot", [], {
+                  env: wineEnv,
                 })
               }
+
+              await fs.promises.cp(
+                path.join(process.env.WOTW_RANDOMIZER_APPIMAGE_ROOT, "opt/dxvk/x64"),
+                path.join(wineprefixLocation, "drive_c/windows/system32"), {
+                  force: true,
+                  recursive: true,
+                },
+              )
+
+              wineEnv["WINEDLLOVERRIDES"] = "winhttp.dll=n,b;d3d11=n;d3d10core=n;d3d9=n;dxgi=n;d3d12=n;d3d12core=n"
             }
 
             defaultExecDetached("wine", [settings.GameBinaryPath, ...gameArguments], {
-              env: {
-                WINEPREFIX: wineprefixLocation,
-                WINEDLLOVERRIDES: "winhttp.dll=n,b",
-              },
+              env: wineEnv,
             })
             break
         }

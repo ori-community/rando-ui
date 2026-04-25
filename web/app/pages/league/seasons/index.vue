@@ -75,6 +75,99 @@
         </div>
       </div>
     </rando-throttled-spinner>
+
+    <v-dialog v-model="showLeagueInfo" max-width="800" content-class="elevation-0 pr-2">
+      <v-expansion-panels multiple :value="[0]" variant="accordion">
+        <v-expansion-panel>
+          <v-expansion-panel-title class="font-weight-bold title">
+            What is the Randomizer League?
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            The Randomizer League is a new game mode for the Ori and the Will of the Wisps Randomizer which allows
+            multiple players to compete against each other asynchronously. All players play the same seeds but don't
+            have to do so at the same time. Instead, each player can complete each game in a given time frame.
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+        <v-expansion-panel>
+          <v-expansion-panel-title class="font-weight-bold title"> What are Seasons?</v-expansion-panel-title>
+          <v-expansion-panel-text>
+            Each season is a set of games which player can compete in. Every season has its own leaderboard and games of
+            a season are counted towards the player's ranking on the leaderboard of that season. There can be multiple
+            seasons in parallel. This allows for different seasons with unique seed settings, for example different
+            difficulty levels.
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+        <v-expansion-panel>
+          <v-expansion-panel-title class="font-weight-bold title">
+            How can I play games in the Randomizer League?
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            To play games in the Randomizer League, you need to first pick an upcoming season and join it. Joining
+            seasons is possible until the first game of that season is finished. While it is possible to play without
+            being a member in the
+            <template v-if="isElectron">
+              <a @click="openDiscordLeagueChannel">Ori Runs Discord server</a>
+            </template>
+            <template v-else><a :href="leagueDiscordChannelUrl" target="_blank">Ori Runs Discord server</a></template
+            >
+            , it is heavily advised to be part of it to receive pings and reminders for your joined seasons as well as
+            being added to spoiler discussion channels after you finished a game.<br/>
+            Once the season started, games will be created automatically in fixed intervals. You can then play these
+            games whenever you want until they expire and the next game is created or the season is over.<br/>
+            You can also play training seeds to practice or try out the settings of a season.
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+        <v-expansion-panel>
+          <v-expansion-panel-title class="font-weight-bold title">
+            How are points calculated?
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            After a game is finished, players who submitted a run are awarded two types of points:
+
+            <ul class="mb-2">
+              <li>
+                <span class="font-italic">Base Points</span><br/>
+                Base Points are awarded to all players who submitted a run, regardless of their time.
+              </li>
+              <li>
+                <span class="font-italic">Speed Points</span><br/>
+                Speed Points are awarded to players depending on their run time in relation to the fastest player.
+              </li>
+            </ul>
+
+            The fastest time gets full Speed Points, fastest time * Speed Factor gets no Speed Points.
+            Times that are in between these two will get points based on where in the range the final
+            time was. The distribution of points is not necessarily linear.
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+        <v-expansion-panel>
+          <v-expansion-panel-title class="font-weight-bold title"> How do I submit a run?</v-expansion-panel-title>
+          <v-expansion-panel-text>
+            The Randomizer League is deeply integrated into the Randomizer itself. Submission and basic validation of
+            games is done automatically. If you want to submit a video recording of your run alongside the submitted
+            time, you can do so after finishing your run on the game page.
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+        <v-expansion-panel>
+          <v-expansion-panel-title class="font-weight-bold title">
+            Can I make my own custom seasons?
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            Season suggestions are appreciated! Just hit the Randomizer developers up with the Seed and season settings
+            you want to play with and they'll figure something out with you.
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+        <v-expansion-panel>
+          <v-expansion-panel-title class="font-weight-bold title">
+            What happens if I'm caught cheating?
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            You will be banned from playing any League games temporarily or permanently.
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+      </v-expansion-panels>
+    </v-dialog>
+
   </v-container>
 </template>
 
@@ -83,6 +176,8 @@
 
   const {axios} = useAxios()
   const userStore = useUserStore()
+  const isElectron = useIsElectron()
+
   const seasonsLoading = ref(false)
   const leagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
   const showLeagueInfo = ref(false)
@@ -132,6 +227,11 @@
     return season.memberships?.some((m) => m.user.id === userStore.user?.id)
   })
 
+  const openDiscordLeagueChannel = (() => {
+    // TODO open URL
+    // window.electronApi.invoke('launcher.openUrl', { url: this.leagueDiscordChannelUrl })
+  })
+
 </script>
 
 <style lang="scss" scoped>
@@ -150,4 +250,10 @@
       opacity: 1;
     }
   }
+
+
+  .v-expansion-panel:not(:last-child) .v-expansion-panel-text {
+    padding-bottom: 0.8em;
+  }
+
 </style>

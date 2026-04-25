@@ -14,13 +14,20 @@
         <template v-else>
           <v-scroll-x-transition>
             <div v-if="multiverses">
-              <h2 class="d-inline-block mb-3">Last Games</h2>
+              <div>
+                <h2 class="d-inline-block mb-3">Last Games</h2>
+                <nuxt-link class="pl-3 pt-2 more-label text-decoration-none" to="/my-games">More Games</nuxt-link>
+              </div>
+
               <div class="last-games-container">
                 <v-card
-                  v-for="multiverse in multiverses.slice(0,3)"
+                  v-for="multiverse in multiverses.slice(0, visiblePastGamesCount)"
                   :key="multiverse.id"
                   :to="{ name: 'game-multiverseId', params: { multiverseId: multiverse.id } }"
-                  class="pa-2 bg-background"
+                  class="pa-4"
+                  variant="plain"
+                  border="sm"
+                  hover
                 >
                   <div class="multiverse-id-container">
                     <div>
@@ -61,7 +68,7 @@
             >
               <div>
                 <h2 class="d-inline-block mb-3">Upcoming League Seasons</h2>
-                <nuxt-link class="pl-3 pt-2 learn-more text-decoration-none" to="/league/seasons">Learn more</nuxt-link>
+                <nuxt-link class="pl-3 pt-2 more-label text-decoration-none" to="/league/seasons">Learn more</nuxt-link>
               </div>
 
               <div class="seasons-container">
@@ -71,7 +78,7 @@
                   :season="season"
                   mode="upcoming"
                   flat
-                  :joined-overlay="season.memberships?.some((m) => m.user.id === user?.id)"
+                  :joined-overlay="season.memberships?.some((m) => m.user.id === userStore.user?.id)"
                 />
               </div>
 
@@ -217,9 +224,10 @@
   import type {MultiverseMetadataInfo} from "@shared/types/http-api";
 
   const {axios} = useAxios()
-  const router = useRouter()
+  const userStore = useUserStore()
   const electronApi = useElectronApi()
   const {launch} = useLauncherHelper()
+  const {xs, mdAndDown} = useDisplay()
 
   const multiverses = ref<MultiverseMetadataInfo[]>([])
   const upcomingLeagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
@@ -237,6 +245,16 @@
       console.error(e)
     }
 
+  })
+
+  const visiblePastGamesCount = computed(() => {
+    if (xs.value) {
+      return 1
+    }
+    if (mdAndDown.value) {
+      return 2
+    }
+    return 3
   })
 
   const selectAndLaunchFile = (async () => {
@@ -275,19 +293,17 @@
 
   .last-games-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, 250px);
     grid-auto-flow: column;
     gap: 0.75em;
   }
 
-  .upcoming-seasons {
-    .learn-more {
-      opacity: 0.5;
-      transition: opacity 200ms;
+  .more-label {
+    opacity: 0.5;
+    transition: opacity 200ms;
 
-      &:hover {
-        opacity: 1;
-      }
+    &:hover {
+      opacity: 1;
     }
   }
 

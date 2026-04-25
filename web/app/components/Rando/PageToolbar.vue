@@ -28,7 +28,7 @@
         <span v-if="!mdAndDown">Settings</span>
       </v-btn>
       <!--  MENU  -->
-      <div key="electron-menu">
+      <div v-if="isElectron" key="electron-menu">
         <v-menu offset-y>
           <template #activator="{ props }">
             <v-btn variant="text" icon v-bind="props">

@@ -4,7 +4,7 @@
       <div class="d-flex justify-center align-center mb-6">
         <h1 class="text-center mx-4">Game <small>#</small>{{ multiverse.id }}</h1>
         <v-btn icon variant="text" :to="{ name: 'game-multiverseId', params: { multiverseId: multiverse.id } }">
-          <v-icon>mdi-chevron-right</v-icon>
+          <v-icon size="large">mdi-chevron-double-right</v-icon>
         </v-btn>
       </div>
       <div class="multiverse-view text-center">

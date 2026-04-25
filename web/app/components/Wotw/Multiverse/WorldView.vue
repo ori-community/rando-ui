@@ -21,6 +21,7 @@
           :user="membership.user"
           :connected="connectedUserIds.includes(membership.user.id)"
           :race-ready="raceReadyUserIds.includes(membership.user.id)"
+          class="mb-1"
         >
           <div class="player-info">
             <div v-if="seedSpoilerDownloadedByIds.includes(membership.user.id)">

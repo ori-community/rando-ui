@@ -48,6 +48,7 @@
     "focus-ori": "file:native/focus-ori",
     "hasha": "^5.2.2",
     "lodash": "^4.17.21",
+    "lookpath": "^1.2.3",
     "superjson": "^2.2.6",
     "ws": "^8.19.0",
     "zeromq": "^6.5.0",

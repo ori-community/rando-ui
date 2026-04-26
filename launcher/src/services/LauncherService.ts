@@ -13,6 +13,7 @@ import {waitForProcess} from "@launcher/helpers"
 import {RandoIPCService} from "@launcher/services/RandoIPCService"
 import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
 import {EventEmitter} from "events"
+import {lookpath} from "lookpath"
 
 type LauncherEvent = {
   /** Emitted when the isLaunching property changed */
@@ -117,7 +118,7 @@ export class LauncherService {
       errors.push("invalid-game-binary-path")
     }
 
-    if (steamBinaryNeedsToBeValid && !fs.existsSync(settings.SteamBinaryPath)) {
+    if (steamBinaryNeedsToBeValid && !fs.existsSync(settings.SteamBinaryPath) && await lookpath(settings.SteamBinaryPath) === undefined) {
       errors.push("invalid-steam-binary-path")
     }
 

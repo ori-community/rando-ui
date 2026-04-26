@@ -71,7 +71,6 @@
         <div v-if="gameLaunchMethod === 'steam'">
           <v-text-field
             v-model="steamBinaryPath"
-            readonly
             class="mt-5"
             :label="`Click to select the path to Steam (${steamBinaryName})`"
             append-icon="mdi-folder-search-outline"
@@ -86,7 +85,6 @@
         <div v-if="gameLaunchMethod === 'standalone' || modloaderMethod === 'proxy'">
           <v-text-field
             v-model="gameBinaryPath"
-            readonly
             class="mt-5"
             label="Click to select the path to the game binary (oriwotw.exe)"
             append-icon="mdi-folder-search-outline"

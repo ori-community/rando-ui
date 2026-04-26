@@ -18,7 +18,7 @@ export const gameLaunchMethodsMetadata: {
         case "linux":
         case "other":
         default:
-          return <span>Launch the game through Steam. Requires manual setup on Linux but can lead to better performance. Try "Standalone" first.</span>
+          return <span>Launch the game through Steam. Requires manual setup on Linux but can lead to better performance. If you don't want to do manual setup, try "Standalone" first.</span>
       }
     },
     alerts: {
@@ -33,8 +33,10 @@ export const gameLaunchMethodsMetadata: {
         <div class="mt-3">
           Read everything carefully!
           <ol>
+            <li>Start the vanilla game at least once</li>
             <li>Right-click the game in Steam and go to Properties → General</li>
             <li>Set Launch Options to <code class="bg-warning-lighten-1 pa-1">WINEDLLOVERRIDES=winhttp.dll=n,b %command%</code></li>
+            <li>Install the required runtime dependencies using Protontricks: <code class="bg-warning-lighten-1 pa-1">protontricks 1057090 vcrun2022</code></li>
           </ol>
         </div>
         <div class="mt-3">

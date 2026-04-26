@@ -191,7 +191,7 @@
   async function selectSteamPath() {
     const newPath = await electronApi?.systemDialogs.pickFile.query({
       defaultPath: steamBinaryPath.value,
-      filters: [{name: 'Executables', extensions: ['exe']}],
+      filters: [{name: 'Executables', extensions: platform === "windows" ? ['exe'] : []}],
     })
 
     if (newPath) {

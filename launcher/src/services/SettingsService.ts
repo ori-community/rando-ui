@@ -59,7 +59,7 @@ export class SettingsService {
       DeveloperMode: false,
       DebugControls: false,
       AlwaysShowKeystones: true,
-      EnableWorldMap: false,
+      EnableWorldMap: true,
       GrappleMouseControl: false,
       BurrowMouseControl: false,
       WaterDashMouseControl: false,

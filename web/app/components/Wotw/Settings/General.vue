@@ -11,8 +11,8 @@
         />
         <rando-settings-checkbox
           v-model="settings.EnableWorldMap.value"
-          label="Disable World Map"
-          description="Disables the world map that opens when zooming out"
+          label="Enable World Map"
+          description="Enables the world overview that opens when zooming out in the map"
         />
         <rando-settings-checkbox
           v-model="settings.EnableMinimap.value"

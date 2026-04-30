@@ -11,7 +11,7 @@
           prepend-inner-icon="mdi-map-marker-radius-outline"
         />
         <v-switch
-          v-model="randomizeDoorsBoolean"
+          v-model="randomizeEntrancesBoolean"
           label="Randomize Entrances"
           color="secondary"
           hide-details
@@ -283,12 +283,12 @@
     model.value.difficulty = difficultyToSwitchToWhenConfirmingTrickCleanup.value
   }
 
-  const randomizeDoorsBoolean = computed<boolean>({
+  const randomizeEntrancesBoolean = computed<boolean>({
     get() {
-      return !!model.value.randomizeDoors
+      return !!model.value.randomizeEntrances
     },
     set(value) {
-      model.value.randomizeDoors = value ? 2 : null
+      model.value.randomizeEntrances = value ? 2 : null
     }
   })
 

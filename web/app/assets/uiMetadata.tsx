@@ -5,7 +5,7 @@ import type {Platform} from "@shared/types/platform"
 export const gameLaunchMethodsMetadata: {
   [key in Settings["GameLaunchMethod"]]: {
     name: string,
-    descriptionComponent: (platform: Platform) => JSX.Element,
+    descriptionComponent: (platform?: Platform) => JSX.Element,
     alerts?: {[platform in Platform]?: JSX.Element}
   }
 } = {

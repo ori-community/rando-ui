@@ -16,8 +16,15 @@
       </v-btn>
       <!-- TODO pending league games -->
       <v-btn key="league" size="x-large" variant="text" to="/league/seasons">
+        <v-badge
+          color="deep-purple"
+          :content="league.pendingGamesCount"
+          :offset-x="-10"
+          :offset-y="-5"
+        >
         <v-icon :start="!mdAndDown">mdi-trophy</v-icon>
         <span v-if="!mdAndDown">League</span>
+        </v-badge>
       </v-btn>
       <v-btn v-if="userStore.isLoggedIn" key="my-games" exact size="x-large" variant="text" :to="{ name: 'my-games' }">
         <v-icon :start="!mdAndDown">mdi-gamepad-variant-outline</v-icon>
@@ -146,6 +153,7 @@
   const route = useRoute()
   const {axios} = useAxios()
   const userStore = useUserStore()
+  const league = useLeague()
   const {smAndDown, mdAndDown} = useDisplay()
   const editedNickname = ref('')
   const showEditNicknameDialog = ref(false)
@@ -173,6 +181,9 @@
     return trimmedNickname.length > 0 && trimmedNickname.length <= 32
   })
 
+  onMounted(async () => {
+    await league.updatePendingGames()
+  })
 
   const randomGreeting = ((username: string) => {
     if (!randomGreetingTemplate.value) {

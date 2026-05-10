@@ -43,13 +43,12 @@
             </div>
           </v-scroll-x-transition>
           <v-scroll-x-transition>
-            <div v-if="pendingGames !== null">
-              <div v-if="pendingGames.length > 0" class="pt-2">
+            <div>
+              <div v-if="league.pendingGamesCount > 0">
                 <h2 class="mb-2">Your Pending Games</h2>
-
                 <div class="seasons-container">
                   <wotw-league-game-card
-                    v-for="pendingGame in pendingGames"
+                    v-for="pendingGame in league.pendingGames"
                     :key="pendingGame.game.id"
                     :game="pendingGame.game"
                     :season="pendingGame.season"
@@ -59,30 +58,29 @@
                   />
                 </div>
               </div>
-            </div>
-          </v-scroll-x-transition>
-          <v-scroll-x-transition>
-            <div
-              v-if="upcomingLeagueSeasons !== null && upcomingLeagueSeasons.length > 0"
-              class="mb-6 upcoming-seasons"
-            >
-              <div>
-                <h2 class="d-inline-block mb-3">Upcoming League Seasons</h2>
-                <nuxt-link class="pl-3 pt-2 more-label text-decoration-none" to="/league/seasons">Learn more</nuxt-link>
-              </div>
+              <div
+                v-if="upcomingLeagueSeasons !== null && upcomingLeagueSeasons.length > 0"
+                class="mb-6 mt-2 upcoming-seasons"
+              >
+                <div>
+                  <h2 class="d-inline-block mb-3">Upcoming League Seasons</h2>
+                  <nuxt-link class="pl-3 pt-2 more-label text-decoration-none" to="/league/seasons">Learn more
+                  </nuxt-link>
+                </div>
 
-              <div class="seasons-container">
-                <wotw-league-season-card
-                  v-for="season in upcomingLeagueSeasons"
-                  :key="season.id"
-                  :season="season"
-                  mode="upcoming"
-                  flat
-                  :joined-overlay="season.memberships?.some((m) => m.user.id === userStore.user?.id)"
-                />
-              </div>
+                <div class="seasons-container">
+                  <wotw-league-season-card
+                    v-for="season in upcomingLeagueSeasons"
+                    :key="season.id"
+                    :season="season"
+                    mode="upcoming"
+                    flat
+                    :joined-overlay="season.memberships?.some((m) => m.user.id === userStore.user?.id)"
+                  />
+                </div>
 
-              <v-divider class="my-6"/>
+                <v-divider class="my-6"/>
+              </div>
             </div>
           </v-scroll-x-transition>
           <v-scroll-x-transition>
@@ -220,7 +218,7 @@
 </template>
 
 <script setup lang="ts">
-  import type {LeagueGameInfo, LeagueSeasonInfo} from "@shared/types/league"
+  import type {LeagueSeasonInfo} from "@shared/types/league"
   import type {MultiverseMetadataInfo} from "@shared/types/http-api";
 
   const {axios} = useAxios()
@@ -228,10 +226,10 @@
   const electronApi = useElectronApi()
   const {launch} = useLauncherHelper()
   const {xs, mdAndDown} = useDisplay()
+  const league = useLeague()
 
   const multiverses = ref<MultiverseMetadataInfo[]>([])
   const upcomingLeagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
-  const pendingGames: { game: LeagueGameInfo, season: LeagueSeasonInfo }[] = []   // TODO pending LeagueGames
 
   const inOfflineMode = ref(false)    // TODO check if releases can be fetched
   const updateAvailable = ref(false)  // TODO Version Control
@@ -244,7 +242,7 @@
       upcomingLeagueSeasons.value = null
       console.error(e)
     }
-
+    await league.updatePendingGames()
   })
 
   const visiblePastGamesCount = computed(() => {

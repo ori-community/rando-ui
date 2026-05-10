@@ -13,13 +13,13 @@
     </div>
 
     <rando-throttled-spinner>
-      <div v-if="pendingGames !== null">
-        <div v-if="pendingGames.length > 0" class="pt-2">
+      <div v-if="league.pendingGames !== null">
+        <div v-if="league.pendingGamesCount > 0" class="pt-2">
           <h2 class="mb-2">Your Pending Games</h2>
 
           <div class="seasons-container">
             <wotw-league-game-card
-              v-for="pendingGame in pendingGames"
+              v-for="pendingGame in league.pendingGames"
               :key="pendingGame.game.id"
               :game="pendingGame.game"
               :season="pendingGame.season"
@@ -172,18 +172,17 @@
 </template>
 
 <script lang="ts" setup>
-  import type {LeagueGameInfo, LeagueSeasonInfo} from "@shared/types/league"
+  import type {LeagueSeasonInfo} from "@shared/types/league"
 
   const {axios} = useAxios()
   const userStore = useUserStore()
   const isElectron = useIsElectron()
+  const league = useLeague()
 
   const seasonsLoading = ref(false)
   const leagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
   const showLeagueInfo = ref(false)
   const leagueDiscordChannelUrl = ref('https://discord.gg/kXuZSAuxZt')
-
-  const pendingGames: { game: LeagueGameInfo, season: LeagueSeasonInfo }[] = []   // TODO pending LeagueGames
 
   const categorizedSeasons = computed(() => {
     const value: {
@@ -207,8 +206,9 @@
     return value
   })
 
-  onMounted(() => {
+  onMounted(async () => {
     loadSeasons()
+    await league.updatePendingGames()
   })
 
   const loadSeasons = (async () => {

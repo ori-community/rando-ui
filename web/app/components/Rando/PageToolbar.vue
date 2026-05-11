@@ -14,10 +14,10 @@
         <v-icon :start="!mdAndDown">mdi-dice-multiple</v-icon>
         <span v-if="!mdAndDown">Seed Generator</span>
       </v-btn>
-      <!-- TODO pending league games -->
       <v-btn key="league" size="x-large" variant="text" to="/league/seasons">
         <v-badge
           color="deep-purple"
+          :model-value="leagueHelper.pendingGamesCount.value > 0"
           :content="leagueHelper.pendingGamesCount.value"
           :offset-x="-10"
           :offset-y="-5"

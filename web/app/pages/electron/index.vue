@@ -44,11 +44,11 @@
           </v-scroll-x-transition>
           <v-scroll-x-transition>
             <div>
-              <div v-if="league.pendingGamesCount > 0">
+              <div v-if="leagueHelper.pendingGamesCount.value > 0">
                 <h2 class="mb-2">Your Pending Games</h2>
                 <div class="seasons-container">
                   <wotw-league-game-card
-                    v-for="pendingGame in league.pendingGames"
+                    v-for="pendingGame in leagueHelper.pendingGames.value"
                     :key="pendingGame.game.id"
                     :game="pendingGame.game"
                     :season="pendingGame.season"
@@ -226,7 +226,7 @@
   const electronApi = useElectronApi()
   const {launch} = useLauncherHelper()
   const {xs, mdAndDown} = useDisplay()
-  const league = useLeague()
+  const leagueHelper = useLeagueHelper()
 
   const multiverses = ref<MultiverseMetadataInfo[]>([])
   const upcomingLeagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
@@ -242,7 +242,7 @@
       upcomingLeagueSeasons.value = null
       console.error(e)
     }
-    await league.updatePendingGames()
+    await leagueHelper.updatePendingGames()
   })
 
   const visiblePastGamesCount = computed(() => {

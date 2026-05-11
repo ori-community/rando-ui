@@ -13,13 +13,13 @@
     </div>
 
     <rando-throttled-spinner>
-      <div v-if="league.pendingGames !== null">
-        <div v-if="league.pendingGamesCount > 0" class="pt-2">
+      <div v-if="leagueHelper.pendingGames.value !== null">
+        <div v-if="leagueHelper.pendingGamesCount.value > 0" class="pt-2">
           <h2 class="mb-2">Your Pending Games</h2>
 
           <div class="seasons-container">
             <wotw-league-game-card
-              v-for="pendingGame in league.pendingGames"
+              v-for="pendingGame in leagueHelper.pendingGames.value"
               :key="pendingGame.game.id"
               :game="pendingGame.game"
               :season="pendingGame.season"
@@ -177,7 +177,7 @@
   const {axios} = useAxios()
   const userStore = useUserStore()
   const isElectron = useIsElectron()
-  const league = useLeague()
+  const leagueHelper = useLeagueHelper()
 
   const seasonsLoading = ref(false)
   const leagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
@@ -208,7 +208,7 @@
 
   onMounted(async () => {
     loadSeasons()
-    await league.updatePendingGames()
+    await leagueHelper.updatePendingGames()
   })
 
   const loadSeasons = (async () => {

@@ -18,7 +18,7 @@
       <v-btn key="league" size="x-large" variant="text" to="/league/seasons">
         <v-badge
           color="deep-purple"
-          :content="league.pendingGamesCount"
+          :content="leagueHelper.pendingGamesCount.value"
           :offset-x="-10"
           :offset-y="-5"
         >
@@ -153,7 +153,7 @@
   const route = useRoute()
   const {axios} = useAxios()
   const userStore = useUserStore()
-  const league = useLeague()
+  const leagueHelper = useLeagueHelper()
   const {smAndDown, mdAndDown} = useDisplay()
   const editedNickname = ref('')
   const showEditNicknameDialog = ref(false)
@@ -182,7 +182,7 @@
   })
 
   onMounted(async () => {
-    await league.updatePendingGames()
+    await leagueHelper.updatePendingGames()
   })
 
   const randomGreeting = ((username: string) => {

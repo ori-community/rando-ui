@@ -1,7 +1,6 @@
-import {defineStore} from "pinia"
 import type {LeagueGameInfo, LeagueSeasonInfo} from "@shared/types/league"
 
-export const useLeague = defineStore("league", () => {
+export function useLeagueHelper() {
   const {axios, catchAxiosErrors} = useAxios()
 
   const pendingGames = ref<{ game: LeagueGameInfo, season: LeagueSeasonInfo }[] | null>(null)
@@ -47,4 +46,4 @@ export const useLeague = defineStore("league", () => {
     updatePendingGames,
   }
 
-})
+}

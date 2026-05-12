@@ -14,6 +14,7 @@ import {RandoIPCService} from "@launcher/services/RandoIPCService"
 import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
 import {EventEmitter} from "events"
 import {lookpath} from "lookpath"
+import {SeedgenServerService} from "@launcher/services/SeedgenServerService"
 
 type LauncherEvent = {
   /** Emitted when the isLaunching property changed */
@@ -370,6 +371,8 @@ export class LauncherService {
     if (settings.LaunchWithTracker) {
       await LocalTrackerService.openLocalTracker()
     }
+
+    await SeedgenServerService.ensureRunning()
 
     return {launchedSuccessfully: true}
   }

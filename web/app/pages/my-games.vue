@@ -3,7 +3,8 @@
     <h1 class="text-center mt-12 mb-6">My Games</h1>
 
     <rando-throttled-spinner>
-      <template v-if="multiverses !== null && !fetchingGames">
+      <template v-if="!fetchingGames">
+      <template v-if="multiverses !== null && multiverses.length > 0">
         <div class="games-container mt-8">
           <div class="timeline">
             <v-timeline truncate-line="start" side="end" size="small" align="center" density="comfortable">
@@ -55,9 +56,10 @@
             </v-scroll-x-reverse-transition>
           </div>
         </div>
-        <div v-if="multiversesByPeriod.length === 0" class="text-center">
-          <img class="ori-image" src="../../../shared/images/ori_thumb.png" alt="">
-          <div>You haven't played any online games yet</div>
+      </template>
+        <div v-else class="text-center">
+          <img class="ori-image" src="@shared/images/ori_thumb.png" alt="">
+          <div>You haven't played any online games recently</div>
         </div>
       </template>
     </rando-throttled-spinner>
@@ -73,7 +75,7 @@
     period: string,
     multiverses: MultiverseMetadataInfo[],
   }
-  const {axios} = useAxios()
+  const {axios, catchAxiosErrors} = useAxios()
   const route = useRoute()
   const router = useRouter()
 
@@ -148,7 +150,14 @@
 
   const fetchMultiverses = (async () => {
     fetchingGames.value = true
-    multiverses.value = (await axios.get("/multiverses/own")).data
+    await catchAxiosErrors(
+      async () => {
+        multiverses.value = (await axios.get("/multiverses/own")).data
+      },
+      async (e) => {
+        console.error(e)
+      },
+    )
     fetchingGames.value = false
   })
 </script>

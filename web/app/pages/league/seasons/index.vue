@@ -48,14 +48,14 @@
               v-for="season in categorizedSeasons.active"
               :key="season.id"
               :season="season"
-              mode="active"
+              :show-time="false"
               :joined-tag="userIsMemberOfSeason(season)"
             />
             <wotw-league-season-card
               v-for="season in categorizedSeasons.upcoming"
               :key="season.id"
               :season="season"
-              mode="upcoming"
+              :show-time="false"
               upcoming-tag
               :joined-tag="userIsMemberOfSeason(season)"
             />
@@ -173,6 +173,8 @@
 
 <script lang="ts" setup>
   import type {LeagueSeasonInfo} from "@shared/types/league"
+
+  useHead({title: "League"})
 
   const {axios} = useAxios()
   const userStore = useUserStore()

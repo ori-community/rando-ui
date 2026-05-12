@@ -59,23 +59,24 @@
                 </div>
               </div>
               <div
-                v-if="upcomingLeagueSeasons !== null && upcomingLeagueSeasons.length > 0"
-                class="mb-6 mt-2 upcoming-seasons"
+                v-if="combinedLeagueSeasons !== null && combinedLeagueSeasons.length > 0"
+                class="mb-6 mt-2"
               >
                 <div>
-                  <h2 class="d-inline-block mb-3">Upcoming League Seasons</h2>
+                  <h2 class="d-inline-block mb-3">League Seasons</h2>
                   <nuxt-link class="pl-3 pt-2 more-label text-decoration-none" to="/league/seasons">Learn more
                   </nuxt-link>
                 </div>
 
                 <div class="seasons-container">
                   <wotw-league-season-card
-                    v-for="season in upcomingLeagueSeasons"
-                    :key="season.id"
-                    :season="season"
-                    mode="upcoming"
+                    v-for="combination in combinedLeagueSeasons"
+                    :key="combination.season.id"
+                    :season="combination.season"
+                    :show-time="true"
                     flat
-                    :joined-overlay="season.memberships?.some((m) => m.user.id === userStore.user?.id)"
+                    :upcoming-tag="combination.state == 'upcoming'"
+                    :checkmark-overlay="combination.checkmark"
                   />
                 </div>
 
@@ -221,7 +222,7 @@
   import type {LeagueSeasonInfo} from "@shared/types/league"
   import type {MultiverseMetadataInfo} from "@shared/types/http-api";
 
-  const {axios} = useAxios()
+  const {axios, catchAxiosErrors} = useAxios()
   const userStore = useUserStore()
   const electronApi = useElectronApi()
   const {launch} = useLauncherHelper()
@@ -230,16 +231,27 @@
 
   const multiverses = ref<MultiverseMetadataInfo[]>([])
   const upcomingLeagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
+  const activeLeagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
 
   const inOfflineMode = ref(false)    // TODO check if releases can be fetched
   const updateAvailable = ref(false)  // TODO Version Control
 
   onMounted(async () => {
-    multiverses.value = (await axios.get("/multiverses/own")).data
+    await catchAxiosErrors(
+      async () => {
+        multiverses.value = (await axios.get("/multiverses/own")).data
+      },
+      async (e) => {
+        console.error(e)
+      },
+    )
+
     try {
       upcomingLeagueSeasons.value = await (await axios.get('/league/seasons/upcoming')).data
+      activeLeagueSeasons.value = await (await axios.get('/league/seasons/active')).data
     } catch (e) {
       upcomingLeagueSeasons.value = null
+      activeLeagueSeasons.value = null
       console.error(e)
     }
     await leagueHelper.updatePendingGames()
@@ -253,6 +265,21 @@
       return 2
     }
     return 3
+  })
+  const combinedLeagueSeasons = computed(() => {
+    // return (upcomingLeagueSeasons.value || []).concat(activeLeagueSeasons.value || []) as LeagueSeasonInfo[]
+    return [
+      ...(activeLeagueSeasons.value ?? []).map(season => ({
+        season,
+        state: 'active',
+        checkmark: !leagueHelper.pendingGames.value?.some(game => game.season.id === season.id),
+      })),
+      ...(upcomingLeagueSeasons.value ?? []).map(season => ({
+        season,
+        state: 'upcoming',
+        checkmark: season.memberships?.some((m) => m.user.id === userStore.user?.id)
+      })),
+    ] as { season: LeagueSeasonInfo, state: 'active' | 'upcoming', checkmark: boolean }[]
   })
 
   const selectAndLaunchFile = (async () => {

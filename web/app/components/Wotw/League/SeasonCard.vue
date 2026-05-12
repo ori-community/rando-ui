@@ -4,7 +4,7 @@
       v-if="!!season.backgroundImageUrl" cover class="background-image" alt=""
       :src="season.backgroundImageUrl"/>
 
-    <div v-if="joinedOverlay" class="joined-overlay">
+    <div v-if="checkmarkOverlay" class="joined-overlay">
       <v-icon size="96">mdi-check</v-icon>
     </div>
 
@@ -24,7 +24,7 @@
 
       <div class="spacer"/>
 
-      <div v-if="mode === MODE_TYPES.Default ">
+      <div v-if="showTime">
         <v-icon size="x-small">mdi-clock-outline</v-icon>
         starts at
         {{ formatDateEpoch(season.nextContinuationAt, 'P p') }}
@@ -46,17 +46,17 @@
 
   const props = withDefaults(defineProps<{
     season: LeagueSeasonInfo,
-    mode?: string,
-    joinedOverlay?: boolean,
+    checkmarkOverlay?: boolean,
     joinedTag?: boolean,
     upcomingTag?: boolean,
     flat?: boolean,
+    showTime?: boolean,
   }>(), {
-    mode: MODE_TYPES.Default,
-    joinedOverlay: false,
+    checkmarkOverlay: false,
     joinedTag: false,
     upcomingTag: false,
     flat: false,
+    showTime: true,
   })
 
   const currentGameNumber = computed(() => {
@@ -72,11 +72,7 @@
 </script>
 
 <script lang="ts">
-  enum MODE_TYPES {
-    Default = 'default',
-    Upcoming = 'upcoming',
-    Active = 'active',
-  }
+
 </script>
 
 <style lang="scss" scoped>

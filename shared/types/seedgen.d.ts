@@ -252,7 +252,7 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["ApplyBody"];
+                    "application/json": components["schemas"]["UniversePresetApplyBody"];
                 };
             };
             responses: {
@@ -261,7 +261,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["UniverseSettings"];
+                        "application/json": components["schemas"]["UniversePresetApplyBody"];
                     };
                 };
                 422: {
@@ -503,6 +503,41 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/settings/universe/new": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Start new universe settings */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["UniverseSettings"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1060,6 +1095,17 @@ export interface components {
             assetsVersion?: number;
             info?: null | components["schemas"]["PresetInfo"];
         };
+        UniversePresetApplyBody: components["schemas"]["UniversePresetApplyBodySettings"] & {
+            /** @description Presets to apply */
+            presets: components["schemas"]["UniversePreset"][];
+        };
+        UniversePresetApplyBodySettings: components["schemas"]["UniversePresetApplyBodySettingsFull"] | components["schemas"]["UniversePresetApplyBodySettingsSeed"];
+        UniversePresetApplyBodySettingsFull: {
+            settings: components["schemas"]["UniverseSettings"];
+        };
+        UniversePresetApplyBodySettingsSeed: {
+            seed: string;
+        };
         /**
          * @description Settings to apply to [`UniverseSettings`]
          *
@@ -1179,7 +1225,7 @@ export interface components {
          * @description World zones as indicated on the map
          * @enum {integer}
          */
-        Zone: 0 | 1 | 2 | 3 | 7 | 6 | 8 | 4 | 9 | 10 | 11 | 5 | 14 | 12 | 13;
+        Zone: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14;
         /** Format: int32 */
         i32: number;
     };
@@ -1233,6 +1279,10 @@ export type Trick = components['schemas']['Trick'];
 export type TrickInfo = components['schemas']['TrickInfo'];
 export type UberIdentifier = components['schemas']['UberIdentifier'];
 export type UniversePreset = components['schemas']['UniversePreset'];
+export type UniversePresetApplyBody = components['schemas']['UniversePresetApplyBody'];
+export type UniversePresetApplyBodySettings = components['schemas']['UniversePresetApplyBodySettings'];
+export type UniversePresetApplyBodySettingsFull = components['schemas']['UniversePresetApplyBodySettingsFull'];
+export type UniversePresetApplyBodySettingsSeed = components['schemas']['UniversePresetApplyBodySettingsSeed'];
 export type UniversePresetSettings = components['schemas']['UniversePresetSettings'];
 export type UniverseSettings = components['schemas']['UniverseSettings'];
 export type WorldPreset = components['schemas']['WorldPreset'];

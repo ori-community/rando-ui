@@ -103,12 +103,12 @@ if (!app.requestSingleInstanceLock()) {
     createIPCHandler({router: appRouter, windows: [mainWindow]})
 
     if (process.env.NODE_ENV === "development") {
-      await mainWindow.loadURL("http://localhost:3000")
+      await mainWindow.loadURL("http://localhost:3000/electron")
 
       // Open the DevTools.
       mainWindow.webContents.openDevTools()
     } else {
-      await mainWindow.loadURL("app://bundle/")
+      await mainWindow.loadURL("app://bundle/electron")
     }
 
     mainWindow.maximize()

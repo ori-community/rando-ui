@@ -15,8 +15,8 @@
           <v-scroll-x-transition>
             <div v-if="multiverses?.length > 0">
               <div>
-                <h2 class="d-inline-block mb-3">Last Games</h2>
-                <nuxt-link class="pl-3 pt-2 more-label text-decoration-none" to="/my-games">More Games</nuxt-link>
+                <h2 class="d-inline-block mb-3">Recent Online Games</h2>
+                <nuxt-link class="pl-3 pt-2 more-label text-decoration-none" to="/my-games">See more</nuxt-link>
               </div>
 
               <div class="last-games-container">

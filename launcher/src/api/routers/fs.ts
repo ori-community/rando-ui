@@ -5,6 +5,11 @@ import nodeFs from "node:fs"
 import path from "node:path"
 
 export const fs = router({
+  /**
+   * Save given seed binaries to the default seeds directory and returns
+   * an array of paths saved. The returned array has the same length as the amount of
+   * given seed binaries.
+   */
   saveSeed: publicProcedure
     .input(
       z.object({

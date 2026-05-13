@@ -1,9 +1,13 @@
 import {publicProcedure, router} from "@launcher/api/trpc"
 import {z} from "zod"
-import {dialog} from "electron"
+import {dialog, shell} from "electron"
 import {getMainWindow} from "@launcher/main"
 
 export const systemDialogs = router({
+  /**
+   * Show a file picker ("Open File dialog") with specified filters
+   * and default path
+   */
   pickFile: publicProcedure
     .input(
       z.object({
@@ -26,5 +30,17 @@ export const systemDialogs = router({
       }
 
       return null
+    }),
+  /**
+   * Display a path in the default file explorer
+   */
+  showPathInExplorer: publicProcedure
+    .input(
+      z.object({
+        path: z.string(),
+      })
+    )
+    .query(async ({input}): Promise<void> => {
+      shell.showItemInFolder(input.path)
     })
 })

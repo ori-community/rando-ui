@@ -130,8 +130,7 @@
 
           <!--                  TODO VERSION CONTROL-->
           <v-card :class="updateAvailable ? `bg-warning-darken-1` : `bg-background-lighten-1`" class="pa-4">
-            <!--            <h3>Version: {{ currentVersion }}</h3>-->
-            <h3>Version: yes</h3>
+            <h3>Version: {{ currentVersion }}</h3>
             <!--            <template v-if="updateDownloading">-->
             <!--              Downloading {{ !!updateReleaseName ? `version ${updateReleaseName}` : `update` }}...-->
             <!--              <v-progress-linear class="mt-3" :value="updateDownloadProgress"/>-->
@@ -228,7 +227,7 @@
   const {launch} = useLauncherHelper()
   const {xs, mdAndDown} = useDisplay()
   const leagueHelper = useLeagueHelper()
-
+  const currentVersion = ref(await electronApi?.updater.getVersion.query())
   const multiverses = ref<MultiverseMetadataInfo[]>([])
   const upcomingLeagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
   const activeLeagueSeasons = ref<LeagueSeasonInfo[] | null>(null)

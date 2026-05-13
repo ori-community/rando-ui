@@ -436,7 +436,7 @@
     if (enableBingo.value) {
       const goalState = bingoSettings.value.goalType === "lines"
         ? "bingoState.lines"
-        : "bingoState.cards"
+        : "bingoState.squares"
       const goalTargetValue = bingoSettings.value.goalAmount
       const goalName = bingoSettings.value.goalType === "lines"
         ? "Bingo Lines"

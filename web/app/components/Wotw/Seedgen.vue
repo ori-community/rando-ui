@@ -5,7 +5,7 @@
         <v-icon start>mdi-content-duplicate</v-icon>
         Duplicate
       </v-list-item>
-      <v-list-item @click="universeSettings.worldSettings.splice(worldContextMenuSelectedWorldIndex, 1)">
+      <v-list-item @click="worldSettings.splice(worldContextMenuSelectedWorldIndex, 1)">
         <v-icon start>mdi-delete-outline</v-icon>
         Delete
       </v-list-item>
@@ -14,8 +14,8 @@
 
   <v-tabs v-model="selectedWorldIndex" color="primary">
     <v-expand-x-transition group>
-      <template v-if="universeSettings.worldSettings.length >= 2 || selectedWorldIndex === null">
-        <div v-for="nth in universeSettings.worldSettings.length" :key="nth - 1">
+      <template v-if="worldSettings.length >= 2 || selectedWorldIndex === null">
+        <div v-for="nth in worldSettings.length" :key="nth - 1">
           <v-tab
             :value="nth - 1"
             :variant="worldContextMenuOpen && worldContextMenuSelectedWorldIndex === nth - 1 ? 'tonal' : 'text'"
@@ -28,9 +28,9 @@
       </template>
     </v-expand-x-transition>
 
-    <v-tab :disabled="universeSettings.worldSettings.length === 0" :value="null">
+    <v-tab :disabled="worldSettings.length === 0" :value="null">
       <v-icon start>mdi-plus</v-icon>
-      <template v-if="universeSettings.worldSettings.length <= 1">Multiworld</template>
+      <template v-if="worldSettings.length <= 1">Multiworld</template>
       <template v-else>Add World</template>
     </v-tab>
   </v-tabs>
@@ -41,20 +41,20 @@
       type="article"
     />
     <template v-else>
-      <v-window :model-value="selectedWorldIndex ?? universeSettings.worldSettings.length" :show-arrows="false">
-        <v-window-item v-for="nth in universeSettings.worldSettings.length" :key="nth - 1" class="pa-4">
+      <v-window :model-value="selectedWorldIndex ?? worldSettings.length" :show-arrows="false">
+        <v-window-item v-for="nth in worldSettings.length" :key="nth - 1" class="pa-4">
           <wotw-seedgen-world-settings
-            v-model="universeSettings.worldSettings[nth - 1]!"
+            v-model="worldSettings[nth - 1]!"
             :snippets-info="snippetsInfo"
             :difficulties="difficulties"
             :tricks="tricks"
           />
         </v-window-item>
-        <v-window-item :key="universeSettings.worldSettings.length" class="pa-3">
+        <v-window-item :key="worldSettings.length" class="pa-3">
           <wotw-seedgen-world-setup
             :grouped-world-preset-ids="groupedWorldPresetIds"
             :world-presets="worldPresets"
-            :existing-world-settings="universeSettings.worldSettings"
+            :existing-world-settings="worldSettings"
             :loading="worldSetupLoading"
             @presets-selected="onWorldSetupPresetsSelected"
             @settings-selected="onWorldSetupSettingsSelected"
@@ -64,7 +64,19 @@
     </template>
   </v-card>
 
-  <div v-if="universeSettings.worldSettings.length > 0">
+  <div v-if="worldSettings.length > 0" class="mt-8">
+    <v-card class="pa-4 mt-2">
+      <v-row>
+        <div class="d-flex flex-column">
+          <div>Seed</div>
+          <div class="text-caption opacity-70">
+            Placeholder Description
+          </div>
+        </div>
+        <v-spacer/>
+        <v-text-field v-model="seedString" hide-details append-icon="mdi-seed-outline"/>
+      </v-row>
+    </v-card>
     <v-card class="pa-4 mt-2">
       <v-switch v-model="enableRaceMode" inset hide-details color="secondary" append-icon="mdi-timer-play-outline">
         <template #label>
@@ -86,7 +98,8 @@
               <div>Play Bingo</div>
               <div class="text-caption opacity-70">
                 Play online bingo alone or with friends.
-                When playing with friends, players in the same universe work as one team while optionally racing players in other universes.
+                When playing with friends, players in the same universe work as one team while optionally racing players
+                in other universes.
               </div>
             </div>
           </template>
@@ -95,9 +108,9 @@
 
       <v-expand-transition>
         <div v-if="enableBingo">
-          <v-divider />
+          <v-divider/>
           <div class="pa-4">
-            <wotw-seedgen-bingo-settings v-model="bingoSettings" />
+            <wotw-seedgen-bingo-settings v-model="bingoSettings"/>
           </div>
         </div>
       </v-expand-transition>
@@ -108,10 +121,14 @@
     <v-card class="pa-16 text-center loading-text">
       <div class="generating-message-container">
         <v-scroll-y-reverse-transition>
-          <div :key="generatingMessageIndex" class="generating-message">{{ generatingMessages[generatingMessageIndex] }}</div>
+          <div :key="generatingMessageIndex" class="generating-message">{{
+              generatingMessages[generatingMessageIndex]
+            }}
+          </div>
         </v-scroll-y-reverse-transition>
       </div>
-      <v-progress-linear :model-value="fakeProgressValue" :max="1" class="mt-5" :class="{'no-transition': fakeProgressActive}" />
+      <v-progress-linear :model-value="fakeProgressValue" :max="1" class="mt-5"
+                         :class="{'no-transition': fakeProgressActive}"/>
     </v-card>
   </v-dialog>
 
@@ -177,10 +194,8 @@
   const worldContextMenuX = ref(0.0)
   const worldContextMenuY = ref(0.0)
   const worldContextMenuSelectedWorldIndex = ref(0)
-  const universeSettings = ref<UniverseSettings>({
-    seed: String(Date.now()),
-    worldSettings: [],
-  })
+  const seedString = ref<string | null>(null)
+  const worldSettings = ref<WorldSettings[]>([])
   const universePresets = ref<HashMapStringUniversePreset | null>(null)
   const worldPresets = ref<HashMapStringWorldPreset | null>(null)
   const difficulties = ref<DifficultyInfo[]>([])
@@ -278,6 +293,13 @@
     }
 
     return groupedPresetIds
+  }
+
+  function getUniverseSerrings() {
+    return {
+      seed: seedString.value ?? String(Date.now()),
+      worldSettings: worldSettings.value
+    } as UniverseSettings
   }
 
   // TODO: Show custom universe presets
@@ -402,7 +424,7 @@
    * seed generator.
    */
   async function generateOfflineSeedFromCurrentSettings() {
-    const {data}: {data: Blob} = await seedgenAxios.post("/generate", universeSettings.value, {
+    const {data}: { data: Blob } = await seedgenAxios.post("/generate", getUniverseSerrings(), {
       responseType: "blob",
       params: {
         text_spoiler: true,
@@ -430,8 +452,8 @@
     type SeedsResponse = {
       seedId: number,
     }
-
-    const clonedUniverseSettings = clone(universeSettings.value)
+    const universeSettings = getUniverseSerrings()
+    const clonedUniverseSettings = clone(universeSettings)
 
     if (enableBingo.value) {
       const goalState = bingoSettings.value.goalType === "lines"
@@ -472,7 +494,7 @@
       }
     }
 
-    const {data: seed}: {data: SeedsResponse} = await axios.post("/seeds", clonedUniverseSettings)
+    const {data: seed}: { data: SeedsResponse } = await axios.post("/seeds", clonedUniverseSettings)
 
     const bingoCreationConfig = enableBingo.value
       ? {
@@ -483,7 +505,7 @@
       }
       : null
 
-    const {data: multiverseId}: {data: string} = await axios.post("/multiverses", {
+    const {data: multiverseId}: { data: string } = await axios.post("/multiverses", {
       seedId: seed.seedId,
       bingoConfig: bingoCreationConfig,
       raceMode: enableRaceMode.value,
@@ -503,8 +525,8 @@
   const seedgenActions = computed(() => {
     const actions: Omit<SeedgenAction, "id">[] = []
 
-    if (universeSettings.value.worldSettings.length > 0) {
-      if (universeSettings.value.worldSettings.length === 1) {
+    if (worldSettings.value.length > 0) {
+      if (worldSettings.value.length === 1) {
         if (isElectron) {
           actions.push({
             label: "Play Offline",
@@ -605,8 +627,8 @@
 
     try {
       const {data}: { data: WorldSettings } = await seedgenAxios.post('/presets/world/apply', {presets})
-      universeSettings.value.worldSettings.push(data)
-      selectedWorldIndex.value = universeSettings.value.worldSettings.length - 1
+      worldSettings.value.push(data)
+      selectedWorldIndex.value = worldSettings.value.length - 1
     } catch (e) {
       console.error(e)
     }
@@ -615,15 +637,15 @@
   }
 
   function onWorldSetupSettingsSelected(settings: WorldSettings) {
-    universeSettings.value.worldSettings.push(settings)
-    selectedWorldIndex.value = universeSettings.value.worldSettings.length - 1
+    worldSettings.value.push(settings)
+    selectedWorldIndex.value = worldSettings.value.length - 1
   }
 
   function duplicateWorld(worldIndex: number) {
-    universeSettings.value.worldSettings.push(clone(universeSettings.value.worldSettings[worldIndex]!))
+    worldSettings.value.push(clone(worldSettings.value[worldIndex]!))
 
     // Workaround for visual glitch
-    setTimeout(() => selectedWorldIndex.value = universeSettings.value.worldSettings.length - 1, 0)
+    setTimeout(() => selectedWorldIndex.value = worldSettings.value.length - 1, 0)
   }
 
   function onWorldTabContextMenu(worldIndex: number, event: MouseEvent) {

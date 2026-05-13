@@ -167,7 +167,7 @@
           <!--                    </v-card>-->
 
           <v-btn variant="text" block class="mt-3" @click="openWiki">
-            <v-icon left>mdi-book-outline</v-icon>
+            <v-icon start>mdi-book-outline</v-icon>
             Read the Wiki
           </v-btn>
 

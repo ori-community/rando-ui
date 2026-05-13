@@ -81,17 +81,17 @@
             </template>
             <v-list>
               <v-list-item @click="editedNickname = ''; showEditNicknameDialog = true">
-                <v-icon left>mdi-account-edit-outline</v-icon>
+                <v-icon start>mdi-account-edit-outline</v-icon>
                 Change Nickname
               </v-list-item>
               <!-- TODO Dev Tools
               <v-list-item v-if="userStore.isDeveloper" @click="toggleDevtools">
-                <v-icon left>mdi-code-braces</v-icon>
+                <v-icon start>mdi-code-braces</v-icon>
                 {{ devtoolsEnabled ? 'Disable' : 'Enable' }} Server Devtools
               </v-list-item>
               -->
               <v-list-item @click="logout">
-                <v-icon left>mdi-logout-variant</v-icon>
+                <v-icon start>mdi-logout-variant</v-icon>
                 Log out
               </v-list-item>
             </v-list>

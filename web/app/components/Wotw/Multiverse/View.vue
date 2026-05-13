@@ -27,21 +27,21 @@
     <div v-if="preview" class="text-center mt-4">
       <template v-if="showSpectatorNotice">
         <v-alert class="d-inline-block" color="info darken">
-          <v-icon left>mdi-monitor-eye</v-icon>
+          <v-icon start>mdi-monitor-eye</v-icon>
           You are spectating this game.
         </v-alert>
       </template>
     </div>
     <div v-else-if="multiverse.locked" class="text-center mt-4">
       <v-alert class="d-inline-block" color="info darken">
-        <v-icon left>mdi-lock</v-icon>
+        <v-icon start>mdi-lock</v-icon>
         This multiverse is locked.
       </v-alert>
     </div>
     <div v-else class="action-buttons mt-4">
       <div class="d-inline-block">
         <v-btn :disabled="loading || !canCreateUniverse" large variant="text" @click="createWorld()">
-          <v-icon left>mdi-plus</v-icon>
+          <v-icon start>mdi-plus</v-icon>
           New Universe
         </v-btn>
         <v-tooltip :disabled="canCreateUniverse" location="bottom" activator="parent">

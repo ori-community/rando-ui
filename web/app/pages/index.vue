@@ -49,7 +49,7 @@
               :loading="!latestRandoWindowsUrl || !latestRandoLinuxUrl"
               v-bind="props"
             >
-              <v-icon left>mdi-download</v-icon>
+              <v-icon start>mdi-download</v-icon>
               Download
             </v-btn>
           </div>

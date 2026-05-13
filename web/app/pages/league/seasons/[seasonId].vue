@@ -40,7 +40,7 @@
 
           <div v-if="isElectron" class="top-row-button">
             <v-btn variant="text" :disabled="!userStore.isLoggedIn" @click="trainingSeedDialogOpen = true">
-              <v-icon left>mdi-dumbbell</v-icon>
+              <v-icon start>mdi-dumbbell</v-icon>
               Training
             </v-btn>
             <v-tooltip location="bottom" open-delay="300" activator="parent">
@@ -54,7 +54,7 @@
                 src="@shared/images/ori_lurk.png" alt="">
             </div>
             <v-btn color="accent" :loading="actionLoading" :disabled="!canJoin" @click="showSeasonRules = true">
-              <v-icon left>mdi-plus-circle-outline</v-icon>
+              <v-icon start>mdi-plus-circle-outline</v-icon>
               Join
             </v-btn>
             <v-tooltip activator="parent" location="bottom" :disabled="canJoin">
@@ -255,7 +255,7 @@
         </div>
         <div v-if="!isJoined && canJoin" class="justify-end dialog-buttons mt-3">
           <v-btn color="accent" depressed @click="joinSeason()">
-            <v-icon left>mdi-plus-circle-outline</v-icon>
+            <v-icon start>mdi-plus-circle-outline</v-icon>
             Confirm and Join
           </v-btn>
         </div>

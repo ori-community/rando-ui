@@ -29,7 +29,7 @@
           </template>
           <v-list>
             <v-list-item @click="boardSettingsOpen = true">
-              <v-icon left>mdi-cog-outline</v-icon>
+              <v-icon start>mdi-cog-outline</v-icon>
               Settings
             </v-list-item>
             <v-list-item :disabled="embedUrlCopied || embedUrlLoading" @click="createEmbedUrl">

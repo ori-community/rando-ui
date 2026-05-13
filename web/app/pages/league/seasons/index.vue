@@ -7,7 +7,7 @@
     </div>
     <div class="text-center mb-12">
       <v-btn variant="text" size="large" outlined @click="showLeagueInfo = true">
-        <v-icon left>mdi-information-outline</v-icon>
+        <v-icon start>mdi-information-outline</v-icon>
         FAQ / Help
       </v-btn>
     </div>

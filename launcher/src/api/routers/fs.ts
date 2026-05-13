@@ -26,8 +26,8 @@ export const fs = router({
       for (let worldIndex = 0; worldIndex < input.worlds.length; worldIndex++) {
         const generateSeedFilePath = (offset: number = 0) => {
           let fileName = input.worlds.length === 1
-            ? `seed-${id}`
-            : `seed-${id}-${worldIndex}`
+            ? `${id}`
+            : `${id}-${worldIndex}`
 
           if (offset > 0) {
             fileName += `-${offset}`

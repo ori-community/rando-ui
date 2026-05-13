@@ -1,5 +1,6 @@
 import {router} from "@launcher/api/trpc"
 import {auth} from "@launcher/api/routers/auth"
+import {fs} from "@launcher/api/routers/fs"
 import {launcher} from "@launcher/api/routers/launcher"
 import {localTracker} from "@launcher/api/routers/localTracker"
 import {localTrackerWebSocket} from "@launcher/api/routers/localTrackerWebSocket"
@@ -12,6 +13,7 @@ import {updater} from "@launcher/api/routers/updater"
 
 export const appRouter = router({
   auth,
+  fs,
   launcher,
   localTracker,
   localTrackerWebSocket,

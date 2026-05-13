@@ -26,7 +26,7 @@
               </div>
             </template>
             <template v-else>
-              <div class="flex-grow-1 d-flex align-center">{{ square.text }}</div>
+              <div class="flex-grow-1 d-flex justify-center align-center">{{ square.text }}</div>
             </template>
           </template>
         </div>

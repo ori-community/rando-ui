@@ -29,7 +29,7 @@ type SeedInfo = {
 }
 
 type SeedgenGenerateResponse = {
-  worlds: Uint8Array[],
+  worlds: Uint8Array<ArrayBuffer>[],
   textSpoiler: string | null,
   jsonSpoiler: string | null,
 }

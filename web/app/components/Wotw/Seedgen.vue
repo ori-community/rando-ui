@@ -64,17 +64,24 @@
     </template>
   </v-card>
 
-  <div v-if="worldSettings.length > 0" class="mt-8">
+  <div v-if="worldSettings.length > 0" class="mt-4">
     <v-card class="pa-4 mt-2">
       <v-row>
         <div class="d-flex flex-column">
-          <div>Seed</div>
+          <div>
+            <span>Seed</span> <span class="opacity-60">(Optional)</span>
+          </div>
           <div class="text-caption opacity-70">
             Placeholder Description
           </div>
         </div>
         <v-spacer/>
-        <v-text-field v-model="seedString" hide-details append-icon="mdi-seed-outline"/>
+        <v-text-field
+          v-model="seedString"
+          hide-details
+          append-icon="mdi-seed-outline"
+          clearable
+        />
       </v-row>
     </v-card>
     <v-card class="pa-4 mt-2">
@@ -127,8 +134,12 @@
           </div>
         </v-scroll-y-reverse-transition>
       </div>
-      <v-progress-linear :model-value="fakeProgressValue" :max="1" class="mt-5"
-                         :class="{'no-transition': fakeProgressActive}"/>
+      <v-progress-linear
+        :model-value="fakeProgressValue"
+        :max="1"
+        class="mt-5"
+        :class="{'no-transition': fakeProgressActive}"
+      />
     </v-card>
   </v-dialog>
 
@@ -189,6 +200,7 @@
   const electronApi = useElectronApi()
   const seedgenAxios = useSeedgenAxios()
   const {axios} = useAxios()
+  const launcherHelper = useLauncherHelper()
   const worldSetupLoading = ref(false)
   const worldContextMenuOpen = ref(false)
   const worldContextMenuX = ref(0.0)
@@ -536,7 +548,14 @@
               ? "Unavailable when playing Bingo or with Race Mode enabled"
               : undefined,
             handler: async () => {
+              if (!electronApi) {
+                return
+              }
               const seed = await generateOfflineSeedFromCurrentSettings()
+              const paths = await electronApi.fs.saveSeed.query({worlds: seed.worlds})
+              if (paths[0]) {
+                await launcherHelper.launch(`file:${paths[0]}`)
+              }
             },
           })
 
@@ -548,7 +567,14 @@
               ? "Unavailable when playing Bingo or with Race Mode enabled"
               : undefined,
             handler: async () => {
+              if (!electronApi) {
+                return
+              }
               const seed = await generateOfflineSeedFromCurrentSettings()
+              const paths = await electronApi.fs.saveSeed.query({worlds: seed.worlds})
+              if (paths[0]) {
+                await electronApi.systemDialogs.showPathInExplorer.query({path: paths[0]})
+              }
             },
           })
         } else {
@@ -557,6 +583,9 @@
             icon: "mdi-download-outline",
             handler: async () => {
               const seed = await generateOfflineSeedFromCurrentSettings()
+              if (seed.worlds[0]) {
+                saveAs(new Blob([seed.worlds[0]]), "game.wotwr")
+              }
             },
           })
         }

@@ -67,21 +67,26 @@
   <div v-if="worldSettings.length > 0" class="mt-4">
     <v-card class="pa-4 mt-2">
       <v-row>
-        <div class="d-flex flex-column">
-          <div>
-            <span>Seed</span> <span class="opacity-60">(Optional)</span>
+        <v-col cols="6">
+          <div class="d-flex flex-column">
+            <div>
+              <span>Seed</span>
+            </div>
+            <div class="text-caption opacity-70">
+              Value to initialize the random number generator with. Changing the seed even just slightly will result
+              in completely different item placements.
+            </div>
           </div>
-          <div class="text-caption opacity-70">
-            Placeholder Description
-          </div>
-        </div>
-        <v-spacer/>
-        <v-text-field
-          v-model="seedString"
-          hide-details
-          append-icon="mdi-seed-outline"
-          clearable
-        />
+        </v-col>
+        <v-col cols="6" class="d-flex align-center">
+          <v-text-field
+            v-model="seedStringInput"
+            hide-details
+            append-icon="mdi-dice-multiple-outline"
+            placeholder="Leave empty for random seed"
+            clearable
+          />
+        </v-col>
       </v-row>
     </v-card>
     <v-card class="pa-4 mt-2">
@@ -193,7 +198,6 @@
   import {shuffleArray} from "~/assets/utils/shuffleArray"
   import {saveAs} from "file-saver"
   import {decode} from "cbor2"
-  import {useCloned} from "@vueuse/core"
   import {clone} from "@shared/utils/clone"
 
   const isElectron = useIsElectron()
@@ -280,6 +284,19 @@
     }
 
     await Promise.all([updateUniversePresets(), updateWorldPresets(), updateDifficulties(), updateTricks(), updateSnippetsInfo()])
+  })
+
+  const seedStringInput = computed<string>({
+    set(value) {
+      if (!value) {
+        seedString.value = null
+      } else {
+        seedString.value = value
+      }
+    },
+    get() {
+      return seedString.value ?? ""
+    }
   })
 
   const difficultyValuesByName = computed(() => difficulties.value.reduce((map, difficultyInfo: DifficultyInfo, index) => {

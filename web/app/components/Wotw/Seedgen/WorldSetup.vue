@@ -49,8 +49,12 @@
   </v-expand-transition>
 
   <div class="d-flex justify-end">
-    <v-btn size="small" color="primary" variant="text" :loading="loading" @click="startFromScratch">
-      Start from scratch
+    <v-btn size="small" color="primary" variant="text" :loading="loading || randomSettingsLoading" @click="selectRandomWorldSettings">
+      Randomize Settings
+    </v-btn>
+    <v-divider vertical class="mx-2" />
+    <v-btn size="small" color="primary" variant="text" :loading="loading" :disabled="randomSettingsLoading" @click="startFromScratch">
+      Start from Scratch
     </v-btn>
   </div>
 </template>
@@ -59,6 +63,7 @@
   import type {HashMapStringWorldPreset, WorldPreset, WorldSettings} from "@shared/types/seedgen"
   import type {GroupedPresetIds} from '~/assets/types/components/seedgen'
   import {clone} from "@shared/utils/clone"
+  import {useSeedgenAxios} from "~/composables/useSeedgenAxios"
 
   const {
     groupedWorldPresetIds,
@@ -76,6 +81,9 @@
     presetsSelected: [WorldPreset[]],
     settingsSelected: [WorldSettings],
   }>()
+
+  const seedgenAxios = useSeedgenAxios()
+  const randomSettingsLoading = ref(false)
 
   type WorldPresetAndId = {
     id: string,
@@ -136,6 +144,13 @@
 
   function selectSettings(settings: WorldSettings) {
     emit("settingsSelected", clone(settings))
+  }
+
+  async function selectRandomWorldSettings() {
+    randomSettingsLoading.value = true
+    const {data: randomSettings}: {data: WorldSettings} = await seedgenAxios.get("/settings/world/random")
+    emit("settingsSelected", randomSettings)
+    randomSettingsLoading.value = false
   }
 </script>
 

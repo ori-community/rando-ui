@@ -17,7 +17,7 @@
         <rando-settings-checkbox
           v-model="settings.EnableMinimap.value"
           label="Enable Minimap"
-          description="Display an in-game minimap overlay"
+          description="Display an in-game minimap overlay. This can also be toggled on demand in the randomizer action wheel"
         />
         <rando-settings-slider
           v-model="settings.MapPanSpeed.value"
@@ -155,7 +155,7 @@
           v-model="settings.HybridMouseControl.value"
           :disabled="!settings.BurrowMouseControl.value && !settings.WaterDashMouseControl.value"
           label="Hybrid Mouse Control"
-          description="Use Mouse Aiming for Burrow and Swimming only when no directional input is pressed. Mouse Aiming needs to be enabled"
+          description="Use Mouse Aiming for Burrow and Swimming only when no directional input is pressed. Mouse Aiming for Burrow or Swimming needs to be enabled"
         />
         <rando-settings-checkbox
           v-model="settings.InvertFastSwim.value"
@@ -233,7 +233,7 @@
           <rando-settings-checkbox
             v-model="settings.DebugControls.value"
             label="Enable Debug Controls"
-            description="Enable Debug Controls by default"
+            description="Start the game with active debug controls"
           />
           <v-combobox
             v-model="settings.ServerHost.value"

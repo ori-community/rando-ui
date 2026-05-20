@@ -1,5 +1,5 @@
 {
-  "name": "@ori-rando/ui",
+  "name": "@ori-community/rando-ui-web",
   "private": true,
   "scripts": {
     "build": "nuxt build",

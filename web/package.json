@@ -1,5 +1,5 @@
 {
-  "name": "@ori-rando/ui",
+  "name": "@ori-community/rando-ui-web",
   "private": true,
   "scripts": {
     "build": "nuxt build",
@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
+    "@ori-community/wotw-map": "^0.1.6",
     "@pinia/nuxt": "^0.11.3",
     "@trpc/client": "^10.45.4",
     "@types/file-saver": "^2.0.7",

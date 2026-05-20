@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex flex-column flex-grow-1 relative">
-    <wotw-map
+    <wotw-legacy-map
       class="flex-grow-1 flex-shrink-1"
       @mouseclick="(_event, point) => console.log(point)"
       @transform-changed="(transform) => mapTransform = transform"
@@ -23,12 +23,11 @@
           :map-transform="mapTransform"
         />
       </template>
-    </wotw-map>
+    </wotw-legacy-map>
   </div>
 </template>
 
 <script lang="ts" setup>
-
   import {ref} from "vue";
   import type Konva from "konva";
   import {Group as KGroup} from 'vue-konva'

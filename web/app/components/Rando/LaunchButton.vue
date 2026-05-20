@@ -6,14 +6,16 @@
     :disabled="disabled"
     :loading="isLaunching && hasBeenClicked"
     @click="onClick">
-    <img
-      v-if="!displayedIcon"
-      class="launch-icon"
-      :class="{ disabled: disabled }"
-      src="@shared/images/launch.png"
-      alt=""
-    >
-    <v-icon v-else start>{{ displayedIcon }}</v-icon>
+    <slot name="icon">
+      <img
+        v-if="!displayedIcon"
+        class="launch-icon"
+        :class="{ disabled: disabled }"
+        src="@shared/images/launch.png"
+        alt=""
+      >
+      <v-icon v-else start>{{ displayedIcon }}</v-icon>
+    </slot>
     {{ displayedLabel }}
   </v-btn>
 </template>

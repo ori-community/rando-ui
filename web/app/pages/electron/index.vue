@@ -153,6 +153,23 @@
                                  @click="selectAndLaunchFile()">
               <v-tooltip location="bottom" activator="parent">This is also a hint</v-tooltip>
             </rando-launch-button>
+            <rando-launch-button
+              ref="refConfetti"
+              icon="mdi-party-popper"
+              label="Confetti"
+              @click="showConfetti()">
+              <v-tooltip location="bottom" activator="parent">CONFETTI</v-tooltip>
+              <template #icon>
+                <v-icon start>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="90 100 60 80">
+                    <path
+                      fill="currentColor"
+                      :d="oriShapePath"
+                    />
+                  </svg>
+                </v-icon>
+              </template>
+            </rando-launch-button>
           </div>
           <!--          <v-card v-if="newGameSeedSource !== null" class="pa-2 text-center top-border-radius-0 current-seed-path">-->
           <!--            {{ newGameSeedSourceDisplayString }}-->
@@ -227,6 +244,7 @@
 <script setup lang="ts">
   import type {LeagueSeasonInfo} from "@shared/types/league"
   import type {MultiverseMetadataInfo} from "@shared/types/http-api";
+  import {confettiFromElement, oriShapePath} from "~/assets/utils/confetti";
 
   const {axios, catchAxiosErrors} = useAxios()
   const userStore = useUserStore()
@@ -238,6 +256,8 @@
   const multiverses = ref<MultiverseMetadataInfo[]>([])
   const upcomingLeagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
   const activeLeagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
+
+  const refConfetti = ref<{ $el: HTMLElement } | null>(null)
 
   const inOfflineMode = ref(false)    // TODO check if releases can be fetched
   const updateAvailable = ref(false)  // TODO Version Control
@@ -312,6 +332,13 @@
   const openDiscord = (() => {
     window.electronApi.invoke('launcher.openUrl', {url: 'https://discord.gg/SUS57PWWnA'})
   })
+
+  function showConfetti() {
+    if (!refConfetti.value) {
+      return
+    }
+    confettiFromElement(refConfetti.value.$el, {disableForReducedMotion: true})
+  }
 
 </script>
 

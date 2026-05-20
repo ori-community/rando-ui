@@ -11,8 +11,7 @@ export default defineNuxtConfig({
   ],
 
   app: {
-    head: {
-    },
+    head: {},
   },
 
   vuetify: {
@@ -33,6 +32,18 @@ export default defineNuxtConfig({
     "@launcher": resolve(__dirname, "../launcher/src"),
     "@shared": resolve(__dirname, "../shared"),
     "@web": resolve(__dirname, "../web"),
+  },
+
+  hooks: {
+    "nitro:config": nitroConfig => {
+      nitroConfig.compressPublicAssets = true
+      nitroConfig.publicAssets ||= []
+      nitroConfig.publicAssets.push({
+        dir: resolve(__dirname, "node_modules/@ori-community/wotw-map/dist"),
+        baseURL: "/wotw-map",
+        maxAge: 600,  // 10 minutes
+      })
+    },
   },
 
   modules: ["@nuxt/eslint", "@pinia/nuxt", "vuetify-nuxt-module"],

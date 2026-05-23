@@ -15,6 +15,7 @@ import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
 import {EventEmitter} from "events"
 import {lookpath} from "lookpath"
 import {SeedgenServerService} from "@launcher/services/SeedgenServerService"
+import {InputBindingsService} from "@launcher/services/InputBindingsService"
 
 type LauncherEvent = {
   /** Emitted when the isLaunching property changed */
@@ -254,6 +255,9 @@ export class LauncherService {
     if (seedSource !== undefined) {
       await this.setNewGameSeedSource(seedSource)
     }
+
+    await InputBindingsService.makeSureControllerBindingsFileExists()
+    await InputBindingsService.makeSureKeyboardBindingsFileExists()
 
     if (RandoIPCService.isConnected()) {
       await RandoIPCService.emit("load_new_game_source")

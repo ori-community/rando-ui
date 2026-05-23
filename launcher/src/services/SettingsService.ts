@@ -6,6 +6,7 @@ import log from "electron-log/main"
 import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
 import {SettingKey, Settings} from "@shared/types/settings"
 import {LauncherService} from "@launcher/services/LauncherService"
+import {RandoIPCService} from "@launcher/services/RandoIPCService"
 
 type SettingsEvent = {
   /** Emitted when a single setting changed */
@@ -174,5 +175,9 @@ export class SettingsService {
 
     await fs.promises.writeFile(settingsFilePath, json, {encoding: "utf-8"})
     log.info("Settings saved")
+
+    if (RandoIPCService.isConnected()) {
+      await RandoIPCService.emit("reload_settings")
+    }
   }
 }

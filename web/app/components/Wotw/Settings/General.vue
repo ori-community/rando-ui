@@ -197,7 +197,7 @@
         />
         <rando-settings-checkbox
           v-model="settings.ShowAllSecrets.value"
-          label="Disable always showing secret areas"
+          label="Always show secret areas"
           description="By default, the randomizer shows all secrets without having the Sense Shard equipped"
         />
         <rando-settings-slider

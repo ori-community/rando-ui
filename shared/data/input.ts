@@ -184,7 +184,7 @@ export type KeyboardAndMouseInputMetadata = InputMetadata & {
   webId: String,
 }
 
-export const controllerInputs: Record<ControllerInput, ControllerInputMetadata> = {
+export const controllerInputMetadata: Record<ControllerInput, ControllerInputMetadata> = {
   ButtonA: {
     displayName: "Button A",
     unityId: 8,
@@ -307,7 +307,11 @@ export const controllerInputs: Record<ControllerInput, ControllerInputMetadata> 
   },
 }
 
-export const keyboardAndMouseInputs: Record<KeyboardAndMouseInput, KeyboardAndMouseInputMetadata> = {
+export const controllerInputsByUnityId: Map<number, ControllerInput> = new Map<number, ControllerInput>(
+  Object.entries(controllerInputMetadata).map(([key, input]) => [input.unityId, key as ControllerInput]),
+)
+
+export const keyboardAndMouseInputMetadata = {
   Backspace: {
     unityId: 8,
     webId: "Backspace",
@@ -891,4 +895,8 @@ export const keyboardAndMouseInputs: Record<KeyboardAndMouseInput, KeyboardAndMo
     unityId: 329,
     webId: "Mouse6",
   },
-}
+} as const satisfies Record<KeyboardAndMouseInput, KeyboardAndMouseInputMetadata>
+
+export const keyboardAndMouseInputsByUnityId: Map<number, KeyboardAndMouseInput> = new Map<number, KeyboardAndMouseInput>(
+  Object.entries(keyboardAndMouseInputMetadata).map(([key, input]) => [input.unityId, key as KeyboardAndMouseInput]),
+)

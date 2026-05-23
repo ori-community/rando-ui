@@ -106,6 +106,16 @@ export const gameActionCategoryMetadata: Record<GameActionCategory, GameActionCa
   },
 }
 
+export type SingleControllerInputBinding = ControllerInput
+export type ComposableControllerInputBinding = ControllerInput[]
+export type ControllerInputBindings = SingleControllerInputBinding[] | ComposableControllerInputBinding[]
+export type ComposableKeyboardAndMouseInputBinding = {
+  inputs: KeyboardAndMouseInput[],
+  /** Whether modifier keys (Ctrl/Alt/Shift...) must match exactly */
+  exactModifiers: boolean,
+}
+export type KeyboardAndMouseInputBindings = ComposableKeyboardAndMouseInputBinding[]
+
 export type GameActionMetadata = {
   name: string,
   category: GameActionCategory,
@@ -117,10 +127,10 @@ export type GameActionMetadata = {
    */
   controller: false | {
     type: "single",
-    default: ControllerInput[],
+    default: SingleControllerInputBinding[],
   } | {
     type: "composable",
-    default: ControllerInput[][],
+    default: ComposableControllerInputBinding[],
   },
   /**
    * false = not rebindable
@@ -129,11 +139,7 @@ export type GameActionMetadata = {
    */
   keyboardAndMouse: false | "in-game" | {
     type: "composable",
-    default: {
-      inputs: KeyboardAndMouseInput[],
-      /** Whether modifier keys (Ctrl/Alt/Shift...) must match exactly */
-      exactModifiers: boolean,
-    }[],
+    default: ComposableKeyboardAndMouseInputBinding[],
   },
 }
 
@@ -782,3 +788,9 @@ export const gameActionMetadata = {
     },
   },
 } as const satisfies Record<GameAction, GameActionMetadata>
+
+export type ControllerRebindableAction = { [K in keyof typeof gameActionMetadata]: (typeof gameActionMetadata)[K]["controller"] extends false ? never : K }[keyof typeof gameActionMetadata]
+export type KeyboardAndMouseRebindableAction = { [K in keyof typeof gameActionMetadata]: (typeof gameActionMetadata)[K]["keyboardAndMouse"] extends (false | "in-game") ? never : K }[keyof typeof gameActionMetadata]
+
+export type ControllerBindings = Record<ControllerRebindableAction, ControllerInputBindings>
+export type KeyboardAndMouseBindings = Record<KeyboardAndMouseRebindableAction, KeyboardAndMouseInputBindings>

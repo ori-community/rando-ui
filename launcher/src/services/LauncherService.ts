@@ -257,7 +257,7 @@ export class LauncherService {
     }
 
     await InputBindingsService.makeSureControllerBindingsFileExists()
-    await InputBindingsService.makeSureKeyboardBindingsFileExists()
+    await InputBindingsService.makeSureKeyboardAndMouseBindingsFileExists()
 
     if (RandoIPCService.isConnected()) {
       await RandoIPCService.emit("load_new_game_source")

@@ -1,5 +1,4 @@
 <template>
-
   <v-row v-if="settingsStore.isInitialized">
     <v-col cols="12" md="6">
       <div class="mb-8">

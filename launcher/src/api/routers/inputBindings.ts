@@ -11,9 +11,8 @@ import {
   KeyboardAndMouseInputBindings,
   KeyboardAndMouseRebindableAction,
 } from "@shared/data/actions"
-import {LauncherService} from "@launcher/services/LauncherService"
 
-export const settings = router({
+export const inputBindings = router({
   /**
    * Set controller binds for `action` to `bindings`
    */

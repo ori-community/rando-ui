@@ -1,4 +1,4 @@
-import {ControllerInput, KeyboardAndMouseInput} from "./input"
+import {ControllerInput, KeyboardAndMouseInput, keyboardAndMouseInputMetadata} from "./input"
 
 export const gameActions = [
   "MainMenuSaveCopy",
@@ -68,12 +68,12 @@ export type GameAction = (typeof gameActions)[number]
 
 export const gameActionCategories = [
   "General",
-  "MainMenu",
-  "Menu",
-  "Wheel",
-  "Dialogue",
-  "Map",
   "Randomizer",
+  "Wheel",
+  "Menu",
+  "Map",
+  "MainMenu",
+  "Dialogue",
 ] as const
 
 export type GameActionCategory = (typeof gameActionCategories)[number]
@@ -788,6 +788,21 @@ export const gameActionMetadata = {
     },
   },
 } as const satisfies Record<GameAction, GameActionMetadata>
+
+export const gameActionsByCategory: Map<GameActionCategory, GameAction[]> = new Map<GameActionCategory, GameAction[]>(
+  Object.entries(
+    (Object.entries(gameActionMetadata) as [GameAction, GameActionMetadata][])
+      .reduce((combined, [action, metadata]) => {
+        if (!combined[metadata.category]) {
+          combined[metadata.category] = []
+        }
+
+        combined[metadata.category].push(action)
+
+        return combined
+      }, {} as Partial<Record<GameActionCategory, GameAction[]>>)
+  ) as [GameActionCategory, GameAction[]][]
+)
 
 export type ControllerRebindableAction = { [K in keyof typeof gameActionMetadata]: (typeof gameActionMetadata)[K]["controller"] extends false ? never : K }[keyof typeof gameActionMetadata]
 export type KeyboardAndMouseRebindableAction = { [K in keyof typeof gameActionMetadata]: (typeof gameActionMetadata)[K]["keyboardAndMouse"] extends (false | "in-game") ? never : K }[keyof typeof gameActionMetadata]

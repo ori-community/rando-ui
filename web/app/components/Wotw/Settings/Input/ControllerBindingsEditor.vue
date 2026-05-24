@@ -132,11 +132,5 @@
 </script>
 
 <style lang="scss" scoped>
-  .mouse-target {
-    user-select: none;
 
-    * {
-      pointer-events: none;
-    }
-  }
 </style>

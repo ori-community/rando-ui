@@ -19,6 +19,7 @@ import {
   keyboardAndMouseInputsByUnityId,
 } from "@shared/data/input"
 import {EventEmitter} from "events"
+import {RandoIPCService} from "@launcher/services/RandoIPCService"
 
 // The following ...File types are the structure saved to and loaded from the
 // actual .json files.
@@ -226,6 +227,10 @@ export class InputBindingsService {
           this.storeControllerBindings(this.controllerBindingsCache),
           this.storeKeyboardAndMouseBindings(this.keyboardAndMouseBindingsCache),
         ])
+
+        if (RandoIPCService.isConnected()) {
+          await RandoIPCService.emit("reload_controls")
+        }
       }, 2000)
     }
   }

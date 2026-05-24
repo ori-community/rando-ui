@@ -345,42 +345,52 @@ export const keyboardAndMouseInputMetadata = {
     webId: "Space",
   },
   Keypad0: {
+    displayName: "Numpad 0",
     unityId: 256,
     webId: "Numpad0",
   },
   Keypad1: {
+    displayName: "Numpad 1",
     unityId: 257,
     webId: "Numpad1",
   },
   Keypad2: {
+    displayName: "Numpad 2",
     unityId: 258,
     webId: "Numpad2",
   },
   Keypad3: {
+    displayName: "Numpad 3",
     unityId: 259,
     webId: "Numpad3",
   },
   Keypad4: {
+    displayName: "Numpad 4",
     unityId: 260,
     webId: "Numpad4",
   },
   Keypad5: {
+    displayName: "Numpad 5",
     unityId: 261,
     webId: "Numpad5",
   },
   Keypad6: {
+    displayName: "Numpad 6",
     unityId: 262,
     webId: "Numpad6",
   },
   Keypad7: {
+    displayName: "Numpad 7",
     unityId: 263,
     webId: "Numpad7",
   },
   Keypad8: {
+    displayName: "Numpad 8",
     unityId: 264,
     webId: "Numpad8",
   },
   Keypad9: {
+    displayName: "Numpad 9",
     unityId: 265,
     webId: "Numpad9",
   },
@@ -509,42 +519,52 @@ export const keyboardAndMouseInputMetadata = {
     webId: "F15",
   },
   Alpha0: {
+    displayName: "0",
     unityId: 48,
     webId: "Digit0",
   },
   Alpha1: {
+    displayName: "1",
     unityId: 49,
     webId: "Digit1",
   },
   Alpha2: {
+    displayName: "2",
     unityId: 50,
     webId: "Digit2",
   },
   Alpha3: {
+    displayName: "3",
     unityId: 51,
     webId: "Digit3",
   },
   Alpha4: {
+    displayName: "4",
     unityId: 52,
     webId: "Digit4",
   },
   Alpha5: {
+    displayName: "5",
     unityId: 53,
     webId: "Digit5",
   },
   Alpha6: {
+    displayName: "6",
     unityId: 54,
     webId: "Digit6",
   },
   Alpha7: {
+    displayName: "7",
     unityId: 55,
     webId: "Digit7",
   },
   Alpha8: {
+    displayName: "8",
     unityId: 56,
     webId: "Digit8",
   },
   Alpha9: {
+    displayName: "9",
     unityId: 57,
     webId: "Digit9",
   },

@@ -5,6 +5,9 @@
       <v-spacer />
       <v-btn icon flat size="x-small" class="ma-n1" @click="resetBindings">
         <v-icon>mdi-restore</v-icon>
+        <v-tooltip activator="parent" location="left" open-delay="400">
+          Reset to default
+        </v-tooltip>
       </v-btn>
     </div>
     <div>
@@ -50,18 +53,32 @@
             <v-menu v-model="keyboardAndMouseRebindEditorOpen" activator="parent" scrim offset="4" :close-on-content-click="false">
               <v-card variant="tonal">
                 <div class="pa-3 d-flex flex-column align-center">
-                  <div class="mb-2">
-                    Press keys for <strong>{{ gameActionMetadata[action].name }}</strong>...
-                  </div>
                   <wotw-settings-input-keyboard-and-mouse-bindings-editor
+                    :action="action"
                     v-model="keyboardAndMouseEditingBinding"
                   />
+                  <div>
+                    <v-checkbox
+                      v-model="keyboardAndMouseEditingBinding.exactModifiers"
+                      label="Exact Modifier Keys"
+                      class="mt-3 min-h-0"
+                      hide-details
+                    />
+
+                    <v-tooltip activator="parent" max-width="500" location="top" open-delay="700">
+                      Whether modifier keys such as Ctrl, Alt or Shift must match exactly.<br>
+                      Example: Take a binding of LeftAlt + F with Exact Modifier Keys enabled and you press
+                      LeftCtrl + LeftAlt + F. In this case the LeftAlt + F binding will not trigger because there is
+                      an additional LeftCtrl being pressed.
+                    </v-tooltip>
+                  </div>
                 </div>
                 <v-divider />
                 <v-btn
                   size="small"
                   block
                   :rounded="0"
+                  :disabled="keyboardAndMouseEditingBinding.inputs.length === 0"
                   @click="onKeyboardAndMouseBindingsEditorDone"
                 >
                   <v-icon start>mdi-check</v-icon>
@@ -192,5 +209,9 @@
 <style lang="scss" scoped>
   .greyed-out {
     opacity: 0.4;
+  }
+
+  .min-h-0 {
+    min-height: 0;
   }
 </style>

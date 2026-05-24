@@ -7,7 +7,7 @@
       </v-card>
     </template>
 
-    <v-icon v-if="binding.exactModifiers" size="x-small" class="mr-1">mdi-target</v-icon>
+    <v-icon v-if="binding.exactModifiers && binding.inputs.length > 0" size="x-small" class="mr-1">mdi-target</v-icon>
 
     <v-menu v-if="canDelete" activator="parent" open-on-hover offset="4">
       <v-list>

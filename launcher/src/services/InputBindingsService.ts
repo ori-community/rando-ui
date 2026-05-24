@@ -101,7 +101,7 @@ export class InputBindingsService {
 
       switch (controllerMetadata.type) {
         case "single":
-          storedBindings[action as ControllerRebindableAction] = (inputBindings[0] ?? []).map(unityId => controllerInputsByUnityId.get(unityId))
+          storedBindings[action as ControllerRebindableAction] = inputBindings.map(unityIds => controllerInputsByUnityId.get(unityIds[0]))
           break;
         case "composable":
           storedBindings[action as ControllerRebindableAction] = inputBindings.map(compositions => compositions.map(unityId => controllerInputsByUnityId.get(unityId)))
@@ -124,7 +124,7 @@ export class InputBindingsService {
       }
 
       file[action as ControllerRebindableAction] = (inputBindings.length > 0 && !Array.isArray(inputBindings[0]))
-        ? [(inputBindings as SingleControllerInputBinding[]).map((input: ControllerInput) => controllerInputMetadata[input].unityId)]
+        ? [...(inputBindings as SingleControllerInputBinding[]).map((input: ControllerInput) => [controllerInputMetadata[input].unityId])]
         : (inputBindings as ComposableControllerInputBinding[]).map((inputs: ControllerInput[]) => inputs.map(input => controllerInputMetadata[input].unityId))
     }
 

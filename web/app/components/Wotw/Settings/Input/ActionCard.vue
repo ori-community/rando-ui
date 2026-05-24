@@ -25,6 +25,28 @@
 
           <v-card class="pa-1 d-flex align-center" flat>
             <v-icon size="x-small">mdi-plus</v-icon>
+
+            <v-menu v-model="controllerRebindEditorOpen" activator="parent" scrim offset="4" :close-on-content-click="false">
+              <v-card variant="tonal">
+                <div class="pa-3 d-flex flex-column align-center">
+                  <wotw-settings-input-controller-bindings-editor
+                    v-model="controllerEditingBinding"
+                    :action="action as ControllerRebindableAction"
+                  />
+                </div>
+                <v-divider />
+                <v-btn
+                  size="small"
+                  block
+                  :rounded="0"
+                  :disabled="controllerEditingBinding === null || controllerEditingBinding.length === 0"
+                  @click="onControllerBindingsEditorDone"
+                >
+                  <v-icon start>mdi-check</v-icon>
+                  Add
+                </v-btn>
+              </v-card>
+            </v-menu>
           </v-card>
         </div>
         <div v-else class="align-self-center">
@@ -54,8 +76,8 @@
               <v-card variant="tonal">
                 <div class="pa-3 d-flex flex-column align-center">
                   <wotw-settings-input-keyboard-and-mouse-bindings-editor
-                    :action="action"
                     v-model="keyboardAndMouseEditingBinding"
+                    :action="action as KeyboardAndMouseRebindableAction"
                   />
                   <div>
                     <v-checkbox
@@ -118,11 +140,19 @@
   const electronApi = useElectronApi()
   const canControllerRebind = computed(() => gameActionMetadata[props.action].controller !== false)
   const canKeyboardAndMouseRebind = computed(() => gameActionMetadata[props.action].keyboardAndMouse !== false)
+  const controllerRebindEditorOpen = ref(false)
+  const controllerEditingBinding = ref<ControllerInputBinding | null>(null)
   const keyboardAndMouseEditingBinding = ref<KeyboardAndMouseInputBinding>({
     inputs: [],
     exactModifiers: false,
   })
   const keyboardAndMouseRebindEditorOpen = ref(false)
+
+  watch(controllerRebindEditorOpen, (value) => {
+    if (value) {
+      controllerEditingBinding.value = null
+    }
+  })
 
   watch(keyboardAndMouseRebindEditorOpen, (value) => {
     if (value) {
@@ -198,6 +228,15 @@
         bindings: keyboardAndMouseMetadata.default
       })
     }
+  }
+
+  function onControllerBindingsEditorDone() {
+    if (controllerEditingBinding.value === null) {
+      return
+    }
+
+    addControllerBinding(controllerEditingBinding.value)
+    controllerRebindEditorOpen.value = false
   }
 
   function onKeyboardAndMouseBindingsEditorDone() {

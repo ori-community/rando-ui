@@ -311,6 +311,10 @@ export const controllerInputsByUnityId: Map<number, ControllerInput> = new Map<n
   Object.entries(controllerInputMetadata).map(([key, input]) => [input.unityId, key as ControllerInput]),
 )
 
+export const controllerInputsByWebId: Map<number, ControllerInput> = new Map<number, ControllerInput>(
+  Object.entries(controllerInputMetadata).map(([key, input]) => [input.webId, key as ControllerInput]),
+)
+
 export const keyboardAndMouseInputMetadata = {
   Backspace: {
     unityId: 8,

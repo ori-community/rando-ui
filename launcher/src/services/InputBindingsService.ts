@@ -19,8 +19,9 @@ import {
   keyboardAndMouseInputsByUnityId,
 } from "@shared/data/input"
 import {EventEmitter} from "events"
-import {SettingKey, Settings} from "@shared/types/settings"
 
+// The following ...File types are the structure saved to and loaded from the
+// actual .json files.
 type ControllerBindingsFile = Record<ControllerRebindableAction, number[][]>
 type KeyboardAndMouseBindingsFile = Record<KeyboardAndMouseRebindableAction, {
   keys: number[],

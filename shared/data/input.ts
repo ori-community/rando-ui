@@ -900,3 +900,7 @@ export const keyboardAndMouseInputMetadata = {
 export const keyboardAndMouseInputsByUnityId: Map<number, KeyboardAndMouseInput> = new Map<number, KeyboardAndMouseInput>(
   Object.entries(keyboardAndMouseInputMetadata).map(([key, input]) => [input.unityId, key as KeyboardAndMouseInput]),
 )
+
+export const keyboardAndMouseInputsByWebId: Map<string, KeyboardAndMouseInput> = new Map<string, KeyboardAndMouseInput>(
+  Object.entries(keyboardAndMouseInputMetadata).map(([key, input]) => [input.webId, key as KeyboardAndMouseInput]),
+)

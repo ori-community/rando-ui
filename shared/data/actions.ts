@@ -108,12 +108,14 @@ export const gameActionCategoryMetadata: Record<GameActionCategory, GameActionCa
 
 export type SingleControllerInputBinding = ControllerInput
 export type ComposableControllerInputBinding = ControllerInput[]
+export type ControllerInputBinding = SingleControllerInputBinding | ComposableControllerInputBinding
 export type ControllerInputBindings = SingleControllerInputBinding[] | ComposableControllerInputBinding[]
 export type ComposableKeyboardAndMouseInputBinding = {
   inputs: KeyboardAndMouseInput[],
   /** Whether modifier keys (Ctrl/Alt/Shift...) must match exactly */
   exactModifiers: boolean,
 }
+export type KeyboardAndMouseInputBinding = ComposableKeyboardAndMouseInputBinding
 export type KeyboardAndMouseInputBindings = ComposableKeyboardAndMouseInputBinding[]
 
 export type GameActionMetadata = {
@@ -308,6 +310,7 @@ export const gameActionMetadata = {
   },
   OpenMapsShardsInventory: {
     name: "Open Previous",
+    description: "Opens Map/Shards/Inventory menu, whichever was opened last",
     category: "Menu",
     controller: {
       type: "single",
@@ -559,6 +562,7 @@ export const gameActionMetadata = {
   QuickBuy: {
     name: "Quick Buy",
     category: "Menu",
+    description: "Press this while buying something in a shop to purchase immediately",
     controller: {
       type: "composable",
       default: [["ButtonX"]],
@@ -573,6 +577,7 @@ export const gameActionMetadata = {
   },
   Binding1: {
     name: "Binding 1",
+    description: "Custom action defined by the loaded seed",
     category: "Randomizer",
     controller: {
       type: "composable",
@@ -591,6 +596,7 @@ export const gameActionMetadata = {
   },
   Binding2: {
     name: "Binding 2",
+    description: "Custom action defined by the loaded seed",
     category: "Randomizer",
     controller: {
       type: "composable",
@@ -609,6 +615,7 @@ export const gameActionMetadata = {
   },
   Binding3: {
     name: "Binding 3",
+    description: "Custom action defined by the loaded seed",
     category: "Randomizer",
     controller: {
       type: "composable",
@@ -627,6 +634,7 @@ export const gameActionMetadata = {
   },
   Binding4: {
     name: "Binding 4",
+    description: "Custom action defined by the loaded seed",
     category: "Randomizer",
     controller: {
       type: "composable",
@@ -645,6 +653,7 @@ export const gameActionMetadata = {
   },
   Binding5: {
     name: "Binding 5",
+    description: "Custom action defined by the loaded seed",
     category: "Randomizer",
     controller: {
       type: "composable",

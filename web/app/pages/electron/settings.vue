@@ -12,7 +12,7 @@
           <v-tabs-window-item :value="1" class='pa-5'>
             <wotw-settings-general />
           </v-tabs-window-item>
-          <v-tabs-window-item :value="2" class='pa-5'>
+          <v-tabs-window-item :value="2" class='pa-5' eager>
             <wotw-settings-input />
           </v-tabs-window-item>
         </v-tabs-window>

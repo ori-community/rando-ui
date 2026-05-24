@@ -1,7 +1,12 @@
 <template>
-  <v-card class="pa-2" variant="tonal">
-    <h3>{{ gameActionMetadata[action].name }}</h3>
-
+  <v-card class="pa-2 d-flex flex-column" variant="tonal">
+    <div class="d-flex">
+      <h3>{{ gameActionMetadata[action].name }}</h3>
+      <v-spacer />
+      <v-btn icon flat size="x-small" class="ma-n1" @click="resetBindings">
+        <v-icon>mdi-restore</v-icon>
+      </v-btn>
+    </div>
     <div>
       <div
         class="d-flex align-start ga-2"
@@ -12,9 +17,10 @@
           <wotw-settings-input-controller-bindings-view
             v-if="controllerInputBindings !== undefined"
             :bindings="controllerInputBindings"
+            @delete="deleteControllerBinding"
           />
 
-          <v-card class="pa-1 d-flex align-center" flat @click="addControllerBinding">
+          <v-card class="pa-1 d-flex align-center" flat>
             <v-icon size="x-small">mdi-plus</v-icon>
           </v-card>
         </div>
@@ -35,23 +41,55 @@
           <wotw-settings-input-keyboard-and-mouse-bindings-view
             v-if="keyboardAndMouseInputBindings !== undefined"
             :bindings="keyboardAndMouseInputBindings"
+            @delete="deleteKeyboardAndMouseBinding"
           />
 
-          <v-card class="pa-1 d-flex align-center" flat @click="addKeyboardBinding">
+          <v-card class="pa-1 d-flex align-center" flat>
             <v-icon size="x-small">mdi-plus</v-icon>
+
+            <v-menu v-model="keyboardAndMouseRebindEditorOpen" activator="parent" scrim offset="4" :close-on-content-click="false">
+              <v-card variant="tonal">
+                <div class="pa-3 d-flex flex-column align-center">
+                  <div class="mb-2">
+                    Press keys for <strong>{{ gameActionMetadata[action].name }}</strong>...
+                  </div>
+                  <wotw-settings-input-keyboard-and-mouse-bindings-editor
+                    v-model="keyboardAndMouseEditingBinding"
+                  />
+                </div>
+                <v-divider />
+                <v-btn
+                  size="small"
+                  block
+                  :rounded="0"
+                  @click="onKeyboardAndMouseBindingsEditorDone"
+                >
+                  <v-icon start>mdi-check</v-icon>
+                  Add
+                </v-btn>
+              </v-card>
+            </v-menu>
           </v-card>
         </div>
       </div>
     </div>
+    <template v-if="!!gameActionMetadata[action].description">
+      <div class="flex-grow-1 my-1" />
+      <p class="text-body-medium">{{ gameActionMetadata[action].description }}</p>
+    </template>
   </v-card>
 </template>
 
 <script lang="ts" setup>
   import {
+    type ControllerInputBinding,
     type ControllerInputBindings,
+    type ControllerRebindableAction,
     type GameAction,
     gameActionMetadata,
+    type KeyboardAndMouseInputBinding,
     type KeyboardAndMouseInputBindings,
+    type KeyboardAndMouseRebindableAction,
   } from "@shared/data/actions"
 
   const props = defineProps<{
@@ -60,15 +98,94 @@
     keyboardAndMouseInputBindings?: KeyboardAndMouseInputBindings,
   }>()
 
+  const electronApi = useElectronApi()
   const canControllerRebind = computed(() => gameActionMetadata[props.action].controller !== false)
   const canKeyboardAndMouseRebind = computed(() => gameActionMetadata[props.action].keyboardAndMouse !== false)
+  const keyboardAndMouseEditingBinding = ref<KeyboardAndMouseInputBinding>({
+    inputs: [],
+    exactModifiers: false,
+  })
+  const keyboardAndMouseRebindEditorOpen = ref(false)
 
-  function addControllerBinding() {
+  watch(keyboardAndMouseRebindEditorOpen, (value) => {
+    if (value) {
+      keyboardAndMouseEditingBinding.value = {
+        inputs: [],
+        exactModifiers: false,
+      }
+    }
+  })
 
+  async function addControllerBinding(binding: ControllerInputBinding) {
+    if (!electronApi) {
+      return
+    }
+
+    await electronApi.inputBindings.setControllerActionBindings.query({
+      action: props.action as ControllerRebindableAction,
+      bindings: [...(props.controllerInputBindings ?? []), binding] as ControllerInputBindings,
+    })
   }
 
-  function addKeyboardBinding() {
+  async function addKeyboardBinding(binding: KeyboardAndMouseInputBinding) {
+    if (!electronApi) {
+      return
+    }
 
+    await electronApi.inputBindings.setKeyboardAndMouseActionBindings.query({
+      action: props.action as KeyboardAndMouseRebindableAction,
+      bindings: [...(props.keyboardAndMouseInputBindings ?? []), binding]
+    })
+  }
+
+  async function deleteControllerBinding(index: number) {
+    if (!electronApi || !props.controllerInputBindings || props.controllerInputBindings.length < index) {
+      return
+    }
+
+    await electronApi.inputBindings.setControllerActionBindings.query({
+      action: props.action as ControllerRebindableAction,
+      bindings: props.controllerInputBindings.toSpliced(index, 1)
+    })
+  }
+
+  async function deleteKeyboardAndMouseBinding(index: number) {
+    if (!electronApi || !props.keyboardAndMouseInputBindings || props.keyboardAndMouseInputBindings.length < index) {
+      return
+    }
+
+    await electronApi.inputBindings.setKeyboardAndMouseActionBindings.query({
+      action: props.action as KeyboardAndMouseRebindableAction,
+      bindings: props.keyboardAndMouseInputBindings.toSpliced(index, 1)
+    })
+  }
+
+  async function resetBindings() {
+    if (!electronApi) {
+      return
+    }
+
+    const controllerMetadata = gameActionMetadata[props.action].controller
+    const keyboardAndMouseMetadata = gameActionMetadata[props.action].keyboardAndMouse
+
+    if (controllerMetadata !== false) {
+      await electronApi.inputBindings.setControllerActionBindings.query({
+        action: props.action as ControllerRebindableAction,
+        bindings: controllerMetadata.default
+      })
+    }
+
+    if (keyboardAndMouseMetadata !== false && keyboardAndMouseMetadata !== "in-game") {
+      await electronApi.inputBindings.setKeyboardAndMouseActionBindings.query({
+        action: props.action as KeyboardAndMouseRebindableAction,
+        bindings: keyboardAndMouseMetadata.default
+      })
+    }
+  }
+
+  function onKeyboardAndMouseBindingsEditorDone() {
+    addKeyboardBinding(keyboardAndMouseEditingBinding.value)
+    keyboardAndMouseRebindEditorOpen.value = false
   }
 </script>
 

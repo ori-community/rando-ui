@@ -66,12 +66,15 @@ if (!app.requestSingleInstanceLock()) {
         })
       }
 
-      if ((await fs.promises.stat(absolutePath)).isDirectory()) {
+      let targetExists = fs.existsSync(absolutePath)
+
+      if (targetExists && (await fs.promises.stat(absolutePath)).isDirectory()) {
         absolutePath = path.join(absolutePath, "index.html")
+        targetExists = fs.existsSync(absolutePath)
       }
 
       // Fall back to top-level index.html if the requested file does not exist
-      if (!fs.existsSync(absolutePath)) {
+      if (!targetExists) {
         absolutePath = path.join(webBuildBasePath, "index.html")
       }
 

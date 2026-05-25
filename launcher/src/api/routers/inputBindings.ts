@@ -36,6 +36,16 @@ export const inputBindings = router({
       await InputBindingsService.setKeyboardAndMouseActionBindings(input.action, input.bindings)
     }),
   /**
+   * Reset all bindings to the default values
+   */
+  resetAllBindings: publicProcedure
+    .query(async () => {
+      await Promise.all([
+        InputBindingsService.resetControllerBindings(),
+        InputBindingsService.resetKeyboardAndMouseBindings(),
+      ])
+    }),
+  /**
    * Subscribe to get the current controller bindings.
    * Will emit its current value on subscription.
    */

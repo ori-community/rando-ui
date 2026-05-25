@@ -132,7 +132,9 @@ export class InputBindingsService {
   }
 
   static async resetControllerBindings() {
-    await this.storeControllerBindings(getDefaultControllerBindings())
+    this.controllerBindingsCache = getDefaultControllerBindings()
+    this.events.emit("controllerBindingsChanged", this.controllerBindingsCache)
+    this.flushBindingsThrottled()
   }
 
   static async makeSureKeyboardAndMouseBindingsFileExists() {
@@ -185,7 +187,9 @@ export class InputBindingsService {
   }
 
   static async resetKeyboardAndMouseBindings() {
-    await this.storeKeyboardAndMouseBindings(getDefaultKeyboardAndMouseBindings())
+    this.keyboardAndMouseBindingsCache = getDefaultKeyboardAndMouseBindings()
+    this.events.emit("keyboardAndMouseBindingsChanged", this.keyboardAndMouseBindingsCache)
+    this.flushBindingsThrottled()
   }
 
   static async getControllerBindings(): Promise<ControllerBindings> {

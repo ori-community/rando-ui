@@ -1,7 +1,8 @@
 import {execa, ResultPromise} from "execa"
 import {LauncherService} from "@launcher/services/LauncherService"
 import {getInstallDataPath, getUserDataPath} from "@launcher/paths"
-import log from "electron-log"
+import log from "electron-log/main"
+import {stripVTControlCharacters} from "node:util"
 
 
 type SeedgenExecaOptions = {
@@ -49,11 +50,11 @@ export class SeedgenServerService {
       new Promise<void>((_resolve, reject) => setTimeout(reject, readyTimeoutMs)),
       new Promise<void>((resolve, reject) => {
         const logInfo = function* (line: string) {
-          log.info("Seedgen: " + line)
+          log.info("Seedgen: " + stripVTControlCharacters(line))
         }
 
         const logError = function* (line: string) {
-          log.error("Seedgen: " + line)
+          log.error("Seedgen: " + stripVTControlCharacters(line))
 
           if (line.startsWith("Listening on")) {
             resolve()

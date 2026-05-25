@@ -436,7 +436,7 @@ export const gameActionMetadata = {
     category: "Menu",
     controller: {
       type: "single",
-      default: ["DPadUp", "LeftStickDown"],
+      default: ["DPadUp", "LeftStickUp"],
     },
     keyboardAndMouse: "in-game",
   },

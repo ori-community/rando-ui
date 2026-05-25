@@ -3,7 +3,7 @@ import path from "path"
 // eslint-disable-next-line import/no-unresolved
 import {createIPCHandler} from "electron-trpc/main"
 import {appRouter} from "@launcher/api/api"
-import {getLogsUserDataPath, getRandomizerUserDataPath, getUserDataPath} from "@launcher/paths"
+import {getLogsUserDataPath, getRandomizerUserDataPath, getSeedsUserDataPath, getUserDataPath} from "@launcher/paths"
 import fs from "fs"
 import {RandoIPCService} from "@launcher/services/RandoIPCService"
 import {LocalTrackerWebSocketService} from "@launcher/services/LocalTrackerWebSocketService"
@@ -46,6 +46,7 @@ if (!app.requestSingleInstanceLock()) {
     await fs.promises.mkdir(getUserDataPath(), {recursive: true})
     await fs.promises.mkdir(getRandomizerUserDataPath(), {recursive: true})
     await fs.promises.mkdir(getLogsUserDataPath(), {recursive: true})
+    await fs.promises.mkdir(getSeedsUserDataPath(), {recursive: true})
 
     const webBuildBasePath = path.normalize(path.join(__dirname, "../../web-build/"))
     protocol.handle("app", async (request) => {

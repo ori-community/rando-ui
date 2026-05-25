@@ -590,7 +590,7 @@
               const seed = await generateOfflineSeedFromCurrentSettings()
               const paths = await electronApi.fs.saveSeed.query({worlds: seed.worlds})
               if (paths[0]) {
-                await electronApi.systemDialogs.showPathInExplorer.query({path: paths[0]})
+                await electronApi.shell.showPathInExplorer.query({path: paths[0]})
               }
             },
           })

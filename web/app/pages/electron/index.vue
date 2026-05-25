@@ -6,40 +6,74 @@
           <div class="pa-6 text-center">
             <v-icon size="64">mdi-cloud-off-outline</v-icon>
             <div>
-              You appear to be offline<br/>
+              You appear to be offline<br>
               <span class="text-lurk">(or we broke the server)</span>
             </div>
           </div>
         </template>
         <template v-else>
           <v-scroll-x-transition>
-            <div v-if="multiverses?.length > 0">
+            <div>
               <div>
                 <h2 class="d-inline-block mb-3">Recent Online Games</h2>
                 <nuxt-link class="pl-3 pt-2 more-label text-decoration-none" to="/my-games">See more</nuxt-link>
               </div>
 
               <div class="last-games-container">
-                <v-card
-                  v-for="multiverse in multiverses.slice(0, visiblePastGamesCount)"
-                  :key="multiverse.id"
-                  :to="{ name: 'game-multiverseId', params: { multiverseId: multiverse.id } }"
-                  class="pa-4"
-                  variant="plain"
-                  border="sm"
-                  hover
+                <div
+                  v-for="i in visibleRecentMultiversesCount"
+                  :key="i"
+                  type="text"
                 >
-                  <div class="multiverse-id-container">
-                    <div>
-                      <span class="hashtag">#</span><span class="multiverse-id">{{ multiverse.id }}</span>
+                  <!-- Fake card to estimate dimensions -->
+                  <div v-if="recentMultiverses === null" class="position-relative">
+                    <v-card
+                      class="pa-4 opacity-0 pointer-events-none"
+                      variant="plain"
+                      border="sm"
+                      hover
+                    >
+                      <div class="multiverse-id-container">
+                        <div>
+                          <span class="hashtag">#</span><span class="multiverse-id">0</span>
+                        </div>
+                      </div>
+                      <div class="pt-3">
+                        <rando-discord-avatar />
+                      </div>
+                    </v-card>
+                    <v-card
+                      class="position-absolute top-0 left-0 right-0 bottom-0"
+                      variant="plain"
+                      border="sm"
+                      hover
+                    >
+                      <v-skeleton-loader type="ossein" width="100%" height="100%" />
+                    </v-card>
+                  </div>
+
+                  <v-card
+                    v-else-if="!!recentMultiverses[i]"
+                    :to="{ name: 'game-multiverseId', params: { multiverseId: recentMultiverses[i].id } }"
+                    class="pa-4"
+                    variant="text"
+                    border="sm"
+                    hover
+                  >
+                    <div class="multiverse-id-container">
+                      <div>
+                        <span class="hashtag">#</span><span class="multiverse-id">{{ recentMultiverses[i].id }}</span>
+                      </div>
                     </div>
-                  </div>
-                  <div class="pt-3">
-                    <rando-discord-avatar v-for="member in multiverse.members" :key="member.id" :user="member"/>
-                  </div>
-                </v-card>
+                    <div class="pt-3">
+                      <rando-discord-avatar v-for="member in recentMultiverses[i].members" :key="member.id" :user="member" />
+                    </div>
+                  </v-card>
+
+                  <div v-else />
+                </div>
               </div>
-              <v-divider class="my-6"/>
+              <v-divider class="my-6" />
             </div>
           </v-scroll-x-transition>
           <v-scroll-x-transition>
@@ -80,7 +114,7 @@
                   />
                 </div>
 
-                <v-divider class="my-6"/>
+                <v-divider class="my-6" />
               </div>
             </div>
           </v-scroll-x-transition>
@@ -146,30 +180,7 @@
           </v-card>
 
           <div class="buttons mt-6">
-            <rando-launch-button icon="mdi-leek" :show-confetti="true" label="Lauch" @click="launch()">
-              <v-tooltip location="bottom" activator="parent">This is a hint</v-tooltip>
-            </rando-launch-button>
-            <rando-launch-button icon="mdi-seed" :show-confetti="true" label="Saatauswahl"
-                                 @click="selectAndLaunchFile()">
-              <v-tooltip location="bottom" activator="parent">This is also a hint</v-tooltip>
-            </rando-launch-button>
-            <rando-launch-button
-              ref="refConfetti"
-              icon="mdi-party-popper"
-              label="Confetti"
-              @click="showConfetti()">
-              <v-tooltip location="bottom" activator="parent">CONFETTI</v-tooltip>
-              <template #icon>
-                <v-icon start>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="90 100 60 80">
-                    <path
-                      fill="currentColor"
-                      :d="oriShapePath"
-                    />
-                  </svg>
-                </v-icon>
-              </template>
-            </rando-launch-button>
+            <rando-launch-button :show-confetti="true" label="Launch" @click="launch()" />
           </div>
           <!--          <v-card v-if="newGameSeedSource !== null" class="pa-2 text-center top-border-radius-0 current-seed-path">-->
           <!--            {{ newGameSeedSourceDisplayString }}-->
@@ -188,26 +199,24 @@
             Read the Wiki
           </v-btn>
 
-          <!--          TODO Button for new directories (appdata / install dir), maybe-->
           <div class="py-4 text-center hoverable">
             <v-btn variant="plain" density="comfortable" icon @click="openSeedsDirectory">
-              <v-icon>mdi-folder-eye-outline</v-icon>
+              <v-icon>mdi-folder-file-outline</v-icon>
               <v-tooltip location="bottom" activator="parent">
                 <span>Open seeds directory</span>
               </v-tooltip>
             </v-btn>
-            <v-btn variant="plain" density="comfortable" icon @click="openRandomizerDirectory">
+            <v-btn variant="plain" density="comfortable" icon @click="openUserDataDirectory">
               <v-icon>mdi-folder-cog-outline</v-icon>
               <v-tooltip location="bottom" activator="parent">
-                <span>Open randomizer directory</span>
+                <span>Open user data directory</span>
               </v-tooltip>
             </v-btn>
             <v-btn
               variant="plain"
               density="comfortable"
               icon
-              :loading="supportBundleLoading"
-              @click="createSupportBundle"
+              disabled
             >
               <v-icon>mdi-bug-outline</v-icon>
               <v-tooltip location="bottom" activator="parent">
@@ -220,7 +229,6 @@
                 <span>GitHub</span>
               </v-tooltip>
             </v-btn>
-            <!--            TODO DISCORD ICON-->
             <v-btn variant="plain" density="comfortable" icon @click="openDiscord">
               <v-icon>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -243,21 +251,18 @@
 
 <script setup lang="ts">
   import type {LeagueSeasonInfo} from "@shared/types/league"
-  import type {MultiverseMetadataInfo} from "@shared/types/http-api";
-  import {confettiFromElement, oriShapePath} from "~/assets/utils/confetti";
+  import type {MultiverseMetadataInfo} from "@shared/types/http-api"
 
   const {axios, catchAxiosErrors} = useAxios()
   const userStore = useUserStore()
   const electronApi = useElectronApi()
   const {launch} = useLauncherHelper()
-  const {xs, mdAndDown} = useDisplay()
+  const {xs, mdAndDown, lgAndDown} = useDisplay()
   const leagueHelper = useLeagueHelper()
   const currentVersion = ref(await electronApi?.updater.getVersion.query())
-  const multiverses = ref<MultiverseMetadataInfo[]>([])
+  const recentMultiverses = ref<MultiverseMetadataInfo[] | null>(null)
   const upcomingLeagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
   const activeLeagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
-
-  const refConfetti = ref<{ $el: HTMLElement } | null>(null)
 
   const inOfflineMode = ref(false)    // TODO check if releases can be fetched
   const updateAvailable = ref(false)  // TODO Version Control
@@ -265,7 +270,7 @@
   onMounted(async () => {
     await catchAxiosErrors(
       async () => {
-        multiverses.value = (await axios.get("/multiverses/own")).data
+        recentMultiverses.value = (await axios.get("/multiverses/own", {params: {limit: 4}})).data
       },
       async (e) => {
         console.error(e)
@@ -273,8 +278,8 @@
     )
 
     try {
-      upcomingLeagueSeasons.value = await (await axios.get('/league/seasons/upcoming')).data
-      activeLeagueSeasons.value = await (await axios.get('/league/seasons/active')).data
+      upcomingLeagueSeasons.value = await (await axios.get("/league/seasons/upcoming")).data
+      activeLeagueSeasons.value = await (await axios.get("/league/seasons/active")).data
     } catch (e) {
       upcomingLeagueSeasons.value = null
       activeLeagueSeasons.value = null
@@ -283,63 +288,49 @@
     await leagueHelper.updatePendingGames()
   })
 
-  const visiblePastGamesCount = computed(() => {
-    if (xs.value) {
-      return 1
+  const visibleRecentMultiversesCount = computed(() => {
+    switch (true) {
+      case xs.value: return 1
+      case mdAndDown.value: return 2
+      case lgAndDown.value: return 3
+      default: return 4
     }
-    if (mdAndDown.value) {
-      return 2
-    }
-    return 3
   })
+
   const combinedLeagueSeasons = computed(() => {
-    // return (upcomingLeagueSeasons.value || []).concat(activeLeagueSeasons.value || []) as LeagueSeasonInfo[]
     return [
       ...(activeLeagueSeasons.value ?? []).map(season => ({
         season,
-        state: 'active',
+        state: "active",
         checkmark: !leagueHelper.pendingGames.value?.some(game => game.season.id === season.id),
       })),
       ...(upcomingLeagueSeasons.value ?? []).map(season => ({
         season,
-        state: 'upcoming',
-        checkmark: season.memberships?.some((m) => m.user.id === userStore.user?.id)
+        state: "upcoming",
+        checkmark: season.memberships?.some((m) => m.user.id === userStore.user?.id),
       })),
-    ] as { season: LeagueSeasonInfo, state: 'active' | 'upcoming', checkmark: boolean }[]
+    ] as { season: LeagueSeasonInfo, state: "active" | "upcoming", checkmark: boolean }[]
   })
 
-  const selectAndLaunchFile = (async () => {
-    const newPath = await electronApi?.systemDialogs.pickFile.query({
-      filters: [{name: 'Seedfiles', extensions: ['wotwr']}],
-    })
-    if (newPath) {
-      launch(`file:${newPath}`)
-    }
-  })
-
-  const openWiki = (() => {
-    window.electronApi.invoke('launcher.openUrl', {url: 'https://wiki.orirando.com'})
-  })
-  const openRandomizerDirectory = (() => {
-    window.electronApi.invoke('launcher.openRandomizerDirectory')
-  })
-  const openSeedsDirectory = (() => {
-    window.electronApi.invoke('launcher.openSeedsDirectory')
-  })
-  const openGitHub = (() => {
-    window.electronApi.invoke('launcher.openUrl', {url: 'https://github.com/ori-community'})
-  })
-  const openDiscord = (() => {
-    window.electronApi.invoke('launcher.openUrl', {url: 'https://discord.gg/SUS57PWWnA'})
-  })
-
-  function showConfetti() {
-    if (!refConfetti.value) {
-      return
-    }
-    confettiFromElement(refConfetti.value.$el, {disableForReducedMotion: true})
+  async function openWiki() {
+    await electronApi?.shell.openUrl.query({url: "https://wiki.orirando.com"})
   }
 
+  async function openUserDataDirectory() {
+    await electronApi?.shell.showWellKnownPathInExplorer.query({wellKnownPath: "user-data"})
+  }
+
+  async function openSeedsDirectory() {
+    await electronApi?.shell.showWellKnownPathInExplorer.query({wellKnownPath: "seeds"})
+  }
+
+  async function openGitHub() {
+    await electronApi?.shell.openUrl.query({url: "https://github.com/ori-community"})
+  }
+
+  async function openDiscord() {
+    await electronApi?.shell.openUrl.query({url: "https://discord.gg/SUS57PWWnA"})
+  }
 </script>
 
 <style lang="scss" scoped>
@@ -351,7 +342,7 @@
 
   .last-games-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, 250px);
+    grid-auto-columns: 1fr;
     grid-auto-flow: column;
     gap: 0.75em;
   }
@@ -415,4 +406,7 @@
     }
   }
 
+  .hidden {
+    visibility: hidden;
+  }
 </style>

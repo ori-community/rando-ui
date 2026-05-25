@@ -8,7 +8,7 @@ import {localTrackerWebSocket} from "@launcher/api/routers/localTrackerWebSocket
 import {randoIpc} from "@launcher/api/routers/randoIpc"
 import {seedgenServer} from "@launcher/api/routers/seedgenServer"
 import {settings} from "@launcher/api/routers/settings"
-import {systemDialogs} from "@launcher/api/routers/systemDialogs"
+import {shell} from "@launcher/api/routers/shell"
 import {toolsWindow} from "@launcher/api/routers/toolsWindow"
 import {updater} from "@launcher/api/routers/updater"
 
@@ -22,7 +22,7 @@ export const appRouter = router({
   randoIpc,
   seedgenServer,
   settings,
-  systemDialogs,
+  shell,
   toolsWindow,
   updater,
 })

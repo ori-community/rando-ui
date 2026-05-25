@@ -18,11 +18,12 @@
 
   const props = withDefaults(
     defineProps<{
-      user: UserInfo,
+      user?: UserInfo | null,
       connected?: boolean,
       raceReady?: boolean,
       size?: number,
     }>(), {
+      user: null,
       connected: false,
       raceReady: false,
       size: 32,
@@ -30,7 +31,7 @@
   )
 
   const discordAvatarUrl = computed(() => {
-    if (!props.user.avatarId) {
+    if (!props.user?.avatarId) {
       return null
     }
 

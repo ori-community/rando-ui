@@ -187,7 +187,7 @@
   })
 
   async function selectSteamPath() {
-    const newPath = await electronApi?.systemDialogs.pickFile.query({
+    const newPath = await electronApi?.shell.pickFile.query({
       defaultPath: steamBinaryPath.value,
       filters: [{name: 'Executables', extensions: platform === "windows" ? ['exe'] : []}],
     })
@@ -198,7 +198,7 @@
   }
 
   async function selectGameBinaryPath() {
-    const newPath = await electronApi?.systemDialogs.pickFile.query({
+    const newPath = await electronApi?.shell.pickFile.query({
       defaultPath: gameBinaryPath.value,
       filters: [{name: 'Executables', extensions: ['exe']}],
     })

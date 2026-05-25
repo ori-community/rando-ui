@@ -35,3 +35,7 @@ export function getRandomizerUserDataPath(relativePath = ".") {
 export function getLogsUserDataPath(relativePath = ".") {
   return getUserDataPath(path.join("logs", relativePath))
 }
+
+export function getSeedsUserDataPath(relativePath = ".") {
+  return getUserDataPath(path.join("seedgen/seeds", relativePath))
+}

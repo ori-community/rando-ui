@@ -17,11 +17,11 @@
       <v-icon v-else start>{{ displayedIcon }}</v-icon>
     </slot>
     {{ displayedLabel }}
+    <slot />
   </v-btn>
 </template>
 
 <script lang="ts" setup>
-
   import {confettiFromElement} from "~/assets/utils/confetti";
 
   const emit = defineEmits<{
@@ -66,7 +66,6 @@
 
   watch(
     () => isLaunching.value, (newValue, oldValue) => {
-      console.log("isLaunching changed", newValue)
       if (oldValue && !newValue && hasBeenClicked.value) {
         hasBeenClicked.value = false
         if (props.showConfetti) {

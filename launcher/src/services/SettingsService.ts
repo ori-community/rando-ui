@@ -55,7 +55,7 @@ export class SettingsService {
     const localTrackerInitialWindowRect = LocalTrackerService.getInitialWindowRect()
 
     return {
-      ServerHost: "wotw.orirando.com",
+      ServerHost: "dev.wotw.orirando.com",
       ServerTLS: true,
       DeveloperMode: false,
       DebugControls: false,

@@ -9,66 +9,66 @@
     </teleport>
 
     <rando-throttled-spinner>
-      <div v-if="leagueSeason !== null" class="season-container justify-center">
-        <div class="d-flex justify-center align-center mt-12 mb-6">
-          <h1 class="pl-12 text-center mx-6">{{ leagueSeason.name }}</h1>
-          <v-btn
-            variant="text"
-            icon
-            :disabled="seasonLinkCopied"
-            @click="copySeasonLink"
-          >
-            <v-icon>{{ seasonLinkCopied ? 'mdi-clipboard-check-outline' : 'mdi-link' }}</v-icon>
-            <v-tooltip location="top" open-delay="500" activator="parent">
-              <span>Copy season link</span>
-            </v-tooltip>
-          </v-btn>
-        </div>
-        <div class="mb-2">
-          <v-btn variant="text" exact to="/league/seasons">
-            <v-icon>mdi-arrow-left-thin</v-icon>
-            Seasons
-          </v-btn>
-          <v-btn variant="text" @click="showSeasonInfo = true">
-            <v-icon start>mdi-information-outline</v-icon>
-            Info
-          </v-btn>
-          <v-btn variant="text" @click="showSeasonRules = true">
-            <v-icon start>mdi-book-open-outline</v-icon>
-            Rules
-          </v-btn>
-
-          <div v-if="isElectron" class="top-row-button">
-            <v-btn variant="text" :disabled="!userStore.isLoggedIn" @click="trainingSeedDialogOpen = true">
-              <v-icon start>mdi-dumbbell</v-icon>
-              Training
+      <template v-if="leagueSeason !== null" #content>
+        <div class="season-container justify-center">
+          <div class="d-flex justify-center align-center mt-12 mb-6">
+            <h1 class="pl-12 text-center mx-6">{{ leagueSeason.name }}</h1>
+            <v-btn
+              variant="text"
+              icon
+              :disabled="seasonLinkCopied"
+              @click="copySeasonLink"
+            >
+              <v-icon>{{ seasonLinkCopied ? 'mdi-clipboard-check-outline' : 'mdi-link' }}</v-icon>
+              <v-tooltip location="top" open-delay="500" activator="parent">
+                <span>Copy season link</span>
+              </v-tooltip>
             </v-btn>
-            <v-tooltip location="bottom" open-delay="300" activator="parent">
-              <span>{{ userStore.isLoggedIn ? 'Create a practice game' : 'Log in to create a practice game' }}</span>
-            </v-tooltip>
           </div>
-          <div v-if="!isJoined && !seasonEnded" class="top-row-button">
-            <div class="ori-lurk-container">
-              <img
-                class="ori-lurk" :class="{ lurking: joinButtonLurking }"
-                src="@shared/images/ori_lurk.png" alt="">
+          <div class="mb-2">
+            <v-btn variant="text" exact to="/league/seasons">
+              <v-icon>mdi-arrow-left-thin</v-icon>
+              Seasons
+            </v-btn>
+            <v-btn variant="text" @click="showSeasonInfo = true">
+              <v-icon start>mdi-information-outline</v-icon>
+              Info
+            </v-btn>
+            <v-btn variant="text" @click="showSeasonRules = true">
+              <v-icon start>mdi-book-open-outline</v-icon>
+              Rules
+            </v-btn>
+
+            <div v-if="isElectron" class="top-row-button">
+              <v-btn variant="text" :disabled="!userStore.isLoggedIn" @click="trainingSeedDialogOpen = true">
+                <v-icon start>mdi-dumbbell</v-icon>
+                Training
+              </v-btn>
+              <v-tooltip location="bottom" open-delay="300" activator="parent">
+                <span>{{ userStore.isLoggedIn ? 'Create a practice game' : 'Log in to create a practice game' }}</span>
+              </v-tooltip>
             </div>
-            <v-btn color="accent" :loading="actionLoading" :disabled="!canJoin" @click="showSeasonRules = true">
-              <v-icon start>mdi-plus-circle-outline</v-icon>
-              Join
-            </v-btn>
-            <v-tooltip activator="parent" location="bottom" :disabled="canJoin">
-              <span>{{ userStore.isLoggedIn ? `You can't join running seasons` : 'Log in to join' }}</span>
-            </v-tooltip>
+            <div v-if="!isJoined && !seasonEnded" class="top-row-button">
+              <div class="ori-lurk-container">
+                <img
+                  class="ori-lurk" :class="{ lurking: joinButtonLurking }"
+                  src="@shared/images/ori_lurk.png" alt="">
+              </div>
+              <v-btn color="accent" :loading="actionLoading" :disabled="!canJoin" @click="showSeasonRules = true">
+                <v-icon start>mdi-plus-circle-outline</v-icon>
+                Join
+              </v-btn>
+              <v-tooltip activator="parent" location="bottom" :disabled="canJoin">
+                <span>{{ userStore.isLoggedIn ? `You can't join running seasons` : 'Log in to join' }}</span>
+              </v-tooltip>
+            </div>
           </div>
-        </div>
-        <div class="tables-container">
+          <div class="tables-container">
 
-          <!-- TODO fix row highlighting -->
-          <!-- LEADERBOARD -->
-          <v-card class="overflow-x-auto leaderboard-container">
-            <h2 ref="leaderboardTitleRef" class="text-center mt-5 mb-5">Leaderboard</h2>
-            <rando-throttled-spinner>
+            <!-- TODO fix row highlighting -->
+            <!-- LEADERBOARD -->
+            <v-card class="overflow-x-auto leaderboard-container">
+              <h2 ref="leaderboardTitleRef" class="text-center mt-5 mb-5">Leaderboard</h2>
               <v-data-table
                 v-if="sortedMembers"
                 class="leaderboard"
@@ -149,95 +149,95 @@
                   </div>
                 </div>
               </div>
-            </rando-throttled-spinner>
-          </v-card>
+            </v-card>
 
-          <!-- SEASON START -->
-          <v-card
-            v-if="leagueSeason?.nextContinuationAt && !(leagueSeason.games.length > 0)"
-            class="season-start-container text-center pa-5"
-            style="grid-row: 1"
-          >
-            <div class="background-overlay"/>
-            <div class="gradient-overlay"/>
-            <div class="starting-date-content">
-              <div>Starting at</div>
-              <span class="starting-date">
+            <!-- SEASON START -->
+            <v-card
+              v-if="leagueSeason?.nextContinuationAt && !(leagueSeason.games.length > 0)"
+              class="season-start-container text-center pa-5"
+              style="grid-row: 1"
+            >
+              <div class="background-overlay"/>
+              <div class="gradient-overlay"/>
+              <div class="starting-date-content">
+                <div>Starting at</div>
+                <span class="starting-date">
                  {{ formatDateEpoch(leagueSeason?.nextContinuationAt, 'P p') }}
               </span>
-              <div>
-                <template v-if="isJoined">Be prepared!</template>
-                <template v-else>Join the hype!</template>
+                <div>
+                  <template v-if="isJoined">Be prepared!</template>
+                  <template v-else>Join the hype!</template>
+                </div>
               </div>
-            </div>
-          </v-card>
+            </v-card>
 
-          <!-- CURRENT GAME -->
-          <wotw-league-game-card
-            v-if="currentGame !== null"
-            style="grid-row: 1"
-            :game="currentGame"
-            :game-count="leagueSeason.gameCount"
-            :playable-until="leagueSeason.nextContinuationAt"
-            :member-count="leagueSeason.memberships?.length"
-          />
+            <!-- CURRENT GAME -->
+            <wotw-league-game-card
+              v-if="currentGame !== null"
+              style="grid-row: 1"
+              :game="currentGame"
+              :game-count="leagueSeason.gameCount"
+              :playable-until="leagueSeason.nextContinuationAt"
+              :member-count="leagueSeason.memberships?.length"
+            />
 
-          <!-- PAST GAMES -->
-          <div class="games-list">
-            <h3
-              v-if="pastGames.length > 0 && leagueSeason.currentGameId"
-              class="text-center"
-              :class="{ 'mt-3': currentGame !== null }"
-              style="grid-row: 2"
-            >
-              Past Games
-            </h3>
-            <v-card v-if="pastGames.length > 0" class="overflow-x-auto">
-              <h2 v-if="!leagueSeason.currentGameId" class="text-center mt-5 mb-5">Games</h2>
-              <v-data-table
-                class="past-games"
-                :headers="gameHeaders"
-                :items="pastGames"
-                :items-per-page="-1"
-                hide-default-footer
-                must-sort
-                :sort-by="[{ key: 'gameNumber'}]"
-                :item-class="() => 'cursor-pointer'"
-                :mobile-breakpoint='0'
-                @click:row="(event: PointerEvent, row: any) => openGamePage(row.item.id)"
+            <!-- PAST GAMES -->
+            <div class="games-list">
+              <h3
+                v-if="pastGames.length > 0 && leagueSeason.currentGameId"
+                class="text-center"
+                :class="{ 'mt-3': currentGame !== null }"
+                style="grid-row: 2"
               >
-                <!-- items -->
-                <template #[`item.gameNumber`]="{ item }">#{{ item.gameNumber }}</template>
-                <template #[`item.userMetadata.ownSubmission.rankingData.rank`]="{ item }">
-                  <rando-place-badge
-                    v-if="item.userMetadata?.ownSubmission?.rankingData?.rank ?? false"
-                    :size="40"
-                    :place="item.userMetadata?.ownSubmission?.rankingData?.rank"
-                  />
-                  <div v-else>-</div>
-                </template>
-                <template #[`item.userMetadata.ownSubmission.rankingData.points`]="{ item }">
-                  <template v-if="item.userMetadata?.ownSubmission?.rankingData?.points ?? 0 >= 0">
-                    <wotw-league-points-view
-                      :ranking-data="item.userMetadata?.ownSubmission?.rankingData"
-                      :discard-worst-games-count="leagueSeason.discardWorstGamesCount"
+                Past Games
+              </h3>
+              <v-card v-if="pastGames.length > 0" class="overflow-x-auto">
+                <h2 v-if="!leagueSeason.currentGameId" class="text-center mt-5 mb-5">Games</h2>
+                <v-data-table
+                  class="past-games"
+                  :headers="gameHeaders"
+                  :items="pastGames"
+                  :items-per-page="-1"
+                  hide-default-footer
+                  must-sort
+                  :sort-by="[{ key: 'gameNumber'}]"
+                  :item-class="() => 'cursor-pointer'"
+                  :mobile-breakpoint='0'
+                  @click:row="(event: PointerEvent, row: any) => openGamePage(row.item.id)"
+                >
+                  <!-- items -->
+                  <template #[`item.gameNumber`]="{ item }">#{{ item.gameNumber }}</template>
+                  <template #[`item.userMetadata.ownSubmission.rankingData.rank`]="{ item }">
+                    <rando-place-badge
+                      v-if="item.userMetadata?.ownSubmission?.rankingData?.rank ?? false"
+                      :size="40"
+                      :place="item.userMetadata?.ownSubmission?.rankingData?.rank"
+                    />
+                    <div v-else>-</div>
+                  </template>
+                  <template #[`item.userMetadata.ownSubmission.rankingData.points`]="{ item }">
+                    <template v-if="item.userMetadata?.ownSubmission?.rankingData?.points ?? 0 >= 0">
+                      <wotw-league-points-view
+                        :ranking-data="item.userMetadata?.ownSubmission?.rankingData"
+                        :discard-worst-games-count="leagueSeason.discardWorstGamesCount"
+                      />
+                    </template>
+                    <template v-else>
+                      <div>-</div>
+                    </template>
+                  </template>
+                  <template #[`item.userMetadata.ownSubmission.rankingData.time`]="{ item }">
+                    <wotw-league-time-view
+                      :time="item.userMetadata?.ownSubmission?.rankingData?.time ?? null"
+                      :original-time="item.userMetadata?.ownSubmission?.rankingData?.originalTime ?? null"
                     />
                   </template>
-                  <template v-else>
-                    <div>-</div>
-                  </template>
-                </template>
-                <template #[`item.userMetadata.ownSubmission.rankingData.time`]="{ item }">
-                  <wotw-league-time-view
-                    :time="item.userMetadata?.ownSubmission?.rankingData?.time ?? null"
-                    :original-time="item.userMetadata?.ownSubmission?.rankingData?.originalTime ?? null"
-                  />
-                </template>
-              </v-data-table>
-            </v-card>
+                </v-data-table>
+              </v-card>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
     </rando-throttled-spinner>
     <v-dialog v-model="showSeasonInfo" max-width="800">
       <v-card class="pa-5">
@@ -295,8 +295,6 @@
   import {renderMarkdown} from "assets/utils/markdown"
   import {formatDateEpoch} from "~/assets/utils/formatsDates"
   import {confettiFromElement} from "~/assets/utils/confetti";
-
-  const trainingSeedLaunchButton = useTemplateRef('trainingSeedLaunchButton')
 
   const {axios} = useAxios()
   const route = useRoute()

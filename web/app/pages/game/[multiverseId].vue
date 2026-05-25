@@ -53,53 +53,55 @@
         </div>
 
         <rando-throttled-spinner>
-          <div v-if="userStore.isLoggedIn">
-            <div class="text-center mb-3">
-              <wotw-multiverse-race-timer
-                v-if="isRaceRunning"
-                :starting-at="normalGameHandlerState?.raceStartingAt ?? null"
-                :finished-time="normalGameHandlerState?.finishedTime ?? null"
-              />
-              <template v-else-if="isRaceModeEnabled">
-                <h3>Waiting for all players to be ready...</h3>
-                <div>Start a new save file to signal yourself ready.</div>
-              </template>
-            </div>
+          <template v-if="userStore.user !== undefined" #content>
+            <div v-if="userStore.isLoggedIn">
+              <div class="text-center mb-3">
+                <wotw-multiverse-race-timer
+                  v-if="isRaceRunning"
+                  :starting-at="normalGameHandlerState?.raceStartingAt ?? null"
+                  :finished-time="normalGameHandlerState?.finishedTime ?? null"
+                />
+                <template v-else-if="isRaceModeEnabled">
+                  <h3>Waiting for all players to be ready...</h3>
+                  <div>Start a new save file to signal yourself ready.</div>
+                </template>
+              </div>
 
-            <div :class="{ 'two-columns': !!multiverse.race }">
-              <wotw-multiverse-view
-                :preview="isSpectating"
-                :show-spectator-notice="isSpectating"
-                :multiverse="multiverse"
-                :race-starting-at="normalGameHandlerState?.raceStartingAt"
-                :player-in-game-times="normalGameHandlerState?.playerInGameTimes"
-                :player-finished-times="normalGameHandlerState?.playerFinishedTimes"
-                :world-finished-times="normalGameHandlerState?.worldFinishedTimes"
-                :universe-finished-times="normalGameHandlerState?.universeFinishedTimes"
-              />
-              <wotw-multiverse-race-result-view v-if="!!multiverse.race" :race="multiverse.race" />
-            </div>
+              <div :class="{ 'two-columns': !!multiverse.race }">
+                <wotw-multiverse-view
+                  :preview="isSpectating"
+                  :show-spectator-notice="isSpectating"
+                  :multiverse="multiverse"
+                  :race-starting-at="normalGameHandlerState?.raceStartingAt"
+                  :player-in-game-times="normalGameHandlerState?.playerInGameTimes"
+                  :player-finished-times="normalGameHandlerState?.playerFinishedTimes"
+                  :world-finished-times="normalGameHandlerState?.worldFinishedTimes"
+                  :universe-finished-times="normalGameHandlerState?.universeFinishedTimes"
+                />
+                <wotw-multiverse-race-result-view v-if="!!multiverse.race" :race="multiverse.race" />
+              </div>
 
-            <div v-if="devtoolsEnabled" class="mt-5">
-              <v-card class="pa-4">
-                <h3>Dispatch custom event</h3>
-                <v-text-field v-model="devDebugEventName" label="Event" />
+              <div v-if="devtoolsEnabled" class="mt-5">
+                <v-card class="pa-4">
+                  <h3>Dispatch custom event</h3>
+                  <v-text-field v-model="devDebugEventName" label="Event" />
 
-                <div class="d-flex">
-                  <v-spacer />
-                  <v-btn depressed color="accent" @click="dispatchDebugEvent"> Dispatch</v-btn>
-                </div>
-              </v-card>
+                  <div class="d-flex">
+                    <v-spacer />
+                    <v-btn depressed color="accent" @click="dispatchDebugEvent"> Dispatch</v-btn>
+                  </div>
+                </v-card>
+              </div>
             </div>
-          </div>
-          <div v-if="userStore.user === null" class="text-center">
-            <v-alert class="d-inline-block" color="error darken-3">
-              <template v-if="isOBS">
-                <b>DO NOT</b> add this page to OBS directly. Please use the "Embed" feature above the board.
-              </template>
-              <template v-else> You need to be logged in to view this game.</template>
-            </v-alert>
-          </div>
+            <div v-else class="text-center">
+              <v-alert class="d-inline-block" color="error darken-3">
+                <template v-if="isOBS">
+                  <b>DO NOT</b> add this page to OBS directly. Please use the "Embed" feature above the board.
+                </template>
+                <template v-else> You need to be logged in to view this game.</template>
+              </v-alert>
+            </div>
+          </template>
         </rando-throttled-spinner>
       </div>
     </v-container>
@@ -191,6 +193,7 @@
   const {multiverse, seed, bingoBoard, bingoUniverses} = await useMultiverse(Number(route.params.multiverseId))
   const {launch} = useLauncherHelper()
   const {devtoolsEnabled} = storeToRefs(useDevtoolsStore())
+  const isOBS = ref(false)  // TODO
 
   const gameLinkCopied = ref(false)
   const downloadSpoilerDialogOpen = ref(false)
@@ -245,7 +248,7 @@
       return null
     }
 
-    return Proto.NormalGameHandlerState.decode(multiverse.value.gameHandlerClientInfo)
+    return Proto.NormalGameHandlerState.decode(multiverse.value.gameHandlerClientInfo as Uint8Array)
   })
   const isRaceRunning = computed(() => {
     if (!normalGameHandlerState.value) {
@@ -316,7 +319,7 @@
   // },
 
   watch(() => spoilerSearchQuery.value, (value) => {
-    const range = document.createRange()
+    const _range = document.createRange()
 
     const offset = spoilerText.value.toLowerCase().indexOf(value.toLowerCase())
 

@@ -16,47 +16,76 @@
     </div>
   </div>
 
-  <h2 class="mb-2">Start with Presets</h2>
-  <wotw-seedgen-preset-button
-    v-for="presetId in groupedWorldPresetIds['Base']"
-    :key="presetId"
-    :selected="presetId === selectedBasePreset?.id"
-    large
-    class="mb-2"
-    :preset-id="presetId"
-    :preset-info="(worldPresets[presetId] as WorldPreset).info"
-    @click="onBaseWorldPresetSelected(presetId)"
-  />
+  <h2 class="mb-2">Presets</h2>
 
-  <v-expand-transition>
-    <div v-if="selectedBasePreset !== null" class="d-flex gap-6">
+  <template v-for="presetId in groupedWorldPresetIds['Base']" :key="presetId">
+    <div class="pb-2">
       <wotw-seedgen-preset-button
-        v-for="presetId in Object.keys(presetsWithoutGroup)"
-        :key="presetId"
-        :disabled="selectedBasePreset.preset.includes?.includes(presetId)"
-        :selected="selectedAdditionalPresets.has(presetId) || selectedBasePreset.preset.includes?.includes(presetId)"
+        :selected="presetId === selectedBasePreset?.id"
+        large
+        icon="mdi-format-list-bulleted-type"
         :preset-id="presetId"
         :preset-info="(worldPresets[presetId] as WorldPreset).info"
-        :description-append="selectedBasePreset.preset.includes?.includes(presetId) ? `Included in the '${selectedBasePreset.preset.info?.name ?? selectedBasePreset.id}' preset` : null"
-        @click="onAdditionalPresetSelected(presetId)"
+        @click="onBaseWorldPresetSelected(presetId)"
       />
-
-      <v-btn variant="flat" color="accent" :loading="loading" @click="finishPresetSelection">
-        <v-icon start>mdi-check</v-icon>
-        Done
-      </v-btn>
     </div>
-  </v-expand-transition>
 
-  <div class="d-flex justify-end">
-    <v-btn size="small" color="primary" variant="text" :loading="loading || randomSettingsLoading" @click="selectRandomWorldSettings">
-      Randomize Settings
-    </v-btn>
-    <v-divider vertical class="mx-2" />
-    <v-btn size="small" color="primary" variant="text" :loading="loading" :disabled="randomSettingsLoading" @click="startFromScratch">
-      Start from Scratch
-    </v-btn>
-  </div>
+    <v-expand-transition>
+      <div v-if="selectedBasePreset !== null && selectedBasePreset.id === presetId">
+        <div class="pb-4 d-flex align-start ga-3">
+          <v-icon size="28">mdi-arrow-right-bottom</v-icon>
+
+          <div class="d-flex gap-6">
+            <wotw-seedgen-preset-button
+              v-for="ungroupedPreset in Object.keys(presetsWithoutGroup)"
+              :key="ungroupedPreset"
+              :disabled="selectedBasePreset.preset.includes?.includes(ungroupedPreset)"
+              :selected="selectedAdditionalPresets.has(ungroupedPreset) || selectedBasePreset.preset.includes?.includes(ungroupedPreset)"
+              :preset-id="ungroupedPreset"
+              :preset-info="(worldPresets[ungroupedPreset] as WorldPreset).info"
+              :description-append="selectedBasePreset.preset.includes?.includes(ungroupedPreset) ? `Included in the '${selectedBasePreset.preset.info?.name ?? selectedBasePreset.id}' preset` : null"
+              icon="mdi-plus"
+              @click="onAdditionalPresetSelected(ungroupedPreset)"
+            />
+
+            <v-btn variant="flat" color="accent" :loading="loading" @click="finishPresetSelection">
+              <v-icon start>mdi-check</v-icon>
+              Done
+            </v-btn>
+          </div>
+        </div>
+      </div>
+    </v-expand-transition>
+  </template>
+
+  <h2 class="mb-2 mt-4">Other Options</h2>
+  <wotw-seedgen-preset-button
+    large
+    class="mb-2"
+    preset-id="random"
+    @click="selectRandomWorldSettings"
+  >
+    <div class="d-flex ga-3 align-center">
+      <v-icon>mdi-dice-multiple-outline</v-icon>
+      <div>
+        <h3>Random Settings</h3>
+        <p>Let the randomizer randomize all your settings</p>
+      </div>
+    </div>
+  </wotw-seedgen-preset-button>
+  <wotw-seedgen-preset-button
+    large
+    preset-id="random"
+    @click="startFromScratch"
+  >
+    <div class="d-flex ga-3 align-center">
+      <v-icon>mdi-creation-outline</v-icon>
+      <div>
+        <h3>Start from Scratch</h3>
+        <p>Configure everything yourself</p>
+      </div>
+    </div>
+  </wotw-seedgen-preset-button>
 </template>
 
 <script lang="ts" setup>

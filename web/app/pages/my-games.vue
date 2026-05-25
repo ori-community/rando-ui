@@ -3,63 +3,65 @@
     <h1 class="text-center mt-12 mb-6">My Games</h1>
 
     <rando-throttled-spinner>
-      <template v-if="!fetchingGames">
-      <template v-if="multiverses !== null && multiverses.length > 0">
-        <div class="games-container mt-8">
-          <div class="timeline">
-            <v-timeline truncate-line="start" side="end" size="small" align="center" density="comfortable">
-              <template v-for="group of multiversesByPeriod" :key="group.period">
-                <v-timeline-item hide-dot>
-                  <h2>{{ group.period }}</h2>
-                </v-timeline-item>
-                <v-timeline-item
-                  v-for="multiverseMetadata in group.multiverses"
-                  :key="multiverseMetadata.id"
-                  class="game-container"
-                  :class="{selected: Number(route.query.game) === multiverseMetadata.id}"
-                  :fill-dot="Number(route.query.game) === multiverseMetadata.id"
-                  :dot-color="Number(route.query.game) === multiverseMetadata.id ? 'primary' : 'secondary'"
-                  @click="router.push({query: {...route.query, game: multiverseMetadata.id}})"
-                  @dblclick="router.push({name: 'game-multiverseId', params: {multiverseId: multiverseMetadata.id}})"
-                >
-                  <template #opposite>
-                    <div class="multiverse-id-container">
-                      <div>
-                        <span class="hashtag">#</span><span class="multiverse-id">{{ multiverseMetadata.id }}</span>
+      <template v-if="multiverses !== null" #content>
+        <div>
+          <template v-if="multiverses.length > 0">
+            <div class="games-container mt-8">
+              <div class="timeline">
+                <v-timeline truncate-line="start" side="end" size="small" align="center" density="comfortable">
+                  <template v-for="group of multiversesByPeriod" :key="group.period">
+                    <v-timeline-item hide-dot>
+                      <h2>{{ group.period }}</h2>
+                    </v-timeline-item>
+                    <v-timeline-item
+                      v-for="multiverseMetadata in group.multiverses"
+                      :key="multiverseMetadata.id"
+                      class="game-container"
+                      :class="{selected: Number(route.query.game) === multiverseMetadata.id}"
+                      :fill-dot="Number(route.query.game) === multiverseMetadata.id"
+                      :dot-color="Number(route.query.game) === multiverseMetadata.id ? 'primary' : 'secondary'"
+                      @click="router.push({query: {...route.query, game: multiverseMetadata.id}})"
+                      @dblclick="router.push({name: 'game-multiverseId', params: {multiverseId: multiverseMetadata.id}})"
+                    >
+                      <template #opposite>
+                        <div class="multiverse-id-container">
+                          <div>
+                            <span class="hashtag">#</span><span class="multiverse-id">{{ multiverseMetadata.id }}</span>
+                          </div>
+                        </div>
+                      </template>
+                      <div class="avatars">
+                        <div v-for="user in multiverseMetadata.members" :key="user.id" class="avatar">
+                          <rando-discord-avatar :user="user" />
+                          <v-tooltip location="bottom" activator="parent" open-delay="250">
+                            <span>{{ user.name }}</span>
+                          </v-tooltip>
+                        </div>
                       </div>
-                    </div>
+                    </v-timeline-item>
                   </template>
-                  <div class="avatars">
-                    <div v-for="user in multiverseMetadata.members" :key="user.id" class="avatar">
-                      <rando-discord-avatar :user="user" />
-                      <v-tooltip location="bottom" activator="parent" open-delay="250">
-                        <span>{{ user.name }}</span>
-                      </v-tooltip>
+                </v-timeline>
+              </div>
+              <v-divider vertical />
+              <div class="multiverse-view-container mt-4">
+                <v-scroll-x-reverse-transition leave-absolute>
+                  <div v-if="route.query.game">
+                    <wotw-multiverse-preview-pane :multiverse-id="Number(route.query.game)" />
+                  </div>
+                  <div v-else class="text-center">
+                    <div class="pt-6">
+                      Select a game to preview.<br>
+                      Double click a game to open directly.
                     </div>
                   </div>
-                </v-timeline-item>
-              </template>
-            </v-timeline>
-          </div>
-          <v-divider vertical />
-          <div class="multiverse-view-container mt-4">
-            <v-scroll-x-reverse-transition leave-absolute>
-              <div v-if="route.query.game">
-                <wotw-multiverse-preview-pane :multiverse-id="Number(route.query.game)" />
+                </v-scroll-x-reverse-transition>
               </div>
-              <div v-else class="text-center">
-                <div class="pt-6">
-                  Select a game to preview.<br>
-                  Double click a game to open directly.
-                </div>
-              </div>
-            </v-scroll-x-reverse-transition>
+            </div>
+          </template>
+          <div v-else class="text-center">
+            <img class="ori-image" src="@shared/images/ori_thumb.png" alt="">
+            <div>You haven't played any online games recently</div>
           </div>
-        </div>
-      </template>
-        <div v-else class="text-center">
-          <img class="ori-image" src="@shared/images/ori_thumb.png" alt="">
-          <div>You haven't played any online games recently</div>
         </div>
       </template>
     </rando-throttled-spinner>
@@ -79,9 +81,13 @@
   const route = useRoute()
   const router = useRouter()
 
-  const multiverses = ref<MultiverseMetadataInfo[]>([])
-  const fetchingGames = ref(true)
+  const multiverses = ref<MultiverseMetadataInfo[] | null>(null)
+
   const multiversesByPeriod = computed(() => {
+    if (multiverses.value === null) {
+      return []
+    }
+
     const periodGroups: Array<PeriodGroup> = new Array<PeriodGroup>()
 
     // set dates that separate periods
@@ -149,7 +155,6 @@
   })
 
   const fetchMultiverses = (async () => {
-    fetchingGames.value = true
     await catchAxiosErrors(
       async () => {
         multiverses.value = (await axios.get("/multiverses/own")).data
@@ -158,7 +163,6 @@
         console.error(e)
       },
     )
-    fetchingGames.value = false
   })
 </script>
 

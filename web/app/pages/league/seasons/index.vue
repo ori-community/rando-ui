@@ -13,7 +13,7 @@
     </div>
 
     <rando-throttled-spinner>
-      <div v-if="leagueHelper.pendingGames.value !== null">
+      <template v-if="leagueHelper.pendingGames.value !== null" #content>
         <div v-if="leagueHelper.pendingGamesCount.value > 0" class="pt-2">
           <h2 class="mb-2">Your Pending Games</h2>
 
@@ -29,12 +29,12 @@
             />
           </div>
         </div>
-      </div>
+      </template>
     </rando-throttled-spinner>
 
     <rando-throttled-spinner>
-      <div v-if="!seasonsLoading" class="pt-6">
-        <div v-if="categorizedSeasons.active.length > 0 || categorizedSeasons.upcoming.length > 0">
+      <template v-if="!seasonsLoading" #content>
+        <div v-if="categorizedSeasons.active.length > 0 || categorizedSeasons.upcoming.length > 0" class="pt-6">
           <h2 class="mb-2">
             <template v-if="categorizedSeasons.active.length > 0 && categorizedSeasons.upcoming.length > 0">Active &
               Upcoming Seasons
@@ -73,7 +73,7 @@
             />
           </div>
         </div>
-      </div>
+      </template>
     </rando-throttled-spinner>
 
     <v-dialog v-model="showLeagueInfo" max-width="800" content-class="elevation-0 pr-2">

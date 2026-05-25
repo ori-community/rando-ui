@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <rando-throttled-spinner>
-      <div v-if="leagueSeason !== null && leagueGame !== null">
+      <template v-if="leagueSeason !== null && leagueGame !== null" #content>
         <div class="text-center mt-12">
           <rando-copy-to-clipboard
             v-slot="{ copyToClipboard }"
@@ -60,90 +60,91 @@
           <v-card class="pt-5">
             <h2 class="text-center mb-5">Submissions</h2>
             <rando-throttled-spinner>
-
-              <!-- TODO fix row highlighting -->
-              <!-- SUBMISSIONS -->
-              <v-data-table
-                v-if="sortedSubmissions"
-                class="submissions"
-                :headers="submissionHeaders"
-                :items="sortedSubmissions"
-                :items-per-page="-1"
-                hide-default-footer
-                :mobile-breakpoint="0"
-                disable-sort
-                :item-class="(item: LeagueGameSubmissionInfo) => (item.membership.user.id === userStore.user?.id ? 'row-highlighting' : '')"
-              >
-                <!-- Items -->
-                <template #[`item.rankingData.rank`]="{ item }">
-                  <rando-place-badge
-                    v-if="item.rankingData?.rank ?? false"
-                    :size="40"
-                    :place="item.rankingData?.rank"
-                    light-circle
-                  />
-                </template>
-                <template #[`item.membership.user.name`]="{ item }">
-                  <div class="d-flex align-center">
-                    <rando-discord-avatar :user="item.membership.user" class="mr-1"/>
-                    {{ item.membership.user.name }}
-                  </div>
-                </template>
-                <template #[`item.rankingData.time`]="{ item }">
-                  <wotw-league-time-view
-                    :time="item.rankingData?.time ?? null"
-                    :original-time="item.rankingData?.originalTime ?? null"/>
-                </template>
-                <template #[`item.rankingData.points`]="{ item }">
-                  <template v-if="!leagueGame.isCurrent && item.rankingData !== null">
-                    <wotw-league-points-view
-                      :ranking-data="item.rankingData"
-                      :discard-worst-games-count="leagueSeason.discardWorstGamesCount"
+              <template v-if="gameSubmissions !== null" #content>
+                <!-- TODO fix row highlighting -->
+                <!-- SUBMISSIONS -->
+                <v-data-table
+                  v-if="sortedSubmissions"
+                  class="submissions"
+                  :headers="submissionHeaders"
+                  :items="sortedSubmissions"
+                  :items-per-page="-1"
+                  hide-default-footer
+                  :mobile-breakpoint="0"
+                  disable-sort
+                  :item-class="(item: LeagueGameSubmissionInfo) => (item.membership.user.id === userStore.user?.id ? 'row-highlighting' : '')"
+                >
+                  <!-- Items -->
+                  <template #[`item.rankingData.rank`]="{ item }">
+                    <rando-place-badge
+                      v-if="item.rankingData?.rank ?? false"
+                      :size="40"
+                      :place="item.rankingData?.rank"
+                      light-circle
                     />
                   </template>
-                  <template v-else>
-                    <div>-</div>
-                  </template>
-                </template>
-                <template #[`item.traceMap`]="{ item }">
-                  <v-btn v-if="item.hasSaveFile" icon @click="openTraceMap(item)">
-                    <v-icon size="small">mdi-map</v-icon>
-                  </v-btn>
-                </template>
-                <template #[`item.rankingData.videoUrl`]="{ item }">
-                  <v-btn v-if="item.rankingData?.videoUrl" icon @click="openVideo(item.rankingData.videoUrl)">
-                    <v-icon>mdi-video-outline</v-icon>
-                  </v-btn>
-                  <v-btn
-                    v-else-if="item.membership.user.id === userStore.user?.id" icon
-                    @click="showVideoSubmission = true">
-                    <v-icon>mdi-plus</v-icon>
-                  </v-btn>
-                </template>
-
-                <!-- no data -->
-                <template #no-data>
-                  <template v-if="canSubmit">Be the first to submit!</template>
-                  <template v-else-if="leagueGame.isCurrent">No submittions available yet</template>
-                  <template v-else>
-                    <div class="mb-2 mt-5">
-                      <img class="ori-image" src="@shared/images/ori_thumb.png" alt=""><br><b>no submittions</b>
+                  <template #[`item.membership.user.name`]="{ item }">
+                    <div class="d-flex align-center">
+                      <rando-discord-avatar :user="item.membership.user" class="mr-1"/>
+                      {{ item.membership.user.name }}
                     </div>
                   </template>
-                </template>
-              </v-data-table>
+                  <template #[`item.rankingData.time`]="{ item }">
+                    <wotw-league-time-view
+                      :time="item.rankingData?.time ?? null"
+                      :original-time="item.rankingData?.originalTime ?? null"/>
+                  </template>
+                  <template #[`item.rankingData.points`]="{ item }">
+                    <template v-if="!leagueGame.isCurrent && item.rankingData !== null">
+                      <wotw-league-points-view
+                        :ranking-data="item.rankingData"
+                        :discard-worst-games-count="leagueSeason.discardWorstGamesCount"
+                      />
+                    </template>
+                    <template v-else>
+                      <div>-</div>
+                    </template>
+                  </template>
+                  <template #[`item.traceMap`]="{ item }">
+                    <v-btn v-if="item.hasSaveFile" icon @click="openTraceMap(item)">
+                      <v-icon size="small">mdi-map</v-icon>
+                    </v-btn>
+                  </template>
+                  <template #[`item.rankingData.videoUrl`]="{ item }">
+                    <v-btn v-if="item.rankingData?.videoUrl" icon @click="openVideo(item.rankingData.videoUrl)">
+                      <v-icon>mdi-video-outline</v-icon>
+                    </v-btn>
+                    <v-btn
+                      v-else-if="item.membership.user.id === userStore.user?.id" icon
+                      @click="showVideoSubmission = true">
+                      <v-icon>mdi-plus</v-icon>
+                    </v-btn>
+                  </template>
 
-              <!-- footer -->
-              <div v-if="leagueGame.isCurrent && !didSubmit && gameSubmissions?.length > 0" class="text-center mt-3">
-                <div class="background--text text--lighten-5">
-                  <template v-if="canSubmit">Submit to see the times from other players</template>
-                  <template v-else>Results will be visible once game has been closed</template>
+                  <!-- no data -->
+                  <template #no-data>
+                    <template v-if="canSubmit">Be the first to submit!</template>
+                    <template v-else-if="leagueGame.isCurrent">No submittions available yet</template>
+                    <template v-else>
+                      <div class="mb-2 mt-5">
+                        <img class="ori-image" src="@shared/images/ori_thumb.png" alt=""><br><b>no submittions</b>
+                      </div>
+                    </template>
+                  </template>
+                </v-data-table>
+
+                <!-- footer -->
+                <div v-if="leagueGame.isCurrent && !didSubmit && gameSubmissions.length > 0" class="text-center mt-3">
+                  <div class="background--text text--lighten-5">
+                    <template v-if="canSubmit">Submit to see the times from other players</template>
+                    <template v-else>Results will be visible once game has been closed</template>
+                  </div>
                 </div>
-              </div>
+              </template>
             </rando-throttled-spinner>
           </v-card>
         </div>
-      </div>
+      </template>
     </rando-throttled-spinner>
 
     <!-- submit video -->
@@ -202,11 +203,11 @@
     <v-dialog v-model="developerModeWarningOpen" max-width="500">
       <v-card class="pa-5">
         <h3 class="mb-2">Developer Mode Enabled</h3>
-        <div class="mb-5">You are unable to launch League Games while Developer Mode is enabled!</div>
+        <div class="mb-5">League games cannot be played while Developer Mode is enabled!</div>
         <div class="justify-center dialog-buttons">
           <v-btn size="x-large" color="accent" :loading="launching" @click="disableDevModeAndLaunchGame()">
             <img class="launch-icon" src="@shared/images/launch.png" alt="">
-            Disable Dev Mode and Launch
+            Disable Developer Mode and Launch
           </v-btn>
         </div>
       </v-card>
@@ -225,12 +226,11 @@
   const {axios, catchAxiosErrors} = useAxios()
   const route = useRoute()
   const isElectron = useIsElectron()
-  const electronApi = useElectronApi()
+  // const electronApi = useElectronApi()
   const userStore = useUserStore()
   const leagueSeason = ref<LeagueSeasonInfo | null>(null)
   const leagueGame = ref<LeagueGameInfo | null>(null)
-  const gameSubmissions = ref<LeagueGameSubmissionInfo[]>([])
-  const actionLoading = ref(false)
+  const gameSubmissions = ref<LeagueGameSubmissionInfo[] | null>(null)
   const showVideoSubmission = ref(false)
   const videoUrlForSubmission = ref(null)
   const videoUrlSubmissionLoading = ref(false)
@@ -257,9 +257,6 @@
   const didSubmit = computed(() => {
     return ownSubmission.value !== null
   })
-  const multiverse = computed(() => {
-    return multiverses[leagueGame.value?.multiverseId]
-  })
   const sortedSubmissions = computed(() => {
     return gameSubmissions.value?.toSorted((a, b) => {
       const aTime = a.rankingData?.time ?? Number.MAX_VALUE
@@ -272,15 +269,7 @@
       return aTime - bTime
     })
   })
-  const hasWorldWithCurrentUser = computed(() => {
-    if (!multiverse.value) {
-      return false
-    }
 
-    return multiverse.value.universes.some((u) =>
-      u.worlds.some((w) => w.memberships.find((m) => m.user.id === userStore.user?.id)),
-    )
-  })
   const launcherUrl = computed(() => {
     return `ori-rando://league-game/${leagueGame.value?.id}`
   })
@@ -350,6 +339,7 @@
     //   newGameSeedSource: `server:${this.leagueGame.multiverseId}`,
     // })
   })
+
   const replayGame = (async () => {
     // TODO launch game
     // const multiverse = await this.$axios.$get(`/multiverses/${this.leagueGame.multiverseId}`)
@@ -376,11 +366,14 @@
     //   console.error(e)
     // }
   })
+
   const disableDevModeAndLaunchGame = (async () => {
     developerModeWarningOpen.value = false
-    await electronApi.invoke('settings.setSetting', {key: 'Flags.Dev', value: false})
+    // TODO
+    // await electronApi.invoke('settings.setSetting', {key: 'Flags.Dev', value: false})
     await launchGame()
   })
+
   const openInLauncher = ((event: KeyboardEvent) => {
     window.open(launcherUrl.value, '_self')
 
@@ -415,7 +408,7 @@
 
     videoUrlSubmissionLoading.value = false
   })
-  const openTraceMap = ((submission: LeagueGameSubmissionInfo) => {
+  const openTraceMap = ((_submission: LeagueGameSubmissionInfo) => {
     // TODO post trace map
     // store.commit('electron/setTraceMapSource', {
     //   multiverseId: leagueGame.value?.multiverseId,
@@ -428,7 +421,8 @@
   })
   const openVideo = ((videoUrl: string) => {
     if (isElectron) {
-      electronApi.invoke('launcher.openUrl', {url: videoUrl})
+      // TODO
+      // electronApi.invoke('launcher.openUrl', {url: videoUrl})
     } else {
       window.open(videoUrl)
     }

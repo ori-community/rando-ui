@@ -1,7 +1,7 @@
 <template>
   <v-fade-transition mode="out-in">
-    <div v-if="!!$slots.default" key="content">
-      <slot/>
+    <div v-if="!!$slots.content" key="content">
+      <slot name="content" />
     </div>
     <div v-else-if="show" key="progress" class="text-center" :class="{'ma-8': !noMargin}">
       <v-progress-circular indeterminate v-bind="$attrs"/>
@@ -17,6 +17,8 @@
   }>(), {
     noMargin: false,
   })
+
+  defineSlots<{content(): unknown}>()
 
   onMounted(() => {
     setTimeout(() => show.value = true, 750)

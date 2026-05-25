@@ -67,43 +67,45 @@
     </v-scale-transition>
     <v-spacer/>
     <rando-throttled-spinner no-margin>
-      <div class="d-flex align-center">
-        <template v-if="userStore.isLoggedIn">
-          <!-- TODO no greeting on mobile -->
-          <div v-if="!smAndDown" class="mr-4 user-info">
-            <div class="text-no-wrap">{{ randomGreeting(userStore.user?.name ?? '') }}</div>
-          </div>
-          <v-menu offset-y left nudge-bottom="6">
-            <template #activator="{ props }">
-              <v-btn x-large class="ma-0 mr-1" icon v-bind="props">
-                <rando-discord-avatar v-if="userStore.user" :user="userStore.user" :size="48"/>
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item @click="editedNickname = ''; showEditNicknameDialog = true">
-                <v-icon start>mdi-account-edit-outline</v-icon>
-                Change Nickname
-              </v-list-item>
-              <!-- TODO Dev Tools
-              <v-list-item v-if="userStore.isDeveloper" @click="toggleDevtools">
-                <v-icon start>mdi-code-braces</v-icon>
-                {{ devtoolsEnabled ? 'Disable' : 'Enable' }} Server Devtools
-              </v-list-item>
-              -->
-              <v-list-item @click="logout">
-                <v-icon start>mdi-logout-variant</v-icon>
-                Log out
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </template>
-        <template v-else>
-          <v-btn size="x-large" variant="text" @click="login">
-            <v-icon start>mdi-login-variant</v-icon>
-            Log in
-          </v-btn>
-        </template>
-      </div>
+      <template v-if="userStore.user !== undefined" #content>
+        <div class="d-flex align-center">
+          <template v-if="userStore.isLoggedIn">
+            <!-- TODO no greeting on mobile -->
+            <div v-if="!smAndDown" class="mr-4 user-info">
+              <div class="text-no-wrap">{{ randomGreeting(userStore.user?.name ?? '') }}</div>
+            </div>
+            <v-menu offset-y left nudge-bottom="6">
+              <template #activator="{ props }">
+                <v-btn x-large class="ma-0 mr-1" icon v-bind="props">
+                  <rando-discord-avatar v-if="userStore.user" :user="userStore.user" :size="48"/>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item @click="editedNickname = ''; showEditNicknameDialog = true">
+                  <v-icon start>mdi-account-edit-outline</v-icon>
+                  Change Nickname
+                </v-list-item>
+                <!-- TODO Dev Tools
+                <v-list-item v-if="userStore.isDeveloper" @click="toggleDevtools">
+                  <v-icon start>mdi-code-braces</v-icon>
+                  {{ devtoolsEnabled ? 'Disable' : 'Enable' }} Server Devtools
+                </v-list-item>
+                -->
+                <v-list-item @click="logout">
+                  <v-icon start>mdi-logout-variant</v-icon>
+                  Log out
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </template>
+          <template v-else>
+            <v-btn size="x-large" variant="text" @click="login">
+              <v-icon start>mdi-login-variant</v-icon>
+              Log in
+            </v-btn>
+          </template>
+        </div>
+      </template>
     </rando-throttled-spinner>
   </div>
 

@@ -1,13 +1,16 @@
 <template>
   <v-card v-if="large" class="pa-3 d-flex align-center" :color="color" :variant="variant" :disabled="disabled" @click="emit('click')">
     <div class="flex-grow-1">
-      <template v-if="!!presetInfo">
-        <h3>{{ presetInfo.name }}</h3>
-        <p>{{ presetInfo.description }}</p>
-      </template>
-      <template v-else>
-        {{ presetId }}
-      </template>
+      <div class="d-flex align-center ga-3">
+        <v-icon v-if="icon !== null">{{ icon }}</v-icon>
+        <div v-if="!!presetInfo">
+          <h3>{{ presetInfo.name }}</h3>
+          <p>{{ presetInfo.description }}</p>
+        </div>
+        <div v-else>
+          <slot>{{ presetId }}</slot>
+        </div>
+      </div>
     </div>
     <div>
       <v-icon>mdi-chevron-right</v-icon>
@@ -15,6 +18,7 @@
   </v-card>
   <div v-else>
     <v-btn class="no-text-transform" :color="color" :variant="variant" :disabled="disabled" @click="emit('click')">
+      <v-icon v-if="icon !== null" start>{{ icon }}</v-icon>
       {{ !!presetInfo ? presetInfo.name : presetId }}
     </v-btn>
 
@@ -40,7 +44,8 @@
     large = false,
     selected = false,
     disabled = false,
-    descriptionAppend = null
+    descriptionAppend = null,
+    icon = null,
   } = defineProps<{
     presetInfo?: PresetInfo | null,
     presetId: string,
@@ -48,6 +53,7 @@
     selected?: boolean,
     disabled?: boolean,
     descriptionAppend?: string | null,
+    icon?: string | null,
   }>()
 
   const color = computed(() => {

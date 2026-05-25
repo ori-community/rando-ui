@@ -21,7 +21,7 @@
 
               <div class="last-games-container">
                 <div
-                  v-for="i in visibleRecentMultiversesCount"
+                  v-for="(_count, i) in visibleRecentMultiversesCount"
                   :key="i"
                   type="text"
                 >

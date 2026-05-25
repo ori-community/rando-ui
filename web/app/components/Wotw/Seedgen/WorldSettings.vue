@@ -53,10 +53,21 @@
       prepend-inner-icon="mdi-transit-detour"
       chips
       :return-object="false"
-      :append-inner-icon="allAvailableTricksSelected ? 'mdi-close-box-multiple-outline' : 'mdi-checkbox-multiple-outline'"
       glow
-      @click:append-inner="toggleAllAvailableTricks()"
-    />
+    >
+      <template #append-inner>
+        <v-fade-transition mode="out-in">
+          <v-btn v-if="allAvailableTricksSelected" variant="tonal" @click="toggleAllAvailableTricks()">
+            <v-icon start>mdi-close-box-multiple-outline</v-icon>
+            Disable all Tricks
+          </v-btn>
+          <v-btn v-else variant="tonal" @click="toggleAllAvailableTricks()">
+            <v-icon start>mdi-checkbox-multiple-outline</v-icon>
+            Enable all Tricks
+          </v-btn>
+        </v-fade-transition>
+      </template>
+    </v-combobox>
 
     <div class="snippets-grid gap-12">
       <div v-for="category in sortedSnippetCategories" :key="category">

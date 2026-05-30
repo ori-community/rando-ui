@@ -35,7 +35,7 @@
       <template #actions>
         <v-btn @click="errorDialogOpen = false">Close</v-btn>
 
-        <v-dialog>
+        <v-dialog max-width="1200">
           <template #activator="{ props: activatorProps }">
             <v-btn v-bind="activatorProps" variant="flat" color="accent" @click="setupWizardDialogOpen = true">Check setup</v-btn>
           </template>

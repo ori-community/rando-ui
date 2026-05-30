@@ -112,7 +112,7 @@
           </strong>
         </div>
 
-        <v-dialog>
+        <v-dialog max-width="1200">
           <template #activator="{ props: activatorProps }">
             <v-btn v-bind="activatorProps" color="accent" flat class="mt-4">
               <v-icon start>mdi-restore</v-icon>

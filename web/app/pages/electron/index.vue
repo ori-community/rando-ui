@@ -20,13 +20,55 @@
               </div>
 
               <div class="last-games-container">
+                <div v-if="!loadingRecentMultiverses && recentMultiverses === null" class="position-relative">
+                  <v-card
+                    class="pa-4 opacity-0 pointer-events-none"
+                    variant="plain"
+                    border="sm"
+                    hover
+                  >
+                    <div class="multiverse-id-container">
+                      <div>
+                        <span class="hashtag">#</span><span class="multiverse-id">0</span>
+                      </div>
+                    </div>
+                    <div class="pt-3">
+                      <rando-discord-avatar/>
+                    </div>
+                  </v-card>
+                  <v-card
+                    class="position-absolute top-0 left-0 right-0 bottom-0 pa-1"
+                    variant="plain"
+                    border="sm"
+                    hover
+                  >
+                    <template v-if="userStore.isLoggedIn">
+                      <div class="align-center justify-center d-flex flex-column fill-height">
+                        <img class="ori-image mb-1" src="@shared/images/ori_thumb.png" alt="">
+                        <span>None found</span>
+                      </div>
+                      <v-tooltip activator="parent" location="right">
+                        You haven't played any online games recently
+                      </v-tooltip>
+                    </template>
+                    <template v-else>
+                      <div class="align-center justify-center d-flex flex-column fill-height">
+                        <img class="ori-image mb-1" src="@shared/images/ori_lurk.png" alt="">
+                        <span>Not logged in</span>
+                      </div>
+                      <v-tooltip activator="parent" location="right">
+                        You need to be logged in to show your recent games
+                      </v-tooltip>
+                    </template>
+                  </v-card>
+                </div>
                 <div
                   v-for="(_count, i) in visibleRecentMultiversesCount"
                   :key="i"
                   type="text"
                 >
                   <!-- Fake card to estimate dimensions -->
-                  <div v-if="recentMultiverses === null" class="position-relative">
+                  <div v-if="loadingRecentMultiverses" class="position-relative">
                     <v-card
                       class="pa-4 opacity-0 pointer-events-none"
                       variant="plain"
@@ -39,7 +81,7 @@
                         </div>
                       </div>
                       <div class="pt-3">
-                        <rando-discord-avatar />
+                        <rando-discord-avatar/>
                       </div>
                     </v-card>
                     <v-card
@@ -48,12 +90,11 @@
                       border="sm"
                       hover
                     >
-                      <v-skeleton-loader type="ossein" width="100%" height="100%" />
+                      <v-skeleton-loader type="ossein" width="100%" height="100%"/>
                     </v-card>
                   </div>
-
                   <v-card
-                    v-else-if="!!recentMultiverses[i]"
+                    v-else-if="recentMultiverses !== null && recentMultiverses[i]"
                     :to="{ name: 'game-multiverseId', params: { multiverseId: recentMultiverses[i].id } }"
                     class="pa-4"
                     variant="text"
@@ -66,14 +107,17 @@
                       </div>
                     </div>
                     <div class="pt-3">
-                      <rando-discord-avatar v-for="member in recentMultiverses[i].members" :key="member.id" :user="member" />
+                      <rando-discord-avatar
+                        v-for="member in recentMultiverses[i].members"
+                        :key="member.id"
+                        :user="member"/>
                     </div>
                   </v-card>
 
-                  <div v-else />
+                  <div v-else/>
                 </div>
               </div>
-              <v-divider class="my-6" />
+              <v-divider class="my-6"/>
             </div>
           </v-scroll-x-transition>
           <v-scroll-x-transition>
@@ -113,8 +157,8 @@
                     :checkmark-overlay="combination.checkmark"
                   />
                 </div>
-
-                <v-divider class="my-6" />
+                <!-- TODO divider not shown if only pending games are listed and not upcoming seasons-->
+                <v-divider class="my-6"/>
               </div>
             </div>
           </v-scroll-x-transition>
@@ -180,7 +224,7 @@
           </v-card>
 
           <div class="buttons mt-6">
-            <rando-launch-button :show-confetti="true" label="Launch" @click="launch()" />
+            <rando-launch-button :show-confetti="true" label="Launch" @click="launch()"/>
           </div>
           <!--          <v-card v-if="newGameSeedSource !== null" class="pa-2 text-center top-border-radius-0 current-seed-path">-->
           <!--            {{ newGameSeedSourceDisplayString }}-->
@@ -266,34 +310,26 @@
 
   const inOfflineMode = ref(false)    // TODO check if releases can be fetched
   const updateAvailable = ref(false)  // TODO Version Control
+  const loadingRecentMultiverses = ref(true)
 
   onMounted(async () => {
-    await catchAxiosErrors(
-      async () => {
-        recentMultiverses.value = (await axios.get("/multiverses/own", {params: {limit: 4}})).data
-      },
-      async (e) => {
-        console.error(e)
-      },
-    )
+    await loadUserData()
+  })
 
-    try {
-      upcomingLeagueSeasons.value = await (await axios.get("/league/seasons/upcoming")).data
-      activeLeagueSeasons.value = await (await axios.get("/league/seasons/active")).data
-    } catch (e) {
-      upcomingLeagueSeasons.value = null
-      activeLeagueSeasons.value = null
-      console.error(e)
-    }
-    await leagueHelper.updatePendingGames()
+  watch(() => userStore.user, () => {
+    loadUserData()
   })
 
   const visibleRecentMultiversesCount = computed(() => {
     switch (true) {
-      case xs.value: return 1
-      case mdAndDown.value: return 2
-      case lgAndDown.value: return 3
-      default: return 4
+      case xs.value:
+        return 1
+      case mdAndDown.value:
+        return 2
+      case lgAndDown.value:
+        return 3
+      default:
+        return 4
     }
   })
 
@@ -311,6 +347,31 @@
       })),
     ] as { season: LeagueSeasonInfo, state: "active" | "upcoming", checkmark: boolean }[]
   })
+
+  async function loadUserData() {
+    loadingRecentMultiverses.value = true
+    await catchAxiosErrors(
+      async () => {
+        recentMultiverses.value = (await axios.get("/multiverses/own", {params: {limit: 4}})).data
+      },
+      async (e) => {
+        recentMultiverses.value = null
+        console.error(e)
+      },
+    )
+    loadingRecentMultiverses.value = false
+
+    try {
+      upcomingLeagueSeasons.value = await (await axios.get("/league/seasons/upcoming")).data
+      activeLeagueSeasons.value = await (await axios.get("/league/seasons/active")).data
+    } catch (e) {
+      upcomingLeagueSeasons.value = null
+      activeLeagueSeasons.value = null
+      console.error(e)
+    }
+    await leagueHelper.updatePendingGames()
+
+  }
 
   async function openWiki() {
     await electronApi?.shell.openUrl.query({url: "https://wiki.orirando.com"})
@@ -409,4 +470,9 @@
   .hidden {
     visibility: hidden;
   }
+
+  .ori-image {
+    height: 3em;
+  }
+
 </style>

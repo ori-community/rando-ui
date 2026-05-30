@@ -16,7 +16,9 @@
             <div>
               <div>
                 <h2 class="d-inline-block mb-3">Recent Online Games</h2>
-                <nuxt-link class="pl-3 pt-2 more-label text-decoration-none" to="/my-games">See more</nuxt-link>
+                <nuxt-link v-if="userStore.isLoggedIn" class="pl-3 pt-2 more-label text-decoration-none" to="/my-games">
+                  See more
+                </nuxt-link>
               </div>
 
               <div class="last-games-container">

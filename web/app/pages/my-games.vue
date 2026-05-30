@@ -3,9 +3,9 @@
     <h1 class="text-center mt-12 mb-6">My Games</h1>
 
     <rando-throttled-spinner>
-      <template v-if="multiverses !== null" #content>
+      <template v-if="!loadingMultiverses" #content>
         <div>
-          <template v-if="multiverses.length > 0">
+          <template v-if="multiverses !== null && multiverses.length > 0">
             <div class="games-container mt-8">
               <div class="timeline">
                 <v-timeline truncate-line="start" side="end" size="small" align="center" density="comfortable">
@@ -32,7 +32,7 @@
                       </template>
                       <div class="avatars">
                         <div v-for="user in multiverseMetadata.members" :key="user.id" class="avatar">
-                          <rando-discord-avatar :user="user" />
+                          <rando-discord-avatar :user="user"/>
                           <v-tooltip location="bottom" activator="parent" open-delay="250">
                             <span>{{ user.name }}</span>
                           </v-tooltip>
@@ -42,11 +42,11 @@
                   </template>
                 </v-timeline>
               </div>
-              <v-divider vertical />
+              <v-divider vertical/>
               <div class="multiverse-view-container mt-4">
                 <v-scroll-x-reverse-transition leave-absolute>
                   <div v-if="route.query.game">
-                    <wotw-multiverse-preview-pane :multiverse-id="Number(route.query.game)" />
+                    <wotw-multiverse-preview-pane :multiverse-id="Number(route.query.game)"/>
                   </div>
                   <div v-else class="text-center">
                     <div class="pt-6">
@@ -80,8 +80,10 @@
   const {axios, catchAxiosErrors} = useAxios()
   const route = useRoute()
   const router = useRouter()
+  const userStore = useUserStore()
 
   const multiverses = ref<MultiverseMetadataInfo[] | null>(null)
+  const loadingMultiverses = ref(true)
 
   const multiversesByPeriod = computed(() => {
     if (multiverses.value === null) {
@@ -153,16 +155,21 @@
   onMounted(() => {
     fetchMultiverses()
   })
-
+  watch(() => userStore.user, () => {
+    fetchMultiverses()
+  })
   const fetchMultiverses = (async () => {
+    loadingMultiverses.value = true
     await catchAxiosErrors(
       async () => {
         multiverses.value = (await axios.get("/multiverses/own")).data
       },
       async (e) => {
+        multiverses.value = null
         console.error(e)
       },
     )
+    loadingMultiverses.value = false
   })
 </script>
 

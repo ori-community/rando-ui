@@ -324,7 +324,7 @@
     return groupedPresetIds
   }
 
-  function getUniverseSerrings() {
+  function getUniverseSettings() {
     return {
       seed: seedString.value ?? String(Date.now()),
       worldSettings: worldSettings.value

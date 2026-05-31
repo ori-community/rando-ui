@@ -152,8 +152,8 @@
         Please note that you <b>cannot join this game anymore</b> after you chose to spectate.
 
         <div class="d-flex justify-end">
-          <v-btn :disabled="spectateLoading" class="mr-1" text @click="spectateDialogOpen = false"> Cancel</v-btn>
-          <v-btn :loading="spectateLoading" color="accent" depressed @click="spectate"> Spectate</v-btn>
+          <v-btn :disabled="spectateLoading" class="mr-1" variant="text" @click="spectateDialogOpen = false"> Cancel</v-btn>
+          <v-btn :loading="spectateLoading" color="accent" variant="flat" @click="spectate"> Spectate</v-btn>
         </div>
       </v-card>
     </v-dialog>

@@ -254,7 +254,7 @@
           <div class="dialog-html" v-html="rulesHtml"/>
         </div>
         <div v-if="!isJoined && canJoin" class="justify-end dialog-buttons mt-3">
-          <v-btn color="accent" depressed @click="joinSeason()">
+          <v-btn color="accent" variant="flat" @click="joinSeason()">
             <v-icon start>mdi-plus-circle-outline</v-icon>
             Confirm and Join
           </v-btn>

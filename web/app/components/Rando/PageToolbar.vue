@@ -123,11 +123,11 @@
 
         <div class="d-flex">
           <v-spacer/>
-          <v-btn class="mr-1" text :disabled="RenameRequestInProgress" @click="showEditNicknameDialog = false">
+          <v-btn class="mr-1" variant="text" :disabled="RenameRequestInProgress" @click="showEditNicknameDialog = false">
             Cancel
           </v-btn>
           <v-btn
-            depressed
+            variant="flat"
             color="accent"
             :disabled="!nicknameIsValid"
             :loading="RenameRequestInProgress"

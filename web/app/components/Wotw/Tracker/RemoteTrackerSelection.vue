@@ -28,10 +28,9 @@
         />
       </div>
       <div class="d-flex justify-end">
-        <v-btn color="accent" depressed :loading="remoteTrackerUrlCopying" @click="exposeTracker"
-        >Create Link
-        </v-btn
-        >
+        <v-btn color="accent" variant="flat" :loading="remoteTrackerUrlCopying" @click="exposeTracker">
+          Create Link
+        </v-btn>
       </div>
     </v-card-text>
   </v-card>

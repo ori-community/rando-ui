@@ -76,7 +76,7 @@
         </v-expand-transition>
 
         <v-btn
-          depressed
+          variant="flat"
           color="accent"
           class="mt-5"
           :disabled="localTrackerPositionReset"
@@ -221,7 +221,7 @@
           <v-btn
               v-if="$store.getters['electron/differentVersionAvailable']"
               class="mt-1"
-              depressed
+              variant="flat"
               color="accent"
               @click="downloadAndInstallUpdate"
           >

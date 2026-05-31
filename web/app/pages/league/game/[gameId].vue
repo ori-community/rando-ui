@@ -166,12 +166,12 @@
           <v-btn
             :disabled="!videoUrlForSubmission"
             :loading="videoUrlSubmissionLoading"
-            depressed
+            variant="flat"
             color="accent"
             @click="submitVideoUrl(videoUrlForSubmission)"
-          >Submit
-          </v-btn
           >
+            Submit
+          </v-btn>
         </div>
       </v-card>
     </v-dialog>
@@ -188,13 +188,12 @@
             <v-btn
               variant="text" :disabled="videoUrlSubmissionLoading"
               @click="removeVideoUrlConfirmationDialogOpen = false"
-            >No
-            </v-btn
             >
-            <v-btn depressed color="red" :loading="videoUrlSubmissionLoading" @click="submitVideoUrl(null)"
-            >Yes
-            </v-btn
-            >
+              No
+            </v-btn>
+            <v-btn variant="flat" color="red" :loading="videoUrlSubmissionLoading" @click="submitVideoUrl(null)">
+              Yes
+            </v-btn>
           </v-row>
         </v-col>
       </v-card>

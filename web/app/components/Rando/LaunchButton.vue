@@ -53,31 +53,33 @@
     }
     return null
   })
+
   const displayedLabel = computed(() => {
     if (props.label) {
       return props.label
     }
     return isLeek.value ? "Lauch" : "Launch"
   })
+
   const onClick = (async (event: MouseEvent) => {
     hasBeenClicked.value = true
     emit('click', event)
   })
 
-  watch(
-    () => isLaunching.value, (newValue, oldValue) => {
-      if (oldValue && !newValue && hasBeenClicked.value) {
-        hasBeenClicked.value = false
-        if (props.showConfetti) {
-          shootConfetti()
-        }
+  watch(isLaunching, (newValue, oldValue) => {
+    if (oldValue && !newValue && hasBeenClicked.value) {
+      hasBeenClicked.value = false
+      if (props.showConfetti) {
+        shootConfetti()
       }
-    })
+    }
+  })
 
   const shootConfetti = (() => {
     if (!buttonRef.value) {
       return
     }
+
     confettiFromElement(buttonRef.value.$el, {disableForReducedMotion: true})
   })
 
@@ -85,7 +87,6 @@
     const today = new Date()
     isLeek.value = Math.random() < 0.005 || (today.getDate() === 1 && today.getMonth() === 3)
   })
-
 </script>
 
 <style lang="scss" scoped>

@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-if="currentUnsuccessfulLaunchResult != null" v-model="errorDialogOpen" max-width="600">
+  <v-dialog v-if="currentUnsuccessfulLaunchResult !== null" v-model="errorDialogOpen" max-width="600">
     <v-card title="Unable to launch">
       <template #text>
         The randomizer is unable to launch due to the following errors:

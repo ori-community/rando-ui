@@ -88,7 +88,7 @@
 
                   <div class="d-flex">
                     <v-spacer />
-                    <v-btn depressed color="accent" @click="dispatchDebugEvent"> Dispatch</v-btn>
+                    <v-btn variant="flat" color="accent" @click="dispatchDebugEvent">Dispatch</v-btn>
                   </div>
                 </v-card>
               </div>
@@ -122,8 +122,8 @@
         Forfeiting from the game makes all players in your universe forfeit from this race.
 
         <div class="d-flex justify-end">
-          <v-btn :disabled="forfeitLoading" class="mr-1" text @click="forfeitDialogOpen = false"> Cancel</v-btn>
-          <v-btn :loading="forfeitLoading" color="error" depressed @click="forfeit">Forfeit</v-btn>
+          <v-btn :disabled="forfeitLoading" class="mr-1" variant="text" @click="forfeitDialogOpen = false"> Cancel</v-btn>
+          <v-btn :loading="forfeitLoading" color="error" variant="flat" @click="forfeit">Forfeit</v-btn>
         </div>
       </v-card>
     </v-dialog>

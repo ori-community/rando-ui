@@ -4,6 +4,9 @@ import {resolve} from "path"
 export default defineNuxtConfig({
   devtools: {enabled: true},
   ssr: false,
+  experimental: {
+    viteEnvironmentApi: true,
+  },
 
   css: [
     "@/assets/vuetify/globals.scss",

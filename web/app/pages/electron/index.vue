@@ -13,111 +13,78 @@
         </template>
         <template v-else>
           <v-scroll-x-transition>
-            <div>
+            <div v-if="userStore.isLoggedIn">
               <div>
                 <h2 class="d-inline-block mb-3">Recent Online Games</h2>
-                <nuxt-link v-if="userStore.isLoggedIn" class="pl-3 pt-2 more-label text-decoration-none" to="/my-games">
-                  See more
-                </nuxt-link>
+                <v-fade-transition>
+                  <span v-if="(recentMultiverses?.length ?? 0) > 0">
+                    <nuxt-link class="pl-3 pt-2 more-label text-decoration-none" to="/my-games">
+                      See more
+                    </nuxt-link>
+                  </span>
+                </v-fade-transition>
               </div>
 
               <div class="last-games-container">
-                <div v-if="!loadingRecentMultiverses && recentMultiverses === null" class="position-relative">
-                  <v-card
-                    class="pa-4 opacity-0 pointer-events-none"
-                    variant="plain"
-                    border="sm"
-                    hover
-                  >
-                    <div class="multiverse-id-container">
-                      <div>
-                        <span class="hashtag">#</span><span class="multiverse-id">0</span>
-                      </div>
-                    </div>
-                    <div class="pt-3">
-                      <rando-discord-avatar/>
-                    </div>
-                  </v-card>
-                  <v-card
-                    class="position-absolute top-0 left-0 right-0 bottom-0 pa-1"
-                    variant="plain"
-                    border="sm"
-                    hover
-                  >
-                    <template v-if="userStore.isLoggedIn">
-                      <div class="align-center justify-center d-flex flex-column fill-height">
-                        <img class="ori-image mb-1" src="@shared/images/ori_thumb.png" alt="">
-                        <span>None found</span>
-                      </div>
-                      <v-tooltip activator="parent" location="right">
-                        You haven't played any online games recently
-                      </v-tooltip>
-                    </template>
-                    <template v-else>
-                      <div class="align-center justify-center d-flex flex-column fill-height">
-                        <img class="ori-image mb-1" src="@shared/images/ori_lurk.png" alt="">
-                        <span>Not logged in</span>
-                      </div>
-                      <v-tooltip activator="parent" location="right">
-                        You need to be logged in to show your recent games
-                      </v-tooltip>
-                    </template>
-                  </v-card>
-                </div>
-                <div
+                <template
                   v-for="(_count, i) in visibleRecentMultiversesCount"
                   :key="i"
-                  type="text"
                 >
-                  <!-- Fake card to estimate dimensions -->
-                  <div v-if="loadingRecentMultiverses" class="position-relative">
+                  <div class="position-relative">
+                    <!-- Fake card to estimate dimensions -->
                     <v-card
-                      class="pa-4 opacity-0 pointer-events-none"
-                      variant="plain"
+                      :to="!!recentMultiverses?.[i] ? { name: 'game-multiverseId', params: { multiverseId: recentMultiverses[i].id } } : {}"
+                      class="pa-4 d-flex flex-column recent-game-card"
+                      :class="{fake: !recentMultiverses?.[i]}"
+                      :style="{transitionDelay: `${i * 50}ms`}"
+                      variant="text"
                       border="sm"
                       hover
                     >
                       <div class="multiverse-id-container">
                         <div>
-                          <span class="hashtag">#</span><span class="multiverse-id">0</span>
+                          <span class="hashtag">#</span><span class="multiverse-id">{{ recentMultiverses?.[i]?.id ?? 0 }}</span>
                         </div>
                       </div>
-                      <div class="pt-3">
-                        <rando-discord-avatar/>
+                      <v-spacer />
+                      <div class="pt-3 d-flex flex-wrap-reverse ga-1">
+                        <rando-discord-avatar v-if="recentMultiverses === null || !recentMultiverses[i]" />
+                        <template v-else>
+                          <rando-discord-avatar
+                            v-for="member in recentMultiverses[i].members"
+                            :key="member.id"
+                            :user="member" />
+                        </template>
                       </div>
                     </v-card>
-                    <v-card
-                      class="position-absolute top-0 left-0 right-0 bottom-0"
-                      variant="plain"
-                      border="sm"
-                      hover
-                    >
-                      <v-skeleton-loader type="ossein" width="100%" height="100%"/>
-                    </v-card>
-                  </div>
-                  <v-card
-                    v-else-if="recentMultiverses !== null && recentMultiverses[i]"
-                    :to="{ name: 'game-multiverseId', params: { multiverseId: recentMultiverses[i].id } }"
-                    class="pa-4"
-                    variant="text"
-                    border="sm"
-                    hover
-                  >
-                    <div class="multiverse-id-container">
-                      <div>
-                        <span class="hashtag">#</span><span class="multiverse-id">{{ recentMultiverses[i].id }}</span>
-                      </div>
-                    </div>
-                    <div class="pt-3">
-                      <rando-discord-avatar
-                        v-for="member in recentMultiverses[i].members"
-                        :key="member.id"
-                        :user="member"/>
-                    </div>
-                  </v-card>
 
-                  <div v-else/>
-                </div>
+                    <v-fade-transition>
+                      <!-- Loading animation inside the fake card -->
+                      <v-card
+                        v-if="loadingRecentMultiverses"
+                        class="position-absolute top-0 left-0 right-0 bottom-0"
+                        :style="{transitionDelay: `${i * 50}ms`}"
+                        variant="plain"
+                        hover
+                      >
+                        <v-skeleton-loader type="ossein" width="100%" height="100%" />
+                      </v-card>
+
+                      <!-- Create online game action card -->
+                      <v-card
+                        v-else-if="recentMultiverses?.length === 0 && i === 0"
+                        class="position-absolute top-0 left-0 right-0 bottom-0 d-flex align-center flex-column justify-center ga-2"
+                        variant="plain"
+                        border="sm"
+                        hover
+                        :to="{name: 'seedgen'}"
+                      >
+                        <v-icon>mdi-plus-circle-outline</v-icon>
+                        Create online game
+                      </v-card>
+                    </v-fade-transition>
+                  </div>
+                </template>
               </div>
               <v-divider class="my-6"/>
             </div>
@@ -407,6 +374,7 @@
     display: grid;
     grid-auto-columns: 1fr;
     grid-auto-flow: column;
+    align-items: stretch;
     gap: 0.75em;
   }
 
@@ -477,4 +445,13 @@
     height: 3em;
   }
 
+  .recent-game-card {
+    transition: opacity 1000ms;
+
+    &.fake {
+      opacity: 0;
+      pointer-events: none;
+      user-select: none;
+    }
+  }
 </style>

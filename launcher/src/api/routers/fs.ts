@@ -1,6 +1,6 @@
 import {publicProcedure, router} from "@launcher/api/trpc"
 import {z} from "zod"
-import {getUserDataPath} from "@launcher/paths"
+import {getSeedsUserDataPath} from "@launcher/paths"
 import nodeFs from "node:fs"
 import path from "node:path"
 
@@ -17,7 +17,7 @@ export const fs = router({
       })
     )
     .query(async ({input}): Promise<string[]> => {
-      const seedsDir = getUserDataPath("seeds")
+      const seedsDir = getSeedsUserDataPath()
       await nodeFs.promises.mkdir(seedsDir, {recursive: true})
 
       const id = Date.now()

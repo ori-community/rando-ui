@@ -57,7 +57,7 @@
     if (props.label) {
       return props.label
     }
-    return isLeek.value ? "lauch" : "launch"
+    return isLeek.value ? "Lauch" : "Launch"
   })
   const onClick = (async (event: MouseEvent) => {
     hasBeenClicked.value = true

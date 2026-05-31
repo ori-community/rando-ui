@@ -28,16 +28,16 @@
               <span><kbd>Ctrl</kbd> + Click to close this window</span>
             </v-tooltip>
           </rando-launch-button>
-          <rando-launch-button
-            v-else-if="!isSpectating"
-            :disabled="!ownWorld"
-            @click="onLaunchButtonPressed()"
-          >
-            <v-tooltip location="bottom" activator="parent">
+          <div v-else-if="!isSpectating">
+            <rando-launch-button
+              :disabled="!ownWorld"
+              @click="onLaunchButtonPressed()"
+            />
+            <v-tooltip v-if="!ownWorld" location="bottom" activator="parent">
               <span v-if="multiverse.universes.length > 0">Create or join a world to launch the game</span>
               <span v-else>Create a universe to launch the game</span>
             </v-tooltip>
-          </rando-launch-button>
+          </div>
 
           <div class="mt-4">
             <v-btn v-if="canForfeit" variant="text" @click="forfeitDialogOpen = true">

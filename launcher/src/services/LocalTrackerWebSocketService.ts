@@ -44,6 +44,7 @@ export class LocalTrackerWebSocketService {
   static start() {
     if (!this._hookedIntoRandoIPCEvents) {
       RandoIPCService.events.on("connectionStateChanged", async () => {
+        await LocalTrackerWebSocketService.subscribeToUberStates()
         await LocalTrackerWebSocketService.forceRefreshAll()
       })
       this._hookedIntoRandoIPCEvents = true
@@ -293,5 +294,12 @@ export class LocalTrackerWebSocketService {
       }
       connect()
     })
+  }
+
+  private static async subscribeToUberStates() {
+    await RandoIPCService.emit("subscribe_uber_states", TRACKED_UBER_STATES.map(trackedUberState => ({
+      group: trackedUberState.uberId.group,
+      state: trackedUberState.uberId.state,
+    })))
   }
 }

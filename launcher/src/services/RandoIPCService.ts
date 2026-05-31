@@ -281,7 +281,7 @@ export class RandoIPCService {
   }
 
   static async getUberStates(states: UberId[]): Promise<number[]> {
-    return await this.request("get_uberstates", states) as number[]
+    return await this.request("get_uber_states", states) as number[]
   }
 
   static async getUberState(group: number, state: number): Promise<number> {
@@ -293,7 +293,7 @@ export class RandoIPCService {
   }
 
   static async setUberState(group: number, state: number, value: number): Promise<void> {
-    await this.emit("set_uberstate", {group, state, value})
+    await this.emit("set_uber_state", {group, state, value})
   }
 
   static async getGameObject(path: string, instanceId: number) {

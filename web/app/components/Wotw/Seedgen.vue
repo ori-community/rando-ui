@@ -453,7 +453,7 @@
    * seed generator.
    */
   async function generateOfflineSeedFromCurrentSettings() {
-    const {data}: { data: Blob } = await seedgenAxios.post("/generate", getUniverseSerrings(), {
+    const {data}: { data: Blob } = await seedgenAxios.post("/generate", getUniverseSettings(), {
       responseType: "blob",
       params: {
         text_spoiler: true,
@@ -481,7 +481,7 @@
     type SeedsResponse = {
       seedId: number,
     }
-    const universeSettings = getUniverseSerrings()
+    const universeSettings = getUniverseSettings()
     const clonedUniverseSettings = clone(universeSettings)
 
     if (enableBingo.value) {

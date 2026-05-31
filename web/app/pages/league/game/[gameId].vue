@@ -127,7 +127,7 @@
                     <template v-else-if="leagueGame.isCurrent">No submittions available yet</template>
                     <template v-else>
                       <div class="mb-2 mt-5">
-                        <img class="ori-image" src="@shared/images/ori_thumb.png" alt=""><br><b>no submittions</b>
+                        <img class="ori-image" src="@shared/images/ori_thump.png" alt=""><br><b>no submittions</b>
                       </div>
                     </template>
                   </template>

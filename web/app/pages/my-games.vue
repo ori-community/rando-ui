@@ -59,7 +59,7 @@
             </div>
           </template>
           <div v-else class="text-center">
-            <img class="ori-image" src="@shared/images/ori_thumb.png" alt="">
+            <img class="ori-image" src="@shared/images/ori_thump.png" alt="">
             <div>You haven't played any online games recently</div>
           </div>
         </div>

@@ -1,8 +1,9 @@
 import {publicProcedure, router} from "@launcher/api/trpc"
 import {z} from "zod"
-import {getSeedsUserDataPath} from "@launcher/paths"
+import {getSeedgenUserDataPath, getSeedsUserDataPath} from "@launcher/paths"
 import nodeFs from "node:fs"
 import path from "node:path"
+import {UniversePreset} from "@shared/types/seedgen"
 
 export const fs = router({
   /**
@@ -49,5 +50,32 @@ export const fs = router({
       }
 
       return filePaths
-    })
+    }),
+  /**
+   * Save a given universe preset as the special Last Config universe preset
+   */
+  saveLastSeedgenConfig: publicProcedure
+    .input(
+      z.object({
+        universePreset: z.object(),
+      })
+    )
+    .query(async ({input}): Promise<void> => {
+      await nodeFs.promises.mkdir(getSeedgenUserDataPath(), {recursive: true})
+      await nodeFs.promises.writeFile(getSeedgenUserDataPath("last_config.json"), JSON.stringify(input, null, 2), {encoding: "utf8"})
+    }),
+  /**
+   * Save a given universe preset as the special Last Config universe preset
+   */
+  getLastSeedgenConfig: publicProcedure
+    .query(async (): Promise<UniversePreset | null> => {
+      const lastConfigPath = getSeedgenUserDataPath("last_config.json")
+
+      if (!nodeFs.existsSync(lastConfigPath)) {
+        return null
+      }
+
+      const fileContents = await nodeFs.promises.readFile(lastConfigPath, {encoding: "utf8"})
+      return JSON.parse(fileContents) as UniversePreset
+    }),
 })

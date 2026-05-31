@@ -20,8 +20,8 @@
                       :class="{selected: Number(route.query.game) === multiverseMetadata.id}"
                       :fill-dot="Number(route.query.game) === multiverseMetadata.id"
                       :dot-color="Number(route.query.game) === multiverseMetadata.id ? 'primary' : 'secondary'"
-                      @click="router.push({query: {...route.query, game: multiverseMetadata.id}})"
-                      @dblclick="router.push({name: 'game-multiverseId', params: {multiverseId: multiverseMetadata.id}})"
+                      @click="router.push({name: 'game-multiverseId', params: {multiverseId: multiverseMetadata.id}})"
+                      @mouseover="router.push({query: {...route.query, game: multiverseMetadata.id}})"
                     >
                       <template #opposite>
                         <div class="multiverse-id-container">
@@ -47,12 +47,6 @@
                 <v-scroll-x-reverse-transition leave-absolute>
                   <div v-if="route.query.game">
                     <wotw-multiverse-preview-pane :multiverse-id="Number(route.query.game)"/>
-                  </div>
-                  <div v-else class="text-center">
-                    <div class="pt-6">
-                      Select a game to preview.<br>
-                      Double click a game to open directly.
-                    </div>
                   </div>
                 </v-scroll-x-reverse-transition>
               </div>
@@ -152,8 +146,11 @@
     return periodGroups
   })
 
-  onMounted(() => {
-    fetchMultiverses()
+  onMounted(async () => {
+    await fetchMultiverses()
+    if (!route.query.game && multiverses.value?.[0]) {
+      await router.push({query: {...route.query, game: multiverses.value[0].id}})
+    }
   })
   watch(() => userStore.user, () => {
     fetchMultiverses()

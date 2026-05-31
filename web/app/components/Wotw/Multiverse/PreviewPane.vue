@@ -2,10 +2,7 @@
   <v-scroll-x-reverse-transition leave-absolute>
     <div :key="multiverseId">
       <div class="d-flex justify-center align-center mb-6">
-        <h1 class="text-center mx-4">Game <small>#</small>{{ multiverse.id }}</h1>
-        <v-btn icon variant="text" :to="{ name: 'game-multiverseId', params: { multiverseId: multiverse.id } }">
-          <v-icon size="large">mdi-chevron-double-right</v-icon>
-        </v-btn>
+        <h1 class="text-center">Game <small>#</small>{{ multiverse.id }}</h1>
       </div>
       <div class="multiverse-view text-center">
         <wotw-multiverse-view

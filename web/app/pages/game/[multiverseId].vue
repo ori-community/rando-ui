@@ -128,19 +128,18 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="downloadSpoilerDialogOpen" :persistent="downloadSpoilerLoading" max-width="400">
+    <v-dialog v-model="downloadSpoilerDialogOpen" :persistent="downloadSpoilerLoading" max-width="500">
       <v-card class="pa-5 relative">
         <h2>View Spoiler</h2>
-
-        You can view the spoiler for this seed. Note that <b>all players can see that you viewed the spoiler.</b>
-
+        <div>
+          You can view the spoiler for this seed. Note that <b>all players can see that you looked at the spoiler.</b>
+        </div>
         <div class="d-flex justify-end mt-4">
-          <v-btn :disabled="downloadSpoilerLoading" class="mr-1" text @click="downloadSpoilerDialogOpen = false">
+          <v-btn :disabled="downloadSpoilerLoading" class="mr-1" variant="text" @click="downloadSpoilerDialogOpen = false">
             Cancel
           </v-btn>
-          <v-btn
-            :loading="downloadSpoilerLoading" color="error" depressed @click="downloadSpoiler"
-          >Show Spoiler
+          <v-btn :loading="downloadSpoilerLoading" color="error" variant="flat" @click="downloadSpoiler">
+            Show Spoiler
           </v-btn>
         </div>
       </v-card>
@@ -158,22 +157,11 @@
               :user="user"
             />
           </div>
-          <v-spacer />
-          <div class="mr-3">
-            <v-text-field
-              ref="spoilerSearchInput"
-              v-model="spoilerSearchQuery"
-              solo
-              flat
-              placeholder="Search..."
-              hide-details
-            />
-          </div>
           <v-btn icon @click="viewSpoilerDialogOpen = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-toolbar>
-        <div ref="spoilerText" class="spoiler-text pa-3">{{ spoilerText }}</div>
+        <div class="spoiler-text pa-3">{{ spoilerText }}</div>
       </v-sheet>
     </v-dialog>
   </div>
@@ -200,7 +188,6 @@
   const downloadSpoilerLoading = ref(false)
   const viewSpoilerDialogOpen = ref(false)
   const spoilerText = ref("")
-  const spoilerSearchQuery = ref("")
   const forfeitDialogOpen = ref(false)
   const forfeitLoading = ref(false)
   const lockGameLoading = ref(false)
@@ -318,17 +305,6 @@
   //   }
   // },
 
-  watch(() => spoilerSearchQuery.value, (value) => {
-    const _range = document.createRange()
-
-    const offset = spoilerText.value.toLowerCase().indexOf(value.toLowerCase())
-
-    if (offset > 0) {
-      // TODO fix spoilertext
-      // range.setStart(this.$refs.spoilerText.childNodes[0], offset)
-      // this.$refs.spoilerText.scrollTop = Math.max(0, this.$refs.spoilerText.scrollTop + range.getBoundingClientRect()?.top - 100)
-    }
-  })
   onMounted(() => {
     try {
       // TODO load bingo board settings
@@ -410,11 +386,11 @@
 
   async function downloadSpoiler() {
     downloadSpoilerLoading.value = true
-    spoilerText.value = await axios.get(`/seeds/${multiverse.value.seedId}/spoiler`, {
+    spoilerText.value = (await axios.get(`/seeds/${multiverse.value.seedId}/spoiler`, {
       headers: {
         Accept: "text/plain",
       },
-    })
+    })).data
     downloadSpoilerLoading.value = false
     downloadSpoilerDialogOpen.value = false
     viewSpoilerDialogOpen.value = true

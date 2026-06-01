@@ -111,11 +111,19 @@ if (!app.requestSingleInstanceLock()) {
 
       // Open the DevTools.
       mainWindow.webContents.openDevTools()
+
+      // Minimize to not disturb development
+      setTimeout(() => {
+        // Windows is epic
+        mainWindow.setFocusable(false)
+        mainWindow.maximize()
+        mainWindow.minimize()
+        mainWindow.setFocusable(true)
+      }, 500)
     } else {
       await mainWindow.loadURL("app://bundle/electron")
+      mainWindow.maximize()
     }
-
-    mainWindow.maximize()
 
     await RandoIPCService.startIPCServer()
     LocalTrackerWebSocketService.start()

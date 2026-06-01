@@ -228,6 +228,13 @@ export class RandoIPCService {
       let tries = 0
       do {
         try {
+          if (!this.isConnected()) {
+            // Stall for 3 seconds
+            await new Promise(resolve => setTimeout(resolve, 3000))
+            tries++
+            continue
+          }
+
           if (queuedRequest.expectsResponse) {
             await this.send(queuedRequest.request)
             await outgoingRequestHandlers[queuedRequest.request.id].promise

@@ -106,6 +106,10 @@ export class LocalTrackerWebSocketService {
   }
 
   static async reportCurrentTimerState() {
+    if (!RandoIPCService.isConnected()) {
+      return
+    }
+
     const {
       in_game_time: inGameTime,
       async_loading_time: asyncLoadingTime,
@@ -119,6 +123,10 @@ export class LocalTrackerWebSocketService {
   }
 
   static async reportCurrentTimerStateToClient(client: WebSocket) {
+    if (!RandoIPCService.isConnected()) {
+      return
+    }
+
     const {
       in_game_time: inGameTime,
       async_loading_time: asyncLoadingTime,

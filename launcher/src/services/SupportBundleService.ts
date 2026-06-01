@@ -122,9 +122,12 @@ export class SupportBundleService {
     const newCrashDumps = discoveredCrashDumpPaths.difference(this.knownCrashDumpDirectories)
 
     if (newCrashDumps.size > 0) {
+      const crashDumpPath = Array.from(newCrashDumps)[0]
+      log.info(`SupportBundleService: Detected crash (${crashDumpPath}), will create support bundle shortly...`)
+
       // Wait three seconds because the Unity crash handler needs a bit to write everything
       await new Promise(resolve => setTimeout(resolve, 3000))
-      await this.createSupportBundle(Array.from(newCrashDumps)[0])
+      await this.createSupportBundle(crashDumpPath)
     }
 
     this.knownCrashDumpDirectories = discoveredCrashDumpPaths

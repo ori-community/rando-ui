@@ -151,7 +151,7 @@ export class SupportBundleService {
   }
 
   // Creates a support bundle
-  async createSupportBundle(crashDumpPath: string | null): Promise<string> {
+  async createSupportBundle(crashDumpPath: string | null = null): Promise<string> {
     log.info("SupportBundleService: Collecting data...")
 
     type Entry = {

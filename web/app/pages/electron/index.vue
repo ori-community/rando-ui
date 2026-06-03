@@ -229,7 +229,8 @@
               variant="plain"
               density="comfortable"
               icon
-              disabled
+              :loading="supportBundleLoading"
+              @click="createSupportBundle"
             >
               <v-icon>mdi-bug-outline</v-icon>
               <v-tooltip location="bottom" activator="parent">
@@ -280,6 +281,7 @@
   const inOfflineMode = ref(false)    // TODO check if releases can be fetched
   const updateAvailable = ref(false)  // TODO Version Control
   const loadingRecentMultiverses = ref(true)
+  const supportBundleLoading = ref(false)
 
   onMounted(async () => {
     await loadUserData()
@@ -338,8 +340,8 @@
       activeLeagueSeasons.value = null
       console.error(e)
     }
-    await leagueHelper.updatePendingGames()
 
+    await leagueHelper.updatePendingGames()
   }
 
   async function openWiki() {
@@ -360,6 +362,22 @@
 
   async function openDiscord() {
     await electronApi?.shell.openUrl.query({url: "https://discord.gg/SUS57PWWnA"})
+  }
+
+  async function createSupportBundle() {
+    if (!electronApi) {
+      return
+    }
+
+    supportBundleLoading.value = true
+
+    try {
+      await electronApi.supportBundle.createAndShowInExplorer.query()
+    } catch (e) {
+      console.error(e)
+    }
+
+    supportBundleLoading.value = false
   }
 </script>
 

@@ -6,11 +6,18 @@ import {SettingKey} from "@shared/types/settings"
 import {getInstallDataPath, getUserDataPath} from "@launcher/paths"
 import nodeFs from "node:fs"
 import {create as createArchive} from "archiver"
+import {EventEmitter} from "events"
 
+
+type SupportBundleServiceEvent = {
+  /** Emitted when a support bundle was created due to a crash */
+  onSupportBundleCreatedFromCrash: [string],
+}
 
 export class SupportBundleService {
   public static readonly instance = new SupportBundleService()
 
+  public readonly events: EventEmitter<SupportBundleServiceEvent> = new EventEmitter()
   private appdataPath: string | null = null
   private knownCrashDumpDirectories: Set<string> = new Set()
 
@@ -127,7 +134,9 @@ export class SupportBundleService {
 
       // Wait three seconds because the Unity crash handler needs a bit to write everything
       await new Promise(resolve => setTimeout(resolve, 3000))
-      await this.createSupportBundle(crashDumpPath)
+      const path = await this.createSupportBundle(crashDumpPath)
+
+      this.events.emit('onSupportBundleCreatedFromCrash', path)
     }
 
     this.knownCrashDumpDirectories = discoveredCrashDumpPaths

@@ -9,6 +9,7 @@ import log from "electron-log/main"
 import {throttle} from "lodash"
 import os from "node:os"
 import {shell as electronShell} from "electron"
+import {SeedgenServerService} from "@launcher/services/SeedgenServerService"
 
 
 type InputBindingsEvent = {
@@ -95,7 +96,9 @@ export class UpdateService {
       const installerPath = getTemporaryUserDataPath("randomizer_update.exe")
       await this.downloadUpdate(urls.windowsInstaller, installerPath)
 
-      app.on("quit", () => {
+      app.on("quit", async () => {
+        await SeedgenServerService.kill()
+
         log.info("UpdateService: Spawning process: ", installerPath)
         spawn(installerPath, ["/SILENT"], {
           detached: true,
@@ -117,6 +120,8 @@ export class UpdateService {
         await this.downloadUpdate(urls.linuxAppimage, temporaryPath)
 
         app.on("quit", async () => {
+          await SeedgenServerService.kill()
+
           log.info("UpdateService: Replacing AppImage")
           await fs.promises.copyFile(temporaryPath, process.env.APPIMAGE)
           await fs.promises.chmod(process.env.APPIMAGE, 0o755)
@@ -134,6 +139,8 @@ export class UpdateService {
         await this.downloadUpdate(urls.linuxPortable, temporaryPath)
 
         app.on("quit", async () => {
+          await SeedgenServerService.kill()
+
           // TODO: Maybe extract automatically, not sure yet whether the portable version
           //       should be supported at all in the end...
           electronShell.showItemInFolder(temporaryPath)

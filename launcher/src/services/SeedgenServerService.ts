@@ -31,6 +31,17 @@ export class SeedgenServerService {
   }
 
   /**
+   * Kills the seedgen process if it is running and was started by the launcher
+   */
+  static async kill() {
+    if (!this.#isSeedgenProcessRunning()) {
+      return
+    }
+
+    this._process.kill("SIGTERM")
+  }
+
+  /**
    * Ensure the seedgen HTTP server is running.
    * @param forceRestart If true, terminates an already running seedgen server. Only works if that server has been started by the launcher.
    * @param readyTimeoutMs Timeout in milliseconds to wait for the seedgen server to become ready.

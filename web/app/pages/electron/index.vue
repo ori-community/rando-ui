@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col cols="12" md="9" order-md="0" order="1">
-        <template v-if="inOfflineMode">
+        <template v-if="!isOnline">
           <div class="pa-6 text-center">
             <v-icon size="64">mdi-cloud-off-outline</v-icon>
             <div>
@@ -12,83 +12,9 @@
           </div>
         </template>
         <template v-else>
-          <v-scroll-x-transition>
-            <div v-if="userStore.isLoggedIn">
-              <div>
-                <h2 class="d-inline-block mb-3">Recent Online Games</h2>
-                <v-fade-transition>
-                  <span v-if="(recentMultiverses?.length ?? 0) > 0">
-                    <nuxt-link class="pl-3 pt-2 more-label text-decoration-none" to="/my-games">
-                      See more
-                    </nuxt-link>
-                  </span>
-                </v-fade-transition>
-              </div>
-
-              <div class="last-games-container">
-                <template
-                  v-for="(_count, i) in visibleRecentMultiversesCount"
-                  :key="i"
-                >
-                  <div class="position-relative">
-                    <!-- Fake card to estimate dimensions -->
-                    <v-card
-                      :to="!!recentMultiverses?.[i] ? { name: 'game-multiverseId', params: { multiverseId: recentMultiverses[i].id } } : {}"
-                      class="pa-4 d-flex flex-column recent-game-card"
-                      :class="{fake: !recentMultiverses?.[i]}"
-                      :style="{transitionDelay: `${i * 50}ms`}"
-                      variant="text"
-                      border="sm"
-                      hover
-                    >
-                      <div class="multiverse-id-container">
-                        <div>
-                          <span class="hashtag">#</span><span class="multiverse-id">{{ recentMultiverses?.[i]?.id ?? 0 }}</span>
-                        </div>
-                      </div>
-                      <v-spacer />
-                      <div class="pt-3 d-flex flex-wrap-reverse ga-1">
-                        <rando-discord-avatar v-if="recentMultiverses === null || !recentMultiverses[i]" />
-                        <template v-else>
-                          <rando-discord-avatar
-                            v-for="member in recentMultiverses[i].members"
-                            :key="member.id"
-                            :user="member" />
-                        </template>
-                      </div>
-                    </v-card>
-
-                    <v-fade-transition>
-                      <!-- Loading animation inside the fake card -->
-                      <v-card
-                        v-if="loadingRecentMultiverses"
-                        class="position-absolute top-0 left-0 right-0 bottom-0"
-                        :style="{transitionDelay: `${i * 50}ms`}"
-                        variant="plain"
-                        hover
-                      >
-                        <v-skeleton-loader type="ossein" width="100%" height="100%" />
-                      </v-card>
-
-                      <!-- Create online game action card -->
-                      <v-card
-                        v-else-if="recentMultiverses?.length === 0 && i === 0"
-                        class="position-absolute top-0 left-0 right-0 bottom-0 d-flex align-center flex-column justify-center ga-2"
-                        variant="plain"
-                        border="sm"
-                        hover
-                        :to="{name: 'seedgen'}"
-                      >
-                        <v-icon>mdi-plus-circle-outline</v-icon>
-                        Create online game
-                      </v-card>
-                    </v-fade-transition>
-                  </div>
-                </template>
-              </div>
-              <v-divider class="my-6"/>
-            </div>
-          </v-scroll-x-transition>
+          <wotw-recent-games-view>
+            <v-divider class="my-6" />
+          </wotw-recent-games-view>
           <v-scroll-x-transition>
             <div>
               <div v-if="leagueHelper.pendingGamesCount.value > 0">
@@ -111,7 +37,8 @@
               >
                 <div>
                   <h2 class="d-inline-block mb-3">League Seasons</h2>
-                  <nuxt-link class="pl-3 pt-2 more-label text-decoration-none" to="/league/seasons">Learn more
+                  <nuxt-link class="pl-3 pt-2 more-label text-decoration-none" to="/league/seasons">
+                    Learn more
                   </nuxt-link>
                 </div>
 
@@ -132,80 +59,30 @@
             </div>
           </v-scroll-x-transition>
           <v-scroll-x-transition>
-            <!--            TODO Changelog  -->
-            <div>Hier könnte Ihr Changelog stehen</div>
-            <!--            <div v-if="upcomingLeagueSeasons !== null && !!visibleReleases">-->
-            <!--              <v-card v-for="release in visibleReleases" :key="release.id" class="release mb-2">-->
-            <!--                <v-card-title class="d-block">-->
-            <!--                  Version {{ release.name }}-->
-            <!--                  <v-chip v-if="isNewVersion(release.name)" class="ml-2" small color="accent">New</v-chip>-->
-            <!--                </v-card-title>-->
-            <!--                <v-card-text class="release-changelog">-->
-            <!--                  <div v-html="release.bodyHtml" />-->
-            <!--                  <div class="d-flex justify-end">-->
-            <!--                    <div class="d-flex align-end">-->
-            <!--                      <template v-if="!!getSetupAssetFromRelease(release)">-->
-            <!--                        <v-btn-->
-            <!--                          :disabled="updateDownloading"-->
-            <!--                          text-->
-            <!--                          x-small-->
-            <!--                          class="install-button mr-3"-->
-            <!--                          @click="downloadAndInstallUpdate(release)"-->
-            <!--                        >-->
-            <!--                          <template v-if="isNewVersion(release.name)">Install</template>-->
-            <!--                          <template v-else-if="release.name === currentVersion">Re-install</template>-->
-            <!--                          <template v-else>Downgrade</template>-->
-            <!--                        </v-btn>-->
-            <!--                        <div class="text-caption grey&#45;&#45;text mr-3 d-inline">-->
-            <!--                          {{ getSetupAssetFromRelease(release).download_count }}-->
-            <!--                          <v-icon small color="grey">mdi-download-outline</v-icon>-->
-            <!--                        </div>-->
-            <!--                      </template>-->
-            <!--                      <span class="text-caption grey&#45;&#45;text">-->
-            <!--                        {{ formatDateRelative(release.published_at) }}-->
-            <!--                      </span>-->
-            <!--                    </div>-->
-            <!--                  </div>-->
-            <!--                </v-card-text>-->
-            <!--              </v-card>-->
-            <!--            </div>-->
+            <wotw-releases-changelog
+              v-if="availableReleases !== null"
+              :releases="availableReleases"
+              @install-release="installUpdate"
+            />
           </v-scroll-x-transition>
         </template>
       </v-col>
       <v-col cols="12" md="3" order-md="1" order="0">
         <div class="sticky">
-
-          <!--                  TODO VERSION CONTROL-->
-          <v-card :class="updateAvailable ? `bg-warning-darken-1` : `bg-background-lighten-1`" class="pa-4">
-            <h3>Version: {{ currentVersion }}</h3>
-            <!--            <template v-if="updateDownloading">-->
-            <!--              Downloading {{ !!updateReleaseName ? `version ${updateReleaseName}` : `update` }}...-->
-            <!--              <v-progress-linear class="mt-3" :value="updateDownloadProgress"/>-->
-            <!--            </template>-->
-            <!--            <template v-else-if="currentVersion === 'develop'">-->
-            <!--              You are running a development build. Download the latest stable version to get automatic updates.-->
-            <!--            </template>-->
-            <!--            <template v-else-if="updateAvailable">-->
-            <!--              Version {{ latestVisibleVersion }} is available!-->
-            <!--              <v-btn class="mt-3" depressed block @click="downloadAndInstallUpdate()">Install update</v-btn>-->
-            <!--            </template>-->
-            <!--            <template v-else> You are running the latest version.</template>-->
+          <v-card :class="availableUpdate !== null ? `bg-warning-darken-1` : `bg-background-lighten-1`" class="pa-4">
+            <template v-if="availableUpdate !== null">
+              <h3>Version {{ availableUpdate.version }} is available!</h3>
+              <v-btn variant="flat" block class="mt-3" @click="installUpdate(availableUpdate)">Install Update</v-btn>
+            </template>
+            <template v-else>
+              <h3>Version: {{ currentVersion }}</h3>
+              You are running the latest version.
+            </template>
           </v-card>
 
           <div class="buttons mt-6">
             <rando-launch-button :show-confetti="true" label="Launch" @click="launch()"/>
           </div>
-          <!--          <v-card v-if="newGameSeedSource !== null" class="pa-2 text-center top-border-radius-0 current-seed-path">-->
-          <!--            {{ newGameSeedSourceDisplayString }}-->
-          <!--          </v-card>-->
-
-          <!--                    <v-card class="mt-6 pa-4 text-center did-you-know" ripple @click="rerollDidYouKnow">-->
-          <!--                      <h4 class="font-weight-regular mb-1 text-h6">-->
-          <!--                        Did you know?-->
-          <!--                      </h4>-->
-          <!--                      <div v-html="randomDidYouKnowHtml"></div>-->
-          <!--                      <img class="ori-think" src="@/assets/images/ori_think.png" alt="Ori Think" />-->
-          <!--                    </v-card>-->
 
           <v-btn variant="text" block class="mt-3" @click="openWiki">
             <v-icon start>mdi-book-outline</v-icon>
@@ -265,23 +142,19 @@
 
 <script setup lang="ts">
   import type {LeagueSeasonInfo} from "@shared/types/league"
-  import type {MultiverseMetadataInfo} from "@shared/types/http-api"
+  import {useOnline} from "@vueuse/core"
 
-  const {axios, catchAxiosErrors} = useAxios()
+  const {axios} = useAxios()
   const userStore = useUserStore()
   const electronApi = useElectronApi()
   const {launch} = useLauncherHelper()
-  const {xs, mdAndDown, lgAndDown} = useDisplay()
   const leagueHelper = useLeagueHelper()
   const currentVersion = ref(await electronApi?.updater.getVersion.query())
-  const recentMultiverses = ref<MultiverseMetadataInfo[] | null>(null)
   const upcomingLeagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
   const activeLeagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
-
-  const inOfflineMode = ref(false)    // TODO check if releases can be fetched
-  const updateAvailable = ref(false)  // TODO Version Control
-  const loadingRecentMultiverses = ref(true)
   const supportBundleLoading = ref(false)
+  const isOnline = useOnline()
+  const {availableReleases, availableUpdate} = useReleases()
 
   onMounted(async () => {
     await loadUserData()
@@ -289,19 +162,6 @@
 
   watch(() => userStore.user, () => {
     loadUserData()
-  })
-
-  const visibleRecentMultiversesCount = computed(() => {
-    switch (true) {
-      case xs.value:
-        return 1
-      case mdAndDown.value:
-        return 2
-      case lgAndDown.value:
-        return 3
-      default:
-        return 4
-    }
   })
 
   const combinedLeagueSeasons = computed(() => {
@@ -320,18 +180,6 @@
   })
 
   async function loadUserData() {
-    loadingRecentMultiverses.value = true
-    await catchAxiosErrors(
-      async () => {
-        recentMultiverses.value = (await axios.get("/multiverses/own", {params: {limit: 4}})).data
-      },
-      async (e) => {
-        recentMultiverses.value = null
-        console.error(e)
-      },
-    )
-    loadingRecentMultiverses.value = false
-
     try {
       upcomingLeagueSeasons.value = await (await axios.get("/league/seasons/upcoming")).data
       activeLeagueSeasons.value = await (await axios.get("/league/seasons/active")).data
@@ -379,6 +227,18 @@
 
     supportBundleLoading.value = false
   }
+
+  async function installUpdate(release: Release) {
+    if (!electronApi) {
+      return
+    }
+
+    await electronApi.updater.downloadAndInstallUpdate.query({
+      windowsInstallerUrl: release.urls.windows.installer,
+      linuxAppImageUrl: release.urls.linux.appimage,
+      linuxPortableUrl: release.urls.linux.portable,
+    })
+  }
 </script>
 
 <style lang="scss" scoped>
@@ -388,43 +248,11 @@
     gap: 0.6em;
   }
 
-  .last-games-container {
-    display: grid;
-    grid-auto-columns: 1fr;
-    grid-auto-flow: column;
-    align-items: stretch;
-    gap: 0.75em;
-  }
-
-  .more-label {
-    opacity: 0.5;
-    transition: opacity 200ms;
-
-    &:hover {
-      opacity: 1;
-    }
-  }
-
   .seasons-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     grid-auto-rows: 1fr;
     gap: 0.75em;
-  }
-
-  .multiverse-id-container {
-    display: flex;
-    flex-direction: column;
-    line-height: 1;
-
-    .hashtag {
-      font-size: 1em;
-    }
-
-    .multiverse-id {
-      font-size: 1.5em;
-      font-weight: 900;
-    }
   }
 
   .sticky {
@@ -461,15 +289,5 @@
 
   .ori-image {
     height: 3em;
-  }
-
-  .recent-game-card {
-    transition: opacity 1000ms;
-
-    &.fake {
-      opacity: 0;
-      pointer-events: none;
-      user-select: none;
-    }
   }
 </style>

@@ -1,9 +1,15 @@
-import {app, BrowserWindow, net, protocol, nativeTheme} from "electron"
+import {app, BrowserWindow, net, protocol} from "electron"
 import path from "path"
 // eslint-disable-next-line import/no-unresolved
 import {createIPCHandler} from "electron-trpc/main"
 import {appRouter} from "@launcher/api/api"
-import {getLogsUserDataPath, getRandomizerUserDataPath, getSeedsUserDataPath, getUserDataPath} from "@launcher/paths"
+import {
+  getLogsUserDataPath,
+  getRandomizerUserDataPath,
+  getSeedsUserDataPath,
+  getTemporaryUserDataPath,
+  getUserDataPath,
+} from "@launcher/paths"
 import fs from "fs"
 import {RandoIPCService} from "@launcher/services/RandoIPCService"
 import {LocalTrackerWebSocketService} from "@launcher/services/LocalTrackerWebSocketService"
@@ -42,11 +48,21 @@ if (!app.requestSingleInstanceLock()) {
   ])
 
   const createWindow = async () => {
+    if (fs.existsSync(getTemporaryUserDataPath())) {
+      await fs.promises.rm(getTemporaryUserDataPath(), {
+        recursive: true,
+        force: true,
+        maxRetries: 3,
+        retryDelay: 500,
+      })
+    }
+
     // Create user data directory
     await fs.promises.mkdir(getUserDataPath(), {recursive: true})
     await fs.promises.mkdir(getRandomizerUserDataPath(), {recursive: true})
     await fs.promises.mkdir(getLogsUserDataPath(), {recursive: true})
     await fs.promises.mkdir(getSeedsUserDataPath(), {recursive: true})
+    await fs.promises.mkdir(getTemporaryUserDataPath(), {recursive: true})
 
     const webBuildBasePath = path.normalize(path.join(__dirname, "../../web-build/"))
     protocol.handle("app", async (request) => {

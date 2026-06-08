@@ -3,7 +3,7 @@ import type {UberId, UberState} from "@shared/types/UberStates"
 import {RandoIPCService} from "@launcher/services/RandoIPCService"
 import {Proto} from "@shared/proto"
 import {decodePacket, makePacket} from "@shared/proto/ProtoUtil"
-import {VersionService} from "@launcher/services/VersionService"
+import {UpdateService} from "@launcher/services/UpdateService"
 import {EventEmitter} from "events"
 import log from "electron-log/main"
 import {TRACKED_UBER_STATES, TrackedUberState} from "@shared/itemTracker/trackedUberStates"
@@ -251,7 +251,7 @@ export class LocalTrackerWebSocketService {
           ws?.send(
             makePacket(Proto.AuthenticateMessage, {
               jwt,
-              clientVersion: await VersionService.getVersion(),
+              clientVersion: await UpdateService.getVersion(),
             }),
           )
         })

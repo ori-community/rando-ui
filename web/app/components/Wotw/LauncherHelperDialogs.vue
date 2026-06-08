@@ -65,6 +65,14 @@
       <img class="crash-ori" src="@shared/images/ori_sus.png" alt="">
     </v-card>
   </v-dialog>
+  <v-dialog :model-value="updateDownloadProgress !== null" persistent max-width="600" opacity="1.0">
+    <v-card class="pa-12 text-center">
+      <template v-if="updateDownloadProgress !== null">
+        <h3 class="mb-4">Downloading update...</h3>
+        <v-progress-linear class="no-transition" :model-value="updateDownloadProgress" max="1" />
+      </template>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -77,6 +85,7 @@
   const gameCrashedDialogOpen = ref(false)
   const currentUnsuccessfulLaunchResult = ref<UnsuccessfulLaunchResult | null>(null)
   const currentDetectedCrashSupportBundlePath = ref<string | null>(null)
+  const updateDownloadProgress = ref<number | null>(null)
 
   onLaunchResult.on((launchResult) => {
     if (!launchResult.launchedSuccessfully) {
@@ -100,6 +109,12 @@
       gameCrashedDialogOpen.value = true
     },
   })
+
+  electronApi?.updater.updateDownloadProgress.subscribe(undefined, {
+    onData(value) {
+      updateDownloadProgress.value = value
+    },
+  })
 </script>
 
 <style lang="scss" scoped>
@@ -109,5 +124,9 @@
     left: 0;
     width: 96px;
     transform: scaleX(-1);
+  }
+
+  .no-transition:deep(*) {
+    transition: none !important;
   }
 </style>

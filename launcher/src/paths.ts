@@ -43,3 +43,7 @@ export function getSeedgenUserDataPath(relativePath = ".") {
 export function getSeedsUserDataPath(relativePath = ".") {
   return getSeedgenUserDataPath(path.join("seeds", relativePath))
 }
+
+export function getTemporaryUserDataPath(relativePath = ".") {
+  return getUserDataPath(path.join("temp", relativePath))
+}

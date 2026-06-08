@@ -28,6 +28,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       baseUrl: "https://wotw.orirando.com",
+      releasesUrl: "https://ori-rando-update.schwarzer.dev/releases/wotw",
     },
   },
 

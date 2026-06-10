@@ -494,7 +494,6 @@
         : "Bingo Cards"
 
       for (const settings of clonedUniverseSettings.worldSettings) {
-        settings.snippets.push("__bingo_generated")
         settings.inlineSnippets["__bingo_generated"] = {
           id: "__bingo_generated",
           content: `

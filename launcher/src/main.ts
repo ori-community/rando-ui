@@ -49,12 +49,14 @@ if (!app.requestSingleInstanceLock()) {
 
   const createWindow = async () => {
     if (fs.existsSync(getTemporaryUserDataPath())) {
-      await fs.promises.rm(getTemporaryUserDataPath(), {
-        recursive: true,
-        force: true,
-        maxRetries: 3,
-        retryDelay: 500,
-      })
+      try {
+        await fs.promises.rm(getTemporaryUserDataPath(), {
+          recursive: true,
+          force: true,
+        })
+      } catch (e) {
+        log.error("Main: Failed to delete temporary user directory:", e)
+      }
     }
 
     // Create user data directory

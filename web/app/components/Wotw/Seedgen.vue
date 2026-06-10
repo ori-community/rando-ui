@@ -523,7 +523,8 @@
       }
     }
 
-    const {data: seed}: { data: SeedsResponse } = await axios.post("/seeds", clonedUniverseSettings)
+    const {data: universeSettingsWithInlinedUserSnippets} = await seedgenAxios.post("/settings/universe/inline-snippets", clonedUniverseSettings)
+    const {data: seed}: { data: SeedsResponse } = await axios.post("/seeds", universeSettingsWithInlinedUserSnippets)
 
     const bingoCreationConfig = enableBingo.value
       ? {

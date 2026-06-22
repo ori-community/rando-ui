@@ -72,16 +72,24 @@
           <div class="buttons">
             <rando-launch-button :subtitle="displayedNewGameSeedSource" :show-confetti="true" label="Launch" @click="launch()"/>
 
-            <v-card :loading="isFetchingReleases" :class="availableUpdate !== null ? `bg-warning-darken-1` : `bg-background-lighten-1`" class="pa-4">
-              <template v-if="availableUpdate !== null">
-                <h3>Version {{ availableUpdate.version }} is available!</h3>
-                <v-btn variant="flat" block class="mt-3" @click="installUpdate(availableUpdate)">Install Update</v-btn>
-              </template>
-              <template v-else>
-                <h3>Version: {{ currentVersion }}</h3>
-                You are running the latest version.
-              </template>
+            <v-card :loading="isFetchingReleases" :class="availableUpdate !== null ? `bg-warning-darken-1` : `bg-background-lighten-1`">
+              <v-expand-transition>
+                <div v-if="availableUpdate !== null">
+                  <div class="pa-4">
+                    <h3>Version {{ availableUpdate.version }} is available!</h3>
+                    <v-btn variant="flat" block class="mt-3" @click="installUpdate(availableUpdate)">Install Update</v-btn>
+                  </div>
+                </div>
+                <div v-else>
+                  <div class="pa-4">
+                    <h3>Version: {{ currentVersion }}</h3>
+                    You are running the latest version.
+                  </div>
+                </div>
+              </v-expand-transition>
             </v-card>
+
+            <wotw-trivia />
           </div>
 
           <v-btn variant="text" block class="mt-3" @click="openWiki">

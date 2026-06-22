@@ -1,31 +1,36 @@
 <template>
-  <v-btn
-    ref="buttonRef"
-    color="accent"
-    size="x-large"
-    :disabled="disabled"
-    :loading="isLaunching && hasBeenClicked"
-    @click="onClick">
-    <slot name="icon">
-      <img
-        v-if="!displayedIcon"
-        class="launch-icon"
-        :class="{ disabled: disabled }"
-        src="@shared/images/launch.png"
-        alt=""
-      >
-      <v-icon v-else start>{{ displayedIcon }}</v-icon>
-    </slot>
-    {{ displayedLabel }}
-    <slot />
-  </v-btn>
+  <v-card color="background-lighten-1">
+    <v-btn
+      ref="buttonRef"
+      color="accent"
+      size="x-large"
+      block
+      :disabled="disabled"
+      :loading="isLaunching && hasBeenClicked"
+      @click="onClick"
+    >
+      <slot name="icon">
+        <img
+          v-if="!displayedIcon"
+          class="launch-icon"
+          :class="{ disabled: disabled }"
+          src="@shared/images/launch.png"
+          alt=""
+        >
+        <v-icon v-else start>{{ displayedIcon }}</v-icon>
+      </slot>
+      {{ displayedLabel }}
+      <slot />
+    </v-btn>
+    <div v-if="subtitle !== null" class="pa-2 text-center text-body-medium opacity-70 subtitle">{{ subtitle }}</div>
+  </v-card>
 </template>
 
 <script lang="ts" setup>
-  import {confettiFromElement} from "~/assets/utils/confetti";
+  import {confettiFromElement} from "~/assets/utils/confetti"
 
   const emit = defineEmits<{
-    (e: 'click', event: MouseEvent): void
+    (e: "click", event: MouseEvent): void
   }>()
 
   const props = withDefaults(defineProps<{
@@ -33,11 +38,13 @@
     disabled?: boolean,
     icon?: string | null,
     showConfetti?: boolean,
+    subtitle?: string | null,
   }>(), {
     label: null,
     disabled: false,
     icon: null,
     showConfetti: false,
+    subtitle: null,
   })
 
   const isLeek = ref(false) // funny (display lauch / leek)
@@ -49,7 +56,7 @@
       return props.icon
     }
     if (isLeek.value) {
-      return 'mdi-leek'
+      return "mdi-leek"
     }
     return null
   })
@@ -63,7 +70,7 @@
 
   const onClick = (async (event: MouseEvent) => {
     hasBeenClicked.value = true
-    emit('click', event)
+    emit("click", event)
   })
 
   watch(isLaunching, (newValue, oldValue) => {
@@ -100,5 +107,11 @@
       opacity: 0.4;
       filter: grayscale(1);
     }
+  }
+
+  .subtitle {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 </style>

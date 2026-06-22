@@ -23,6 +23,9 @@ type LauncherEvent = {
 
   /** Emitted when a LaunchResult is ready */
   onLaunchResult: [LaunchResult],
+
+  /** Emitted when the new game seed source changed */
+  newGameSeedSourceChanged: [string],
 }
 
 export class LauncherService {
@@ -223,7 +226,22 @@ export class LauncherService {
    * Sets the seed source for new games. (aka writes to .newgameseedsource)
    */
   static async setNewGameSeedSource(seedSource: string) {
-    await fs.promises.writeFile(getRandomizerUserDataPath(".newgameseedsource"), seedSource, {encoding: "utf-8"})
+    let append = ""
+    if (fs.existsSync(getRandomizerUserDataPath(".newgameseedsource"))) {
+      const contents = await fs.promises.readFile(getRandomizerUserDataPath(".newgameseedsource"), {encoding: "utf-8"})
+      append = "\n" + contents.split("\n").slice(1).join("\n")
+    }
+
+    await fs.promises.writeFile(getRandomizerUserDataPath(".newgameseedsource"), seedSource.trim() + append, {encoding: "utf-8"})
+    this.events.emit("newGameSeedSourceChanged", seedSource)
+  }
+
+  /**
+   * Gets the seed source for new games. (aka reads from .newgameseedsource)
+   */
+  static async getNewGameSeedSource() {
+    const contents = await fs.promises.readFile(getRandomizerUserDataPath(".newgameseedsource"), {encoding: "utf-8"})
+    return contents.split("\n")[0].trim()
   }
 
   /**

@@ -69,19 +69,19 @@
       </v-col>
       <v-col cols="12" md="3" order-md="1" order="0">
         <div class="sticky">
-          <v-card :class="availableUpdate !== null ? `bg-warning-darken-1` : `bg-background-lighten-1`" class="pa-4">
-            <template v-if="availableUpdate !== null">
-              <h3>Version {{ availableUpdate.version }} is available!</h3>
-              <v-btn variant="flat" block class="mt-3" @click="installUpdate(availableUpdate)">Install Update</v-btn>
-            </template>
-            <template v-else>
-              <h3>Version: {{ currentVersion }}</h3>
-              You are running the latest version.
-            </template>
-          </v-card>
+          <div class="buttons">
+            <rando-launch-button :subtitle="displayedNewGameSeedSource" :show-confetti="true" label="Launch" @click="launch()"/>
 
-          <div class="buttons mt-6">
-            <rando-launch-button :show-confetti="true" label="Launch" @click="launch()"/>
+            <v-card :loading="isFetchingReleases" :class="availableUpdate !== null ? `bg-warning-darken-1` : `bg-background-lighten-1`" class="pa-4">
+              <template v-if="availableUpdate !== null">
+                <h3>Version {{ availableUpdate.version }} is available!</h3>
+                <v-btn variant="flat" block class="mt-3" @click="installUpdate(availableUpdate)">Install Update</v-btn>
+              </template>
+              <template v-else>
+                <h3>Version: {{ currentVersion }}</h3>
+                You are running the latest version.
+              </template>
+            </v-card>
           </div>
 
           <v-btn variant="text" block class="mt-3" @click="openWiki">

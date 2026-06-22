@@ -75,6 +75,23 @@ export const launcher = router({
       })
     }),
   /**
+   * Subscribe to get the new game seed source string.
+   * Will emit its current value on subscription.
+   */
+  newGameSeedSource: publicProcedure
+    .subscription(() => {
+      return observable<string>((emit) => {
+        const onNewGameSeedSourceChanged = (value: string) => emit.next(value)
+        LauncherService.events.on("newGameSeedSourceChanged", onNewGameSeedSourceChanged)
+
+        LauncherService.getNewGameSeedSource().then(emit.next)
+
+        return () => {
+          LauncherService.events.off("newGameSeedSourceChanged", onNewGameSeedSourceChanged)
+        }
+      })
+    }),
+  /**
    * Subscribe to get LaunchResults when LauncherService launches the game or fails to do so.
    */
   onLaunchResult: publicProcedure

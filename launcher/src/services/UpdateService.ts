@@ -140,12 +140,11 @@ export class UpdateService {
 
         app.on("quit", async () => {
           await SeedgenServerService.kill()
-
-          // TODO: Maybe extract automatically, not sure yet whether the portable version
-          //       should be supported at all in the end...
-          electronShell.showItemInFolder(temporaryPath)
         })
 
+        // TODO: Maybe extract automatically, not sure yet whether the portable version
+        //       should be supported at all in the end...
+        electronShell.showItemInFolder(temporaryPath)
         app.quit()
       }
     }

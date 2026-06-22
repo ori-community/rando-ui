@@ -147,14 +147,14 @@
   const {axios} = useAxios()
   const userStore = useUserStore()
   const electronApi = useElectronApi()
-  const {launch} = useLauncherHelper()
+  const {launch, newGameSeedSource} = useLauncherHelper()
   const leagueHelper = useLeagueHelper()
   const currentVersion = ref(await electronApi?.updater.getVersion.query())
   const upcomingLeagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
   const activeLeagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
   const supportBundleLoading = ref(false)
   const isOnline = useOnline()
-  const {availableReleases, availableUpdate} = useReleases()
+  const {availableReleases, availableUpdate, isFetchingReleases} = useReleases()
 
   onMounted(async () => {
     await loadUserData()
@@ -162,6 +162,30 @@
 
   watch(() => userStore.user, () => {
     loadUserData()
+  })
+
+  const displayedNewGameSeedSource = computed(() => {
+    if (newGameSeedSource.value === null) {
+      return null
+    }
+
+    const colonIndex = newGameSeedSource.value.indexOf(":")
+
+    if (colonIndex === -1) {
+      return newGameSeedSource.value
+    }
+
+    const sourceType = newGameSeedSource.value.slice(0, colonIndex)
+    const sourceValue = newGameSeedSource.value.slice(colonIndex + 1)
+
+    switch (sourceType) {
+      case "file":
+        return sourceValue.slice(sourceValue.replaceAll("\\", "/").lastIndexOf("/") + 1)
+      case "server":
+        return `Online Game ${sourceValue}`
+    }
+
+    return newGameSeedSource.value
   })
 
   const combinedLeagueSeasons = computed(() => {
@@ -257,7 +281,7 @@
 
   .sticky {
     position: sticky;
-    top: 1em;
+    top: 24px;
   }
 
   .did-you-know {

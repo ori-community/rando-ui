@@ -33,8 +33,11 @@ type GitHubRelease = {
 
 let fetchedReleases = false
 const releases = ref<Release[] | null>(null)
+const isFetchingReleases = ref(false)
 
 async function fetchReleases() {
+  isFetchingReleases.value = true
+
   const runtimeConfig = useRuntimeConfig()
   const githubReleases: GitHubRelease[] = (await axios.get(runtimeConfig.public.releasesUrl)).data
   const electronApi = useElectronApi()
@@ -86,6 +89,8 @@ async function fetchReleases() {
     })
     .filter(release => release !== null)
     .toSorted((a, b) => semver.rcompare(a.version, b.version))
+
+  isFetchingReleases.value = false
 }
 
 export function useReleases() {
@@ -110,5 +115,5 @@ export function useReleases() {
   })
   const availableUpdate = computed(() => availableReleases.value?.find(r => r.isNew) ?? null)
 
-  return {releases, availableReleases, availableUpdate}
+  return {releases, availableReleases, availableUpdate, isFetchingReleases}
 }

@@ -89,7 +89,7 @@
               </v-expand-transition>
             </v-card>
 
-            <wotw-trivia />
+            <wotw-trivia class="bg-background-lighten-1" />
           </div>
 
           <v-btn variant="text" block class="mt-3" @click="openWiki">
@@ -290,29 +290,6 @@
   .sticky {
     position: sticky;
     top: 24px;
-  }
-
-  .did-you-know {
-    font-weight: 300;
-    font-size: 1.1em;
-
-    .ori-think {
-      height: 2em;
-      position: absolute;
-      pointer-events: none;
-      opacity: 0.5;
-      bottom: 0;
-      right: 0;
-    }
-
-    :deep(strong) {
-      font-weight: 700;
-      color: var(--v-accent-lighten5)
-    }
-
-    :deep(p) {
-      margin-bottom: 0;
-    }
   }
 
   .hidden {

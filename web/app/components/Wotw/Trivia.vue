@@ -1,6 +1,6 @@
 <template>
-  <v-card class="trivia" @click="nextTrivia()">
-    <div class=" pa-3 text-center user-select-none">
+  <v-card class="trivia" :ripple="false" @click="nextTrivia()">
+    <div class="pa-4 text-center user-select-none">
       <h3>Did you know?</h3>
       <v-expand-transition>
         <vue-markdown :key="triviaIndex" :source="currentTriviaHtml" />

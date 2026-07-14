@@ -1,5 +1,5 @@
 <template>
-  <v-card color="background-lighten-1">
+  <v-card class="d-inline-block" color="background-lighten-1">
     <v-btn
       ref="buttonRef"
       color="accent"

@@ -14,7 +14,7 @@ type MultiverseRefs = {
 
 class MultiverseConnection {
   readonly multiverseId: number
-  readonly multiverseRef: Promise<Ref<MultiverseInfo>>
+  readonly multiverseRefPromise: Promise<Ref<MultiverseInfo>>
   readonly seedRef: Ref<SeedInfo | null> = ref(null)
   readonly bingoBoardRef: Ref<BingoBoard | null> = ref(null)
   readonly bingoUniversesRef: Ref<BingoUniverseInfo[]> = ref([])
@@ -24,12 +24,19 @@ class MultiverseConnection {
 
   constructor(multiverseId: number) {
     this.multiverseId = multiverseId
-    this.multiverseRef = (async () => {
+    this.multiverseRefPromise = (async () => {
       const {axios} = useAxios()
       const data = (await axios.get(`/multiverses/${multiverseId}`)).data
       data.gameHandlerClientInfo = base64ToUint8Array(data.gameHandlerClientInfo)
 
       const multiverseRef = ref(data as MultiverseInfo)
+      const multiverseRefPromise = (async () => multiverseRef)()
+
+      await Promise.all([
+        this.#fetchSeed(multiverseRefPromise),
+        this.#fetchBingoData(multiverseRefPromise),
+      ])
+
       this.#watchDependencies(multiverseRef)
 
       return multiverseRef
@@ -41,15 +48,15 @@ class MultiverseConnection {
   #watchDependencies(multiverseRef: Ref<MultiverseInfo>) {
     watch(() => multiverseRef.value.seedId, async () => {
       await this.#fetchSeed()
-    }, {immediate: true})
+    })
 
     watch(() => multiverseRef.value.hasBingoBoard, async () => {
       await this.#fetchBingoData()
-    }, {immediate: true})
+    })
   }
 
-  async #fetchSeed() {
-    const seedId = (await this.multiverseRef).value.seedId
+  async #fetchSeed(multiverseRefPromise = this.multiverseRefPromise) {
+    const seedId = (await multiverseRefPromise).value.seedId
 
     if (!seedId) {
       this.seedRef.value = null
@@ -60,8 +67,8 @@ class MultiverseConnection {
     this.seedRef.value = (await axios.get(`/seeds/${seedId}`)).data as SeedInfo
   }
 
-  async #fetchBingoData() {
-    const hasBingoBoard = (await this.multiverseRef).value.hasBingoBoard
+  async #fetchBingoData(multiverseRefPromise = this.multiverseRefPromise) {
+    const hasBingoBoard = (await multiverseRefPromise).value.hasBingoBoard
 
     if (!hasBingoBoard) {
       this.bingoBoardRef.value = null
@@ -107,7 +114,7 @@ class MultiverseConnection {
     }
 
     this.#webSocket.addEventListener("message", async ({message}) => {
-      const multiverseRef = await this.multiverseRef
+      const multiverseRef = await this.multiverseRefPromise
 
       switch (message.$type) {
         case Proto.MultiverseInfoMessage.$type: {
@@ -173,7 +180,7 @@ export async function useMultiverse(id: MaybeRefOrGetter<number>): Promise<Multi
     }
 
     currentConnection = connection
-    const multiverseRef = await connection.multiverseRef
+    const multiverseRef = await connection.multiverseRefPromise
 
     if (!composableRefs) {
       composableRefs = {

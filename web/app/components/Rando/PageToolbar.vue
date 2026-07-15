@@ -22,14 +22,58 @@
           :offset-x="-10"
           :offset-y="-5"
         >
-        <v-icon :start="!mdAndDown">mdi-trophy</v-icon>
-        <span v-if="!mdAndDown">League</span>
+          <v-icon :start="!mdAndDown">mdi-trophy</v-icon>
+          <span v-if="!mdAndDown">League</span>
         </v-badge>
       </v-btn>
-      <v-btn v-if="userStore.isLoggedIn" key="my-games" exact size="x-large" variant="text" :to="{ name: 'my-games' }">
-        <v-icon :start="!mdAndDown">mdi-gamepad-variant-outline</v-icon>
-        <span v-if="!mdAndDown"> My Games </span>
-      </v-btn>
+      <div class="position-relative">
+        <v-btn
+          v-if="userStore.isLoggedIn"
+          key="my-games"
+          exact
+          size="x-large"
+          variant="text"
+          @click="toggleMultiversesMenu"
+        >
+          <v-icon :start="!mdAndDown">mdi-gamepad-variant-outline</v-icon>
+          <span v-if="!mdAndDown">My Games</span>
+          <v-menu v-model="multiversesMenuOpen" target="parent" stick-to-target>
+            <v-list>
+              <v-list-item
+                v-for="item in multiverses"
+                :key="item.id"
+                :to="{ name: 'game-multiverseId', params: { multiverseId: item.id } }"
+                class="py-3 flex-column"
+              >
+                <div class="multiverse-id-container d-flex ga-3">
+                  <div>
+                    <span class="hashtag">#</span><span class="multiverse-id">{{ item.id }}</span>
+                  </div>
+                  <div class="d-flex flex-wrap-reverse">
+                    <rando-discord-avatar
+                      v-for="member in item.members"
+                      :key="member.id"
+                      :user="member"
+                      :size="24"
+                      class="inset-avatar"
+                    />
+                  </div>
+                </div>
+                <div class="opacity-70 line-height-1 pt-1">
+                  {{ useTimeAgo(item.createdAt) }}
+                </div>
+              </v-list-item>
+              <v-list-item key="more" :to="{ name: 'my-games' }" :active="false">
+                <v-icon start>mdi-arrow-down</v-icon>
+                Older Games...
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-btn>
+        <div class="position-absolute button-progress-bar">
+          <v-progress-linear v-if="loadingMultiverses" indeterminate height="2" class="position-absolute" />
+        </div>
+      </div>
       <v-btn v-if="isElectron" key="settings" size="x-large" variant="text" to="/electron/settings">
         <v-icon :start="!mdAndDown">mdi-cog-outline</v-icon>
         <span v-if="!mdAndDown">Settings</span>
@@ -65,19 +109,19 @@
         </v-menu>
       </div>
     </v-scale-transition>
-    <v-spacer/>
+    <v-spacer />
     <rando-throttled-spinner no-margin>
       <template v-if="userStore.user !== undefined" #content>
         <div class="d-flex align-center">
           <template v-if="userStore.isLoggedIn">
             <!-- TODO no greeting on mobile -->
             <div v-if="!smAndDown" class="mr-4 user-info">
-              <div class="text-no-wrap">{{ randomGreeting(userStore.user?.name ?? '') }}</div>
+              <div class="text-no-wrap">{{ randomGreeting }}</div>
             </div>
             <v-menu offset-y left nudge-bottom="6">
               <template #activator="{ props }">
                 <v-btn x-large class="ma-0 mr-1" icon v-bind="props">
-                  <rando-discord-avatar v-if="userStore.user" :user="userStore.user" :size="48"/>
+                  <rando-discord-avatar v-if="userStore.user" :user="userStore.user" :size="48" />
                 </v-btn>
               </template>
               <v-list>
@@ -122,8 +166,13 @@
         />
 
         <div class="d-flex">
-          <v-spacer/>
-          <v-btn class="mr-1" variant="text" :disabled="RenameRequestInProgress" @click="showEditNicknameDialog = false">
+          <v-spacer />
+          <v-btn
+            class="mr-1"
+            variant="text"
+            :disabled="RenameRequestInProgress"
+            @click="showEditNicknameDialog = false"
+          >
             Cancel
           </v-btn>
           <v-btn
@@ -142,41 +191,47 @@
   <v-dialog v-model="showRemoteTrackerDialog" max-width="500px">
     <wotw-tracker-remote-tracker-selection
       :user-is-logged-in="userStore.isLoggedIn"
-      @created="showRemoteTrackerDialog = false"/>
+      @created="showRemoteTrackerDialog = false"
+    />
   </v-dialog>
 </template>
 
 <script lang="ts" setup>
   import {useDisplay} from "vuetify"
+  import type {MultiverseMetadataInfo} from "@shared/types/http-api"
+  import {useTimeAgo} from "@vueuse/core"
 
   const isElectron = useIsElectron()
   const electronApi = isElectron ? useElectronApi() : null
   const authStore = useAuthStore()
   const route = useRoute()
-  const {axios} = useAxios()
+  const {axios, catchAxiosErrors} = useAxios()
   const userStore = useUserStore()
   const leagueHelper = useLeagueHelper()
   const {smAndDown, mdAndDown} = useDisplay()
-  const editedNickname = ref('')
+  const editedNickname = ref("")
   const showEditNicknameDialog = ref(false)
   const RenameRequestInProgress = ref(false)
   const showRemoteTrackerDialog = ref(false)
+  const multiverses = ref<MultiverseMetadataInfo[] | null>(null)
+  const loadingMultiverses = ref(false)
+  const multiversesMenuOpen = ref(false)
 
   const randomGreetingTemplate = computed(() => {
     const templates = [
-      'Hi, #!',
-      'Hello, #!',
-      'Hey, #!',
-      'Hiya, #!',
-      'Yo, #!',
-      'Ahoy, #!',
-      'Howdy, #!',
-      'oriHi, #!',
-      'Hello there, #!',
-      'Hola, #!',
-      '#, wassup?',
+      "Hi, #!",
+      "Hello, #!",
+      "Hey, #!",
+      "Hiya, #!",
+      "Yo, #!",
+      "Ahoy, #!",
+      "Howdy, #!",
+      "oriHi, #!",
+      "Hello there, #!",
+      "Hola, #!",
+      "#, wassup?",
     ]
-    return templates[Math.floor(Math.random() * templates.length)]
+    return templates[Math.floor(Math.random() * templates.length)]!
   })
   const nicknameIsValid = computed(() => {
     const trimmedNickname = editedNickname.value.trim()
@@ -187,14 +242,11 @@
     await leagueHelper.updatePendingGames()
   })
 
-  const randomGreeting = ((username: string) => {
-    if (!randomGreetingTemplate.value) {
-      return username
-    }
-    return randomGreetingTemplate.value.replace('#', username)
+  const randomGreeting = computed(() => {
+    return randomGreetingTemplate.value.replace("#", userStore.user?.name ?? "")
   })
 
-  const login = (async () => {
+  async function login() {
     const {apiBaseUrl} = await useBaseUrls()
 
     if (!electronApi) {
@@ -211,44 +263,77 @@
       apiBaseUrl,
     })
 
-    axios.defaults.headers.common['Authorization'] = `Bearer ${shortLivedJwt}`
+    axios.defaults.headers.common["Authorization"] = `Bearer ${shortLivedJwt}`
 
-    const longLivedJwt = (await axios.post('/tokens/', {
-      scopes: ['*'],
+    const longLivedJwt = (await axios.post("/tokens/", {
+      scopes: ["*"],
     })).data as string
 
     if (longLivedJwt) {
       await authStore.setJwt(longLivedJwt)
     }
-  })
+  }
 
-  const logout = (async () => {
+  async function logout() {
     await authStore.setJwt(null)
-  })
-  const saveNickname = (async () => {
+  }
+
+  async function saveNickname() {
     if (!nicknameIsValid.value) {
       return
     }
 
     RenameRequestInProgress.value = true
-    await axios.put('/users/me/nickname', editedNickname.value, {
+    await axios.put("/users/me/nickname", editedNickname.value, {
       headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
+        "Content-Type": "text/plain; charset=utf-8",
       },
     })
     await userStore.updateUser()
     RenameRequestInProgress.value = false
     showEditNicknameDialog.value = false
-  })
+  }
 
-  const openLocalTrackerWindow = (async () => {
+  async function openLocalTrackerWindow() {
     await electronApi?.localTracker.openWindow.query()
-  })
+  }
 
-  const openToolsWindow = (async () => {
+  async function openToolsWindow() {
     await electronApi?.toolsWindow.openWindow.query()
-  })
+  }
 
+  async function fetchMultiverses() {
+    loadingMultiverses.value = true
+    await catchAxiosErrors(
+      async () => {
+        multiverses.value = (await axios.get("/multiverses/own", {params: {limit: 6}})).data
+      },
+      async (e) => {
+        multiverses.value = null
+        console.error(e)
+      },
+    )
+    loadingMultiverses.value = false
+  }
+
+  async function toggleMultiversesMenu() {
+    if (loadingMultiverses.value) {
+      return
+    }
+
+    if (multiversesMenuOpen.value) {
+      multiversesMenuOpen.value = false
+      return
+    }
+
+    if (multiverses.value !== null) {
+      multiversesMenuOpen.value = true
+      await fetchMultiverses()
+    } else {
+      await fetchMultiverses()
+      multiversesMenuOpen.value = true
+    }
+  }
 </script>
 
 <style lang="scss" scoped>
@@ -262,5 +347,33 @@
 
   .toolbar-button-text {
     font-size: 1.0rem;
+  }
+
+  .multiverse-id-container {
+    display: flex;
+    line-height: 1;
+
+    .hashtag {
+      font-size: 1em;
+    }
+
+    .multiverse-id {
+      font-size: 1.5em;
+      font-weight: 900;
+    }
+  }
+
+  .inset-avatar:not(:first-of-type) {
+    margin-left: -10px;
+  }
+
+  .button-progress-bar {
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+
+  .line-height-1 {
+    line-height: 1;
   }
 </style>

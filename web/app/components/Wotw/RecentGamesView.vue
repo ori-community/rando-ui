@@ -44,6 +44,14 @@
                   />
                 </template>
               </div>
+              <div class="opacity-50 line-height-1 pt-2">
+                <template v-if="recentMultiverses === null || !recentMultiverses[i]">
+                  placeholder
+                </template>
+                <template v-else>
+                  {{ useTimeAgo(recentMultiverses[i].createdAt) }}
+                </template>
+              </div>
             </v-card>
 
             <v-fade-transition>
@@ -81,6 +89,7 @@
 
 <script lang="ts" setup>
   import type {MultiverseMetadataInfo} from "@shared/types/http-api"
+  import {useTimeAgo} from "@vueuse/core"
 
   const {axios, catchAxiosErrors} = useAxios()
   const userStore = useUserStore()
@@ -122,8 +131,6 @@
     gap: 0.75em;
   }
 
-
-
   .multiverse-id-container {
     display: flex;
     flex-direction: column;
@@ -156,5 +163,9 @@
       pointer-events: none;
       user-select: none;
     }
+  }
+
+  .line-height-1 {
+    line-height: 1;
   }
 </style>

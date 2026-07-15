@@ -274,8 +274,9 @@
     )
   })
   const hasSeed = computed(() => {
-    return seed.value
+    return !!seed.value
   })
+
   const canDownloadSpoiler = computed(() => {
     return hasSeed.value && (!isRaceRunning.value || ownWorldFinished.value)
   })

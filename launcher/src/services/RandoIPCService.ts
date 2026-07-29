@@ -4,6 +4,7 @@ import {EventEmitter} from "events"
 import {LocalTrackerWebSocketService} from "@launcher/services/LocalTrackerWebSocketService"
 import log from "electron-log/main"
 import {SeedgenServerService} from "@launcher/services/SeedgenServerService"
+import {encode as cborEncode, decode as cborDecode} from "cbor2"
 
 let socket: zmq.Dealer | null = null
 let receiveLoopActive = false
@@ -117,7 +118,7 @@ export class RandoIPCService {
     socket
       .receive()
       .then(([messageString]) => {
-        const message = JSON.parse(messageString.toString())
+        const message = cborDecode<Request | Response>(messageString)
 
         if (message.type === "request") {
           this.handleIncomingRequest(message).catch((error) => log.error("RandoIPC: Could not handle incoming request", error))
@@ -138,7 +139,7 @@ export class RandoIPCService {
   }
 
   static async send(message: object) {
-    await socket?.send(JSON.stringify(message))
+    await socket?.send(cborEncode(message))
   }
 
   static async handleIncomingRequest(request: Request) {

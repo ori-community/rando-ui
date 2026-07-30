@@ -67,4 +67,9 @@ export const randoIpc = router({
         value: input.active,
       })
     }),
+
+  getGameStatsSlotData: publicProcedure
+    .query(async () => {
+      return RandoIPCService.getGameStatsSlotData()
+    }),
 })

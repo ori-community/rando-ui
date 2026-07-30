@@ -1,28 +1,42 @@
 <template>
-  <div v-if="engineLoading" class="position-absolute d-flex flex-column ga-2 justify-center align-center top-0 left-0 right-0 bottom-0">
+  <div v-if="loading || engineLoading" class="position-absolute d-flex flex-column ga-2 justify-center align-center top-0 left-0 right-0 bottom-0">
     <v-progress-circular reveal indeterminate />
     <div>Loading</div>
   </div>
-  <canvas id="map-canvas" ref="canvas" class="canvas" :class="{loading: engineLoading}" />
+  <canvas v-if="!loading" id="map-canvas" ref="canvas" class="canvas" :class="{loading: engineLoading}" />
+  <v-snackbar v-model="copiedSnackbar">
+    Image copied to clipboard.
+  </v-snackbar>
 </template>
 
 <script lang="ts" setup>
-  import { Engine } from '@ori-community/wotw-map'
+  import {Engine} from "@ori-community/wotw-map"
 
-  export type SaveFile = {
-    data: ArrayBuffer,
-    name: string,
-  }
-
-  const props = defineProps<{
-    saveFiles: SaveFile[],
-  }>()
+  const props = withDefaults(
+    defineProps<{
+      gameStatsSlotData?: ArrayBufferLike | null,
+      loading?: boolean,
+    }>(),
+    {
+      gameStatsSlotData: null,
+      loading: false,
+    }
+  )
 
   const canvas = ref<HTMLCanvasElement | null>(null)
   const engineLoading = ref(false)
   const resizeObserver = new ResizeObserver(updateCanvasSize)
   const engine = shallowRef<Engine | null>(null)
   const engineReady = ref(false)
+  const copiedSnackbar = ref(false)
+
+  watch(() => props.gameStatsSlotData, () => {
+    if (!engineReady.value) {
+      return
+    }
+
+    loadGameStatsSlotData()
+  })
 
   watch(canvas, async (value, oldValue) => {
     if (oldValue !== null) {
@@ -42,7 +56,16 @@
       onGodotReady: () => {
         engineReady.value = true
         updateEngineWindowScale()
-        loadSaveFiles()
+        loadGameStatsSlotData()
+      },
+      copyImageToClipboard(data: ArrayBuffer) {
+        navigator.clipboard.write([
+          new ClipboardItem({
+            "image/png": new Blob([data], {type: "image/png"}),
+          })
+        ]).then(
+          copiedSnackbar.value = true
+        )
       },
       call: () => {
         // This callback is replaced by the Engine at startup
@@ -74,8 +97,11 @@
     }
   })
 
-  function loadSaveFiles() {
-    window.__godotBridge?.call("load_save_files", toRaw(props.saveFiles))
+  function loadGameStatsSlotData() {
+    if (props.gameStatsSlotData !== null) {
+      console.log(toRaw(props.gameStatsSlotData))
+      window.__godotBridge?.call("load_game_stats_slot_data", toRaw(props.gameStatsSlotData))
+    }
   }
 
   function updateEngineWindowScale() {

@@ -332,4 +332,11 @@ export class RandoIPCService {
     await this.emit("set_game_object_active", {path, instance_id: instanceId, value: active})
   }
 
+  static async getGameStatsSlotData(): Promise<Uint8Array> {
+    const response = await this.request("stats.get_game_stats_slot_data") as {
+      data: number[],
+    }
+
+    return new Uint8Array(response.data)
+  }
 }

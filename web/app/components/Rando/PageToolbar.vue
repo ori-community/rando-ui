@@ -26,10 +26,9 @@
           <span v-if="!mdAndDown">League</span>
         </v-badge>
       </v-btn>
-      <div class="position-relative">
+      <div key="my-games" class="position-relative">
         <v-btn
           v-if="userStore.isLoggedIn"
-          key="my-games"
           exact
           size="x-large"
           variant="text"
@@ -77,6 +76,10 @@
       <v-btn v-if="isElectron" key="settings" size="x-large" variant="text" to="/electron/settings">
         <v-icon :start="!mdAndDown">mdi-cog-outline</v-icon>
         <span v-if="!mdAndDown">Settings</span>
+      </v-btn>
+      <v-btn v-if="randoIpcIsConnected" key="stats" size="x-large" variant="text" @click="statsDialog.open = true">
+        <v-icon :start="!mdAndDown">mdi-chart-timeline</v-icon>
+        <span v-if="!mdAndDown">Stats</span>
       </v-btn>
       <!--  MENU  -->
       <div v-if="isElectron" key="electron-menu">
@@ -216,6 +219,8 @@
   const multiverses = ref<MultiverseMetadataInfo[] | null>(null)
   const loadingMultiverses = ref(false)
   const multiversesMenuOpen = ref(false)
+  const {isConnected: randoIpcIsConnected} = useRandoIpc()
+  const statsDialog = useStatsDialogStore()
 
   const randomGreetingTemplate = computed(() => {
     const templates = [

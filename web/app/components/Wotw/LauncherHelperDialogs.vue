@@ -73,6 +73,21 @@
       </template>
     </v-card>
   </v-dialog>
+  <v-dialog v-model="statsDialog.open" height="90%" max-width="1500">
+    <v-card class="fill-height relative">
+      <template v-if="statsDialogError">
+        <div class="position-absolute d-flex flex-column ga-2 justify-center align-center top-0 left-0 right-0 bottom-0">
+          <div>
+            Error loading statistics data from the game. Is the game running?
+          </div>
+          <v-btn variant="tonal" @click="updateGameStatsSlotData()">Retry</v-btn>
+        </div>
+      </template>
+      <template v-else>
+        <wotw-map :loading="gameStatsSlotData === null" :game-stats-slot-data="gameStatsSlotData" />
+      </template>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -86,6 +101,30 @@
   const currentUnsuccessfulLaunchResult = ref<UnsuccessfulLaunchResult | null>(null)
   const currentDetectedCrashSupportBundlePath = ref<string | null>(null)
   const updateDownloadProgress = ref<number | null>(null)
+  const statsDialog = useStatsDialogStore()
+  const gameStatsSlotData = shallowRef<ArrayBufferLike | null>(null)
+  const statsDialogError = ref(false)
+
+  watch(() => statsDialog.open, async (open) => {
+    if (open) {
+      await updateGameStatsSlotData()
+    }
+  })
+
+  async function updateGameStatsSlotData() {
+    statsDialogError.value = false
+
+    try {
+      gameStatsSlotData.value = (await electronApi?.randoIpc.getGameStatsSlotData.query())?.buffer ?? null
+
+      if (gameStatsSlotData.value === null) {
+        statsDialogError.value = true
+      }
+    } catch (e) {
+      console.error(e)
+      statsDialogError.value = true
+    }
+  }
 
   onLaunchResult.on((launchResult) => {
     if (!launchResult.launchedSuccessfully) {

@@ -171,8 +171,8 @@ message ResetTracker { // 101
 
 }
 
-message TrackerFlagsUpdate { // 102
-  repeated string flags = 1;
+message TrackerTagsUpdate { // 102
+  repeated string tags = 1;
 }
 
 message RequestFullUpdate { // 103

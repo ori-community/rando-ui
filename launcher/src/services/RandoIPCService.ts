@@ -121,7 +121,7 @@ export class RandoIPCService {
         const message = cborDecode<Request | Response>(messageString)
 
         if (message.type === "request") {
-          this.handleIncomingRequest(message).catch((error) => log.error("RandoIPC: Could not handle incoming request", error))
+          this.handleIncomingRequest(message).catch((error) => log.error(`RandoIPC: Could not handle incoming request '${message.method}'`, error))
         } else if (message.type === "response") {
           if (message.id in outgoingRequestHandlers) {
             outgoingRequestHandlers[message.id].resolve?.(message.payload)
@@ -238,7 +238,7 @@ export class RandoIPCService {
 
           if (queuedRequest.expectsResponse) {
             await this.send(queuedRequest.request)
-            await outgoingRequestHandlers[queuedRequest.request.id].promise
+            await outgoingRequestHandlers[queuedRequest.request.id]?.promise
           } else {
             await this.send(queuedRequest.request)
             outgoingRequestHandlers[queuedRequest.request.id].resolve?.()
@@ -271,7 +271,7 @@ export class RandoIPCService {
       outgoingRequestHandlers[request.id].resolve = resolve
 
       setTimeout(() => {
-        reject(new Error("RandoIPC timeout"))
+        reject(new Error(`RandoIPC timeout on method '${method}'`))
         delete outgoingRequestHandlers[request.id]
       }, 5000)
     })
@@ -296,8 +296,8 @@ export class RandoIPCService {
     return (await this.getUberStates([{group, state}]))[0]
   }
 
-  static async getSeedFlags(): Promise<string[]> {
-    return await this.request("get_flags") as string[]
+  static async getSeedTags(): Promise<string[]> {
+    return await this.request("get_tags") as string[]
   }
 
   static async setUberState(group: number, state: number, value: number): Promise<void> {

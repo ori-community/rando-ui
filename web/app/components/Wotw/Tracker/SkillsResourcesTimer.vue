@@ -97,7 +97,7 @@
   // TODO tracking doors
 
   const props = withDefaults(defineProps<{
-    seedFlags: string[],
+    seedTags: string[],
     trackedValues: { [key in typeof TRACKED_UBER_STATES[number]["trackingId"]]?: number },
     showWillowHearts?: boolean,
     heartCount?: number,

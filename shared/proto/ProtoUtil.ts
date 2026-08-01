@@ -16,7 +16,7 @@ export type PacketType =
   Proto.ShowUINotificationMessage |
   Proto.TrackerUpdate |
   Proto.ResetTracker |
-  Proto.TrackerFlagsUpdate |
+  Proto.TrackerTagsUpdate |
   Proto.RequestFullUpdate |
   Proto.SetTrackerEndpointId |
   Proto.TrackerTimerStateUpdate |
@@ -33,7 +33,7 @@ const packetIdMap: PacketIdMap = {
   12: null,
   100: Proto.TrackerUpdate,
   101: Proto.ResetTracker,
-  102: Proto.TrackerFlagsUpdate,
+  102: Proto.TrackerTagsUpdate,
   103: Proto.RequestFullUpdate,
   104: Proto.SetTrackerEndpointId,
   105: Proto.TrackerTimerStateUpdate,

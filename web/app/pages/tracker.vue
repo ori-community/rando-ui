@@ -10,7 +10,7 @@
       >
         <div class="tracker">
           <wotw-tracker-skills-resources-timer
-            :seed-flags="seedFlags"
+            :seed-tags="seedTags"
             :tracked-values="trackedValues"
             :heart-count="heartCount"
             :show-willow-hearts="showWillowHearts"
@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-  import {ResetTracker, TrackerFlagsUpdate, TrackerTimerStateUpdate, TrackerUpdate} from "@shared/proto/messages"
+  import {ResetTracker, TrackerTagsUpdate, TrackerTimerStateUpdate, TrackerUpdate} from "@shared/proto/messages"
   import {decodePacket} from "@shared/proto/ProtoUtil"
   import {confettiFromElement} from "~/assets/utils/confetti"
 
@@ -59,7 +59,7 @@
     settings = storeToRefs(settingsStore)
   }
 
-  // import { ResetTracker, TrackerFlagsUpdate, TrackerTimerStateUpdate, TrackerUpdate } from '~/assets/proto/messages'
+  // import { ResetTracker, TrackerTagsUpdate, TrackerTimerStateUpdate, TrackerUpdate } from '~/assets/proto/messages'
   // import { applyTransparentWindowStyles, isOBS } from '~/assets/lib/obs'
   // import { isElectron } from '~/assets/lib/isElectron'
   // import { hasSettings } from '~/assets/lib/hasSettings'
@@ -69,7 +69,7 @@
   const connectedOnce = ref(false)
   const hideConnectingScreen = ref(false)
   const trackedValues = ref<{ [key: string]: number }>({})
-  const seedFlags = ref<string[]>([])
+  const seedTags = ref<string[]>([])
   const showDone = ref(false)
   const showDoneTimeout = shallowRef<NodeJS.Timeout | number | null>(null)
   const timerStartTimestamp = ref(0)
@@ -239,8 +239,8 @@
             trackedValues.value[packet.id] = packet.value
             receivedPacket.value = true
             break
-          case TrackerFlagsUpdate.$type:
-            seedFlags.value = packet.flags
+          case TrackerTagsUpdate.$type:
+            seedTags.value = packet.tags
             receivedPacket.value = true
             break
           case TrackerTimerStateUpdate.$type:
@@ -251,7 +251,7 @@
             break
           case ResetTracker.$type:
             trackedValues.value = {}
-            seedFlags.value = []
+            seedTags.value = []
             displayedTime.value = 0
             inGameTime.value = 0
             asyncLoadingTime.value = 0

@@ -208,8 +208,8 @@ export class LocalTrackerWebSocketService {
     }
 
     client.send(
-      makePacket(Proto.TrackerFlagsUpdate, {
-        flags: await RandoIPCService.getSeedFlags(),
+      makePacket(Proto.TrackerTagsUpdate, {
+        tags: await RandoIPCService.getSeedTags(),
       }),
     )
 

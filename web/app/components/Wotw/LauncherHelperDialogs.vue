@@ -73,7 +73,7 @@
       </template>
     </v-card>
   </v-dialog>
-  <v-dialog v-model="statsDialog.open" height="90%" max-width="1500">
+  <v-dialog v-model="statsDialog.open" height="90%" max-width="1250">
     <v-card class="fill-height relative">
       <template v-if="statsDialogError">
         <div class="position-absolute d-flex flex-column ga-2 justify-center align-center top-0 left-0 right-0 bottom-0">

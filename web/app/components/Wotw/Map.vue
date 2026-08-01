@@ -104,7 +104,7 @@
   }
 
   function updateEngineWindowScale() {
-    window.__godotBridge?.call("set_window_scale", window.devicePixelRatio)
+    window.__godotBridge?.call("set_window_scale", window.devicePixelRatio * 0.7)
   }
 
   function updateCanvasSize() {

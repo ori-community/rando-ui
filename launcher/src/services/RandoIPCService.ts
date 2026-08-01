@@ -34,6 +34,8 @@ type RandoIPCEvent = {
   connectionStateChanged: [boolean],
   /** Emitted when the league.run_submitted IPC event was fired */
   leagueRunSubmitted: [],
+  /** Emitted when the notify_checkpoint_created event was fired */
+  checkpointCreated: [],
 }
 
 const outgoingRequestHandlers: {
@@ -212,6 +214,10 @@ export class RandoIPCService {
         // TASService.reportTimelineLoaded(request.payload?.tas_config ?? null)
         break
       }
+      case "notify_checkpoint_created": {
+        this.events.emit("checkpointCreated")
+        break
+      }
       case "league.run_submitted": {
         this.events.emit("leagueRunSubmitted")
         break
@@ -332,11 +338,11 @@ export class RandoIPCService {
     await this.emit("set_game_object_active", {path, instance_id: instanceId, value: active})
   }
 
-  static async getGameStatsSlotData(): Promise<Uint8Array> {
+  static async getGameStatsSlotData(): Promise<number[]> {
     const response = await this.request("stats.get_game_stats_slot_data") as {
       data: number[],
     }
 
-    return new Uint8Array(response.data)
+    return response.data
   }
 }

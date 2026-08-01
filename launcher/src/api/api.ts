@@ -12,6 +12,7 @@ import {shell} from "@launcher/api/routers/shell"
 import {supportBundle} from "@launcher/api/routers/supportBundle"
 import {toolsWindow} from "@launcher/api/routers/toolsWindow"
 import {updater} from "@launcher/api/routers/updater"
+import type {Unsubscribable as TrpcUnsubscribable} from "@trpc/server/observable"
 
 export const appRouter = router({
   auth,
@@ -32,3 +33,4 @@ export const appRouter = router({
 // Export type router type signature,
 // NOT the router itself.
 export type LauncherApiRouter = typeof appRouter;
+export type Unsubscribable = TrpcUnsubscribable

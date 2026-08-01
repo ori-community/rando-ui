@@ -70,6 +70,18 @@ export const randoIpc = router({
 
   getGameStatsSlotData: publicProcedure
     .query(async () => {
-      return RandoIPCService.getGameStatsSlotData()
+      return await RandoIPCService.getGameStatsSlotData()
+    }),
+
+  onCheckpointCreated: publicProcedure
+    .subscription(() => {
+      return observable<void>((emit) => {
+        const onCheckpointCreated = () => emit.next()
+        RandoIPCService.events.on("checkpointCreated", onCheckpointCreated)
+
+        return () => {
+          RandoIPCService.events.off("checkpointCreated", onCheckpointCreated)
+        }
+      })
     }),
 })

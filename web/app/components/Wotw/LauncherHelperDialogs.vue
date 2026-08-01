@@ -93,6 +93,7 @@
 <script lang="ts" setup>
   import type {UnsuccessfulLaunchResult} from '@shared/types/launcher'
   import {launchSetupValidationErrorMessages} from '~/assets/uiMetadata'
+  import type {Unsubscribable} from "@launcher/api/api"
 
   const electronApi = useElectronApi()
   const {onLaunchResult} = useLauncherHelper()
@@ -104,22 +105,42 @@
   const statsDialog = useStatsDialogStore()
   const gameStatsSlotData = shallowRef<ArrayBufferLike | null>(null)
   const statsDialogError = ref(false)
+  const onCheckpointUnsubscribable = shallowRef<Unsubscribable | null>(null)
 
-  watch(() => statsDialog.open, async (open) => {
-    if (open) {
-      await updateGameStatsSlotData()
-    }
+  if (electronApi !== null) {
+    watch(() => statsDialog.open, async (open) => {
+      if (open) {
+        await updateGameStatsSlotData()
+
+        onCheckpointUnsubscribable.value = electronApi.randoIpc.onCheckpointCreated.subscribe(undefined, {
+          onData() {
+            // TODO: Currently broken due to a memory bug in Godot
+            // updateGameStatsSlotData()
+          }
+        })
+      } else {
+        onCheckpointUnsubscribable.value?.unsubscribe()
+        onCheckpointUnsubscribable.value = null
+      }
+    })
+  }
+
+  onBeforeUnmount(() => {
+    onCheckpointUnsubscribable.value?.unsubscribe()
   })
 
   async function updateGameStatsSlotData() {
     statsDialogError.value = false
 
     try {
-      gameStatsSlotData.value = (await electronApi?.randoIpc.getGameStatsSlotData.query())?.buffer ?? null
+      const response = (await electronApi?.randoIpc.getGameStatsSlotData.query()) ?? null
 
-      if (gameStatsSlotData.value === null) {
+      if (response === null) {
         statsDialogError.value = true
+        return
       }
+
+      gameStatsSlotData.value = new Uint8Array(response).buffer
     } catch (e) {
       console.error(e)
       statsDialogError.value = true

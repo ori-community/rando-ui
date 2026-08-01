@@ -99,7 +99,6 @@
 
   function loadGameStatsSlotData() {
     if (props.gameStatsSlotData !== null) {
-      console.log(toRaw(props.gameStatsSlotData))
       window.__godotBridge?.call("load_game_stats_slot_data", toRaw(props.gameStatsSlotData))
     }
   }

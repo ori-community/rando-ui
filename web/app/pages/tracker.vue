@@ -6,7 +6,7 @@
         ref="tracker"
         key="tracker"
         class="tracker-container"
-        :class="{ done: false }"
+        :class="{ done: showDone }"
       >
         <div class="tracker">
           <wotw-tracker-skills-resources-timer
@@ -70,7 +70,8 @@
   const hideConnectingScreen = ref(false)
   const trackedValues = ref<{ [key: string]: number }>({})
   const seedFlags = ref<string[]>([])
-  const showDone = ref(true)
+  const showDone = ref(false)
+  const showDoneTimeout = shallowRef<NodeJS.Timeout | number | null>(null)
   const timerStartTimestamp = ref(0)
   const displayedTime = ref(0)
   const inGameTime = ref(0)
@@ -79,7 +80,7 @@
   const appliedDelay = ref(0)
   const delayQueued = ref(false)
   const webSocket = ref<WebSocket | null>(null)
-  const hypeRef = ref<{ $el: HTMLElement } | null>(null)
+  const hypeRef = ref<HTMLElement | null>(null)
 
   useHead({title: "Item Tracker"})
 
@@ -123,6 +124,7 @@
   const requestedDelay = computed(() => {
     return Number(route.query.delay ?? 0)
   })
+
   watch(() => connected.value, (newValue) => {
     if (!newValue && isOBS() && !showErrors.value) {
       setTimeout(() => {
@@ -132,22 +134,30 @@
       hideConnectingScreen.value = false
     }
   }, {immediate: true})
+
   watch(() => trackedValues.value.game_finished, (value) => {
     if (value) {
       setTimeout(() => {
         if (hypeRef.value) {
-          confettiFromElement(hypeRef.value.$el, {
+          confettiFromElement(hypeRef.value, {
             startVelocity: 30,
           })
         }
       }, 75)
 
       showDone.value = true
-      setTimeout(() => {
+      showDoneTimeout.value = setTimeout(() => {
+        showDoneTimeout.value = null
         showDone.value = false
       }, 4000)
+    } else {
+      if (showDoneTimeout.value) {
+        clearTimeout(showDoneTimeout.value)
+      }
+      showDone.value = false
     }
   })
+
   watch(() => inGameTime.value, () => {
     updateTimerStartTimestamp()
   })
@@ -320,7 +330,7 @@
         overflow: hidden;
         display: flex;
         border-radius: 50%;
-        border: 1vw solid var(--v-accent-base);
+        border: 1vw solid rgb(var(--v-theme-accent));
         margin-top: -5vw;
         transform: translateY(5vw) scale(1.1);
         opacity: 0;

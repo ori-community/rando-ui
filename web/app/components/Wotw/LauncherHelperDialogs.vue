@@ -114,8 +114,7 @@
 
         onCheckpointUnsubscribable.value = electronApi.randoIpc.onCheckpointCreated.subscribe(undefined, {
           onData() {
-            // TODO: Currently broken due to a memory bug in Godot
-            // updateGameStatsSlotData()
+            updateGameStatsSlotData()
           }
         })
       } else {

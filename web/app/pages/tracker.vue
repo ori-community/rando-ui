@@ -34,19 +34,19 @@
           <template v-else-if="connectedOnce"> Connection lost. Trying to reconnect...</template>
           <template v-else> Waiting for connection...</template>
         </div>
-        <v-progress-circular indeterminate/>
+        <v-progress-circular indeterminate />
       </div>
     </v-fade-transition>
   </div>
 </template>
 
 <script setup lang="ts">
-  import {ResetTracker, TrackerFlagsUpdate, TrackerTimerStateUpdate, TrackerUpdate} from "@shared/proto/messages";
-  import {decodePacket} from "@shared/proto/ProtoUtil";
-  import {confettiFromElement} from "~/assets/utils/confetti";
+  import {ResetTracker, TrackerFlagsUpdate, TrackerTimerStateUpdate, TrackerUpdate} from "@shared/proto/messages"
+  import {decodePacket} from "@shared/proto/ProtoUtil"
+  import {confettiFromElement} from "~/assets/utils/confetti"
 
   definePageMeta({
-    layout: 'plain'
+    layout: "plain",
   })
 
   const route = useRoute()
@@ -71,7 +71,6 @@
   const trackedValues = ref<{ [key: string]: number }>({})
   const seedFlags = ref<string[]>([])
   const showDone = ref(true)
-  const timerUpdateIntervalId = ref(null)
   const timerStartTimestamp = ref(0)
   const displayedTime = ref(0)
   const inGameTime = ref(0)
@@ -82,52 +81,34 @@
   const webSocket = ref<WebSocket | null>(null)
   const hypeRef = ref<{ $el: HTMLElement } | null>(null)
 
-  useHead({title: 'Item Tracker'})
+  useHead({title: "Item Tracker"})
 
-  const trackerSource = computed(() => {
-    const source = route.query.source
-
-    if (!source || Array.isArray(source)) {
-      return 'ws://127.0.0.1:31410'
-    }
-
-    if (/^wss?:\/\//.test(source)) {
-      return source
-    }
-
-    // TODO tracker source for remote
-    // return `${this.$paths.WS_BASE_URL}/remote-tracker/${source}`
-    return null
-  })
   const isOBS = (() => {
     return false
   }) // TODO isOBS
   const showWillowHearts = computed(() => {
-    const showWillowHearts = route.query.hearts === 'true' || (settings?.LocalTrackerShowWillowHearts.value)
+    const showWillowHearts = route.query.hearts === "true" || (settings?.LocalTrackerShowWillowHearts.value)
     const hideHeartsUntilFirstOne =
-      route.query.hideHeartsUntilFirst === 'true' || (settings?.LocalTrackerHideHeartsUntilFirstHeart.value)
+      route.query.hideHeartsUntilFirst === "true" || (settings?.LocalTrackerHideHeartsUntilFirstHeart.value)
 
     return showWillowHearts && (!hideHeartsUntilFirstOne || heartCount.value > 0)
   })
   const showTimer = computed(() => {
-    return route.query.timer === 'true' || (isElectron && !!settings?.LocalTrackerShowTimer.value)
-  })
-  const showTeleporters = computed(() => {
-    return route.query.teleporters === 'true'
+    return route.query.timer === "true" || (isElectron && !!settings?.LocalTrackerShowTimer.value)
   })
   const showErrors = computed(() => {
-    return route.query.errors === 'true'
+    return route.query.errors === "true"
   })
   const heartCount = computed(() => {
     const hearts = [
-      'heart_wind_spinners',
-      'heart_spinning_lasers',
-      'heart_upper_heart',
-      'heart_burrow_heart',
-      'heart_willow_laser',
-      'heart_redirect_puzzle',
-      'heart_boulder_escape',
-      'heart_lower_left',
+      "heart_wind_spinners",
+      "heart_spinning_lasers",
+      "heart_upper_heart",
+      "heart_burrow_heart",
+      "heart_willow_laser",
+      "heart_redirect_puzzle",
+      "heart_boulder_escape",
+      "heart_lower_left",
     ] as const
     let count = 0
 
@@ -185,7 +166,7 @@
     if (isElectron) {
       // applyTransparentWindowStyles() TODO why transparent?
 
-      document.documentElement.style.overflow = 'hidden'
+      document.documentElement.style.overflow = "hidden"
     }
 
     timerStartTimestamp.value = (Date.now() / 1000.0)
@@ -195,30 +176,47 @@
     tryDisconnect()
   })
 
-  const connect = (() => { // TODO connect tracker
-    if (!trackerSource.value) {
-      return
+  async function getTrackerSourceUrl(): Promise<string> {
+    const source = route.query.source
+
+    if (!source || Array.isArray(source)) {
+      return "ws://127.0.0.1:31410"
     }
 
-    console.log(`tracker: Trying to connect to ${trackerSource.value}...`)
+    if (/^wss?:\/\//.test(source)) {
+      return source
+    }
+
+    const baseUrls = await useBaseUrls()
+    const url = new URL(baseUrls.apiBaseUrl)
+    url.protocol = "wss:"
+    url.pathname = `/remote-tracker/${source}`
+
+    return url.href
+  }
+
+  async function connect() {
+    const trackerSourceURL = await getTrackerSourceUrl()
+
+    console.log(`tracker: Trying to connect to ${trackerSourceURL}...`)
 
     tryDisconnect()
-    webSocket.value = new WebSocket(trackerSource.value)
+    webSocket.value = new WebSocket(trackerSourceURL)
 
-    webSocket.value.addEventListener('close', () => {
+    webSocket.value.addEventListener("close", () => {
       console.log(`tracker: Connection lost. Will retry in 2s...`)
       connected.value = false
       receivedPacket.value = false
       setTimeout(connect, 2000)
     })
 
-    webSocket.value.addEventListener('open', () => {
+    webSocket.value.addEventListener("open", () => {
       console.log(`tracker: Connected`)
       connected.value = true
       connectedOnce.value = true
     })
 
-    webSocket.value.addEventListener('message', async (event) => {
+    webSocket.value.addEventListener("message", async (event) => {
       const packet = await decodePacket(event.data)
 
       if (!packet) {
@@ -266,19 +264,22 @@
         }
       }
     })
-  })
-  const tryDisconnect = (() => { // TODO tracker disconnect
+  }
+
+  function tryDisconnect() { // TODO tracker disconnect
     try {
       webSocket.value?.close()
     } catch (e) {
       console.error(e)
     }
-  })
-  const updateTimerStartTimestamp = (() => {
+  }
+
+  function updateTimerStartTimestamp() {
     timerStartTimestamp.value = (Date.now() / 1000.0) - inGameTime.value - requestedDelay.value
     updateTimer()
-  })
-  const updateTimer = (() => {
+  }
+
+  function updateTimer() {
     if (!connected.value) {
       return
     }
@@ -288,8 +289,7 @@
     } else if (timerShouldRun.value) {
       displayedTime.value = Math.max((Date.now() / 1000.0) - timerStartTimestamp.value, 0)
     }
-  })
-
+  }
 </script>
 
 <style lang="scss" scoped>

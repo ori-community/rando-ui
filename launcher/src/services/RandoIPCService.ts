@@ -36,6 +36,8 @@ type RandoIPCEvent = {
   leagueRunSubmitted: [],
   /** Emitted when the notify_checkpoint_created event was fired */
   checkpointCreated: [],
+  /** Emitted when the gameFinished uber stats was set to true */
+  gameFinished: [],
 }
 
 const outgoingRequestHandlers: {
@@ -168,8 +170,7 @@ export class RandoIPCService {
         }
 
         if (group === 34543 && state === 11226 && value) {
-          // TODO: uiIpc
-          // uiIpc.queueSend("game.gameFinished")
+          this.events.emit("gameFinished")
         }
 
         if (RandoIPCService.shouldSendAllUberStateUpdates) {

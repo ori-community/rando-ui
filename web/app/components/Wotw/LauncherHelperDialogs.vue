@@ -103,9 +103,11 @@
   const currentDetectedCrashSupportBundlePath = ref<string | null>(null)
   const updateDownloadProgress = ref<number | null>(null)
   const statsDialog = useStatsDialogStore()
+  const settings = useSettingsStore()
   const gameStatsSlotData = shallowRef<ArrayBufferLike | null>(null)
   const statsDialogError = ref(false)
   const onCheckpointUnsubscribable = shallowRef<Unsubscribable | null>(null)
+  const onGameFinishedUnsubscribable = shallowRef<Unsubscribable | null>(null)
 
   if (electronApi !== null) {
     watch(() => statsDialog.open, async (open) => {
@@ -122,10 +124,21 @@
         onCheckpointUnsubscribable.value = null
       }
     })
+
+    onMounted(() => {
+      onGameFinishedUnsubscribable.value = electronApi.randoIpc.onGameFinished.subscribe(undefined, {
+        onData() {
+          if (settings.isInitialized && settings.ShowStatsAfterFinish) {
+            statsDialog.open = true
+          }
+        }
+      })
+    })
   }
 
   onBeforeUnmount(() => {
     onCheckpointUnsubscribable.value?.unsubscribe()
+    onGameFinishedUnsubscribable.value?.unsubscribe()
   })
 
   async function updateGameStatsSlotData() {

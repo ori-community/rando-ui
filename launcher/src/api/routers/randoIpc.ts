@@ -84,4 +84,16 @@ export const randoIpc = router({
         }
       })
     }),
+
+  onGameFinished: publicProcedure
+    .subscription(() => {
+      return observable<void>((emit) => {
+        const onGameFinished = () => emit.next()
+        RandoIPCService.events.on("gameFinished", onGameFinished)
+
+        return () => {
+          RandoIPCService.events.off("gameFinished", onGameFinished)
+        }
+      })
+    }),
 })

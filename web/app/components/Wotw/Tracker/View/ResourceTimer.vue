@@ -64,6 +64,14 @@
           {{ questsCount }}<span class="small">/{{ questsRequired }}</span>
         </div>
       </div>
+      <div v-if="showVisitedEntranceCount" class="line">
+        <div class="image">
+          <img src="@shared/images/tracker/watermill_door.png" alt="">
+        </div>
+        <div class="value" :class="{ completed: visitedEntranceCount === totalEntranceCount }">
+          {{ visitedEntranceCount }}<span class="small">/{{ totalEntranceCount }}</span>
+        </div>
+      </div>
       <div v-if="showWillowHearts" class="line">
         <div class="image">
           <img src="@shared/images/tracker/willow_heart.png" alt="">
@@ -108,6 +116,9 @@
     gameFinished?: boolean,
     showTimer?: boolean,
     time?: number,
+    showVisitedEntranceCount?: boolean,
+    visitedEntranceCount?: number,
+    totalEntranceCount?: number,
   }>(), {
     spiritLight: 0,
     gorlekOre: 0,
@@ -129,6 +140,9 @@
     gameFinished: false,
     showTimer: true,
     time: 0,
+    showVisitedEntranceCount: false,
+    visitedEntranceCount: 0,
+    totalEntranceCount: 0,
   })
 
   const mainTimerText = ref('0:00')
@@ -145,6 +159,9 @@
   })
   const showQuests = computed(() => {
     return props.questsRequired > 0
+  })
+  const showVisitedEntranceCount = computed(() => {
+    return props.showVisitedEntranceCount
   })
 
   const rows = computed(() => {

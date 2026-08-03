@@ -16,6 +16,7 @@
             :show-willow-hearts="showWillowHearts"
             :time="displayedTime"
             :show-timer="showTimer"
+            :visited-entrance-count="visitedEntranceCount"
           />
         </div>
         <div class="done-label">
@@ -44,6 +45,7 @@
   import {ResetTracker, TrackerTagsUpdate, TrackerTimerStateUpdate, TrackerUpdate} from "@shared/proto/messages"
   import {decodePacket} from "@shared/proto/ProtoUtil"
   import {confettiFromElement} from "~/assets/utils/confetti"
+  import type {TRACKED_UBER_STATES} from "@shared/itemTracker/trackedUberStates"
 
   definePageMeta({
     layout: "plain",
@@ -68,7 +70,7 @@
   const receivedPacket = ref(false)
   const connectedOnce = ref(false)
   const hideConnectingScreen = ref(false)
-  const trackedValues = ref<{ [key: string]: number }>({})
+  const trackedValues = ref<{ [key in typeof TRACKED_UBER_STATES[number]["trackingId"]]?: number }>({})
   const seedTags = ref<string[]>([])
   const showDone = ref(false)
   const showDoneTimeout = shallowRef<NodeJS.Timeout | number | null>(null)
@@ -102,19 +104,64 @@
   })
   const heartCount = computed(() => {
     const hearts = [
-      "heart_wind_spinners",
-      "heart_spinning_lasers",
-      "heart_upper_heart",
-      "heart_burrow_heart",
-      "heart_willow_laser",
-      "heart_redirect_puzzle",
-      "heart_boulder_escape",
-      "heart_lower_left",
+      "heartWindSpinners",
+      "heartSpinningLasers",
+      "heartUpperHeart",
+      "heartBurrowHeart",
+      "heartWillowLaser",
+      "heartRedirectPuzzle",
+      "heartBoulderEscape",
+      "heartLowerLeft",
     ] as const
     let count = 0
 
     for (const heart of hearts) {
       if (trackedValues.value[heart]) {
+        count++
+      }
+    }
+
+    return count
+  })
+  const visitedEntranceCount = computed(() => {
+    const entrances = [
+      "lupoShopOutside",
+      "lupoShopInside",
+      "lastHutOutside",
+      "lastHutInside",
+      "hutAboveMotayOutside",
+      "hutAboveMotayInside",
+      "treeHutOutside",
+      "treeHutInside",
+      "mokiFatherHutOutside",
+      "mokiFatherHutInside",
+      "storageHutOutside",
+      "storageHutInside",
+      "caveOutside",
+      "caveInside",
+      "wellspring1stFloorBottomOutside",
+      "wellspring1stFloorBottomInside",
+      "wellspring1stFloorTopOutside",
+      "wellspring1stFloorTopInside",
+      "wellspring2ndFloorOutside",
+      "wellspring2ndFloorInside",
+      "wellspring3rdFloorOutside",
+      "wellspring3rdFloorInside",
+      "reachSeedOutside",
+      "reachSeedInside",
+      "teddyHutOutside",
+      "teddyHutInside",
+      "ruinsOutside",
+      "ruinsInside",
+      "willowBottomOutside",
+      "willowBottomInside",
+      "willowTopInside",
+      "willowTopOutside",
+    ] as const
+    let count = 0
+
+    for (const entrance of entrances) {
+      if (trackedValues.value[entrance]) {
         count++
       }
     }
@@ -135,7 +182,7 @@
     }
   }, {immediate: true})
 
-  watch(() => trackedValues.value.game_finished, (value) => {
+  watch(() => trackedValues.value.gameFinished, (value) => {
     if (value) {
       setTimeout(() => {
         if (hypeRef.value) {

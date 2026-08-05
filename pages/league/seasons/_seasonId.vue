@@ -54,7 +54,6 @@
           </v-tooltip>
         </div>
         <div class="tables-container">
-
           <!-- LEADERBOARD -->
           <v-card class="overflow-x-auto leaderboard-container">
             <h2 ref="leaderboardTitle" class="text-center mt-5 mb-5">Leaderboard</h2>
@@ -109,13 +108,14 @@
                 <template #item.points="{ item }">
                   <v-tooltip left open-delay="500" :disabled="item.rankingCompensationPoints === 0">
                     <template #activator="{ on }">
-                      <span :class="{'compensating-points': item.rankingCompensationPoints > 0}" v-on="on">
+                      <span :class="{ 'compensating-points': item.rankingCompensationPoints > 0 }" v-on="on">
                         {{ item.points }}
                       </span>
                     </template>
                     <div class="text-right">
-                      Includes {{ item.rankingCompensationPoints }} {{ item.rankingCompensationPoints === 1 ? 'point' : 'points' }} to compensate<br>
-                      missed or unusually bad games. These points<br>
+                      Includes {{ item.rankingCompensationPoints }}
+                      {{ item.rankingCompensationPoints === 1 ? 'point' : 'points' }} to compensate<br />
+                      missed or unusually bad games. These points<br />
                       disappear over time until the end of the season.
                     </div>
                   </v-tooltip>
@@ -428,7 +428,7 @@
           if (this.leagueSeason.currentGame !== null || this.leagueSeason.nextContinuationAt > Date.now()) {
             this.refreshTimeoutId = setTimeout(() => {
               this.loadSeason()
-            }, Math.max(10000, this.leagueSeason.nextContinuationAt - Date.now()))
+            }, Math.min(3600000, Math.max(10000, this.leagueSeason.nextContinuationAt - Date.now())))
           }
         } catch (e) {
           console.error(e)

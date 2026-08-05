@@ -243,7 +243,9 @@
       <v-card class="pa-5">
         <h2 class="text-center mb-3">Info</h2>
         <div v-if="leagueSeason">
-          <div class="dialog-html" v-html="longDescriptionHtml"/>
+          <div class="dialog-html">
+            <vue-markdown :source="leagueSeason.longDescriptionMarkdown" />
+          </div>
         </div>
       </v-card>
     </v-dialog>
@@ -251,12 +253,32 @@
       <v-card class="pa-5">
         <h2 class="text-center mb-3">Rules</h2>
         <div v-if="leagueSeason">
-          <div class="dialog-html" v-html="rulesHtml"/>
+          <div class="dialog-html">
+            <vue-markdown :source="leagueSeason.rulesMarkdown" />
+          </div>
         </div>
         <div v-if="!isJoined && canJoin" class="justify-end dialog-buttons mt-3">
           <v-btn color="accent" variant="flat" @click="joinSeason()">
             <v-icon start>mdi-plus-circle-outline</v-icon>
             Confirm and Join
+          </v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="showDiscordJoinPrompt" max-width="800">
+      <v-card class="pa-5">
+        <h2 class="text-center mb-3">Join the Discord</h2>
+        <div>
+          For each game there will be a message thread where <strong>players can talk about the seed</strong> they just
+          played and exchange strategies. When you join the Ori Runs Discord, you will be automatically added to these
+          threads after finishing a game. It's not required to join, although highly recommended. We have cookies!
+        </div>
+        <div class="justify-end dialog-buttons mt-3">
+          <v-btn variant="text" @click="showDiscordJoinPrompt = false">
+            No, Thanks
+          </v-btn>
+          <v-btn color="accent" variant="flat" @click="joinDiscord()">
+            Join Discord
           </v-btn>
         </div>
       </v-card>
@@ -292,13 +314,14 @@
     LeagueSeasonMembershipInfo
   } from "@shared/types/league"
   import type {DataTableHeader} from "vuetify/framework"
-  import {renderMarkdown} from "assets/utils/markdown"
+  import VueMarkdown from "vue-markdown-render"
   import {formatDateEpoch} from "~/assets/utils/formatsDates"
   import {confettiFromElement} from "~/assets/utils/confetti";
 
   const {axios} = useAxios()
   const route = useRoute()
   const router = useRouter()
+  const electronApi = useElectronApi()
   const isElectron = useIsElectron()
   const userStore = useUserStore()
   const seasonId = route.params.seasonId
@@ -313,6 +336,7 @@
   const joinButtonLurking = ref(false)
   const trainingSeedDialogOpen = ref(false)
   const trainingSeedLoading = ref(false)
+  const showDiscordJoinPrompt = ref(false)
   const gameHeaders: DataTableHeader[] = [
     {title: 'Number', value: 'gameNumber', align: 'center'},
     {title: 'Your Rank', value: 'userMetadata.ownSubmission.rankingData.rank', align: 'start'},
@@ -344,12 +368,6 @@
       }) ?? []
     )
   })
-  const rulesHtml = computed(() => {
-    return renderMarkdown(String(leagueSeason.value?.rulesMarkdown))
-  })
-  const longDescriptionHtml = computed(() => {
-    return renderMarkdown(String(leagueSeason.value?.longDescriptionMarkdown))
-  })
   const currentGame = computed(() => {
     return leagueSeason.value?.games?.find((g) => g.isCurrent) ?? null
   })
@@ -357,7 +375,6 @@
     return leagueSeason.value?.games?.filter((g) => !g.isCurrent) ?? []
   })
   const memberHeaders = computed(() => {
-
     const headers: DataTableHeader[] = [
       {title: 'Rank', value: 'rank', align: 'center', width: 0},
       {title: 'Player', value: 'user.name',},
@@ -393,7 +410,7 @@
     }
   })
 
-  const lurkAfterRandomTime = (() => {
+  async function lurkAfterRandomTime() {
     lurkTimeoutId.value = setTimeout(() => {
       if (joinButtonLurking.value) {
         joinButtonLurking.value = false
@@ -403,8 +420,8 @@
 
       lurkAfterRandomTime()
     }, 2000 + Math.random() * 10000)
-  })
-  const loadSeason = (async () => {
+  }
+  async function loadSeason() {
     try {
       leagueSeason.value = (await axios.get(`/league/seasons/${seasonId}`)).data
       if (leagueSeason.value?.currentGameId) {
@@ -413,12 +430,17 @@
     } catch (error) {
       console.error(error)
     }
-  })
-  const joinSeason = (async () => {
+  }
+  async function joinSeason() {
     actionLoading.value = true
 
     try {
-      leagueSeason.value = (await axios.post(`/league/seasons/${route.params.seasonId}/membership`)).data
+      const {seasonInfo, promptToJoinLeagueDiscord}: {seasonInfo: LeagueSeasonInfo, promptToJoinLeagueDiscord: boolean} = (await axios.post(`/league/seasons/${route.params.seasonId}/membership`)).data
+      leagueSeason.value = seasonInfo
+
+      if (promptToJoinLeagueDiscord) {
+        showDiscordJoinPrompt.value = true
+      }
     } catch (e) {
       console.error(e)
     }
@@ -433,11 +455,21 @@
 
     showSeasonRules.value = false
     actionLoading.value = false
-  })
-  const openGamePage = (async (gameId: number) => {
+  }
+  async function joinDiscord() {
+    if (electronApi !== null) {
+      await electronApi.shell.openUrl.query({url: "https://discord.gg/SUS57PWWnA"})
+    } else {
+      window.open("https://discord.gg/SUS57PWWnA")
+    }
+
+    showDiscordJoinPrompt.value = false
+  }
+
+  async function openGamePage(gameId: number)  {
     await router.push({name: 'league-game-gameId', params: {gameId}})
-  })
-  const copySeasonLink = (async () => {
+  }
+  async function copySeasonLink() {
     // TODO copy season link
     // const url = new URL(`/league/seasons/${leagueSeason.value?.id}`, $paths.UI_BASE_URL)
     // await navigator.clipboard.writeText(url.toString())
@@ -446,9 +478,9 @@
     // setTimeout(() => {
     //   seasonLinkCopied.value = false
     // }, 3000)
-  })
+  }
 
-  const launchTrainingSeed = (async () => {
+  async function launchTrainingSeed() {
     trainingSeedLoading.value = true
 
     // TODO after seedgen
@@ -475,17 +507,17 @@
     }
     trainingSeedLoading.value = false
     trainingSeedDialogOpen.value = false
-  })
+  }
 
   watch(() => route.params.seasonId, () => {
     loadSeason()
   }, {immediate: true})
+
   watch(canJoin, (value) => {
     if (!value) {
       joinButtonLurking.value = false
     }
   }, {immediate: true})
-
 </script>
 
 <style scoped lang="scss">

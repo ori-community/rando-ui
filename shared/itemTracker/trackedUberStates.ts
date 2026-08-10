@@ -118,13 +118,13 @@ const trackedUberStates = [
 
   {uberId: {group: 14019, state: 44578}, trackingId: "questRebuildGlades"},
 
-  {uberId: {group: 42178, state: 16825}, trackingId: "builderProjectSpiritWell"},
-  {uberId: {group: 42178, state: 51230}, trackingId: "builderProjectHouses"},
-  {uberId: {group: 42178, state: 18751}, trackingId: "builderProjectRemoveThorns"},
-  {uberId: {group: 42178, state: 23607}, trackingId: "builderProjectHousesB"},
-  {uberId: {group: 42178, state: 40448}, trackingId: "builderProjectHousesC"},
-  {uberId: {group: 42178, state: 16586}, trackingId: "builderProjectOpenCave"},
-  {uberId: {group: 42178, state: 15068}, trackingId: "builderProjectBeautify"},
+  {uberId: {group: 21, state: 16825}, trackingId: "gladesProjectsSpiritWellBuilt"},
+  {uberId: {group: 21, state: 51230}, trackingId: "gladesProjectsHousesABuilt"},
+  {uberId: {group: 21, state: 18751}, trackingId: "gladesProjectsHousesBBuilt"},
+  {uberId: {group: 21, state: 23607}, trackingId: "gladesProjectsHousesCBuilt"},
+  {uberId: {group: 21, state: 40448}, trackingId: "gladesProjectsRemoveThornsBuilt"},
+  {uberId: {group: 21, state: 16586}, trackingId: "gladesProjectsOpenCaveBuilt"},
+  {uberId: {group: 21, state: 15068}, trackingId: "gladesProjectsBeautifyBuilt"},
 
   {uberId: {group: 28, state: 1}, trackingId: "lupoShopOutside"},
   {uberId: {group: 28, state: 2}, trackingId: "lupoShopInside"},

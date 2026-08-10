@@ -138,22 +138,16 @@
 
   const gladesRebuildProjectsDone = computed(() => {
     const projects = [
-      "builderProjectSpiritWell",
-      "builderProjectHouses",
-      "builderProjectRemoveThorns",
-      "builderProjectHousesB",
-      "builderProjectOpenCave",
-      "builderProjectHousesC",
-      "builderProjectBeautify",
+      "gladesProjectsSpiritWellBuilt",
+      "gladesProjectsHousesABuilt",
+      "gladesProjectsHousesBBuilt",
+      "gladesProjectsHousesCBuilt",
+      "gladesProjectsRemoveThornsBuilt",
+      "gladesProjectsOpenCaveBuilt",
+      "gladesProjectsBeautifyBuilt",
     ] as const
 
-    for (const project of projects) {
-      if (!(props.trackedValues[project] ?? 0 >= 3)) {
-        return false
-      }
-    }
-
-    return true
+    return !projects.some(project => (props.trackedValues[project] ?? 0.0) > 0.0)
   })
 
 </script>

@@ -19,7 +19,7 @@
           <v-tab
             :value="nth - 1"
             :variant="worldContextMenuOpen && worldContextMenuSelectedWorldIndex === nth - 1 ? 'tonal' : 'text'"
-            @contextmenu="event => onWorldTabContextMenu(nth - 1, event)"
+            @contextmenu="(event: MouseEvent) => onWorldTabContextMenu(nth - 1, event)"
           >
             <v-icon start>mdi-earth</v-icon>
             {{ nth }}
@@ -441,7 +441,7 @@
       jumpToNextGeneratingMessageTimeoutId = window.setTimeout(() => {
         jumpToNextGeneratingMessage()
         queueJumpToNextGeneratingMessage()
-      }, 800 + Math.random() * 1000)
+      }, 1200 + Math.random() * 1000)
     }
 
     jumpToNextGeneratingMessage()

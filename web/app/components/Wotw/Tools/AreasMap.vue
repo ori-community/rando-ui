@@ -92,7 +92,6 @@
         return
       }
       image.src = (fileEntry![1] as { default: string }).default
-      console.log(image.src)
       image.onload = () => {
         resolve(image)
       }

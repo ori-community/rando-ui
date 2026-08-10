@@ -96,4 +96,9 @@ export const randoIpc = router({
         }
       })
     }),
+
+  getDebugEnabled: publicProcedure
+    .query(async () => {
+      return await RandoIPCService.getDebugEnabled()
+    }),
 })

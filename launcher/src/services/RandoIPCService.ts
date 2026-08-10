@@ -346,4 +346,9 @@ export class RandoIPCService {
 
     return response.data
   }
+
+  static async getDebugEnabled() {
+    return (await this.request("get_debug_enabled") as { debug_enabled: boolean }).debug_enabled
+  }
+
 }

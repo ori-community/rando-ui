@@ -1,27 +1,32 @@
 <template>
   <div class="mt-2">
-    <template v-if="!randoIpcIsConnected">Randomizer IPC not connected</template>
-    <template v-else-if="hierarchy">
-      <div class="mb-1">
-        <div class="d-flex align-end mb-1">
-          <v-text-field
-            v-model="search"
-            label="Search"
-            variant="solo"
-            hide-details
-            clearable
-            prepend-inner-icon="mdi-magnify"
-          />
-          <v-btn :loading="isLoading" variant="text" class="ml-4" @click="reload">
-            <v-icon>mdi-reload</v-icon>
-          </v-btn>
-        </div>
-        <v-checkbox-btn
-          v-model="caseSensitiveSearch"
-          label="Case sensitive search"
+    <div class="mb-1">
+      <div class="d-flex align-end mb-1">
+        <v-text-field
+          v-model="search"
+          label="Search"
+          variant="solo"
+          hide-details
+          clearable
+          prepend-inner-icon="mdi-magnify"
         />
+        <v-btn :loading="isLoading" variant="text" class="ml-4" size="x-large" @click="reload">
+          <v-icon>mdi-reload</v-icon>
+        </v-btn>
       </div>
-      <v-divider class="border-opacity-50"/>
+      <v-checkbox-btn
+        v-model="caseSensitiveSearch"
+        label="Case sensitive search"
+      />
+    </div>
+    <v-divider class="border-opacity-50"/>
+    <template v-if="!randoIpcIsConnected">
+      <div class="mt-2">Randomizer IPC not connected</div>
+    </template>
+    <template v-else-if="!isDebugEnabled">
+      <div class="mt-2">Debug Mode is disabled</div>
+    </template>
+    <template v-else-if="hierarchy">
       <v-treeview
         v-model:open="openGameObjects"
         v-model:active="activeGameObjects"
@@ -66,6 +71,7 @@
   const electronApi = useElectronApi()
   const {isConnected: randoIpcIsConnected} = useRandoIpc()
   const isLoading = ref(false)
+  const isDebugEnabled = ref(false)
   const openGameObjects = ref<GameObject[]>([])
   const activeGameObjects = ref<GameObject[]>([])
   const hierarchy = ref<GameObject[] | undefined>([])
@@ -114,6 +120,13 @@
     }
   })
   const updateTree = (async () => {
+
+    isDebugEnabled.value = await electronApi?.randoIpc.getDebugEnabled.query() ?? false
+    if (!isDebugEnabled.value) {
+      console.log("debug disabled")
+      return
+    }
+
     isLoading.value = true
     const tree = await getSubtree('')
 

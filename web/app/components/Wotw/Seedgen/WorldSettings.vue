@@ -56,16 +56,14 @@
       glow
     >
       <template #append-inner>
-        <v-fade-transition mode="out-in">
-          <v-btn v-if="allAvailableTricksSelected" variant="tonal" @click="toggleAllAvailableTricks()">
-            <v-icon start>mdi-close-box-multiple-outline</v-icon>
-            Disable all Tricks
-          </v-btn>
-          <v-btn v-else variant="tonal" @click="toggleAllAvailableTricks()">
-            <v-icon start>mdi-checkbox-multiple-outline</v-icon>
-            Enable all Tricks
-          </v-btn>
-        </v-fade-transition>
+        <v-btn v-if="allAvailableTricksSelected" variant="tonal" @mousedown.stop @click="toggleAllAvailableTricks()">
+          <v-icon start>mdi-close-box-multiple-outline</v-icon>
+          Disable All
+        </v-btn>
+        <v-btn v-else variant="tonal" @mousedown.stop @click="toggleAllAvailableTricks()">
+          <v-icon start>mdi-checkbox-multiple-outline</v-icon>
+          Enable All
+        </v-btn>
       </template>
     </v-combobox>
 

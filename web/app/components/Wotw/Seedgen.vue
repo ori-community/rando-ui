@@ -662,6 +662,17 @@
             confettiFromElement(runningSeedgenActionButtonElement.value)
           }
         } catch (e) {
+          snackbarStore.add({
+            title: "Error",
+            text: String(e),
+            contentClass: "text-pre",
+            prependIcon: "mdi-close-octagon-outline",
+            color: "error",
+            timer: "bottom",
+            timerColor: "error-darken-2",
+            timeout: 6000,
+          })
+
           console.error(e)
         }
 

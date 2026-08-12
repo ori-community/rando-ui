@@ -190,7 +190,7 @@
     WorldPreset,
     WorldSettings,
   } from "@shared/types/seedgen"
-  import type {BingoSettings, SeedgenGenerateResponse} from "@shared/types/http-api"
+  import type {BingoSettings, SeedgenGenerateResponse, SeedgenLogRecord} from "@shared/types/http-api"
   import type {GroupedPresetIds, Presets} from "~/assets/types/components/seedgen"
   import {useSeedgenAxios} from "~/composables/useSeedgenAxios"
   import {confettiFromElement} from "~/assets/utils/confetti"
@@ -205,6 +205,7 @@
   const seedgenAxios = useSeedgenAxios()
   const {axios} = useAxios()
   const launcherHelper = useLauncherHelper()
+  const snackbarStore = useSnackbarStore()
   const worldSetupLoading = ref(false)
   const worldContextMenuOpen = ref(false)
   const worldContextMenuX = ref(0.0)
@@ -448,6 +449,19 @@
     queueJumpToNextGeneratingMessage()
   })
 
+  function showSeedgenLogMessages(records: SeedgenLogRecord[]) {
+    snackbarStore.add({
+      text: records.map(record => `${record.level}: ${record.message}`).join("\n"),
+      title: "Seed Generator",
+      contentClass: "text-pre",
+      prependIcon: "mdi-alert-outline",
+      color: "warning",
+      timer: "bottom",
+      timerColor: "warning-darken-2",
+      timeout: 6000,
+    })
+  }
+
   /**
    * Generates a seed for offline use. This does not necessarily use the local
    * seed generator.
@@ -457,6 +471,7 @@
       responseType: "blob",
       params: {
         text_spoiler: true,
+        max_log_level: "WARN",
       },
     })
 
@@ -464,12 +479,18 @@
       worlds: number[][],
       text_spoiler: string | null,
       json_spoiler: string | null,
+      logs: {level: SeedgenLogRecord["level"], message: string}[],
     } = decode(await data.bytes())
+
+    if (response.logs.length > 0) {
+      showSeedgenLogMessages(response.logs)
+    }
 
     return {
       worlds: response.worlds.map(numberArray => new Uint8Array(numberArray)),
       textSpoiler: response.text_spoiler,
       jsonSpoiler: response.json_spoiler,
+      logs: response.logs,
     } as SeedgenGenerateResponse
   }
 
@@ -478,9 +499,6 @@
    * Always uses the server-side seedgen.
    */
   async function generateOnlineGameFromCurrentSettings() {
-    type SeedsResponse = {
-      seedId: number,
-    }
     const universeSettings = getUniverseSettings()
     const clonedUniverseSettings = clone(universeSettings)
 
@@ -523,7 +541,16 @@
     }
 
     const {data: universeSettingsWithInlinedUserSnippets} = await seedgenAxios.post("/settings/universe/inline-snippets", clonedUniverseSettings)
-    const {data: seed}: { data: SeedsResponse } = await axios.post("/seeds", universeSettingsWithInlinedUserSnippets)
+    const {data: response}: {
+      data: {
+        seedId: number,
+        logs: SeedgenLogRecord[],
+      }
+    } = await axios.post("/seeds", universeSettingsWithInlinedUserSnippets)
+
+    if (response.logs.length > 0) {
+      showSeedgenLogMessages(response.logs)
+    }
 
     const bingoCreationConfig = enableBingo.value
       ? {
@@ -535,7 +562,7 @@
       : null
 
     const {data: multiverseId}: { data: string } = await axios.post("/multiverses", {
-      seedId: seed.seedId,
+      seedId: response.seedId,
       bingoConfig: bingoCreationConfig,
       raceMode: enableRaceMode.value,
     })

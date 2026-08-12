@@ -6,7 +6,7 @@
         <h1 class="mb-4">Something went oribly wrong.</h1>
 
         <div
-          v-if="error.statusCode !== 404"
+          v-if="error.status !== 404"
           class="mb-3">Press
           <v-kbd>Ctrl</v-kbd>
           +

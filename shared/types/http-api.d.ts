@@ -28,10 +28,16 @@ type SeedInfo = {
   config: UniversePreset
 }
 
+type SeedgenLogRecord = {
+  level: "ERROR" | "WARN" | "INFO" | "DEBUG" | "TRACE",
+  message: string,
+}
+
 type SeedgenGenerateResponse = {
   worlds: Uint8Array<ArrayBuffer>[],
   textSpoiler: string | null,
   jsonSpoiler: string | null,
+  logs: SeedgenLogRecord[],
 }
 
 type BingoSettings = {

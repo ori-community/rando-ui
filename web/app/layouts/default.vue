@@ -13,19 +13,16 @@
       <nuxt-page/>
     </v-main>
 
-    <footer v-if="!hideFooter">
+    <footer>
       <img src='@shared/images/footer.png' alt="">
     </footer>
 
+    <v-snackbar-queue v-model="snackbarStore.queue" total-visible="3" collapsed />
   </v-app>
 </template>
 
 <script lang="ts" setup>
-  withDefaults(defineProps<{
-    hideFooter?: boolean,
-  }>(), {
-    hideFooter: false,
-  })
+  const snackbarStore = useSnackbarStore()
 </script>
 
 <style lang="scss" scoped>
@@ -52,5 +49,4 @@
       opacity: 0.5;
     }
   }
-
 </style>

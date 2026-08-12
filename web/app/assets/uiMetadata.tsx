@@ -97,6 +97,6 @@ export const launchSetupValidationErrorMessages: { [key in LaunchSetupValidation
   "modloader-method-not-available-on-current-platform": "The selected modloader method is not available on the current platform.",
   "invalid-game-binary-path": "The path to the game binary is invalid.",
   "invalid-steam-binary-path": "The path to Steam is invalid.",
-  "invalid-proxy-modloader-file": "The proxy modloader is not installed correctly.",
+  "invalid-proxy-modloader-file": "The proxy modloader is not installed correctly or needs an update.",
   "game-launch-method-not-available-on-current-platform": "The selected game launch method is not available on the current platform.",
 }

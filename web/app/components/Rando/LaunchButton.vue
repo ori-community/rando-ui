@@ -6,7 +6,7 @@
       size="x-large"
       block
       :disabled="disabled"
-      :loading="isLaunching && hasBeenClicked"
+      :loading="isLaunching"
       @click="onClick"
     >
       <slot name="icon">
@@ -48,9 +48,9 @@
   })
 
   const isLeek = ref(false) // funny (display lauch / leek)
-  const hasBeenClicked = ref(false)
+  const confettiScheduledForNextSuccessfulLaunch = ref(false)
   const buttonRef = ref<{ $el: HTMLElement } | null>(null)
-  const {isLaunching} = useLauncherHelper()
+  const {isLaunching, onLaunchResult} = useLauncherHelper()
   const displayedIcon = computed(() => {
     if (props.icon) {
       return props.icon
@@ -69,16 +69,13 @@
   })
 
   const onClick = (async (event: MouseEvent) => {
-    hasBeenClicked.value = true
+    confettiScheduledForNextSuccessfulLaunch.value = true
     emit("click", event)
   })
 
-  watch(isLaunching, (newValue, oldValue) => {
-    if (oldValue && !newValue && hasBeenClicked.value) {
-      hasBeenClicked.value = false
-      if (props.showConfetti) {
-        shootConfetti()
-      }
+  onLaunchResult.on((launchResult) => {
+    if (props.showConfetti && launchResult.launchedSuccessfully && confettiScheduledForNextSuccessfulLaunch.value) {
+      shootConfetti()
     }
   })
 

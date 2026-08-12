@@ -28,7 +28,7 @@
         </template>
 
         <div class="mt-3">
-          Please re-run the setup wizard and try again.
+          Please check the setup.
         </div>
       </template>
 
@@ -41,7 +41,10 @@
           </template>
           <template #default="{ isActive }">
             <v-card class="pa-4">
-              <wotw-settings-setup-wizard @setup-finished="isActive.value = false; unsuccessfulLaunchErrorDialogOpen = false" />
+              <wotw-settings-setup-wizard
+                complete-setup-button-label="Complete Setup & Launch"
+                @setup-finished="isActive.value = false; onSetupWizardSetupFinished()"
+              />
             </v-card>
           </template>
         </v-dialog>
@@ -96,7 +99,7 @@
   import type {Unsubscribable} from "@launcher/api/api"
 
   const electronApi = useElectronApi()
-  const {onLaunchResult} = useLauncherHelper()
+  const {launch, onLaunchResult} = useLauncherHelper()
   const unsuccessfulLaunchErrorDialogOpen = ref(false)
   const gameCrashedDialogOpen = ref(false)
   const currentUnsuccessfulLaunchResult = ref<UnsuccessfulLaunchResult | null>(null)
@@ -173,6 +176,11 @@
     }
 
     await electronApi.shell.showPathInExplorer.query({path: currentDetectedCrashSupportBundlePath.value})
+  }
+
+  function onSetupWizardSetupFinished() {
+    unsuccessfulLaunchErrorDialogOpen.value = false
+    launch()
   }
 
   electronApi?.supportBundle.onSupportBundleCreatedFromCrash.subscribe(undefined, {

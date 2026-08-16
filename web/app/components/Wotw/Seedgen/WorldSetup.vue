@@ -35,7 +35,7 @@
         <div class="pb-4 d-flex align-start ga-3">
           <v-icon size="28">mdi-arrow-right-bottom</v-icon>
 
-          <div class="d-flex gap-6">
+          <div class="d-flex flex-wrap gap-6">
             <wotw-seedgen-preset-button
               v-for="ungroupedPreset in Object.keys(presetsWithoutGroup)"
               :key="ungroupedPreset"

@@ -18,7 +18,7 @@
             <div v-for="member in team.members" :key="member.user.id" class="team-member">
               <wotw-multiverse-player-view :user="member.user"/>
               <div class="member-time">{{
-                  member.finishedTime !== 0.0 ? formatTime(member.finishedTime) : 'DNF'
+                  member.finishedTime !== 0.0 ? formatTime(member.finishedTime ?? 0.0) : 'DNF'
                 }}
               </div>
             </div>
@@ -26,7 +26,7 @@
 
           <div class="team-info mt-5">
             <div v-if="team.members.length > 1" class="team-time">
-              {{ team.finishedTime !== 0.0 ? formatTime(team.finishedTime) : 'DNF' }}
+              {{ team.finishedTime !== 0.0 ? formatTime(team.finishedTime ?? 0.0) : 'DNF' }}
             </div>
           </div>
         </v-card>
@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts" setup>
-  import {formatTime} from "assets/utils/formatTime"
+  import {formatTime} from "@web/app/assets/utils/formatTime"
   import type {RaceInfo, RaceTeamInfo} from "@shared/types/http-api"
 
   const props = defineProps<{

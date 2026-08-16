@@ -63,8 +63,18 @@ class MultiverseConnection {
       return
     }
 
-    const {axios} = useAxios()
-    this.seedRef.value = (await axios.get(`/seeds/${seedId}`)).data as SeedInfo
+    const {catchAxiosErrors, axios} = useAxios()
+
+    await catchAxiosErrors(
+      async () => {
+        this.seedRef.value = (await axios.get(`/seeds/${seedId}`)).data as SeedInfo
+      },
+      async (error) => {
+        if (error.status !== 401) {
+          console.error(error)
+        }
+      }
+    )
   }
 
   async #fetchBingoData(multiverseRefPromise = this.multiverseRefPromise) {

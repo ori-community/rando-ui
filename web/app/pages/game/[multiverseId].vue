@@ -28,7 +28,7 @@
               <span><kbd>Ctrl</kbd> + Click to close this window</span>
             </v-tooltip>
           </rando-launch-button>
-          <div v-else-if="!isSpectating">
+          <div v-else-if="!isSpectating && userStore.isLoggedIn">
             <rando-launch-button
               :disabled="!ownWorld"
               @click="onLaunchButtonPressed()"

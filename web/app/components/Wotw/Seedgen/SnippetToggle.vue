@@ -16,9 +16,6 @@
         location="bottom"
       >
         {{ snippetInfo.metadata.description }}
-        <template v-if="snippetInfo.origin === 'UserDataDir'">
-          <em>(Custom Snippet)</em>
-        </template>
       </v-tooltip>
     </v-btn>
     <template v-if="snippetHasConfig">
@@ -41,7 +38,7 @@
         </v-dialog>
       </v-btn>
     </template>
-    <v-btn v-if="snippetInfo.origin === 'UserDataDir'" variant="plain" size="x-small" class="mx-1" icon>
+    <v-btn v-if="snippetInfo.origin.kind === 'UserDataDir'" variant="plain" size="x-small" class="mx-1" icon>
       <v-icon icon="mdi-account-outline" size="x-large" />
       <v-tooltip activator="parent" location="bottom" open-delay="500" content-class="bg-surface-light">
         Custom Snippet

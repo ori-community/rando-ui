@@ -413,7 +413,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["HashMap_String_UniversePreset"];
+                        "application/json": components["schemas"]["HashMap_String_UniversePresetInfo"];
                     };
                 };
             };
@@ -498,7 +498,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["HashMap_String_WorldPreset"];
+                        "application/json": components["schemas"]["HashMap_String_WorldPresetInfo"];
                     };
                 };
             };
@@ -857,6 +857,15 @@ export interface components {
             position?: null | components["schemas"]["Position"];
             refills: components["schemas"]["Refill"][];
             teleport_restriction: components["schemas"]["Requirement"];
+        };
+        /** @description Origin of an asset */
+        AssetOrigin: {
+            /** @enum {string} */
+            kind: "ExecutableDir";
+        } | {
+            /** @enum {string} */
+            kind: "UserDataDir";
+            path: string;
         };
         /** @enum {string} */
         ClientEvent: "Spawn" | "Reload" | "Respawn" | "Binding1" | "Binding2" | "Binding3" | "Binding4" | "Binding5" | "ProgressMessage" | "Tick" | "InkwaterTrialTextRequest" | "HollowTrialTextRequest" | "WellspringTrialTextRequest" | "WoodsTrialTextRequest" | "ReachTrialTextRequest" | "DepthsTrialTextRequest" | "LumaTrialTextRequest" | "WastesTrialTextRequest";
@@ -1581,10 +1590,10 @@ export interface components {
         };
         HashMap_String_SnippetInfo: {
             [key: string]: {
-                /** @description Metadata defined in the snippet */
+                /** @description Metadata about the snippet */
                 metadata: components["schemas"]["Metadata"];
                 /** @description Where this snippet came from */
-                origin: components["schemas"]["SnippetOrigin"];
+                origin: components["schemas"]["AssetOrigin"];
             };
         };
         HashMap_String_Source: {
@@ -1603,24 +1612,20 @@ export interface components {
                 id: string;
             };
         };
-        HashMap_String_UniversePreset: {
-            [key: string]: components["schemas"]["UniversePresetSettings"] & {
-                /**
-                 * Format: int32
-                 * @description Assets version this preset is compatible with
-                 */
-                assetsVersion?: number;
-                info?: null | components["schemas"]["PresetInfo"];
+        HashMap_String_UniversePresetInfo: {
+            [key: string]: {
+                /** @description The universe preset */
+                content: components["schemas"]["UniversePreset"];
+                /** @description Where this universe preset came from */
+                origin: components["schemas"]["AssetOrigin"];
             };
         };
-        HashMap_String_WorldPreset: {
-            [key: string]: components["schemas"]["WorldPresetSettings"] & {
-                /**
-                 * Format: int32
-                 * @description Assets version this preset is compatible with
-                 */
-                assetsVersion?: number;
-                info?: null | components["schemas"]["PresetInfo"];
+        HashMap_String_WorldPresetInfo: {
+            [key: string]: {
+                /** @description The world preset */
+                content: components["schemas"]["WorldPreset"];
+                /** @description Where this world preset came from */
+                origin: components["schemas"]["AssetOrigin"];
             };
         };
         HashMap_i32_i32: {
@@ -1980,18 +1985,13 @@ export interface components {
          * @enum {integer}
          */
         Skill: 0 | 3 | 5 | 8 | 14 | 15 | 23 | 51 | 57 | 62 | 74 | 77 | 97 | 98 | 100 | 101 | 102 | 104 | 106 | 108 | 109 | 115 | 116 | 118 | 119 | 120 | 121;
-        /** @description Selection of relevant information about a snippet */
+        /** @description Information about a snippet */
         SnippetInfo: {
-            /** @description Metadata defined in the snippet */
+            /** @description Metadata about the snippet */
             metadata: components["schemas"]["Metadata"];
             /** @description Where this snippet came from */
-            origin: components["schemas"]["SnippetOrigin"];
+            origin: components["schemas"]["AssetOrigin"];
         };
-        /**
-         * @description Origin of a snippet
-         * @enum {string}
-         */
-        SnippetOrigin: "ExecutableDir" | "UserDataDir";
         /** @description Representation of a source file with the necessary information to display useful error messages. */
         Source: {
             /**
@@ -2169,6 +2169,13 @@ export interface components {
         UniversePresetApplyBodySettingsSeed: {
             seed: string;
         };
+        /** @description Information about a universe preset */
+        UniversePresetInfo: {
+            /** @description The universe preset */
+            content: components["schemas"]["UniversePreset"];
+            /** @description Where this universe preset came from */
+            origin: components["schemas"]["AssetOrigin"];
+        };
         /**
          * @description Settings to apply to [`UniverseSettings`]
          *
@@ -2265,6 +2272,13 @@ export interface components {
             presets: components["schemas"]["WorldPreset"][];
             settings?: null | components["schemas"]["WorldSettings"];
         };
+        /** @description Information about a world preset */
+        WorldPresetInfo: {
+            /** @description The world preset */
+            content: components["schemas"]["WorldPreset"];
+            /** @description Where this world preset came from */
+            origin: components["schemas"]["AssetOrigin"];
+        };
         /**
          * @description Settings to apply to [`WorldSettings`]
          *
@@ -2345,6 +2359,7 @@ export interface components {
 }
 export type Alignment = components['schemas']['Alignment'];
 export type Anchor = components['schemas']['Anchor'];
+export type AssetOrigin = components['schemas']['AssetOrigin'];
 export type ClientEvent = components['schemas']['ClientEvent'];
 export type CommandBoolean = components['schemas']['CommandBoolean'];
 export type CommandFloat = components['schemas']['CommandFloat'];
@@ -2369,8 +2384,8 @@ export type HashMapStringConfigValue = components['schemas']['HashMap_String_Con
 export type HashMapStringHashMapStringString = components['schemas']['HashMap_String_HashMap_String_String'];
 export type HashMapStringSnippetInfo = components['schemas']['HashMap_String_SnippetInfo'];
 export type HashMapStringSource = components['schemas']['HashMap_String_Source'];
-export type HashMapStringUniversePreset = components['schemas']['HashMap_String_UniversePreset'];
-export type HashMapStringWorldPreset = components['schemas']['HashMap_String_WorldPreset'];
+export type HashMapStringUniversePresetInfo = components['schemas']['HashMap_String_UniversePresetInfo'];
+export type HashMapStringWorldPresetInfo = components['schemas']['HashMap_String_WorldPresetInfo'];
 export type HashMapI32I32 = components['schemas']['HashMap_i32_i32'];
 export type HashSetString = components['schemas']['HashSet_String'];
 export type HashSetTrick = components['schemas']['HashSet_Trick'];
@@ -2409,7 +2424,6 @@ export type SeedSpoiler = components['schemas']['SeedSpoiler'];
 export type Shard = components['schemas']['Shard'];
 export type Skill = components['schemas']['Skill'];
 export type SnippetInfo = components['schemas']['SnippetInfo'];
-export type SnippetOrigin = components['schemas']['SnippetOrigin'];
 export type Source = components['schemas']['Source'];
 export type Spawn = components['schemas']['Spawn'];
 export type SpawnAnchors = components['schemas']['SpawnAnchors'];
@@ -2431,6 +2445,7 @@ export type UniversePresetApplyBody = components['schemas']['UniversePresetApply
 export type UniversePresetApplyBodySettings = components['schemas']['UniversePresetApplyBodySettings'];
 export type UniversePresetApplyBodySettingsFull = components['schemas']['UniversePresetApplyBodySettingsFull'];
 export type UniversePresetApplyBodySettingsSeed = components['schemas']['UniversePresetApplyBodySettingsSeed'];
+export type UniversePresetInfo = components['schemas']['UniversePresetInfo'];
 export type UniversePresetSettings = components['schemas']['UniversePresetSettings'];
 export type UniverseSettings = components['schemas']['UniverseSettings'];
 export type VerticalAnchor = components['schemas']['VerticalAnchor'];
@@ -2438,6 +2453,7 @@ export type WheelBind = components['schemas']['WheelBind'];
 export type WheelItemPosition = components['schemas']['WheelItemPosition'];
 export type WorldPreset = components['schemas']['WorldPreset'];
 export type WorldPresetApplyBody = components['schemas']['WorldPresetApplyBody'];
+export type WorldPresetInfo = components['schemas']['WorldPresetInfo'];
 export type WorldPresetSettings = components['schemas']['WorldPresetSettings'];
 export type WorldSettings = components['schemas']['WorldSettings'];
 export type Zone = components['schemas']['Zone'];

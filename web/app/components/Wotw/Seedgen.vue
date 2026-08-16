@@ -182,9 +182,9 @@
   import type {
     Difficulty,
     DifficultyInfo,
+    HashMapStringUniversePresetInfo,
+    HashMapStringWorldPresetInfo,
     HashMapStringSnippetInfo,
-    HashMapStringUniversePreset,
-    HashMapStringWorldPreset,
     TrickInfo,
     UniverseSettings,
     WorldPreset,
@@ -213,8 +213,8 @@
   const worldContextMenuSelectedWorldIndex = ref(0)
   const seedString = ref<string | null>(null)
   const worldSettings = ref<WorldSettings[]>([])
-  const universePresets = ref<HashMapStringUniversePreset | null>(null)
-  const worldPresets = ref<HashMapStringWorldPreset | null>(null)
+  const universePresets = ref<HashMapStringUniversePresetInfo | null>(null)
+  const worldPresets = ref<HashMapStringWorldPresetInfo | null>(null)
   const difficulties = ref<DifficultyInfo[]>([])
   const tricks = ref<TrickInfo[]>([])
   const selectedWorldIndex = ref<number | null>(null)
@@ -309,7 +309,7 @@
     const groupedPresetIds: GroupedPresetIds = {}
 
     for (const [presetId, preset] of Object.entries(presets)) {
-      const group = preset.info?.group ?? null
+      const group = preset.content.info?.group ?? null
 
       if (group !== null) {
         const existingGroups = groupedPresetIds[group]
@@ -351,8 +351,8 @@
       // Sort grouped presets by difficulty and amount of tricks
       for (const presetsInGroup of Object.values(groupedPresets)) {
         presetsInGroup.sort((a, b) => {
-          const presetA = presets[a]!
-          const presetB = presets[b]!
+          const presetA = presets[a]!.content
+          const presetB = presets[b]!.content
           const difficultyA = presetA.difficulty ?? null
           const difficultyB = presetB.difficulty ?? null
 

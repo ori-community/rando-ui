@@ -25,7 +25,7 @@
         large
         icon="mdi-format-list-bulleted-type"
         :preset-id="presetId"
-        :preset-info="(worldPresets[presetId] as WorldPreset).info"
+        :preset-info="(worldPresets[presetId] as WorldPresetInfo).content.info"
         @click="onBaseWorldPresetSelected(presetId)"
       />
     </div>
@@ -42,7 +42,7 @@
               :disabled="selectedBasePreset.preset.includes?.includes(ungroupedPreset)"
               :selected="selectedAdditionalPresets.has(ungroupedPreset) || selectedBasePreset.preset.includes?.includes(ungroupedPreset)"
               :preset-id="ungroupedPreset"
-              :preset-info="(worldPresets[ungroupedPreset] as WorldPreset).info"
+              :preset-info="(worldPresets[ungroupedPreset] as WorldPresetInfo).content.info"
               :description-append="selectedBasePreset.preset.includes?.includes(ungroupedPreset) ? `Included in the '${selectedBasePreset.preset.info?.name ?? selectedBasePreset.id}' preset` : null"
               icon="mdi-plus"
               @click="onAdditionalPresetSelected(ungroupedPreset)"
@@ -89,7 +89,7 @@
 </template>
 
 <script lang="ts" setup>
-  import type {HashMapStringWorldPreset, WorldPreset, WorldSettings} from "@shared/types/seedgen"
+  import type {HashMapStringWorldPresetInfo, WorldPresetInfo, WorldPreset, WorldSettings} from "@shared/types/seedgen"
   import type {GroupedPresetIds} from '~/assets/types/components/seedgen'
   import {clone} from "@shared/utils/clone"
   import {useSeedgenAxios} from "~/composables/useSeedgenAxios"
@@ -101,7 +101,7 @@
     loading = false,
   } = defineProps<{
     groupedWorldPresetIds: GroupedPresetIds,
-    worldPresets: HashMapStringWorldPreset,
+    worldPresets: HashMapStringWorldPresetInfo,
     existingWorldSettings: WorldSettings[],
     loading?: boolean,
   }>()
@@ -123,7 +123,7 @@
   const selectedAdditionalPresets = ref<Set<string>>(new Set([]))
 
   const presetsWithoutGroup = computed(() => Object.fromEntries(
-    Object.entries(worldPresets).filter(p => !p[1].info || !p[1].info.group)
+    Object.entries(worldPresets).filter(p => !p[1].content.info || !p[1].content.info.group)
   ))
 
   function onBaseWorldPresetSelected(presetId: string) {
@@ -140,7 +140,7 @@
     selectedAdditionalPresets.value.clear()
     selectedBasePreset.value = {
       id: presetId,
-      preset: selectedPreset,
+      preset: selectedPreset.content,
     }
   }
 
@@ -163,7 +163,7 @@
 
     emit("presetsSelected", [
       selectedBasePreset.value.preset,
-      ...selectedAdditionalPresets.value.values().map(presetId => worldPresets[presetId]).filter(preset => !!preset)
+      ...selectedAdditionalPresets.value.values().map(presetId => worldPresets[presetId]?.content).filter(preset => !!preset)
     ])
   }
 

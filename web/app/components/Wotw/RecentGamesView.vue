@@ -109,7 +109,7 @@
     }
   })
 
-  onMounted(async () => {
+  watch(() => userStore.isLoggedIn, async () => {
     await catchAxiosErrors(
       async () => {
         recentMultiverses.value = (await axios.get("/multiverses/own", {params: {limit: 4}})).data
@@ -119,7 +119,7 @@
         console.error(e)
       },
     )
-  })
+  }, {immediate: true})
 </script>
 
 <style lang="scss" scoped>

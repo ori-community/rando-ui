@@ -461,7 +461,7 @@
     snackbarStore.add({
       text: records.map(record => `${record.level}: ${record.message}`).join("\n"),
       title: "Seed Generator",
-      contentClass: "text-pre",
+      contentClass: "text-pre-wrap",
       prependIcon: "mdi-alert-outline",
       color: "warning",
       timer: "bottom",

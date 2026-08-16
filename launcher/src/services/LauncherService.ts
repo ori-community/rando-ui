@@ -22,7 +22,7 @@ type LauncherEvent = {
   isLaunchingChanged: [boolean],
 
   /** Emitted when a LaunchResult is ready */
-  onLaunchResult: [LaunchResult],
+  launchResult: [LaunchResult],
 
   /** Emitted when the new game seed source changed */
   newGameSeedSourceChanged: [string],
@@ -34,6 +34,9 @@ export class LauncherService {
   /** Internal state. Use isLaunching instead. */
   private static _isLaunching: boolean = false
 
+  /** Internal state. Use launchResult instead */
+  private static _launchResult: LaunchResult | null = null
+
   public static get isLaunching(): boolean {
     return this._isLaunching
   }
@@ -41,6 +44,15 @@ export class LauncherService {
   private static set isLaunching(value: boolean) {
     this._isLaunching = value
     LauncherService.events.emit("isLaunchingChanged", value)
+  }
+
+  public static get launchResult(): LaunchResult | null {
+    return this._launchResult
+  }
+
+  public static set launchResult(value: LaunchResult) {
+    this._launchResult = value
+    this.events.emit("launchResult", value)
   }
 
   static getPlatform(): LauncherPlatform {
@@ -254,16 +266,16 @@ export class LauncherService {
 
     try {
       this.isLaunching = true
-      const response = await this._launchOrFocusRandomizer(seedSource)
-      this.events.emit("onLaunchResult", response)
+      const result = await this._launchOrFocusRandomizer(seedSource)
+      this.launchResult = result
       this.isLaunching = false
-      return response
+      return result
     } catch (e) {
-      this.events.emit("onLaunchResult", {
+      this.launchResult = {
         launchedSuccessfully: false,
         errorType: "unknown_error",
         errorMessage: "An unknown error occurred: " + String(e),
-      })
+      }
       this.isLaunching = false
       throw e
     }

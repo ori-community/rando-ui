@@ -1,11 +1,10 @@
 import type {LaunchResult} from "@shared/types/launcher"
-import {type EventBusKey, useEventBus, type UseEventBusReturn} from "@vueuse/core"
 
 type LauncherHelper = {
   newGameSeedSource: Ref<string | null>,
   isLaunching: Ref<boolean>,
   launch: (newGameSeedSource?: string | undefined) => Promise<LaunchResult>,
-  onLaunchResult: UseEventBusReturn<LaunchResult, unknown>,
+  launchResult: Ref<LaunchResult | null>,
 }
 
 let instance: LauncherHelper | null = null
@@ -15,8 +14,7 @@ export const useLauncherHelper = (): LauncherHelper => {
     const electronApi = useElectronApi()
     const isLaunching = ref(false)
     const newGameSeedSource = ref<string | null>(null)
-    const onLaunchResultKey: EventBusKey<LaunchResult> = Symbol("launcher-helper-on-launch-result")
-    const onLaunchResult = useEventBus(onLaunchResultKey)
+    const launchResult = ref<LaunchResult | null>(null)
 
     if (electronApi) {
       electronApi.launcher.newGameSeedSource.subscribe(undefined, {
@@ -31,9 +29,9 @@ export const useLauncherHelper = (): LauncherHelper => {
         },
       })
 
-      electronApi.launcher.onLaunchResult.subscribe(undefined, {
+      electronApi.launcher.launchResult.subscribe(undefined, {
         onData(value) {
-          onLaunchResult.emit(value)
+          launchResult.value = value
         },
       })
     }
@@ -62,7 +60,7 @@ export const useLauncherHelper = (): LauncherHelper => {
       return await launchWrapper()
     }
 
-    instance = {isLaunching, newGameSeedSource, launch, onLaunchResult}
+    instance = {isLaunching, newGameSeedSource, launch, launchResult}
   }
 
   return instance

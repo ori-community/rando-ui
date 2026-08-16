@@ -94,12 +94,12 @@
 </template>
 
 <script lang="ts" setup>
-  import type {UnsuccessfulLaunchResult} from '@shared/types/launcher'
-  import {launchSetupValidationErrorMessages} from '~/assets/uiMetadata'
+  import type {UnsuccessfulLaunchResult} from "@shared/types/launcher"
+  import {launchSetupValidationErrorMessages} from "~/assets/uiMetadata"
   import type {Unsubscribable} from "@launcher/api/api"
 
   const electronApi = useElectronApi()
-  const {launch, onLaunchResult} = useLauncherHelper()
+  const {launch, launchResult} = useLauncherHelper()
   const unsuccessfulLaunchErrorDialogOpen = ref(false)
   const gameCrashedDialogOpen = ref(false)
   const currentUnsuccessfulLaunchResult = ref<UnsuccessfulLaunchResult | null>(null)
@@ -120,7 +120,7 @@
         onCheckpointUnsubscribable.value = electronApi.randoIpc.onCheckpointCreated.subscribe(undefined, {
           onData() {
             updateGameStatsSlotData()
-          }
+          },
         })
       } else {
         onCheckpointUnsubscribable.value?.unsubscribe()
@@ -134,7 +134,7 @@
           if (settings.isInitialized && settings.ShowStatsAfterFinish) {
             statsDialog.open = true
           }
-        }
+        },
       })
     })
   }
@@ -162,13 +162,17 @@
     }
   }
 
-  onLaunchResult.on((launchResult) => {
+  watch(launchResult, (launchResult) => {
+    if (launchResult === null) {
+      return
+    }
+
     if (!launchResult.launchedSuccessfully) {
       currentUnsuccessfulLaunchResult.value = launchResult
     }
 
     unsuccessfulLaunchErrorDialogOpen.value = !launchResult.launchedSuccessfully
-  })
+  }, {immediate: true})
 
   async function showSupportBundleInExplorer() {
     if (!electronApi || currentDetectedCrashSupportBundlePath.value === null) {

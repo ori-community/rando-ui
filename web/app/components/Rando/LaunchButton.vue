@@ -50,7 +50,7 @@
   const isLeek = ref(false) // funny (display lauch / leek)
   const confettiScheduledForNextSuccessfulLaunch = ref(false)
   const buttonRef = ref<{ $el: HTMLElement } | null>(null)
-  const {isLaunching, onLaunchResult} = useLauncherHelper()
+  const {isLaunching, launchResult} = useLauncherHelper()
   const displayedIcon = computed(() => {
     if (props.icon) {
       return props.icon
@@ -73,7 +73,11 @@
     emit("click", event)
   })
 
-  onLaunchResult.on((launchResult) => {
+  watch(launchResult, (launchResult) => {
+    if (launchResult === null) {
+      return
+    }
+
     if (props.showConfetti && launchResult.launchedSuccessfully && confettiScheduledForNextSuccessfulLaunch.value) {
       shootConfetti()
     }

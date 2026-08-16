@@ -93,15 +93,18 @@ export const launcher = router({
     }),
   /**
    * Subscribe to get LaunchResults when LauncherService launches the game or fails to do so.
+   * Will emit its current value on subscription.
    */
-  onLaunchResult: publicProcedure
+  launchResult: publicProcedure
     .subscription(() => {
       return observable<LaunchResult>((emit) => {
-        const onLaunchResult = (value: LaunchResult) => emit.next(value)
-        LauncherService.events.on("onLaunchResult", onLaunchResult)
+        const onLaunchResultChanged = (value: LaunchResult) => emit.next(value)
+        LauncherService.events.on("launchResult", onLaunchResultChanged)
+
+        emit.next(LauncherService.launchResult)
 
         return () => {
-          LauncherService.events.off("onLaunchResult", onLaunchResult)
+          LauncherService.events.off("launchResult", onLaunchResultChanged)
         }
       })
     }),

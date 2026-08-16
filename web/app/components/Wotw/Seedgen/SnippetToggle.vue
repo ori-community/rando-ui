@@ -6,16 +6,19 @@
       class="snippet-toggle"
       @click="toggleSnippet"
     >
-      {{ snippetMetadata.name ?? snippetIdentifier }}
+      {{ snippetInfo.metadata.name ?? snippetIdentifier }}
       <v-tooltip
-        v-if="!!snippetMetadata.description"
+        v-if="!!snippetInfo.metadata.description"
         content-class="bg-surface-light"
         open-delay="500"
         max-width="350"
         activator="parent"
         location="bottom"
       >
-        {{ snippetMetadata.description }}
+        {{ snippetInfo.metadata.description }}
+        <template v-if="snippetInfo.origin === 'UserDataDir'">
+          <em>(Custom Snippet)</em>
+        </template>
       </v-tooltip>
     </v-btn>
     <template v-if="snippetHasConfig">
@@ -23,12 +26,12 @@
         <v-icon icon="mdi-tune" size="x-large" />
 
         <v-dialog v-model="configDialogOpen" activator="parent" max-width="600">
-          <v-card :title="`Options for ${snippetMetadata.name ?? snippetIdentifier}`">
+          <v-card :title="`Options for ${snippetInfo.metadata.name ?? snippetIdentifier}`">
             <v-card-text>
               <wotw-seedgen-snippet-configs
                 v-model:world-snippet-config="worldSnippetConfigModel"
                 :snippet-identifier="snippetIdentifier"
-                :configs-metadata="snippetMetadata.config"
+                :configs-metadata="snippetInfo.metadata.config"
               />
             </v-card-text>
             <div class="ma-3 d-flex justify-end">
@@ -38,16 +41,22 @@
         </v-dialog>
       </v-btn>
     </template>
+    <v-btn v-if="snippetInfo.origin === 'UserDataDir'" variant="plain" size="x-small" class="mx-1" icon>
+      <v-icon icon="mdi-account-outline" size="x-large" />
+      <v-tooltip activator="parent" location="bottom" open-delay="500" content-class="bg-surface-light">
+        Custom Snippet
+      </v-tooltip>
+    </v-btn>
   </v-card>
 </template>
 
 <script lang="ts" setup>
-  import type {Metadata, HashMapStringHashMapStringString} from '@shared/types/seedgen'
+  import type {HashMapStringHashMapStringString, SnippetInfo} from "@shared/types/seedgen"
   import {useVModel} from '@vueuse/core'
 
   const props = defineProps<{
     snippetIdentifier: string,
-    snippetMetadata: Metadata,
+    snippetInfo: SnippetInfo,
     worldSnippets: string[],
     worldSnippetConfig: HashMapStringHashMapStringString,
   }>()
@@ -61,7 +70,7 @@
 
   const worldSnippetsModel = useVModel(props, 'worldSnippets', emits)
   const worldSnippetConfigModel = useVModel(props, 'worldSnippetConfig', emits)
-  const snippetHasConfig = computed(() => Object.keys(props.snippetMetadata.config).length > 0)
+  const snippetHasConfig = computed(() => Object.keys(props.snippetInfo.metadata.config).length > 0)
   const snippetActive = computed(() => worldSnippetsModel.value.includes(props.snippetIdentifier))
 
   function toggleSnippet() {

@@ -182,7 +182,7 @@
   import type {
     Difficulty,
     DifficultyInfo,
-    HashMapStringMetadata,
+    HashMapStringSnippetInfo,
     HashMapStringUniversePreset,
     HashMapStringWorldPreset,
     TrickInfo,
@@ -218,7 +218,7 @@
   const difficulties = ref<DifficultyInfo[]>([])
   const tricks = ref<TrickInfo[]>([])
   const selectedWorldIndex = ref<number | null>(null)
-  const snippetsInfo = ref<HashMapStringMetadata | null>(null)
+  const snippetsInfo = ref<HashMapStringSnippetInfo | null>(null)
   const enableBingo = ref(false)
   const enableRaceMode = ref(false)
   const bingoSettings = ref<BingoSettings>({
@@ -368,11 +368,19 @@
             return difficultyValuesByName.value[difficultyA] - difficultyValuesByName.value[difficultyB]
           }
 
-          const tricksA = presetA.tricks ?? []
-          const tricksB = presetB.tricks ?? []
+          const tricksA = presetA.tricks ?? {Some: []}
+          const tricksB = presetB.tricks ?? {Some: []}
 
-          if (tricksA.length !== tricksB.length) {
-            return tricksA.length - tricksB.length
+          if (tricksA === "All" && tricksB !== "All") {
+            return -1
+          }
+
+          if (tricksA !== "All" && tricksB === "All") {
+            return 1
+          }
+
+          if (tricksA !== "All" && tricksB !== "All" && tricksA.Some.length !== tricksB.Some.length) {
+            return tricksA.Some.length - tricksB.Some.length
           }
 
           return a.localeCompare(b)

@@ -78,7 +78,7 @@
             v-model:world-snippets="model.snippets"
             v-model:world-snippet-config="model.snippetConfig"
             :snippet-identifier="snippet.identifier"
-            :snippet-metadata="snippet.metadata"
+            :snippet-info="snippet.snippetInfo"
           />
         </div>
       </div>
@@ -107,16 +107,16 @@
   import type {
     Difficulty,
     DifficultyInfo,
-    HashMapStringMetadata,
-    Metadata,
+    HashMapStringSnippetInfo,
+    SnippetInfo,
     Trick,
     TrickInfo,
     WorldSettings,
-  } from '@shared/types/seedgen'
+  } from "@shared/types/seedgen"
 
   const props = defineProps<{
     modelValue: WorldSettings,
-    snippetsInfo: HashMapStringMetadata,
+    snippetsInfo: HashMapStringSnippetInfo,
     difficulties: DifficultyInfo[],
     tricks: TrickInfo[],
   }>()
@@ -131,12 +131,12 @@
   const tricksInvalidBecauseOfDifficultyChangeDialogOpen = ref(false)
   const difficultyToSwitchToWhenConfirmingTrickCleanup = ref<Difficulty>("Moki")
 
-  const visibleSnippetsInfo = computed(() => Object.fromEntries(Object.entries(props.snippetsInfo).filter(([, e]) => !e.hidden)))
+  const visibleSnippetsInfo = computed(() => Object.fromEntries(Object.entries(props.snippetsInfo).filter(([, e]) => !e.metadata.hidden)))
   const categorizedSnippetsInfo = computed(() => {
-    const categories: {[categoryName: string]: {identifier: string, metadata: Metadata}[]} = {}
+    const categories: {[categoryName: string]: {identifier: string, snippetInfo: SnippetInfo}[]} = {}
 
-    for (const [identifier, metadata] of Object.entries(visibleSnippetsInfo.value)) {
-      const categoryName = metadata.category ?? "Uncategorized"
+    for (const [identifier, snippetInfo] of Object.entries(visibleSnippetsInfo.value)) {
+      const categoryName = snippetInfo.metadata.category ?? "Uncategorized"
 
       if (!Object.hasOwn(categories, categoryName)) {
         categories[categoryName] = []
@@ -144,7 +144,7 @@
 
       categories[categoryName]?.push({
         identifier,
-        metadata,
+        snippetInfo,
       })
     }
 

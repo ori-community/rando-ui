@@ -22,7 +22,15 @@ export interface paths {
          *         worlds: [ +bstr ],
          *         ? json_spoiler: tstr,
          *         ? text_spoiler: tstr,
+         *         logs: [ *record ],
          *     }
+         *
+         *     record = {
+         *         level: level,
+         *         message: tstr
+         *     }
+         *
+         *     level = "ERROR" / "WARN" / "INFO" / "DEBUG" / "TRACE"
          *     ```
          */
         post: {
@@ -30,6 +38,7 @@ export interface paths {
                 query?: {
                     json_spoiler?: boolean | null;
                     text_spoiler?: boolean | null;
+                    max_log_level?: null | components["schemas"]["LogLevelFilter"];
                 };
                 header?: never;
                 path?: never;
@@ -233,6 +242,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/logic/spawn-anchors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get a list of spawnable anchor identifiers */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SpawnAnchors"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/plando/compile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Compile a plandomizer
+         * @description Response will be in CBOR format
+         *
+         *     ```cddl
+         *     output = {
+         *         seed: bstr,
+         *         logs: [ *record ],
+         *     }
+         *
+         *     record = {
+         *         level: level,
+         *         message: tstr
+         *     }
+         *
+         *     level = "ERROR" / "WARN" / "INFO" / "DEBUG" / "TRACE"
+         *     ```
+         */
+        post: {
+            parameters: {
+                query?: {
+                    debug?: boolean | null;
+                    max_log_level?: null | components["schemas"]["LogLevelFilter"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["HashMap_String_Source"];
+                };
+            };
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/octet-stream": number[];
+                    };
+                };
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": string[];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/presets/universe/apply": {
         parameters: {
             query?: never;
@@ -337,7 +448,7 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["ApplyBody"];
+                    "application/json": components["schemas"]["WorldPresetApplyBody"];
                 };
             };
             responses: {
@@ -519,7 +630,9 @@ export interface paths {
         /** Start new universe settings */
         get: {
             parameters: {
-                query?: never;
+                query: {
+                    seed: string;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -675,7 +788,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["HashMap_String_Metadata"];
+                        "application/json": components["schemas"]["HashMap_String_SnippetInfo"];
                     };
                 };
             };
@@ -688,10 +801,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/spoilers/render": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Render a JSON spoiler into plaintext form */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SeedSpoiler"];
+                };
+            };
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * @description Text alignment in messages
+         * @enum {integer}
+         */
+        Alignment: 0 | 1 | 2 | 3;
         Anchor: {
             can_spawn: boolean;
             connections: components["schemas"]["Connection"][];
@@ -701,10 +858,638 @@ export interface components {
             refills: components["schemas"]["Refill"][];
             teleport_restriction: components["schemas"]["Requirement"];
         };
-        ApplyBody: {
-            /** @description Presets to apply */
-            presets: components["schemas"]["WorldPreset"][];
-            settings?: null | components["schemas"]["WorldSettings"];
+        /** @enum {string} */
+        ClientEvent: "Spawn" | "Reload" | "Respawn" | "Binding1" | "Binding2" | "Binding3" | "Binding4" | "Binding5" | "ProgressMessage" | "Tick" | "InkwaterTrialTextRequest" | "HollowTrialTextRequest" | "WellspringTrialTextRequest" | "WoodsTrialTextRequest" | "ReachTrialTextRequest" | "DepthsTrialTextRequest" | "LumaTrialTextRequest" | "WastesTrialTextRequest";
+        /** @description Command which returns [`bool`] */
+        CommandBoolean: {
+            /** @description Return `value` */
+            Constant: {
+                value: boolean;
+            };
+        } | {
+            /** @description Return the `index`th boolean function argument */
+            FunctionArgument: {
+                index: number;
+            };
+        } | {
+            /** @description Execute `commands`, then use `last` for the return value */
+            Multi: {
+                commands: components["schemas"]["CommandVoid"][];
+                last: components["schemas"]["CommandBoolean"];
+            };
+        } | {
+            /** @description Return the result of `operation` */
+            CompareBoolean: {
+                operation: components["schemas"]["Operation_CommandBoolean_EqualityComparator"];
+            };
+        } | {
+            /** @description Return the result of `operation` */
+            CompareInteger: {
+                operation: components["schemas"]["Operation_CommandInteger_Comparator"];
+            };
+        } | {
+            /** @description Return the result of `operation` */
+            CompareFloat: {
+                operation: components["schemas"]["Operation_CommandFloat_Comparator"];
+            };
+        } | {
+            /** @description Return the result of `operation` */
+            CompareString: {
+                operation: components["schemas"]["Operation_CommandString_EqualityComparator"];
+            };
+        } | {
+            /** @description Return the result of `operation` */
+            CompareZone: {
+                operation: components["schemas"]["Operation_CommandZone_EqualityComparator"];
+            };
+        } | {
+            /** @description Return the result of `operation` */
+            LogicOperation: {
+                operation: components["schemas"]["Operation_CommandBoolean_LogicOperator"];
+            };
+        } | {
+            /** @description Return the value stored in `uber_identifier` */
+            FetchBoolean: {
+                uber_identifier: components["schemas"]["UberIdentifier"];
+            };
+        } | {
+            /** @description Get the value stored under `id` */
+            GetBoolean: {
+                id: number;
+            };
+        } | {
+            /** @description Check if Ori is in box `id` */
+            IsInBox: {
+                x1: components["schemas"]["CommandFloat"];
+                x2: components["schemas"]["CommandFloat"];
+                y1: components["schemas"]["CommandFloat"];
+                y2: components["schemas"]["CommandFloat"];
+            };
+        };
+        /** @description Command which returns [`f32`] */
+        CommandFloat: {
+            /** @description Return `value` */
+            Constant: {
+                /** Format: float */
+                value: number;
+            };
+        } | {
+            /** @description Return the `index`th boolean function argument */
+            FunctionArgument: {
+                index: number;
+            };
+        } | {
+            /** @description Execute `commands`, then use `last` for the return value */
+            Multi: {
+                commands: components["schemas"]["CommandVoid"][];
+                last: components["schemas"]["CommandFloat"];
+            };
+        } | {
+            /** @description Return the result of `operation` */
+            Arithmetic: {
+                operation: components["schemas"]["Operation_CommandFloat_ArithmeticOperator"];
+            };
+        } | {
+            /** @description Return the value stored in `uber_identifier` */
+            FetchFloat: {
+                uber_identifier: components["schemas"]["UberIdentifier"];
+            };
+        } | {
+            /** @description Get the value stored under `id` */
+            GetFloat: {
+                id: number;
+            };
+        } | {
+            /** @description Convert `integer` to `f32` */
+            FromInteger: {
+                integer: components["schemas"]["CommandInteger"];
+            };
+        };
+        /** @description Command which returns [`i32`] */
+        CommandInteger: {
+            /** @description Return `value` */
+            Constant: {
+                /** Format: int32 */
+                value: number;
+            };
+        } | {
+            /** @description Return the `index`th boolean function argument */
+            FunctionArgument: {
+                index: number;
+            };
+        } | {
+            /** @description Execute `commands`, then use `last` for the return value */
+            Multi: {
+                commands: components["schemas"]["CommandVoid"][];
+                last: components["schemas"]["CommandInteger"];
+            };
+        } | {
+            /** @description Return the result of `operation` */
+            Arithmetic: {
+                operation: components["schemas"]["Operation_CommandInteger_ArithmeticOperator"];
+            };
+        } | {
+            /** @description Return the value stored in `uber_identifier` */
+            FetchInteger: {
+                uber_identifier: components["schemas"]["UberIdentifier"];
+            };
+        } | {
+            /** @description Get the value stored under `id` */
+            GetInteger: {
+                id: number;
+            };
+        } | {
+            /** @description Convert `float` to `f32` */
+            FromFloat: {
+                float: components["schemas"]["CommandFloat"];
+            };
+        } | {
+            /** @description Get the length of `string` */
+            StringLength: {
+                string: components["schemas"]["CommandString"];
+            };
+        };
+        /** @description Command which returns [`StringOrPlaceholder`] */
+        CommandString: {
+            /** @description Return `value` */
+            Constant: {
+                value: components["schemas"]["StringOrPlaceholder"];
+            };
+        } | {
+            /** @description Return the `index`th boolean function argument */
+            FunctionArgument: {
+                index: number;
+            };
+        } | {
+            /** @description Execute `commands`, then use `last` for the return value */
+            Multi: {
+                commands: components["schemas"]["CommandVoid"][];
+                last: components["schemas"]["CommandString"];
+            };
+        } | {
+            /** @description Return a String consisting of `left`, then `right` */
+            Concatenate: {
+                operation: components["schemas"]["Operation_CommandString_Concatenator"];
+            };
+        } | {
+            /** @description Get the value stored under `id` */
+            GetString: {
+                id: number;
+            };
+        } | {
+            /** @description Return the name of world number `index` */
+            WorldName: {
+                index: number;
+            };
+        } | {
+            /** @description Convert `boolean` to `String` */
+            FromBoolean: {
+                boolean: components["schemas"]["CommandBoolean"];
+            };
+        } | {
+            /** @description Convert `integer` to `String` */
+            FromInteger: {
+                integer: components["schemas"]["CommandInteger"];
+            };
+        } | {
+            /** @description Convert `float` to `String` */
+            FromFloat: {
+                float: components["schemas"]["CommandFloat"];
+            };
+        };
+        /** @description Command which returns nothing */
+        CommandVoid: {
+            /** @description Execute `commands` */
+            Multi: {
+                commands: components["schemas"]["CommandVoid"][];
+            };
+        } | {
+            /** @description Call the function at `index` with the given arguments */
+            CallFunction: {
+                booleans: components["schemas"]["CommandBoolean"][];
+                floats: components["schemas"]["CommandFloat"][];
+                index: number;
+                integers: components["schemas"]["CommandInteger"][];
+                strings: components["schemas"]["CommandString"][];
+            };
+        } | {
+            /** @description Only perform `command` if `condition` evaluates to true */
+            If: {
+                command: components["schemas"]["CommandVoid"];
+                condition: components["schemas"]["CommandBoolean"];
+            };
+        } | {
+            /** @description Until the next reload, on every tick where `toggle` is `true` increment `timer` by the delta time in seconds */
+            DefineTimer: {
+                timer: components["schemas"]["UberIdentifier"];
+                toggle: components["schemas"]["UberIdentifier"];
+            };
+        } | {
+            /**
+             * @description Add `message` to the queue with `timeout` or a default timeout.
+             *     If `priority` is true, it should be a priority message.
+             *     If `id` is specified, it can later be used to update the message
+             */
+            QueuedMessage: {
+                id?: number | null;
+                message: components["schemas"]["CommandString"];
+                priority: boolean;
+                timeout?: null | components["schemas"]["CommandFloat"];
+            };
+        } | {
+            /**
+             * @description Sets the pickup position for queued messages until the end of the
+             *     current command scope.
+             *     The pickup position is used for animating item messages
+             *     from their pickup positions.
+             */
+            QueuedMessageScopedPickupPosition: {
+                x: components["schemas"]["CommandFloat"];
+                y: components["schemas"]["CommandFloat"];
+            };
+        } | {
+            /** @description Show `message` immediately independent of the queue */
+            FreeMessage: {
+                id: number;
+                message: components["schemas"]["CommandString"];
+            };
+        } | {
+            /** @description Register a free message with no text or visibility */
+            FreeMessageUninitialized: {
+                id: number;
+            };
+        } | {
+            /** @description DESTROY message `id` */
+            MessageDestroy: {
+                id: number;
+            };
+        } | {
+            /** @description Update the `message` of message `id` */
+            MessageText: {
+                id: number;
+                message: components["schemas"]["CommandString"];
+            };
+        } | {
+            /** @description Update the `timeout` of message `id` */
+            MessageTimeout: {
+                id: number;
+                timeout: components["schemas"]["CommandFloat"];
+            };
+        } | {
+            /** @description Update whether message `id` has a `background` */
+            MessageBackground: {
+                background: components["schemas"]["CommandBoolean"];
+                id: number;
+            };
+        } | {
+            /** @description Update the `position` of free message `id` */
+            FreeMessagePosition: {
+                id: number;
+                x: components["schemas"]["CommandFloat"];
+                y: components["schemas"]["CommandFloat"];
+            };
+        } | {
+            /** @description Update the `alignment` of free message `id` */
+            FreeMessageAlignment: {
+                alignment: components["schemas"]["Alignment"];
+                id: number;
+            };
+        } | {
+            /** @description Set the `horizontal_anchor` of free message `id` */
+            FreeMessageHorizontalAnchor: {
+                horizontal_anchor: components["schemas"]["HorizontalAnchor"];
+                id: number;
+            };
+        } | {
+            /** @description Set the `vertical_anchor` of free message `id` */
+            FreeMessageVerticalAnchor: {
+                id: number;
+                vertical_anchor: components["schemas"]["VerticalAnchor"];
+            };
+        } | {
+            FreeMessageBoxWidth: {
+                id: number;
+                width: components["schemas"]["CommandFloat"];
+            };
+        } | {
+            FreeMessageCoordinateSystem: {
+                coordinate_system: components["schemas"]["CoordinateSystem"];
+                id: number;
+            };
+        } | {
+            FreeMessageShow: {
+                fade: components["schemas"]["CommandBoolean"];
+                id: number;
+                sound: components["schemas"]["CommandBoolean"];
+            };
+        } | {
+            FreeMessageHide: {
+                fade: components["schemas"]["CommandBoolean"];
+                id: number;
+            };
+        } | {
+            /** @description Store `value` in `uber_identifier` and check if any events are triggered */
+            StoreBoolean: {
+                trigger_events: boolean;
+                uber_identifier: components["schemas"]["UberIdentifier"];
+                value: components["schemas"]["CommandBoolean"];
+            };
+        } | {
+            /** @description Store `value` in `uber_identifier` and check if any events are triggered */
+            StoreInteger: {
+                trigger_events: boolean;
+                uber_identifier: components["schemas"]["UberIdentifier"];
+                value: components["schemas"]["CommandInteger"];
+            };
+        } | {
+            /** @description Store `value` in `uber_identifier` and check if any events are triggered */
+            StoreFloat: {
+                trigger_events: boolean;
+                uber_identifier: components["schemas"]["UberIdentifier"];
+                value: components["schemas"]["CommandFloat"];
+            };
+        } | {
+            /** @description Temporarily store `value` under `id`. The value should live at least until the next tick */
+            SetBoolean: {
+                id: number;
+                value: components["schemas"]["CommandBoolean"];
+            };
+        } | {
+            /** @description Temporarily store `value` under `id`. The value should live at least until the next tick */
+            SetInteger: {
+                id: number;
+                value: components["schemas"]["CommandInteger"];
+            };
+        } | {
+            /** @description Temporarily store `value` under `id`. The value should live at least until the next tick */
+            SetFloat: {
+                id: number;
+                value: components["schemas"]["CommandFloat"];
+            };
+        } | {
+            /** @description Temporarily store `value` under `id`. The value should live at least until the next tick */
+            SetString: {
+                id: number;
+                value: components["schemas"]["CommandString"];
+            };
+        } | {
+            /** @description Create a new box defined by (`x1`, `y1`) and (`x2`, `y2`) */
+            BoxTrigger: {
+                id: number;
+                x1: components["schemas"]["CommandFloat"];
+                x2: components["schemas"]["CommandFloat"];
+                y1: components["schemas"]["CommandFloat"];
+                y2: components["schemas"]["CommandFloat"];
+            };
+        } | {
+            /** @description DESTROY box `id` */
+            BoxTriggerDestroy: {
+                id: number;
+            };
+        } | {
+            /** @description Register `action` to trigger when Ori enters box `id` */
+            BoxTriggerEnterCallback: {
+                action: number;
+                id: number;
+            };
+        } | {
+            /** @description Register `action` to trigger when Ori leaves box `id` */
+            BoxTriggerLeaveCallback: {
+                action: number;
+                id: number;
+            };
+        } | {
+            /** @description Save the game */
+            Save: {
+                to_disk: boolean;
+            };
+        } | {
+            /** @description Save the game at `position` */
+            SaveAt: {
+                to_disk: boolean;
+                x: components["schemas"]["CommandFloat"];
+                y: components["schemas"]["CommandFloat"];
+            };
+        } | {
+            /** @description Warp the player to (`x`, `y`) */
+            Warp: {
+                x: components["schemas"]["CommandFloat"];
+                y: components["schemas"]["CommandFloat"];
+            };
+        } | {
+            /** @description Instantly Warp the player to (`x`, `y`) */
+            InstantWarp: {
+                x: components["schemas"]["CommandFloat"];
+                y: components["schemas"]["CommandFloat"];
+            };
+        } | {
+            /** @description Equip `equipment` into `slot` */
+            Equip: {
+                equipment: components["schemas"]["Equipment"];
+                slot: components["schemas"]["EquipSlot"];
+            };
+        } | {
+            /** @description Unequip `equipment` from any slot it may be equipped in */
+            Unequip: {
+                equipment: components["schemas"]["Equipment"];
+            };
+        } | {
+            /** @description Act as though the client would have sent `client_event` */
+            TriggerClientEvent: {
+                client_event: components["schemas"]["ClientEvent"];
+            };
+        } | {
+            /** @description Act as though the user would have pressed `bind` */
+            TriggerKeybind: {
+                bind: string;
+            };
+        } | {
+            /** @description Start syncing `uber_identifier` in co-op */
+            EnableServerSync: {
+                uber_identifier: components["schemas"]["UberIdentifier"];
+            };
+        } | {
+            /** @description Stop syncing `uber_identifier` in co-op */
+            DisableServerSync: {
+                uber_identifier: components["schemas"]["UberIdentifier"];
+            };
+        } | {
+            /** @description Create a spoiler map icon with `id` and `icon` at (`x`, `y`) with the label set to `label` */
+            CreateSpoilerMapIcon: {
+                icon: components["schemas"]["MapIcon"];
+                id: number;
+                label: components["schemas"]["CommandString"];
+                x: components["schemas"]["CommandFloat"];
+                y: components["schemas"]["CommandFloat"];
+            };
+        } | {
+            /** @description Marks spoiler map icon with id `id` as collected */
+            MarkSpoilerMapIconCollected: {
+                id: number;
+            };
+        } | {
+            /** @description Create a stats entry with `icon` with the label set to `label` */
+            CreateStatsEntry: {
+                icon: components["schemas"]["MapIcon"];
+                label: components["schemas"]["CommandString"];
+            };
+        } | {
+            /** @description Create a spirit well icon that you can warp to on the map at (`x`, `y`) */
+            CreateWarpIcon: {
+                id: number;
+                x: components["schemas"]["CommandFloat"];
+                y: components["schemas"]["CommandFloat"];
+            };
+        } | {
+            /** @description Set the map label of an existing spirit well icon `id` to `label` */
+            SetWarpIconLabel: {
+                id: number;
+                label: components["schemas"]["CommandString"];
+            };
+        } | {
+            /** @description DESTROY the spirit well icon `id` */
+            DestroyWarpIcon: {
+                id: number;
+            };
+        } | {
+            /** @description Set the price of the shop item at `uber_identifier` to `price` */
+            SetShopItemPrice: {
+                price: components["schemas"]["CommandInteger"];
+                uber_identifier: components["schemas"]["UberIdentifier"];
+            };
+        } | {
+            /** @description Set the display name of the shop item at `uber_identifier` to `name` */
+            SetShopItemName: {
+                name: components["schemas"]["CommandString"];
+                uber_identifier: components["schemas"]["UberIdentifier"];
+            };
+        } | {
+            /** @description Set the description of the shop item at `uber_identifier` to `description` */
+            SetShopItemDescription: {
+                description: components["schemas"]["CommandString"];
+                uber_identifier: components["schemas"]["UberIdentifier"];
+            };
+        } | {
+            /** @description Set the icon of the shop item at `uber_identifier` to `icon` */
+            SetShopItemIcon: {
+                icon: components["schemas"]["Icon"];
+                uber_identifier: components["schemas"]["UberIdentifier"];
+            };
+        } | {
+            /** @description Set the shop item at `uber_identifier` to be `hidden` */
+            SetShopItemHidden: {
+                hidden: components["schemas"]["CommandBoolean"];
+                uber_identifier: components["schemas"]["UberIdentifier"];
+            };
+        } | {
+            /** @description Set the shop item at `uber_identifier` to be `locked` */
+            SetShopItemLocked: {
+                locked: components["schemas"]["CommandBoolean"];
+                uber_identifier: components["schemas"]["UberIdentifier"];
+            };
+        } | {
+            /** @description Set the display name of the wheel item in `wheel` at `position` to `name` */
+            SetWheelItemName: {
+                name: components["schemas"]["CommandString"];
+                position: components["schemas"]["WheelItemPosition"];
+                wheel: number;
+            };
+        } | {
+            /** @description Set the description of the wheel item in `wheel` at `position` to `description` */
+            SetWheelItemDescription: {
+                description: components["schemas"]["CommandString"];
+                position: components["schemas"]["WheelItemPosition"];
+                wheel: number;
+            };
+        } | {
+            /** @description Set the icon of the wheel item in `wheel` at `position` to `icon` */
+            SetWheelItemIcon: {
+                icon: components["schemas"]["Icon"];
+                position: components["schemas"]["WheelItemPosition"];
+                wheel: number;
+            };
+        } | {
+            /** @description Set the rgba color of the wheel item in `wheel` at `position` to `red`, `green`, `blue`, `alpha` */
+            SetWheelItemColor: {
+                alpha: components["schemas"]["CommandInteger"];
+                blue: components["schemas"]["CommandInteger"];
+                green: components["schemas"]["CommandInteger"];
+                position: components["schemas"]["WheelItemPosition"];
+                red: components["schemas"]["CommandInteger"];
+                wheel: number;
+            };
+        } | {
+            /** @description When pressing `bind` with the wheel item in `wheel` at `position` selected, lookup and perform `action` */
+            SetWheelItemAction: {
+                action: number;
+                bind: components["schemas"]["WheelBind"];
+                position: components["schemas"]["WheelItemPosition"];
+                wheel: number;
+            };
+        } | {
+            /** @description Remove the wheel item in `wheel` at `position` */
+            DestroyWheelItem: {
+                position: components["schemas"]["WheelItemPosition"];
+                wheel: number;
+            };
+        } | {
+            /** @description Switch the active wheel to `wheel` */
+            SwitchWheel: {
+                wheel: number;
+            };
+        } | {
+            /** @description If a `wheel` is `pinned`, it should remain the active wheel after closing and reopening the randomizer wheel */
+            SetWheelPinned: {
+                pinned: components["schemas"]["CommandBoolean"];
+                wheel: number;
+            };
+        } | {
+            /** @description Reset all wheel items to their default state */
+            ResetAllWheels: Record<string, never>;
+        } | {
+            /** @description Sets the hint text for the trial using `uber_identifier` to `text` */
+            SetTrialHint: {
+                text: components["schemas"]["CommandString"];
+                uber_identifier: components["schemas"]["UberIdentifier"];
+            };
+        } | {
+            /** @description Closes any open menu screen */
+            CloseMenu: Record<string, never>;
+        } | {
+            /** @description Closes the weapon wheel */
+            CloseWeaponWheel: Record<string, never>;
+        } | {
+            /** @description Write `message` into the client log */
+            DebugLog: {
+                message: components["schemas"]["CommandString"];
+            };
+        } | {
+            DealEnemyDamage: {
+                amount: components["schemas"]["CommandFloat"];
+            };
+        } | {
+            ForceDealEnemyDamage: {
+                amount: components["schemas"]["CommandFloat"];
+            };
+        };
+        /** @description Command which returns [`Zone`] */
+        CommandZone: {
+            /** @description Return `value` */
+            Constant: {
+                value: components["schemas"]["Zone"];
+            };
+        } | {
+            /** @description Execute `commands`, then use `last` for the return value */
+            Multi: {
+                commands: components["schemas"]["CommandVoid"][];
+                last: components["schemas"]["CommandZone"];
+            };
+        } | {
+            /** @description Return the zone Ori is currently in */
+            CurrentZone: Record<string, never>;
+        } | {
+            /** @description Return the zone currently selected in the map */
+            CurrentMapZone: Record<string, never>;
         };
         /**
          * @description Comparison Operations performed on numbers
@@ -733,6 +1518,11 @@ export interface components {
             to: number;
         };
         /**
+         * @description Coordinate system of message boxes
+         * @enum {integer}
+         */
+        CoordinateSystem: 0 | 1 | 2;
+        /**
          * @description The logical difficulty to expect in a seed
          *
          *     This represents how demanding the required core movement should be
@@ -751,11 +1541,32 @@ export interface components {
             requirement: components["schemas"]["Requirement"];
             target: string;
         };
+        /**
+         * @description Available slots for [`Equipment`] (the stuff displayed at the bottom between your energy and health)
+         * @enum {integer}
+         */
+        EquipSlot: 0 | 1 | 2;
+        /**
+         * @description Abilities which have to be equipped before use
+         * @enum {integer}
+         */
+        Equipment: 1000 | 1001 | 1002 | 1003 | 1004 | 1005 | 2000 | 2001 | 2002 | 2003 | 2004 | 2005 | 2006 | 2007 | 2008 | 2009 | 2010 | 2011 | 2012 | 2013 | 2014 | 2015 | 2016 | 2017 | 2018 | 2019 | 3000 | 3001 | 3002 | 3003 | 3004 | 3005 | 4000 | 4001 | 4002 | 4003 | 4004 | 4005 | 4006 | 4007 | 4008 | 4009;
+        /**
+         * @description Generic icons
+         * @enum {integer}
+         */
+        GenericIcon: 0;
         Graph: {
             default_entrance_connections: components["schemas"]["HashMap_i32_i32"];
+            extern_requirements: components["schemas"]["Requirement"][];
             nodes: components["schemas"]["Node"][];
         };
         GreaterOneU8: number;
+        /**
+         * @description Icons used in the Grom shop
+         * @enum {integer}
+         */
+        GromIcon: 0 | 1 | 2 | 3 | 4 | 5 | 6;
         HashMap_String_ConfigValue: {
             [key: string]: {
                 default: components["schemas"]["ConfigDefault"];
@@ -768,13 +1579,12 @@ export interface components {
                 [key: string]: string;
             };
         };
-        HashMap_String_Metadata: {
+        HashMap_String_SnippetInfo: {
             [key: string]: {
-                category?: string | null;
-                config: components["schemas"]["HashMap_String_ConfigValue"];
-                description?: string | null;
-                hidden: boolean;
-                name?: string | null;
+                /** @description Metadata defined in the snippet */
+                metadata: components["schemas"]["Metadata"];
+                /** @description Where this snippet came from */
+                origin: components["schemas"]["SnippetOrigin"];
             };
         };
         HashMap_String_Source: {
@@ -818,9 +1628,36 @@ export interface components {
         };
         HashSet_String: string[];
         HashSet_Trick: ("SwordSentryJump" | "HammerSentryJump" | "ShurikenBreak" | "SentryBreak" | "HammerBreak" | "SpearBreak" | "SentryBurn" | "RemoveKillPlane" | "LaunchSwap" | "SentrySwap" | "FlashSwap" | "BlazeSwap" | "WaveDash" | "GrenadeJump" | "SwordJump" | "AerialHammerJump" | "GlideJump" | "GlideHammerJump" | "CoyoteHammerJump" | "WallHammerJump" | "GroundedHammerJump" | "HammerExtension" | "GrenadeRedirect" | "SentryRedirect" | "PauseFloat" | "SpearJump" | "GlideBashChain" | "DoubleJumpBashChain" | "DashBashChain" | "LaunchBashChain" | "Unpopular")[];
+        /**
+         * @description Horizontal anchor of message boxes
+         *
+         *     Note that message boxes are bigger than their visual background, so this can produce unexpected results
+         * @enum {integer}
+         */
+        HorizontalAnchor: 0 | 1 | 2;
+        /** @description Icons which can be used in shops or wheels */
+        Icon: {
+            Generic: components["schemas"]["GenericIcon"];
+        } | {
+            Shard: components["schemas"]["Shard"];
+        } | {
+            Equipment: components["schemas"]["Equipment"];
+        } | {
+            Opher: components["schemas"]["OpherIcon"];
+        } | {
+            Lupo: components["schemas"]["LupoIcon"];
+        } | {
+            Grom: components["schemas"]["GromIcon"];
+        } | {
+            Tuley: components["schemas"]["TuleyIcon"];
+        } | {
+            File: string;
+        } | {
+            Bundle: string;
+        };
         /** @description Information about a pickup location */
         LocDataEntry: {
-            /** @description Unique identifier for this pickup location which is used in `areas.wotw` */
+            /** @description Unique identifier for this pickup location which is used in `paths.wotwl` */
             identifier: string;
             /** @description Vanilla map icon */
             map_icon: components["schemas"]["MapIcon"];
@@ -840,6 +1677,16 @@ export interface components {
             /** @description Map zone containing this pickup location */
             zone: components["schemas"]["Zone"];
         };
+        /**
+         * @default INFO
+         * @enum {string}
+         */
+        LogLevelFilter: "OFF" | "ERROR" | "WARN" | "INFO" | "DEBUG" | "TRACE";
+        /**
+         * @description Icons used in the Lupo shop
+         * @enum {integer}
+         */
+        LupoIcon: 0 | 1 | 2;
         /**
          * @description Icons used in the map
          * @enum {integer}
@@ -882,6 +1729,109 @@ export interface components {
         } | {
             LogicalState: string;
         };
+        /** @description Select data from a [`LocDataEntry`] */
+        NodeSummary: {
+            /** @description The identifier */
+            identifier: string;
+            position?: null | components["schemas"]["Position"];
+            /** @description The [`Zone`] */
+            zone: components["schemas"]["Zone"];
+        };
+        /** @description An Operation performed on two values */
+        Operation_CommandBoolean_EqualityComparator: {
+            left: components["schemas"]["CommandBoolean"];
+            /**
+             * @description Comparison Operations performed on strings or booleans
+             * @enum {integer}
+             */
+            operator: 0 | 1;
+            right: components["schemas"]["CommandBoolean"];
+        };
+        /** @description An Operation performed on two values */
+        Operation_CommandBoolean_LogicOperator: {
+            left: components["schemas"]["CommandBoolean"];
+            /**
+             * @description Logic Operations performed on booleans
+             * @enum {integer}
+             */
+            operator: 0 | 1;
+            right: components["schemas"]["CommandBoolean"];
+        };
+        /** @description An Operation performed on two values */
+        Operation_CommandFloat_ArithmeticOperator: {
+            left: components["schemas"]["CommandFloat"];
+            /**
+             * @description Arithmetic Operations performed on numbers
+             * @enum {integer}
+             */
+            operator: 0 | 1 | 2 | 3;
+            right: components["schemas"]["CommandFloat"];
+        };
+        /** @description An Operation performed on two values */
+        Operation_CommandFloat_Comparator: {
+            left: components["schemas"]["CommandFloat"];
+            /**
+             * @description Comparison Operations performed on numbers
+             * @enum {integer}
+             */
+            operator: 0 | 1 | 2 | 3 | 4 | 5;
+            right: components["schemas"]["CommandFloat"];
+        };
+        /** @description An Operation performed on two values */
+        Operation_CommandInteger_ArithmeticOperator: {
+            left: components["schemas"]["CommandInteger"];
+            /**
+             * @description Arithmetic Operations performed on numbers
+             * @enum {integer}
+             */
+            operator: 0 | 1 | 2 | 3;
+            right: components["schemas"]["CommandInteger"];
+        };
+        /** @description An Operation performed on two values */
+        Operation_CommandInteger_Comparator: {
+            left: components["schemas"]["CommandInteger"];
+            /**
+             * @description Comparison Operations performed on numbers
+             * @enum {integer}
+             */
+            operator: 0 | 1 | 2 | 3 | 4 | 5;
+            right: components["schemas"]["CommandInteger"];
+        };
+        /** @description An Operation performed on two values */
+        Operation_CommandString_Concatenator: {
+            left: components["schemas"]["CommandString"];
+            /**
+             * @description Concatenation performed on strings
+             * @enum {integer}
+             */
+            operator: 0;
+            right: components["schemas"]["CommandString"];
+        };
+        /** @description An Operation performed on two values */
+        Operation_CommandString_EqualityComparator: {
+            left: components["schemas"]["CommandString"];
+            /**
+             * @description Comparison Operations performed on strings or booleans
+             * @enum {integer}
+             */
+            operator: 0 | 1;
+            right: components["schemas"]["CommandString"];
+        };
+        /** @description An Operation performed on two values */
+        Operation_CommandZone_EqualityComparator: {
+            left: components["schemas"]["CommandZone"];
+            /**
+             * @description Comparison Operations performed on strings or booleans
+             * @enum {integer}
+             */
+            operator: 0 | 1;
+            right: components["schemas"]["CommandZone"];
+        };
+        /**
+         * @description Icons used in the Opher shop
+         * @enum {integer}
+         */
+        OpherIcon: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
         /** @description `x`/`y` position */
         Position: {
             /** Format: float */
@@ -948,16 +1898,18 @@ export interface components {
             /** @description List of logically relevant UberStates */
             identifiers: components["schemas"]["UberIdentifier"][];
         };
-        Requirement: "Free" | "Impossible" | {
+        Requirement: "Free" | "Impossible" | "NormalGameDifficulty" | {
             Difficulty: components["schemas"]["Difficulty"];
-        } | "NormalGameDifficulty" | {
+        } | {
             Trick: components["schemas"]["Trick"];
         } | {
+            State: number;
+        } | "Water" | {
             Skill: components["schemas"]["Skill"];
         } | {
-            EnergySkill: Record<string, never>[];
+            Shard: components["schemas"]["Shard"];
         } | {
-            NonConsumingEnergySkill: components["schemas"]["Skill"];
+            Teleporter: components["schemas"]["Teleporter"];
         } | {
             SpiritLight: number;
         } | {
@@ -965,28 +1917,15 @@ export interface components {
         } | {
             Keystone: number;
         } | {
-            Shard: components["schemas"]["Shard"];
-        } | {
-            Teleporter: components["schemas"]["Teleporter"];
-        } | "Water" | {
-            State: number;
+            /** Format: float */
+            Danger: number;
         } | {
             /** Format: float */
             Damage: number;
         } | {
-            /** Format: float */
-            Danger: number;
+            NonConsumingEnergySkill: components["schemas"]["Skill"];
         } | {
-            Combat: [
-                "Mantis" | "Slug" | "WeakSlug" | "BombSlug" | "CorruptSlug" | "SneezeSlug" | "ShieldSlug" | "Lizard" | "Bat" | "Hornbug" | "Skeeto" | "SmallSkeeto" | "Bee" | "Nest" | "Crab" | "SpinCrab" | "Tentacle" | "Balloon" | "Miner" | "MaceMiner" | "ShieldMiner" | "CrystalMiner" | "ShieldCrystalMiner" | "Sandworm" | "Spiderling" | "EnergyRefill",
-                number
-            ][];
-        } | {
-            /** Format: float */
-            Boss: number;
-        } | {
-            /** Format: float */
-            BreakWall: number;
+            EnergySkill: Record<string, never>[];
         } | {
             /** Format: float */
             ShurikenBreak: number;
@@ -994,15 +1933,46 @@ export interface components {
             /** Format: float */
             SentryBreak: number;
         } | {
+            Extern: number;
+        } | {
+            /** Format: float */
+            BreakWall: number;
+        } | {
+            /** Format: float */
+            Boss: number;
+        } | {
+            Combat: [
+                "Mantis" | "Slug" | "WeakSlug" | "BombSlug" | "CorruptSlug" | "SneezeSlug" | "ShieldSlug" | "Lizard" | "Bat" | "Hornbug" | "Skeeto" | "SmallSkeeto" | "Bee" | "Nest" | "Crab" | "SpinCrab" | "Tentacle" | "Balloon" | "Miner" | "MaceMiner" | "ShieldMiner" | "CrystalMiner" | "ShieldCrystalMiner" | "Sandworm" | "Spiderling" | "EnergyRefill",
+                number
+            ][];
+        } | {
             And: components["schemas"]["Requirement"][];
         } | {
             Or: components["schemas"]["Requirement"][];
+        };
+        /** @description Complete data to create a logic spoiler for the seed */
+        SeedSpoiler: {
+            /**
+             * @description For each world, all the entrance connections
+             *
+             *     If a world's list of entrance connections is empty, the entrances were not randomized
+             */
+            entrances: [
+                string,
+                string
+            ][][];
+            /** @description Each [`SpoilerGroup`] represents one "step" of placements */
+            groups: components["schemas"]["SpoilerGroup"][];
+            /** @description An ordered list describing the preplaced items */
+            preplacements: components["schemas"]["SpoilerPlacement"][];
+            /** @description Anchor identifier of all the spawn locations */
+            spawns: string[];
         };
         /**
          * @description Spirit Shards
          * @enum {integer}
          */
-        Shard: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47;
+        Shard: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 32 | 33 | 34 | 35 | 36 | 37 | 38 | 39 | 40 | 41 | 42 | 43 | 44 | 45 | 46 | 47;
         /**
          * @description Skills, sometimes also called Abilities
          *
@@ -1010,14 +1980,75 @@ export interface components {
          * @enum {integer}
          */
         Skill: 0 | 3 | 5 | 8 | 14 | 15 | 23 | 51 | 57 | 62 | 74 | 77 | 97 | 98 | 100 | 101 | 102 | 104 | 106 | 108 | 109 | 115 | 116 | 118 | 119 | 120 | 121;
+        /** @description Selection of relevant information about a snippet */
+        SnippetInfo: {
+            /** @description Metadata defined in the snippet */
+            metadata: components["schemas"]["Metadata"];
+            /** @description Where this snippet came from */
+            origin: components["schemas"]["SnippetOrigin"];
+        };
+        /**
+         * @description Origin of a snippet
+         * @enum {string}
+         */
+        SnippetOrigin: "ExecutableDir" | "UserDataDir";
+        /** @description Representation of a source file with the necessary information to display useful error messages. */
+        Source: {
+            /**
+             * @description The contents of the file, which will be referenced for better error messages.
+             *
+             *     This should be the same contents you were parsing, otherwise error messages will reference arbitrary spans in your source and possibly panic.
+             */
+            content: string;
+            /**
+             * @description An identifier to be used in error messages that should allow the reader to determine which file the error originated from.
+             *
+             *     This might be the file path relative to the workspace root, or just the filename.
+             */
+            id: string;
+        };
         /** @description The Spawn location, which may either be fixed or randomly decided during seed generation */
         Spawn: {
             /** @description Spawn in a specific location, described by the anchor name from the logic file */
             Set: string;
         } | "Random" | "FullyRandom";
+        SpawnAnchors: {
+            /** @description List of spawnable anchor identifiers */
+            identifiers: string[];
+            /** @description Indices into `identifiers` for viable moki random teleporter spawns */
+            mokiTeleporters: number[];
+            /** @description Indices into `identifiers` for viable random teleporter spawns above moki */
+            teleporters: number[];
+        };
+        /** @description One "step" of placements in a [`SeedSpoiler`] */
+        SpoilerGroup: {
+            /** @description The set of items that were placed as forced progression, if any */
+            forcedItems: components["schemas"]["SpoilerItem"][];
+            /** @description An ordered list describing the placed items */
+            placements: components["schemas"]["SpoilerPlacement"][];
+            /** @description The new reachables for each world */
+            reachable: components["schemas"]["NodeSummary"][][];
+        };
+        SpoilerItem: {
+            /** @description The placed command */
+            command: components["schemas"]["CommandVoid"];
+            /** @description The readable name of the placed item, which usually varies from the `command`s [`Display`] implementation */
+            name: string;
+        };
+        /** @description One item placed on one location */
+        SpoilerPlacement: {
+            /** @description The placed item */
+            item: components["schemas"]["SpoilerItem"];
+            /** @description The placement location */
+            location: components["schemas"]["NodeSummary"];
+            /** @description The "sending" world */
+            originWorldIndex: number;
+            /** @description The "receiving" world */
+            targetWorldIndex: number;
+        };
         /** @description Information about an obtainable world state */
         StateDataEntry: {
-            /** @description Unique identifier for this world state which is used in `areas.wotw` */
+            /** @description Unique identifier for this world state which is used in `paths.wotwl` */
             identifier: string;
             /**
              * @description `UberIdentifier` where this world state is stored
@@ -1030,6 +2061,15 @@ export interface components {
              * @description `None` if `uber_identifier` holds a boolean value. Otherwise, has the minimum integer value at which this world state is completed
              */
             value?: number | null;
+        };
+        StringOrPlaceholder: {
+            Value: string;
+        } | {
+            ZoneOfPlaceholder: components["schemas"]["UberIdentifier"][];
+        } | {
+            ItemOnPlaceholder: components["schemas"]["Trigger"];
+        } | {
+            CountInZonePlaceholder: Record<string, never>[];
         };
         /**
          * @description Spirit Wells which exist in the base game
@@ -1050,6 +2090,29 @@ export interface components {
             min_difficulty: components["schemas"]["Difficulty"];
             name: components["schemas"]["Trick"];
         };
+        Tricks: "All" | {
+            Some: components["schemas"]["HashSet_Trick"];
+        };
+        /** @description Trigger for an [`Event`] */
+        Trigger: {
+            /** @description Specific client events */
+            ClientEvent: components["schemas"]["ClientEvent"];
+        } | {
+            /** @description Trigger on every change to an UberIdentifier */
+            Binding: components["schemas"]["UberIdentifier"];
+        } | {
+            /** @description Trigger when the condition changes from `false` to `true` */
+            Condition: components["schemas"]["TriggerCondition"];
+        };
+        TriggerCondition: {
+            condition: components["schemas"]["CommandBoolean"];
+            id?: number | null;
+        };
+        /**
+         * @description Icons used in the Tuley shop
+         * @enum {integer}
+         */
+        TuleyIcon: 0 | 1 | 2 | 3 | 4 | 5;
         UberIdentifier: [
             number,
             number
@@ -1063,7 +2126,7 @@ export interface components {
          *
          *     ```
          *     # use wotw_seedgen_data::assets::UniversePreset;
-         *     use wotw_seedgen_data::{assets::{NoPresetAccess, UniversePresetSettings, WorldPresetSettings}, Spawn, UniverseSettings};
+         *     use wotw_seedgen_data::{assets::{NoAccess, UniversePresetSettings, WorldPresetSettings}, Spawn, UniverseSettings};
          *
          *     let mut universe_settings = UniverseSettings::new("seed".to_string());
          *
@@ -1081,7 +2144,7 @@ export interface components {
          *         }
          *     };
          *
-         *     preset.apply(&mut universe_settings, &NoPresetAccess);
+         *     preset.apply(&mut universe_settings, &NoAccess);
          *     assert_eq!(universe_settings.world_settings[0].spawn, Spawn::Random);
          *     ```
          *
@@ -1147,6 +2210,21 @@ export interface components {
             worldSettings: components["schemas"]["WorldSettings"][];
         };
         /**
+         * @description Vertical anchor of message boxes
+         * @enum {integer}
+         */
+        VerticalAnchor: 0 | 1 | 2;
+        /**
+         * @description Possible input configurations for an item in a weapon wheel like menu
+         * @enum {integer}
+         */
+        WheelBind: 0 | 1 | 2;
+        /**
+         * @description Positioning in a weapon wheel like menu
+         * @enum {integer}
+         */
+        WheelItemPosition: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
+        /**
          * @description A collection of settings that can be applied to one world of existing settings
          *
          *     Use [`WorldPreset::apply`] to merge a `WorldPreset` into existing [`WorldSettings`]
@@ -1155,7 +2233,7 @@ export interface components {
          *
          *     ```
          *     # use wotw_seedgen_data::assets::WorldPreset;
-         *     use wotw_seedgen_data::{assets::{NoPresetAccess, WorldPresetSettings}, Spawn, WorldSettings};
+         *     use wotw_seedgen_data::{assets::{NoAccess, WorldPresetSettings}, Spawn, WorldSettings};
          *
          *     let mut world_settings = WorldSettings::default();
          *
@@ -1168,7 +2246,7 @@ export interface components {
          *         }
          *     };
          *
-         *     world_preset.apply(&mut world_settings, &NoPresetAccess);
+         *     world_preset.apply(&mut world_settings, &NoAccess);
          *     assert_eq!(world_settings.spawn, Spawn::Random);
          *     ```
          *
@@ -1182,6 +2260,11 @@ export interface components {
             assetsVersion?: number;
             info?: null | components["schemas"]["PresetInfo"];
         };
+        WorldPresetApplyBody: {
+            /** @description Presets to apply */
+            presets: components["schemas"]["WorldPreset"][];
+            settings?: null | components["schemas"]["WorldSettings"];
+        };
         /**
          * @description Settings to apply to [`WorldSettings`]
          *
@@ -1192,33 +2275,58 @@ export interface components {
             /** @description Logically assume hard in-game difficulty */
             hard?: boolean | null;
             includes?: null | components["schemas"]["HashSet_String"];
+            /** @description Randomize settings before applying further changes */
+            randomSettings?: boolean | null;
             randomizeEntrances?: null | components["schemas"]["GreaterOneU8"];
             snippetConfig?: null | components["schemas"]["HashMap_String_HashMap_String_String"];
             /** @description Names of snippets to use */
             snippets?: string[] | null;
             spawn?: null | components["schemas"]["Spawn"];
-            tricks?: null | components["schemas"]["HashSet_Trick"];
+            tricks?: null | components["schemas"]["Tricks"];
         };
         /**
          * @description Seed settings bound to a specific world of a seed
          *
          *     See the [Multiplayer wiki page](https://wiki.orirando.com/features/multiplayer) for an explanation of worlds
+         * @default {
+         *       "difficulty": "Moki",
+         *       "hard": false,
+         *       "inlineSnippets": {},
+         *       "randomizeEntrances": null,
+         *       "snippetConfig": {},
+         *       "snippets": [],
+         *       "spawn": {
+         *         "Set": "MarshSpawn.Main"
+         *       },
+         *       "tricks": []
+         *     }
          */
         WorldSettings: {
-            /** @description Logically expected difficulty */
+            /** @default Moki */
             difficulty: components["schemas"]["Difficulty"];
-            /** @description Logically assume hard in-game difficulty */
+            /**
+             * @description Logically assume hard in-game difficulty
+             * @default false
+             */
             hard: boolean;
-            /** @description Additional inline snippets that don't exist on the filesystem */
+            /** @default {} */
             inlineSnippets: components["schemas"]["HashMap_String_Source"];
-            randomizeEntrances?: null | components["schemas"]["GreaterOneU8"];
-            /** @description Configuration to pass to snippets */
+            /** @default null */
+            randomizeEntrances: null | components["schemas"]["GreaterOneU8"];
+            /** @default {} */
             snippetConfig: components["schemas"]["HashMap_String_HashMap_String_String"];
-            /** @description Names of snippets to use */
+            /**
+             * @description Names of snippets to use
+             * @default []
+             */
             snippets: string[];
-            /** @description Spawn destination */
+            /**
+             * @default {
+             *       "Set": "MarshSpawn.Main"
+             *     }
+             */
             spawn: components["schemas"]["Spawn"];
-            /** @description Logically expected tricks */
+            /** @default [] */
             tricks: components["schemas"]["HashSet_Trick"];
         };
         /**
@@ -1235,32 +2343,59 @@ export interface components {
     headers: never;
     pathItems: never;
 }
+export type Alignment = components['schemas']['Alignment'];
 export type Anchor = components['schemas']['Anchor'];
-export type ApplyBody = components['schemas']['ApplyBody'];
+export type ClientEvent = components['schemas']['ClientEvent'];
+export type CommandBoolean = components['schemas']['CommandBoolean'];
+export type CommandFloat = components['schemas']['CommandFloat'];
+export type CommandInteger = components['schemas']['CommandInteger'];
+export type CommandString = components['schemas']['CommandString'];
+export type CommandVoid = components['schemas']['CommandVoid'];
+export type CommandZone = components['schemas']['CommandZone'];
 export type Comparator = components['schemas']['Comparator'];
 export type ConfigDefault = components['schemas']['ConfigDefault'];
 export type Connection = components['schemas']['Connection'];
+export type CoordinateSystem = components['schemas']['CoordinateSystem'];
 export type Difficulty = components['schemas']['Difficulty'];
 export type DifficultyInfo = components['schemas']['DifficultyInfo'];
 export type Entrance = components['schemas']['Entrance'];
+export type EquipSlot = components['schemas']['EquipSlot'];
+export type Equipment = components['schemas']['Equipment'];
+export type GenericIcon = components['schemas']['GenericIcon'];
 export type Graph = components['schemas']['Graph'];
 export type GreaterOneU8 = components['schemas']['GreaterOneU8'];
+export type GromIcon = components['schemas']['GromIcon'];
 export type HashMapStringConfigValue = components['schemas']['HashMap_String_ConfigValue'];
 export type HashMapStringHashMapStringString = components['schemas']['HashMap_String_HashMap_String_String'];
-export type HashMapStringMetadata = components['schemas']['HashMap_String_Metadata'];
+export type HashMapStringSnippetInfo = components['schemas']['HashMap_String_SnippetInfo'];
 export type HashMapStringSource = components['schemas']['HashMap_String_Source'];
 export type HashMapStringUniversePreset = components['schemas']['HashMap_String_UniversePreset'];
 export type HashMapStringWorldPreset = components['schemas']['HashMap_String_WorldPreset'];
 export type HashMapI32I32 = components['schemas']['HashMap_i32_i32'];
 export type HashSetString = components['schemas']['HashSet_String'];
 export type HashSetTrick = components['schemas']['HashSet_Trick'];
+export type HorizontalAnchor = components['schemas']['HorizontalAnchor'];
+export type Icon = components['schemas']['Icon'];
 export type LocDataEntry = components['schemas']['LocDataEntry'];
+export type LogLevelFilter = components['schemas']['LogLevelFilter'];
+export type LupoIcon = components['schemas']['LupoIcon'];
 export type MapIcon = components['schemas']['MapIcon'];
 export type MapIconCondition = components['schemas']['MapIconCondition'];
 export type MapIconInfo = components['schemas']['MapIconInfo'];
 export type MapIcons = components['schemas']['MapIcons'];
 export type Metadata = components['schemas']['Metadata'];
 export type Node = components['schemas']['Node'];
+export type NodeSummary = components['schemas']['NodeSummary'];
+export type OperationCommandBooleanEqualityComparator = components['schemas']['Operation_CommandBoolean_EqualityComparator'];
+export type OperationCommandBooleanLogicOperator = components['schemas']['Operation_CommandBoolean_LogicOperator'];
+export type OperationCommandFloatArithmeticOperator = components['schemas']['Operation_CommandFloat_ArithmeticOperator'];
+export type OperationCommandFloatComparator = components['schemas']['Operation_CommandFloat_Comparator'];
+export type OperationCommandIntegerArithmeticOperator = components['schemas']['Operation_CommandInteger_ArithmeticOperator'];
+export type OperationCommandIntegerComparator = components['schemas']['Operation_CommandInteger_Comparator'];
+export type OperationCommandStringConcatenator = components['schemas']['Operation_CommandString_Concatenator'];
+export type OperationCommandStringEqualityComparator = components['schemas']['Operation_CommandString_EqualityComparator'];
+export type OperationCommandZoneEqualityComparator = components['schemas']['Operation_CommandZone_EqualityComparator'];
+export type OpherIcon = components['schemas']['OpherIcon'];
 export type Position = components['schemas']['Position'];
 export type PresetGroup = components['schemas']['PresetGroup'];
 export type PresetInfo = components['schemas']['PresetInfo'];
@@ -1270,13 +2405,26 @@ export type Refill = components['schemas']['Refill'];
 export type RefillValue = components['schemas']['RefillValue'];
 export type RelevantUberStates = components['schemas']['RelevantUberStates'];
 export type Requirement = components['schemas']['Requirement'];
+export type SeedSpoiler = components['schemas']['SeedSpoiler'];
 export type Shard = components['schemas']['Shard'];
 export type Skill = components['schemas']['Skill'];
+export type SnippetInfo = components['schemas']['SnippetInfo'];
+export type SnippetOrigin = components['schemas']['SnippetOrigin'];
+export type Source = components['schemas']['Source'];
 export type Spawn = components['schemas']['Spawn'];
+export type SpawnAnchors = components['schemas']['SpawnAnchors'];
+export type SpoilerGroup = components['schemas']['SpoilerGroup'];
+export type SpoilerItem = components['schemas']['SpoilerItem'];
+export type SpoilerPlacement = components['schemas']['SpoilerPlacement'];
 export type StateDataEntry = components['schemas']['StateDataEntry'];
+export type StringOrPlaceholder = components['schemas']['StringOrPlaceholder'];
 export type Teleporter = components['schemas']['Teleporter'];
 export type Trick = components['schemas']['Trick'];
 export type TrickInfo = components['schemas']['TrickInfo'];
+export type Tricks = components['schemas']['Tricks'];
+export type Trigger = components['schemas']['Trigger'];
+export type TriggerCondition = components['schemas']['TriggerCondition'];
+export type TuleyIcon = components['schemas']['TuleyIcon'];
 export type UberIdentifier = components['schemas']['UberIdentifier'];
 export type UniversePreset = components['schemas']['UniversePreset'];
 export type UniversePresetApplyBody = components['schemas']['UniversePresetApplyBody'];
@@ -1285,7 +2433,11 @@ export type UniversePresetApplyBodySettingsFull = components['schemas']['Univers
 export type UniversePresetApplyBodySettingsSeed = components['schemas']['UniversePresetApplyBodySettingsSeed'];
 export type UniversePresetSettings = components['schemas']['UniversePresetSettings'];
 export type UniverseSettings = components['schemas']['UniverseSettings'];
+export type VerticalAnchor = components['schemas']['VerticalAnchor'];
+export type WheelBind = components['schemas']['WheelBind'];
+export type WheelItemPosition = components['schemas']['WheelItemPosition'];
 export type WorldPreset = components['schemas']['WorldPreset'];
+export type WorldPresetApplyBody = components['schemas']['WorldPresetApplyBody'];
 export type WorldPresetSettings = components['schemas']['WorldPresetSettings'];
 export type WorldSettings = components['schemas']['WorldSettings'];
 export type Zone = components['schemas']['Zone'];

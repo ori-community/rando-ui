@@ -147,7 +147,7 @@
       "gladesProjectsBeautifyBuilt",
     ] as const
 
-    return !projects.some(project => (props.trackedValues[project] ?? 0.0) > 0.0)
+    return projects.every(project => (props.trackedValues[project] ?? 0.0) > 0.0)
   })
 
 </script>

@@ -48,6 +48,8 @@ if (!app.requestSingleInstanceLock()) {
     },
   ])
 
+  app.setAsDefaultProtocolClient(DEFAULT_PROTOCOL)
+
   const createWindow = async () => {
     if (fs.existsSync(getTemporaryUserDataPath())) {
       try {

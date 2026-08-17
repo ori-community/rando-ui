@@ -38,6 +38,7 @@ export type Settings = {
   ValidateProxyModloader: boolean,
   GameBinaryPath: string,
   SteamBinaryPath: string,
+  LastUsedVersion: string,
 }
 
 export type SettingKey = keyof Settings

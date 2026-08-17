@@ -7,6 +7,7 @@ import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
 import {SettingKey, Settings} from "@shared/types/settings"
 import {LauncherService} from "@launcher/services/LauncherService"
 import {RandoIPCService} from "@launcher/services/RandoIPCService"
+import {UpdateService} from "@launcher/services/UpdateService"
 
 type SettingsEvent = {
   /** Emitted when a single setting changed */
@@ -51,7 +52,7 @@ export class SettingsService {
   /**
    * Returns the default settings values.
    */
-  public static getDefaultSettings(): Settings {
+  public static async getDefaultSettings(): Promise<Settings> {
     const localTrackerInitialWindowRect = LocalTrackerService.getInitialWindowRect()
 
     return {
@@ -94,6 +95,7 @@ export class SettingsService {
       ValidateProxyModloader: true,
       GameBinaryPath: SettingsService.getDefaultGameBinaryPath(),
       SteamBinaryPath: SettingsService.getDefaultSteamBinaryPath(),
+      LastUsedVersion: await UpdateService.getVersion()
     }
   }
 
@@ -105,7 +107,7 @@ export class SettingsService {
    */
   private async loadSettingsToCache() {
     const settingsFilePath = getRandomizerUserDataPath("settings.json")
-    let settingsObject: Settings = SettingsService.getDefaultSettings()
+    let settingsObject: Settings = await SettingsService.getDefaultSettings()
 
     if (fs.existsSync(settingsFilePath)) {
       const settingsContent = await fs.promises.readFile(settingsFilePath, {encoding: "utf-8"})
@@ -115,6 +117,17 @@ export class SettingsService {
     }
 
     this.settingsCache = {...settingsObject}
+
+    const currentVersion = await UpdateService.getVersion()
+    if (settingsObject.LastUsedVersion !== currentVersion) {
+      log.info(`Migrating from ${settingsObject.LastUsedVersion} to ${currentVersion}`)
+
+      // Run migrations here...
+
+      this.settingsCache.LastUsedVersion = currentVersion
+      await this.flushSettings()
+    }
+
     log.info("Settings loaded")
 
     this.events.emit("settingsLoaded", await this.getSettings())

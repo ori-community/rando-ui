@@ -1,4 +1,5 @@
 import axios from "axios"
+import type {SemVer} from "semver";
 import semver from "semver"
 
 export type Release = {
@@ -34,6 +35,7 @@ type GitHubRelease = {
 let fetchedReleases = false
 const releases = ref<Release[] | null>(null)
 const isFetchingReleases = ref(false)
+const currentVersion = ref<SemVer | null>(null)
 
 async function fetchReleases() {
   isFetchingReleases.value = true
@@ -42,7 +44,7 @@ async function fetchReleases() {
   const githubReleases: GitHubRelease[] = (await axios.get(runtimeConfig.public.releasesUrl)).data
   const electronApi = useElectronApi()
   const currentVersionString = await electronApi?.updater.getVersion.query() ?? null
-  const currentVersion = currentVersionString === null ? null : semver.parse(currentVersionString)
+  currentVersion.value = currentVersionString === null ? null : semver.parse(currentVersionString)
 
   releases.value = githubReleases
     .map((release): Release | null => {
@@ -60,9 +62,9 @@ async function fetchReleases() {
         return null
       }
 
-      const semverComparison = currentVersion === null
+      const semverComparison = currentVersion.value === null
         ? null
-        : semver.compare(version, currentVersion)
+        : semver.compare(version, currentVersion.value)
 
       return {
         version: release.name,
@@ -100,8 +102,10 @@ export function useReleases() {
       .catch(error => console.error(error))
   }
 
-  const settingsStore = useSettingsStore()
-  const includePrereleases = computed(() => settingsStore.UpdateToPrereleaseVersions)
+  const devtoolsStore = useDevtoolsStore()
+  const includePrereleases = computed(() => {
+    return !!currentVersion.value?.prerelease.length || devtoolsStore.forceDisplayPrereleaseVersions
+  })
   const availableReleases = computed(() => {
     if (releases.value === null) {
       return null
@@ -115,5 +119,5 @@ export function useReleases() {
   })
   const availableUpdate = computed(() => availableReleases.value?.find(r => r.isNew) ?? null)
 
-  return {releases, availableReleases, availableUpdate, isFetchingReleases}
+  return {releases, availableReleases, availableUpdate, includePrereleases, isFetchingReleases}
 }

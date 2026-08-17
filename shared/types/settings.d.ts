@@ -13,7 +13,6 @@ export type Settings = {
   FunnyMoney: boolean,
   InvertFastSwim: boolean,
   LockCursor: boolean,
-  UpdateToPrereleaseVersions: boolean,
   ShowStatsAfterFinish: boolean,
   ShowAllSecrets: boolean,
   DisableAutoAim: boolean,

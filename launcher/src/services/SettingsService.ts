@@ -70,7 +70,6 @@ export class SettingsService {
       FunnyMoney: false,
       InvertFastSwim: false,
       LockCursor: false,
-      UpdateToPrereleaseVersions: false,
       ShowStatsAfterFinish: true,
       ShowAllSecrets: true,
       DisableAutoAim: false,

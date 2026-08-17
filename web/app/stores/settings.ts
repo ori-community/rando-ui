@@ -26,7 +26,6 @@ export const useSettingsStore = defineStore("settings", () => {
     FunnyMoney: ref<boolean>(false),
     InvertFastSwim: ref<boolean>(false),
     LockCursor: ref<boolean>(false),
-    UpdateToPrereleaseVersions: ref<boolean>(false),
     ShowStatsAfterFinish: ref<boolean>(false),
     ShowAllSecrets: ref<boolean>(false),
     DisableAutoAim: ref<boolean>(false),

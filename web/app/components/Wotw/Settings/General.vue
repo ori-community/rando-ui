@@ -212,9 +212,10 @@
         <template v-if="settings.DeveloperMode.value">
           <h3>Developer Tools</h3>
           <rando-settings-checkbox
-            v-model="settings.UpdateToPrereleaseVersions.value"
-            label="Update to prerelease versions"
-            description="Search for and ask to update to unreleased unstable versions"
+            v-model="showPrereleaseVersionsCheckboxState"
+            :disabled="includePrereleases && !devtoolsStore.forceDisplayPrereleaseVersions"
+            label="Show prerelease versions"
+            description="Allow updating to prerelease versions until the launcher is closed"
           />
 
           <!-- TODO post Update handling
@@ -259,11 +260,22 @@
   const settingsStore = useSettingsStore()
   const settings = storeToRefs(settingsStore)
   const electronApi = useElectronApi()
+  const devtoolsStore = useDevtoolsStore()
+  const {includePrereleases} = useReleases()
 
   const developerSettingsContainer = useTemplateRef('developerSettingsContainer')
   const debugStreak = ref(0)
   const ctrlPressed = ref(false)
   const localTrackerPositionReset = ref(false)
+
+  const showPrereleaseVersionsCheckboxState = computed({
+    get() {
+      return includePrereleases.value
+    },
+    set(value) {
+      devtoolsStore.forceDisplayPrereleaseVersions = value
+    }
+  })
 
   onMounted(() => {
     document.addEventListener('keyup', onKeyUp)
@@ -288,7 +300,6 @@
   const disableDeveloperTools = (async () => {
     settings.DeveloperMode.value = false
     settings.ServerHost.value = 'wotw.orirando.com'
-    settings.UpdateToPrereleaseVersions.value = false
     settings.DebugControls.value = false
     settings.ServerTLS.value = true
   })

@@ -2,7 +2,7 @@
   <v-app>
     <div id="backdrop" class="backdrop"/>
 
-    <wotw-launcher-helper-dialogs/>
+    <wotw-launcher-helper-dialogs v-if="isElectron" />
 
     <!--    TODO always show toolbar / keep visible on scroll -->
     <v-container class="toolbar">
@@ -23,6 +23,7 @@
 
 <script lang="ts" setup>
   const snackbarStore = useSnackbarStore()
+  const isElectron = useIsElectron()
 </script>
 
 <style lang="scss" scoped>

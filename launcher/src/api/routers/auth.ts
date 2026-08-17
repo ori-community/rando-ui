@@ -2,12 +2,13 @@ import {publicProcedure, router} from "@launcher/api/trpc"
 import {z} from "zod"
 import {app, BrowserWindow, shell} from "electron"
 import fs from "fs"
-import {getRandomizerUserDataPath, getUserDataPath} from "@launcher/paths"
+import {getRandomizerUserDataPath} from "@launcher/paths"
+import {DEFAULT_PROTOCOL} from "@shared/utils/protocol"
 
 export const auth = router({
   /**
    * Starts the OAuth2 authentication flow.
-   * If this launcher is set as the default handler for the ori-rando://
+   * If this launcher is set as the default handler for the <DEFAULT_PROTOCOL>://
    * protocol, it opens the login page in the default browser.
    * If not, or `forceWindowLogin` is true, opens the login page in
    * an embedded window.
@@ -18,8 +19,8 @@ export const auth = router({
       forceWindowLogin: z.boolean().optional(),
     }))
     .query(async ({input}) => {
-      if (app.isDefaultProtocolClient("ori-rando") && !input.forceWindowLogin) {
-        await shell.openExternal(`${input.apiBaseUrl}/login?redirect=ori-rando://authenticate`)
+      if (app.isDefaultProtocolClient(DEFAULT_PROTOCOL) && !input.forceWindowLogin) {
+        await shell.openExternal(`${input.apiBaseUrl}/login?redirect=${DEFAULT_PROTOCOL}://authenticate`)
       } else {
         const loginWindow = new BrowserWindow({
           width: 800,
@@ -31,7 +32,7 @@ export const auth = router({
           },
         })
 
-        await loginWindow.loadURL(`${input.apiBaseUrl}/login?redirect=ori-rando://authenticate`)
+        await loginWindow.loadURL(`${input.apiBaseUrl}/login?redirect=${DEFAULT_PROTOCOL}://authenticate`)
 
         return await new Promise<string>((resolve, reject) => {
           loginWindow.on("close", reject)
@@ -39,7 +40,7 @@ export const auth = router({
           loginWindow.webContents.on("will-redirect", (event, urlString) => {
             const url = new URL(urlString)
 
-            if (url.protocol === "ori-rando:") {
+            if (url.protocol === `${DEFAULT_PROTOCOL}:`) {
               event.preventDefault()
               resolve(url.searchParams.get("jwt"))
               loginWindow.close()

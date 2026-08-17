@@ -19,6 +19,7 @@ import {LauncherService} from "@launcher/services/LauncherService"
 import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
 import {ToolsWindowService} from "@launcher/services/ToolsWindowService"
 import {SupportBundleService} from "@launcher/services/SupportBundleService"
+import {DEFAULT_PROTOCOL} from "@shared/utils/protocol"
 
 // Override session data path to have a clean app data directory.
 // Otherwise, Chromium will pollute it...
@@ -162,7 +163,7 @@ if (!app.requestSingleInstanceLock()) {
           // Maybe a URL?
           try {
             const url = new URL(lastArg)
-            if (url.protocol === "ori-rando:" && url.pathname.startsWith("/")) {
+            if (url.protocol === `${DEFAULT_PROTOCOL}:` && url.pathname.startsWith("/")) {
               if (process.env.NODE_ENV === "development") {
                 await mainWindow.loadURL(`http://localhost:3000${url.pathname}${url.search}${url.hash}`)
               } else {

@@ -172,6 +172,7 @@
   // import { applyTransparentWindowStyles, isOBS } from '~/assets/lib/obs'
   import {Proto} from "@shared/proto"
   import {useDevtoolsStore} from "~/stores/devtools"
+  import {DEFAULT_PROTOCOL} from "@shared/utils/protocol"
 
   const userStore = useUserStore()
   const isElectron = useIsElectron()
@@ -216,7 +217,7 @@
     return multiverse.value.spectators.some((s) => s.id === userStore.user?.id)
   })
   const launcherUrl = computed(() => {
-    return `ori-rando://game/${multiverse.value.id}`
+    return `${DEFAULT_PROTOCOL}://game/${multiverse.value.id}`
   })
   // const isBingoBoardOverlay = computed(() => {
   //   return route.query.isBingoBoardOverlay === "true"

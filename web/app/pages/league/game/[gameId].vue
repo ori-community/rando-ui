@@ -221,6 +221,7 @@
   import type {LeagueSeasonInfo, LeagueGameInfo, LeagueGameSubmissionInfo} from "@shared/types/league"
   import {useHead} from "#imports"
   import type {DataTableHeader} from "vuetify/framework"
+  import {DEFAULT_PROTOCOL} from "@shared/utils/protocol"
 
   const {axios, catchAxiosErrors} = useAxios()
   const route = useRoute()
@@ -270,7 +271,7 @@
   })
 
   const launcherUrl = computed(() => {
-    return `ori-rando://league-game/${leagueGame.value?.id}`
+    return `${DEFAULT_PROTOCOL}://league-game/${leagueGame.value?.id}`
   })
   const submissionHeaders = computed(() => {
     const headers: DataTableHeader[] = []

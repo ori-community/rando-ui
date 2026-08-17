@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-main class="content">
-      <v-container class="fill-height flex-column align-center justify-center">
+      <v-container class="fill-height d-flex flex-column align-center justify-center">
         <img alt="" src="@shared/images/ori_shy.png">
         <h1 class="mb-4">Something went oribly wrong.</h1>
 
@@ -24,9 +24,11 @@
         </v-btn>
         <v-expand-transition>
           <div v-if="showError" class="error-container">
-            <v-code class="error-code">{{ error.stack }}
-              <v-spacer/>
-              <v-btn class="mt-3 mb-1" @click="copyToClipboard">Copy to clipboard</v-btn>
+            <v-code class="error-code">
+              <v-btn class="float-right" icon variant="text" @click="copyToClipboard">
+                <v-icon>mdi-content-copy</v-icon>
+              </v-btn>
+              {{ error.stack }}
             </v-code>
           </div>
           <v-btn v-else variant="text" @click="showError = true">Show error</v-btn>

@@ -20,7 +20,7 @@ export const auth = router({
     }))
     .query(async ({input}) => {
       if (app.isDefaultProtocolClient(DEFAULT_PROTOCOL) && !input.forceWindowLogin) {
-        await shell.openExternal(`${input.apiBaseUrl}/login?redirect=${DEFAULT_PROTOCOL}://authenticate`)
+        await shell.openExternal(`${input.apiBaseUrl}/login?redirect=${DEFAULT_PROTOCOL}:///authenticate`)
       } else {
         const loginWindow = new BrowserWindow({
           width: 800,
@@ -32,7 +32,7 @@ export const auth = router({
           },
         })
 
-        await loginWindow.loadURL(`${input.apiBaseUrl}/login?redirect=${DEFAULT_PROTOCOL}://authenticate`)
+        await loginWindow.loadURL(`${input.apiBaseUrl}/login?redirect=${DEFAULT_PROTOCOL}:///authenticate`)
 
         return await new Promise<string>((resolve, reject) => {
           loginWindow.on("close", reject)

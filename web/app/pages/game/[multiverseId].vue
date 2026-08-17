@@ -217,7 +217,7 @@
     return multiverse.value.spectators.some((s) => s.id === userStore.user?.id)
   })
   const launcherUrl = computed(() => {
-    return `${DEFAULT_PROTOCOL}://game/${multiverse.value.id}`
+    return `${DEFAULT_PROTOCOL}:///game/${multiverse.value.id}`
   })
   // const isBingoBoardOverlay = computed(() => {
   //   return route.query.isBingoBoardOverlay === "true"

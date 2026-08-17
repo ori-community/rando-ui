@@ -271,7 +271,7 @@
   })
 
   const launcherUrl = computed(() => {
-    return `${DEFAULT_PROTOCOL}://league-game/${leagueGame.value?.id}`
+    return `${DEFAULT_PROTOCOL}:///league/game/${leagueGame.value?.id}`
   })
   const submissionHeaders = computed(() => {
     const headers: DataTableHeader[] = []

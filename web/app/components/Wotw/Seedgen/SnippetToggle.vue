@@ -21,7 +21,6 @@
     <template v-if="snippetHasConfig">
       <v-btn variant="plain" size="x-small" class="mx-1" icon @click="enableSnippetIfNotEnabled">
         <v-icon icon="mdi-tune" size="x-large" />
-
         <v-dialog v-model="configDialogOpen" activator="parent" max-width="600">
           <v-card :title="`Options for ${snippetInfo.metadata.name ?? snippetIdentifier}`">
             <v-card-text>
@@ -37,13 +36,16 @@
           </v-card>
         </v-dialog>
       </v-btn>
+      <v-badge :model-value="snippetHasNonDefaultValues" floating color="bg-primary" offset-x="13" offset-y="-10" bordered dot />
     </template>
-    <v-btn v-if="snippetInfo.origin.kind === 'UserDataDir'" variant="plain" size="x-small" class="mx-1" icon>
-      <v-icon icon="mdi-account-outline" size="x-large" />
+    <span v-if="snippetInfo.origin.kind === 'UserDataDir'">
+      <v-btn variant="plain" size="x-small" class="mx-1" icon readonly>
+        <v-icon icon="mdi-account-outline" size="x-large" />
+      </v-btn>
       <v-tooltip activator="parent" location="bottom" open-delay="500" content-class="bg-surface-light">
         Custom Snippet
       </v-tooltip>
-    </v-btn>
+    </span>
   </v-card>
 </template>
 
@@ -69,6 +71,17 @@
   const worldSnippetConfigModel = useVModel(props, 'worldSnippetConfig', emits)
   const snippetHasConfig = computed(() => Object.keys(props.snippetInfo.metadata.config).length > 0)
   const snippetActive = computed(() => worldSnippetsModel.value.includes(props.snippetIdentifier))
+  const snippetHasNonDefaultValues = computed(() =>
+    Object.keys(props.snippetInfo.metadata.config).some(configKey => {
+      const configValue = worldSnippetConfigModel.value[props.snippetIdentifier]?.[configKey]
+
+      if (configValue === undefined) {
+        return false
+      }
+
+      return configValue !== String(props.snippetInfo.metadata.config[configKey]?.value.default)
+    }),
+  )
 
   function toggleSnippet() {
     const existingSnippetIndex = worldSnippetsModel.value.indexOf(props.snippetIdentifier)

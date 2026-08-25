@@ -10,12 +10,12 @@
 </template>
 
 <script lang="ts" setup>
-  import type {HashMapStringConfigValue, HashMapStringHashMapStringString} from '@shared/types/seedgen'
+  import type {HashMapStringConfigArg, HashMapStringHashMapStringString} from '@shared/types/seedgen'
   import {useVModel} from '@vueuse/core'
 
   const props = defineProps<{
     snippetIdentifier: string,
-    configsMetadata: HashMapStringConfigValue,
+    configsMetadata: HashMapStringConfigArg,
     worldSnippetConfig: HashMapStringHashMapStringString,
   }>()
 

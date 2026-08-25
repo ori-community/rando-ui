@@ -1,11 +1,11 @@
 <template>
   <div>
-    <template v-if="configMetadata.default.type === 'Boolean'">
-      <v-checkbox v-model="booleanConfigValue" hide-details>
+    <template v-if="configMetadata.value.type === 'Boolean'">
+      <v-checkbox v-model="booleanConfigValue" hide-details density="comfortable">
         <template #label>
           <div>
             <div>{{ configMetadata.name }}</div>
-            <div v-if="!!configMetadata.description" class="text-caption">{{ configMetadata.description }}</div>
+            <div v-if="!!configMetadata.description" class="text-label-large opacity-60">{{ configMetadata.description }}</div>
           </div>
         </template>
         <template #append>
@@ -13,7 +13,7 @@
         </template>
       </v-checkbox>
     </template>
-    <template v-else-if="configMetadata.default.type === 'Integer'">
+    <template v-else-if="configMetadata.value.type === 'Integer'">
       <v-number-input
         v-model="numberConfigValue"
         class="mb-2"
@@ -27,7 +27,23 @@
         </template>
       </v-number-input>
     </template>
-    <template v-else-if="configMetadata.default.type === 'Float'">
+    <template v-else-if="configMetadata.value.type === 'IntegerRange'">
+      <v-number-input
+        v-model="numberConfigValue"
+        class="mb-2"
+        :label="configMetadata.name"
+        :hint="configMetadata.description ?? undefined"
+        :min="configMetadata.value.min"
+        :max="configMetadata.value.max"
+        persistent-hint
+        :step="1"
+      >
+        <template #append-inner>
+          <v-btn v-if="!configIsDefault" icon="mdi-arrow-u-left-top" variant="plain" @click="resetToDefault" />
+        </template>
+      </v-number-input>
+    </template>
+    <template v-else-if="configMetadata.value.type === 'Float'">
       <v-number-input
         v-model="numberConfigValue"
         class="mb-2"
@@ -42,19 +58,36 @@
         </template>
       </v-number-input>
     </template>
+    <template v-else-if="configMetadata.value.type === 'FloatRange'">
+      <v-number-input
+        v-model="numberConfigValue"
+        class="mb-2"
+        :label="configMetadata.name"
+        :hint="configMetadata.description ?? undefined"
+        :min="configMetadata.value.min"
+        :max="configMetadata.value.max"
+        persistent-hint
+        :step="0.01"
+        :precision="null"
+      >
+        <template #append-inner>
+          <v-btn v-if="!configIsDefault" icon="mdi-arrow-u-left-top" variant="plain" @click="resetToDefault" />
+        </template>
+      </v-number-input>
+    </template>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import type {HashMapStringConfigValue, HashMapStringHashMapStringString} from '@shared/types/seedgen'
+  import type {HashMapStringConfigArg, HashMapStringHashMapStringString} from '@shared/types/seedgen'
   import {useVModel} from '@vueuse/core'
 
-  type ConfigValue = HashMapStringConfigValue[keyof HashMapStringConfigValue]
+  type ConfigArg = HashMapStringConfigArg[keyof HashMapStringConfigArg]
 
   const props = defineProps<{
     snippetIdentifier: string,
     configIdentifier: string,
-    configMetadata: ConfigValue,
+    configMetadata: ConfigArg,
     worldSnippetConfig: HashMapStringHashMapStringString,
   }>()
 
@@ -65,10 +98,10 @@
   const worldSnippetConfigModel = useVModel(props, 'worldSnippetConfig', emits)
   const stringConfigValue = computed({
     get() {
-      return worldSnippetConfigModel.value?.[props.snippetIdentifier]?.[props.configIdentifier] ?? valueToString(props.configMetadata.default.value)
+      return worldSnippetConfigModel.value?.[props.snippetIdentifier]?.[props.configIdentifier] ?? valueToString(props.configMetadata.value.default)
     },
     set(value) {
-      const isDefault = stringToConfigType(value) === props.configMetadata.default.value
+      const isDefault = stringToConfigType(value) === props.configMetadata.value.default
 
       if (isDefault) {
         resetToDefault()
@@ -83,10 +116,10 @@
     },
   })
   const configIsDefault = computed(() => {
-    return stringToConfigType(stringConfigValue.value) === props.configMetadata.default.value
+    return stringToConfigType(stringConfigValue.value) === props.configMetadata.value.default
   })
 
-  function valueToString(value: ConfigValue['default']['value']) {
+  function valueToString(value: ConfigArg['value']['default']) {
     return String(value)
   }
 
@@ -98,12 +131,14 @@
     return Number(value)
   }
 
-  function stringToConfigType(value: string): ConfigValue['default']['value'] {
-    switch (props.configMetadata.default.type) {
+  function stringToConfigType(value: string): ConfigArg['value']['default'] {
+    switch (props.configMetadata.value.type) {
       case 'Boolean':
         return stringToBoolean(value)
       case 'Integer':
+      case 'IntegerRange':
       case 'Float':
+      case 'FloatRange':
         return stringToNumber(value)
     }
   }

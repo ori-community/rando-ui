@@ -700,53 +700,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/settings/world/inline-snippets": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Inline all snippets originating from the data directory */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["WorldSettings"];
-                };
-            };
-            responses: {
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["WorldSettings"];
-                    };
-                };
-                422: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": string;
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/settings/world/random": {
         parameters: {
             query?: never;
@@ -943,8 +896,20 @@ export interface components {
                 id: number;
             };
         } | {
-            /** @description Check if Ori is in box `id` */
-            IsInBox: {
+            /** @description Check if Ori is in box defined by the circle center (x, y) and radius r */
+            IsInCircle: {
+                r: components["schemas"]["CommandFloat"];
+                x: components["schemas"]["CommandFloat"];
+                y: components["schemas"]["CommandFloat"];
+            };
+        } | {
+            /** @description Check if Ori is in a position trigger with the given id */
+            IsInPositionTrigger: {
+                id: number;
+            };
+        } | {
+            /** @description Check if Ori is in box defined by the rectangle (x1, y1) and (x2, y2) */
+            IsInRectangle: {
                 x1: components["schemas"]["CommandFloat"];
                 x2: components["schemas"]["CommandFloat"];
                 y1: components["schemas"]["CommandFloat"];
@@ -1258,8 +1223,16 @@ export interface components {
                 value: components["schemas"]["CommandString"];
             };
         } | {
-            /** @description Create a new box defined by (`x1`, `y1`) and (`x2`, `y2`) */
-            BoxTrigger: {
+            /** @description Create a new circular position defined by center (`x`, `y`) and radius `r` */
+            PositionTriggerCircle: {
+                id: number;
+                r: components["schemas"]["CommandFloat"];
+                x: components["schemas"]["CommandFloat"];
+                y: components["schemas"]["CommandFloat"];
+            };
+        } | {
+            /** @description Create a new rectangular position trigger defined by (`x1`, `y1`) and (`x2`, `y2`) */
+            PositionTriggerRectangle: {
                 id: number;
                 x1: components["schemas"]["CommandFloat"];
                 x2: components["schemas"]["CommandFloat"];
@@ -1268,18 +1241,18 @@ export interface components {
             };
         } | {
             /** @description DESTROY box `id` */
-            BoxTriggerDestroy: {
+            PositionTriggerDestroy: {
                 id: number;
             };
         } | {
             /** @description Register `action` to trigger when Ori enters box `id` */
-            BoxTriggerEnterCallback: {
+            PositionTriggerEnterCallback: {
                 action: number;
                 id: number;
             };
         } | {
             /** @description Register `action` to trigger when Ori leaves box `id` */
-            BoxTriggerLeaveCallback: {
+            PositionTriggerLeaveCallback: {
                 action: number;
                 id: number;
             };
@@ -1628,6 +1601,8 @@ export interface components {
                 metadata: components["schemas"]["Metadata"];
                 /** @description Where this snippet came from */
                 origin: components["schemas"]["AssetOrigin"];
+                /** @description Whether this snippet or anything in its include tree requires local files */
+                treeRequiresLocalFiles: boolean;
             };
         };
         HashMap_String_Source: {
@@ -1756,12 +1731,14 @@ export interface components {
         Metadata: {
             /** @description Category shared with other snippets */
             category?: string | null;
-            /** @description Available configuration */
+            /** @default {} */
             config: components["schemas"]["HashMap_String_ConfigArg"];
             /** @description Longer description */
             description?: string | null;
             /** @description Whether the snippet should be hidden from the options when generating seeds */
             hidden: boolean;
+            /** @description Included snippets */
+            includes: string[];
             /** @description Display name */
             name?: string | null;
             /**
@@ -1769,7 +1746,7 @@ export interface components {
              *
              *     Note that included snippets may require local files even if this one doesn't
              */
-            requires_local_files: boolean;
+            requiresLocalFiles: boolean;
         };
         Node: {
             Anchor: components["schemas"]["Anchor"];
@@ -2037,6 +2014,8 @@ export interface components {
             metadata: components["schemas"]["Metadata"];
             /** @description Where this snippet came from */
             origin: components["schemas"]["AssetOrigin"];
+            /** @description Whether this snippet or anything in its include tree requires local files */
+            treeRequiresLocalFiles: boolean;
         };
         /** @description Representation of a source file with the necessary information to display useful error messages. */
         Source: {
@@ -2253,6 +2232,8 @@ export interface components {
          *     ```
          */
         UniverseSettings: {
+            /** @default {} */
+            inlineSnippets: components["schemas"]["HashMap_String_Source"];
             /** @description The seed that determines all randomness */
             seed: string;
             /**
@@ -2351,7 +2332,6 @@ export interface components {
          * @default {
          *       "difficulty": "Moki",
          *       "hard": false,
-         *       "inlineSnippets": {},
          *       "randomizeEntrances": null,
          *       "snippetConfig": {},
          *       "snippets": [],
@@ -2369,8 +2349,6 @@ export interface components {
              * @default false
              */
             hard: boolean;
-            /** @default {} */
-            inlineSnippets: components["schemas"]["HashMap_String_Source"];
             /** @default null */
             randomizeEntrances: null | components["schemas"]["GreaterOneU8"];
             /** @default {} */

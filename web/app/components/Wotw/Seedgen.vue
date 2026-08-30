@@ -325,11 +325,12 @@
     return groupedPresetIds
   }
 
-  function getUniverseSettings() {
+  function getUniverseSettings(): UniverseSettings {
     return {
       seed: seedString.value ?? String(Date.now()),
-      worldSettings: worldSettings.value
-    } as UniverseSettings
+      worldSettings: worldSettings.value,
+      inlineSnippets: {},
+    }
   }
 
   // TODO: Show custom universe presets
@@ -519,32 +520,34 @@
         ? "Bingo Lines"
         : "Bingo Cards"
 
+      clonedUniverseSettings.inlineSnippets["__bingo_generated"] = {
+        id: "__bingo_generated",
+        content: `
+          !tags("Bingo")
+          !include("goal_mode_core", write_goal_progress_message, check_goals_completed, write_goals_incomplete_message, update_goals_completed)
+
+          !augment_fun(check_goals_completed, {
+              if ${goalState} < ${goalTargetValue} set_boolean("goals_completed", false)
+          })
+
+          !augment_fun(write_goals_incomplete_message, {
+              if ${goalState} < ${goalTargetValue} {
+                  set_string("color", "@")
+                  write_bingo_message()
+                  set_string("goals_incomplete_message", get_string("goals_incomplete_message") + "\\n" + get_string("bingo_message"))
+              }
+          })
+
+          on change ${goalState} update_goals_completed()
+
+          fun write_bingo_message() {
+              set_string("bingo_message", get_string("color") + "${goalName}: " + ${goalState} + "/${goalTargetValue}" + get_string("color"))
+          }
+        `
+      }
+
       for (const settings of clonedUniverseSettings.worldSettings) {
-        settings.inlineSnippets["__bingo_generated"] = {
-          id: "__bingo_generated",
-          content: `
-            !tags("Bingo")
-            !include("goal_mode_core", write_goal_progress_message, check_goals_completed, write_goals_incomplete_message, update_goals_completed)
-
-            !augment_fun(check_goals_completed, {
-                if ${goalState} < ${goalTargetValue} set_boolean("goals_completed", false)
-            })
-
-            !augment_fun(write_goals_incomplete_message, {
-                if ${goalState} < ${goalTargetValue} {
-                    set_string("color", "@")
-                    write_bingo_message()
-                    set_string("goals_incomplete_message", get_string("goals_incomplete_message") + "\\n" + get_string("bingo_message"))
-                }
-            })
-
-            on change ${goalState} update_goals_completed()
-
-            fun write_bingo_message() {
-                set_string("bingo_message", get_string("color") + "${goalName}: " + ${goalState} + "/${goalTargetValue}" + get_string("color"))
-            }
-          `
-        }
+        settings.snippets.push("__bingo_generated")
       }
     }
 

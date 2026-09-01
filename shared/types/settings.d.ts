@@ -22,6 +22,7 @@ export type Settings = {
   ShowTransparentOutOfLogicIcons: boolean,
   MapPanSpeed: number,
   CameraShakeIntensity: number,
+  DisableHealthAndEnergyBarAnimations: boolean,
   LocalTrackerWindowPositionX: number,
   LocalTrackerWindowPositionY: number,
   LocalTrackerWindowPositionWidth: number,

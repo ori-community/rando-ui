@@ -79,6 +79,7 @@ export class SettingsService {
       ShowTransparentOutOfLogicIcons: true,
       MapPanSpeed: 1.0,
       CameraShakeIntensity: 1.0,
+      DisableHealthAndEnergyBarAnimations: false,
       LocalTrackerWindowPositionX: localTrackerInitialWindowRect.x,
       LocalTrackerWindowPositionY: localTrackerInitialWindowRect.y,
       LocalTrackerWindowPositionWidth: localTrackerInitialWindowRect.width,
@@ -94,7 +95,7 @@ export class SettingsService {
       ValidateProxyModloader: true,
       GameBinaryPath: SettingsService.getDefaultGameBinaryPath(),
       SteamBinaryPath: SettingsService.getDefaultSteamBinaryPath(),
-      LastUsedVersion: await UpdateService.getVersion()
+      LastUsedVersion: await UpdateService.getVersion(),
     }
   }
 

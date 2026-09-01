@@ -100,14 +100,14 @@
           <strong>
             {{ gameLaunchMethodsMetadata[settings.GameLaunchMethod.value].name }}
             <v-tooltip location="top" activator="parent" max-width="400">
-              <component :is="gameLaunchMethodsMetadata[settings.GameLaunchMethod.value].descriptionComponent" />
+              <component :is="gameLaunchMethodsMetadata[settings.GameLaunchMethod.value].descriptionComponent"/>
             </v-tooltip>
           </strong>
           +
           <strong>
             {{ modloaderMethodsMetadata[settings.ModloaderMethod.value].name }}
             <v-tooltip location="top" activator="parent" max-width="400">
-              <component :is="modloaderMethodsMetadata[settings.ModloaderMethod.value].descriptionComponent" />
+              <component :is="modloaderMethodsMetadata[settings.ModloaderMethod.value].descriptionComponent"/>
             </v-tooltip>
           </strong>
         </div>
@@ -121,7 +121,7 @@
           </template>
           <template #default="{ isActive }">
             <v-card class="pa-4">
-              <wotw-settings-setup-wizard @setup-finished="isActive.value = false" />
+              <wotw-settings-setup-wizard @setup-finished="isActive.value = false"/>
             </v-card>
           </template>
         </v-dialog>
@@ -198,6 +198,11 @@
           v-model="settings.ShowAllSecrets.value"
           label="Always show secret areas"
           description="By default, the randomizer shows all secrets without having the Sense Shard equipped"
+        />
+        <rando-settings-checkbox
+          v-model="settings.DisableHealthAndEnergyBarAnimations.value"
+          label="Disable Health and Energy Bar Animation"
+          description="Disables the depleting animation in the health and energy bar"
         />
         <rando-settings-slider
           v-model="settings.CameraShakeIntensity.value"

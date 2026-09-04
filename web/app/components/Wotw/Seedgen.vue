@@ -524,25 +524,21 @@
         id: "__bingo_generated",
         content: `
           !tags("Bingo")
-          !include("goal_mode_core", write_goal_progress_message, check_goals_completed, write_goals_incomplete_message, update_goals_completed)
+          !include("goal_mode_core", add_row_item, write_short_goals_row, check_goals_completed, write_missing_goals, update_goals)
+          !include("list_core", new_row, add_current_row)
 
-          !augment_fun(check_goals_completed, {
+          !augment_fun(check_goals_completed(), {
               if ${goalState} < ${goalTargetValue} set_boolean("goals_completed", false)
           })
 
-          !augment_fun(write_goals_incomplete_message, {
+          !augment_fun(write_missing_goals(), {
               if ${goalState} < ${goalTargetValue} {
                   set_string("color", "@")
-                  write_bingo_message()
-                  set_string("goals_incomplete_message", get_string("goals_incomplete_message") + "\\n" + get_string("bingo_message"))
+                  new_row(get_string("color") + "${goalName}: " + ${goalState} + "/${goalTargetValue}" + get_string("color"))
               }
           })
 
-          on change ${goalState} update_goals_completed()
-
-          fun write_bingo_message() {
-              set_string("bingo_message", get_string("color") + "${goalName}: " + ${goalState} + "/${goalTargetValue}" + get_string("color"))
-          }
+          on change ${goalState} update_goals()
         `
       }
 

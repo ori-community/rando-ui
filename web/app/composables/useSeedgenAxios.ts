@@ -34,6 +34,8 @@ export const useSeedgenAxios = () => {
         config[AXIOS_SEEDGEN_RETRY_NAMESPACE] = {triedToStartServer: true}
         return await axiosInstance(config) ?? await Promise.reject(error)
       }
+
+      return await Promise.reject(error)
     })
 
     return axiosInstance

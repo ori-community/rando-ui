@@ -33,6 +33,11 @@ type SeedgenLogRecord = {
   message: string,
 }
 
+type SeedgenErrorResponse = {
+  message: string,
+  logs: SeedgenLogRecord[],
+}
+
 type SeedgenGenerateResponse = {
   worlds: Uint8Array<ArrayBuffer>[],
   textSpoiler: string | null,

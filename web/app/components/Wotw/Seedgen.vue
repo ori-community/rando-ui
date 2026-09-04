@@ -190,7 +190,12 @@
     WorldPreset,
     WorldSettings,
   } from "@shared/types/seedgen"
-  import type {BingoSettings, SeedgenGenerateResponse, SeedgenLogRecord} from "@shared/types/http-api"
+  import type {
+    BingoSettings,
+    SeedgenErrorResponse,
+    SeedgenGenerateResponse,
+    SeedgenLogRecord,
+  } from "@shared/types/http-api"
   import type {GroupedPresetIds, Presets} from "~/assets/types/components/seedgen"
   import {useSeedgenAxios} from "~/composables/useSeedgenAxios"
   import {confettiFromElement} from "~/assets/utils/confetti"
@@ -199,6 +204,7 @@
   import {saveAs} from "file-saver"
   import {decode} from "cbor2"
   import {clone} from "@shared/utils/clone"
+  import {type AxiosError, isAxiosError} from "axios"
 
   const isElectron = useIsElectron()
   const electronApi = useElectronApi()
@@ -669,9 +675,27 @@
             confettiFromElement(runningSeedgenActionButtonElement.value)
           }
         } catch (e) {
+          let errorMessage = String(e)
+
+          if (isAxiosError(e) && e.response) {
+            const axiosError = e as AxiosError
+
+            if (axiosError.response) {
+              let response = axiosError.response.data as SeedgenErrorResponse
+              if (axiosError.response.data instanceof Blob) {
+                response = JSON.parse(await axiosError.response.data.text()) as SeedgenErrorResponse
+              }
+
+              errorMessage = [
+                response.message,
+                response.logs.map(record => `${record.level}: ${record.message}`)
+              ].join("\n")
+            }
+          }
+
           snackbarStore.add({
             title: "Error",
-            text: String(e),
+            text: errorMessage,
             contentClass: "text-pre",
             prependIcon: "mdi-close-octagon-outline",
             color: "error",

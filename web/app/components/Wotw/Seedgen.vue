@@ -5,7 +5,7 @@
         <v-icon start>mdi-content-duplicate</v-icon>
         Duplicate
       </v-list-item>
-      <v-list-item @click="worldSettings.splice(worldContextMenuSelectedWorldIndex, 1)">
+      <v-list-item @click="deleteWorld(worldContextMenuSelectedWorldIndex)">
         <v-icon start>mdi-delete-outline</v-icon>
         Delete
       </v-list-item>
@@ -737,6 +737,17 @@
 
     // Workaround for visual glitch
     setTimeout(() => selectedWorldIndex.value = worldSettings.value.length - 1, 0)
+  }
+
+  function deleteWorld(worldIndex: number) {
+    worldSettings.value.splice(worldIndex, 1)
+    setTimeout(() => {
+      if (worldSettings.value.length === 0) {
+        selectedWorldIndex.value = null
+      } else if (selectedWorldIndex.value !== null && selectedWorldIndex.value >= worldIndex) {
+        selectedWorldIndex.value = Math.max(selectedWorldIndex.value - 1, 0)
+      }
+    }, 0)
   }
 
   function onWorldTabContextMenu(worldIndex: number, event: MouseEvent) {

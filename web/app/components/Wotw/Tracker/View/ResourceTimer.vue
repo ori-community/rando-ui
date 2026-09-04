@@ -33,7 +33,7 @@
         <div class="image">
           <img src="@shared/images/tracker/tree.png" alt="">
         </div>
-        <div class="value" :class="{ completed: treesCount === treesRequired }">
+        <div class="value" :class="{ completed: treesCount >= treesRequired }">
           {{ treesCount }}<span class="small">/{{ treesRequired }}</span>
         </div>
       </div>
@@ -41,7 +41,7 @@
         <div class="image">
           <img src="@shared/images/tracker/wisp.png" alt="">
         </div>
-        <div class="value" :class="{ completed: wispsCount === wispsRequired }">
+        <div class="value" :class="{ completed: wispsCount >= wispsRequired }">
           {{ wispsCount }}<span class="small">/{{ wispsRequired }}</span>
         </div>
       </div>
@@ -52,7 +52,7 @@
         </div>
         <div
           class="value"
-          :class="{ completed: relicsCount === relicsRequired, highlight: currentAreaHasUncollectedRelic }">
+          :class="{ completed: relicsCount >= relicsRequired, highlight: currentAreaHasUncollectedRelic }">
           {{ relicsCount }}<span class="small">/{{ relicsRequired }}</span>
         </div>
       </div>
@@ -60,7 +60,7 @@
         <div class="image">
           <img src="@shared/images/tracker/quest.png" alt="">
         </div>
-        <div class="value" :class="{ completed: questsCount === questsRequired }">
+        <div class="value" :class="{ completed: questsCount >= questsRequired }">
           {{ questsCount }}<span class="small">/{{ questsRequired }}</span>
         </div>
       </div>
@@ -68,7 +68,7 @@
         <div class="image">
           <img src="@shared/images/tracker/watermill_door.png" alt="">
         </div>
-        <div class="value" :class="{ completed: visitedEntranceCount === totalEntranceCount }">
+        <div class="value" :class="{ completed: visitedEntranceCount >= totalEntranceCount }">
           {{ visitedEntranceCount }}<span class="small">/{{ totalEntranceCount }}</span>
         </div>
       </div>
@@ -76,7 +76,7 @@
         <div class="image">
           <img src="@shared/images/tracker/willow_heart.png" alt="">
         </div>
-        <div class="value" :class="{ completed: heartsCount === heartsRequired }">
+        <div class="value" :class="{ completed: heartsCount >= heartsRequired }">
           {{ heartsCount }}<span class="small">/{{ heartsRequired }}</span>
         </div>
       </div>

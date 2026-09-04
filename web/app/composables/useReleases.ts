@@ -36,6 +36,7 @@ let fetchedReleases = false
 const releases = ref<Release[] | null>(null)
 const isFetchingReleases = ref(false)
 const currentVersion = ref<SemVer | null>(null)
+const isDevelopVersion = ref(false)
 
 async function fetchReleases() {
   isFetchingReleases.value = true
@@ -45,6 +46,7 @@ async function fetchReleases() {
   const electronApi = useElectronApi()
   const currentVersionString = await electronApi?.updater.getVersion.query() ?? null
   currentVersion.value = currentVersionString === null ? null : semver.parse(currentVersionString)
+  isDevelopVersion.value = currentVersionString === "develop"
 
   releases.value = githubReleases
     .map((release): Release | null => {
@@ -104,7 +106,7 @@ export function useReleases() {
 
   const devtoolsStore = useDevtoolsStore()
   const includePrereleases = computed(() => {
-    return !!currentVersion.value?.prerelease.length || devtoolsStore.forceDisplayPrereleaseVersions
+    return isDevelopVersion.value || !!currentVersion.value?.prerelease.length || devtoolsStore.forceDisplayPrereleaseVersions
   })
   const availableReleases = computed(() => {
     if (releases.value === null) {

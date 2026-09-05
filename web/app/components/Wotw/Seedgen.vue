@@ -543,38 +543,14 @@
     const clonedUniverseSettings = clone(universeSettings)
 
     if (enableBingo.value) {
-      const goalState = bingoSettings.value.goalType === "lines"
-        ? "bingoState.lines"
-        : "bingoState.squares"
-      const goalTargetValue = bingoSettings.value.goalAmount
-      const goalName = bingoSettings.value.goalType === "lines"
-        ? "Bingo Lines"
-        : "Bingo Cards"
-
-      clonedUniverseSettings.inlineSnippets["__bingo_generated"] = {
-        id: "__bingo_generated",
-        content: `
-          !tags("Bingo")
-          !include("goal_mode_core", add_row_item, write_short_goals_row, check_goals_completed, write_missing_goals, update_goals)
-          !include("list_core", new_row, add_current_row)
-
-          !augment_fun(check_goals_completed(), {
-              if ${goalState} < ${goalTargetValue} set_boolean("goals_completed", false)
-          })
-
-          !augment_fun(write_missing_goals(), {
-              if ${goalState} < ${goalTargetValue} {
-                  set_string("color", "@")
-                  new_row(get_string("color") + "${goalName}: " + ${goalState} + "/${goalTargetValue}" + get_string("color"))
-              }
-          })
-
-          on change ${goalState} update_goals()
-        `
-      }
-
       for (const settings of clonedUniverseSettings.worldSettings) {
-        settings.snippets.push("__bingo_generated")
+        settings.snippets.push("bingo")
+        settings.snippetConfig["bingo"] = {
+          "lines": bingoSettings.value.goalType === "lines"
+            ? "true"
+            : "false",
+          "amount": String(bingoSettings.value.goalAmount),
+        }
       }
     }
 

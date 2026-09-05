@@ -12,7 +12,7 @@
     </v-list>
   </v-menu>
 
-  <v-tabs v-model="selectedWorldIndex" color="primary">
+  <v-tabs v-if="seedgenAssetsError === null" v-model="selectedWorldIndex" color="primary">
     <v-expand-x-transition group>
       <template v-if="worldSettings.length >= 2 || selectedWorldIndex === null">
         <div v-for="nth in worldSettings.length" :key="nth - 1">
@@ -35,8 +35,21 @@
     </v-tab>
   </v-tabs>
   <v-card :loading="runningSeedgenActionId !== null">
+    <v-alert v-if="seedgenAssetsError !== null" color="error" icon="mdi-close-octagon-outline">
+      <v-alert-title>Failed to start seedgen server</v-alert-title>
+      <div>
+        {{ seedgenAssetsError }}
+      </div>
+      <div>
+        More details might have been written to the launcher log.
+      </div>
+
+      <div class="mt-2">
+        <v-btn variant="tonal" @click="loadSeedgenAssets()">Retry</v-btn>
+      </div>
+    </v-alert>
     <v-skeleton-loader
-      v-if="universePresets === null || worldPresets === null || difficulties === null || snippetsInfo === null"
+      v-else-if="universePresets === null || worldPresets === null || difficulties === null || snippetsInfo === null"
       class="ma-4"
       type="article"
     />
@@ -237,6 +250,7 @@
   })
   const userStore = useUserStore()
   const generatingMessageIndex = ref(0)
+  const seedgenAssetsError = ref<string | null>(null)
   const generatingMessages = shuffleArray([
     "Stealing back Burrow from Grom…",
     "Looking for the next Health Fragment…",
@@ -285,12 +299,8 @@
     "Painting murals in Windtorn Ruins…",
   ])
 
-  onMounted(async () => {
-    if (electronApi) {
-      await electronApi.seedgenServer.ensureRunning.query()
-    }
-
-    await Promise.all([updateUniversePresets(), updateWorldPresets(), updateDifficulties(), updateTricks(), updateSnippetsInfo()])
+  onMounted(() => {
+    loadSeedgenAssets()
   })
 
   const seedStringInput = computed<string>({
@@ -310,6 +320,21 @@
     map[difficultyInfo.name] = index
     return map
   }, {} as { [K in Difficulty]: number }))
+
+  async function loadSeedgenAssets() {
+    seedgenAssetsError.value = null
+
+    if (electronApi) {
+      try {
+        await electronApi.seedgenServer.ensureRunning.query()
+      } catch (e) {
+        seedgenAssetsError.value = String(e)
+        throw e
+      }
+    }
+
+    await Promise.all([updateUniversePresets(), updateWorldPresets(), updateDifficulties(), updateTricks(), updateSnippetsInfo()])
+  }
 
   function groupPresets(presets: Presets): GroupedPresetIds {
     const groupedPresetIds: GroupedPresetIds = {}

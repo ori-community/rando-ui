@@ -30,9 +30,13 @@ export const useSeedgenAxios = () => {
       const isNetworkError = !error.response && error.code
 
       if (isNetworkError && !config.signal?.aborted && !config[AXIOS_SEEDGEN_RETRY_NAMESPACE]?.triedToStartServer) {
-        await electronApi.seedgenServer.ensureRunning.query()
-        config[AXIOS_SEEDGEN_RETRY_NAMESPACE] = {triedToStartServer: true}
-        return await axiosInstance(config) ?? await Promise.reject(error)
+        try {
+          await electronApi.seedgenServer.ensureRunning.query()
+          config[AXIOS_SEEDGEN_RETRY_NAMESPACE] = {triedToStartServer: true}
+          return await axiosInstance(config) ?? await Promise.reject(error)
+        } catch (e) {
+          await Promise.reject(e)
+        }
       }
 
       return await Promise.reject(error)

@@ -688,7 +688,7 @@
 
               errorMessage = [
                 response.message,
-                response.logs.map(record => `${record.level}: ${record.message}`)
+                ...response.logs.map(record => `${record.level}: ${record.message}`)
               ].join("\n")
             }
           }
@@ -696,7 +696,7 @@
           snackbarStore.add({
             title: "Error",
             text: errorMessage,
-            contentClass: "text-pre",
+            contentClass: "text-pre-wrap",
             prependIcon: "mdi-close-octagon-outline",
             color: "error",
             timer: "bottom",

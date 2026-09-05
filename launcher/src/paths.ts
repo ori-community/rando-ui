@@ -5,7 +5,7 @@ import os from "os"
 function getBaseUserDataPath() {
   if (os.platform() === "linux") {
     const userDataHome = process.env.XDG_DATA_HOME ?? `${process.env.HOME}/.local/share`
-    return path.join(userDataHome, "Ori and the Will of the Wisps Randomizer")
+    return path.join(userDataHome, "ori-wotw-randomizer")
   }
 
   return app.getPath("userData")

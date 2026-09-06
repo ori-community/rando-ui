@@ -34,6 +34,7 @@ export const useSettingsStore = defineStore("settings", () => {
     EnableNativeControllerSupport: ref<boolean>(false),
     ShowTransparentOutOfLogicIcons: ref<boolean>(false),
     MapPanSpeed: ref<number>(0),
+    ControllerTriggerThreshold: ref<number>(0),
     CameraShakeIntensity: ref<number>(0),
     DisableHealthAndEnergyBarAnimations: ref<boolean>(false),
     LocalTrackerWindowPositionX: ref<number>(0),

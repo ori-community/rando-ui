@@ -93,6 +93,19 @@
         </v-btn>
       </div>
       <div class="mb-8">
+        <h3 class="mb-1">Input Settings</h3>
+
+        <rando-settings-slider
+          v-model="settings.ControllerTriggerThreshold.value"
+          no-margin
+          :min="0.0"
+          :max="1.0"
+          :step="0.01"
+          label="Controller Trigger Threshold"
+          description="Sets how far you need to press a trigger on a controller for the action to happen"
+        />
+      </div>
+      <div class="mb-8">
         <h3>Launcher Setup</h3>
 
         <div>

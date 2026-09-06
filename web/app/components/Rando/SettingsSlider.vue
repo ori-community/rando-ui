@@ -1,6 +1,6 @@
 <template>
-  <div class="ml-8">
-    <div class="ml-2">
+  <div :class="{'ml-8': !noMargin}">
+    <div :class="{'ml-2': !noMargin}">
       {{ label }}
     </div>
     <v-slider
@@ -11,6 +11,7 @@
       show-ticks
       thumb-label
       hide-details
+      :class="{'ml-n2': noMargin}"
     >
       <template #thumb-label>
         <div class="text-white">
@@ -18,7 +19,7 @@
         </div>
       </template>
     </v-slider>
-    <div v-if="!!description" class="ml-2">
+    <div v-if="!!description" :class="{'ml-2': !noMargin}">
       <div class="text-caption text-grey-lighten-1">{{ description }}</div>
     </div>
   </div>
@@ -27,13 +28,19 @@
 <script lang="ts" setup>
   const model = defineModel<number>()
 
-  defineProps<{
-    label: string,
-    description?: string,
-    min: number,
-    max: number,
-    step: number,
-  }>()
+  withDefaults(
+    defineProps<{
+      label: string,
+      description?: string,
+      min: number,
+      max: number,
+      step: number,
+      noMargin?: boolean
+    }>(), {
+      description: undefined,
+      noMargin: false,
+    }
+  )
 </script>
 
 <style lang="scss" scoped>

@@ -21,6 +21,7 @@ export type Settings = {
   EnableNativeControllerSupport: boolean,
   ShowTransparentOutOfLogicIcons: boolean,
   MapPanSpeed: number,
+  ControllerTriggerThreshold: number,
   CameraShakeIntensity: number,
   DisableHealthAndEnergyBarAnimations: boolean,
   LocalTrackerWindowPositionX: number,

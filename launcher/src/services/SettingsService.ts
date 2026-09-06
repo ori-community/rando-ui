@@ -78,6 +78,7 @@ export class SettingsService {
       EnableNativeControllerSupport: true,
       ShowTransparentOutOfLogicIcons: true,
       MapPanSpeed: 1.0,
+      ControllerTriggerThreshold: 0.08,
       CameraShakeIntensity: 1.0,
       DisableHealthAndEnergyBarAnimations: false,
       LocalTrackerWindowPositionX: localTrackerInitialWindowRect.x,

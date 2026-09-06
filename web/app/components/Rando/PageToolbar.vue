@@ -251,7 +251,7 @@
     return randomGreetingTemplate.value.replace("#", userStore.user?.name ?? "")
   })
 
-  async function login() {
+  async function login(event: MouseEvent) {
     const {apiBaseUrl} = await useBaseUrls()
 
     if (!electronApi) {
@@ -266,6 +266,7 @@
 
     const shortLivedJwt = await electronApi.auth.startOAuthFlow.query({
       apiBaseUrl,
+      forceWindowLogin: event.ctrlKey,
     })
 
     axios.defaults.headers.common["Authorization"] = `Bearer ${shortLivedJwt}`

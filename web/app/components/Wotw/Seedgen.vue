@@ -49,7 +49,7 @@
       </div>
     </v-alert>
     <v-skeleton-loader
-      v-else-if="universePresets === null || worldPresets === null || difficulties === null || snippetsInfo === null"
+      v-else-if="universePresets === null || worldPresets === null || difficulties === null || snippetsInfo === null || spawnableAnchors === null"
       class="ma-4"
       type="article"
     />
@@ -61,6 +61,7 @@
             :snippets-info="snippetsInfo"
             :difficulties="difficulties"
             :tricks="tricks"
+            :spawnable-anchors="spawnableAnchors"
           />
         </v-window-item>
         <v-window-item :key="worldSettings.length" class="pa-3">
@@ -195,13 +196,11 @@
   import type {
     Difficulty,
     DifficultyInfo,
-    HashMapStringUniversePresetInfo,
-    HashMapStringWorldPresetInfo,
-    HashMapStringSnippetInfo,
     TrickInfo,
     UniverseSettings,
     WorldPreset,
-    WorldSettings,
+    WorldSettings, SpawnAnchors, HashMapStringSchemaResultWorldPresetInfoString,
+    HashMapStringSchemaResultUniversePresetInfoString, HashMapStringSchemaResultSnippetInfoString,
   } from "@shared/types/seedgen"
   import type {
     BingoSettings,
@@ -232,12 +231,13 @@
   const worldContextMenuSelectedWorldIndex = ref(0)
   const seedString = ref<string | null>(null)
   const worldSettings = ref<WorldSettings[]>([])
-  const universePresets = ref<HashMapStringUniversePresetInfo | null>(null)
-  const worldPresets = ref<HashMapStringWorldPresetInfo | null>(null)
+  const universePresets = ref<HashMapStringSchemaResultUniversePresetInfoString | null>(null)
+  const worldPresets = ref<HashMapStringSchemaResultWorldPresetInfoString | null>(null)
   const difficulties = ref<DifficultyInfo[]>([])
   const tricks = ref<TrickInfo[]>([])
   const selectedWorldIndex = ref<number | null>(null)
-  const snippetsInfo = ref<HashMapStringSnippetInfo | null>(null)
+  const snippetsInfo = ref<HashMapStringSchemaResultSnippetInfoString | null>(null)
+  const spawnableAnchors = ref<SpawnAnchors | null>(null)
   const enableBingo = ref(false)
   const enableRaceMode = ref(false)
   const bingoSettings = ref<BingoSettings>({
@@ -333,7 +333,7 @@
       }
     }
 
-    await Promise.all([updateUniversePresets(), updateWorldPresets(), updateDifficulties(), updateTricks(), updateSnippetsInfo()])
+    await Promise.all([updateUniversePresets(), updateWorldPresets(), updateDifficulties(), updateTricks(), updateSnippetsInfo(), updateSpawnableAnchors()])
   }
 
   function groupPresets(presets: Presets): GroupedPresetIds {
@@ -364,16 +364,28 @@
     }
   }
 
+  const validUniversePresets = computed(() =>
+    universePresets.value === null
+      ? null
+      : Object.fromEntries(Object.entries(universePresets.value).filter(([, e]) => e.status === "Ok")) as {[key: string]: Extract<HashMapStringSchemaResultUniversePresetInfoString[string], { status: "Ok" }> }
+  )
+
+  const validWorldPresets = computed(() =>
+    worldPresets.value === null
+      ? null
+      : Object.fromEntries(Object.entries(worldPresets.value).filter(([, e]) => e.status === "Ok")) as {[key: string]: Extract<HashMapStringSchemaResultWorldPresetInfoString[string], { status: "Ok" }> }
+  )
+
   // TODO: Show custom universe presets
   const _groupedUniversePresetIds = computed(
-    () => universePresets.value !== null
-      ? groupPresets(universePresets.value)
+    () => validUniversePresets.value !== null
+      ? groupPresets(validUniversePresets.value)
       : {},
   )
 
   const groupedWorldPresetIds = computed(
     () => {
-      const presets = worldPresets.value
+      const presets = validWorldPresets.value
       if (presets === null) {
         return {}
       }
@@ -736,6 +748,10 @@
 
   async function updateSnippetsInfo() {
     snippetsInfo.value = (await seedgenAxios.get('/snippets/info')).data
+  }
+
+  async function updateSpawnableAnchors() {
+    spawnableAnchors.value = (await seedgenAxios.get('/logic/spawn-anchors')).data
   }
 
   async function onWorldSetupPresetsSelected(presets: WorldPreset[]) {

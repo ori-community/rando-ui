@@ -155,7 +155,7 @@
     Difficulty,
     DifficultyInfo,
     HashMapStringSchemaResultSnippetInfoString,
-    SnippetInfo,
+    SnippetInfo, SpawnAnchors,
     Trick,
     TrickInfo,
     WorldSettings,
@@ -166,6 +166,7 @@
     snippetsInfo: HashMapStringSchemaResultSnippetInfoString,
     difficulties: DifficultyInfo[],
     tricks: TrickInfo[],
+    spawnableAnchors: SpawnAnchors,
   }>()
 
   const emits = defineEmits<{
@@ -240,13 +241,23 @@
     return names
   })
 
-  // TODO: Fetch from seedgen once API exists
-  const availableSpawnListItems = [
+  const teleporterAnchorNames = computed(() => {
+    return model.value.difficulty === "Moki"
+      ? props.spawnableAnchors.mokiTeleporters.map(index => props.spawnableAnchors.identifiers[index])
+      : props.spawnableAnchors.teleporters.map(index => props.spawnableAnchors.identifiers[index])
+  })
+
+  const availableSpawnListItems = computed(() => ([
     {title: "Random Teleporter", value: "Random", props: {prependIcon: "mdi-map-marker-question-outline"}},
     {title: "Random Position", value: "FullyRandom", props: {prependIcon: "mdi-shuffle"}},
-    {title: "Inkwater Marsh Teleporter", value: {Set: "MarshSpawn.Main"}, props: {prependIcon: "mdi-map-marker-outline"}},
-    {title: "Willow's End Teleporter", value: {Set: "WillowsEnd.TP"}, props: {prependIcon: "mdi-map-marker-outline"}},
-  ]
+    {type: "divider"},
+    {type: "subheader", title: "Teleporters"},
+    ...teleporterAnchorNames.value.map(anchorName => ({
+      title: anchorName,
+      value: {Set: anchorName},
+      props: {prependIcon: "mdi-map-marker-outline"}
+    }))
+  ]))
 
   const availableDifficultyListItems = computed(() => props.difficulties.map(difficultyInfo => ({
     title: difficultyInfo.name,

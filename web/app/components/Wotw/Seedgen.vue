@@ -694,15 +694,25 @@
             const axiosError = e as AxiosError
 
             if (axiosError.response) {
-              let response = axiosError.response.data as SeedgenErrorResponse
-              if (axiosError.response.data instanceof Blob) {
-                response = JSON.parse(await axiosError.response.data.text()) as SeedgenErrorResponse
+              let response = axiosError.response.data as SeedgenErrorResponse | Blob | string
+              if (response instanceof Blob) {
+                try {
+                  response = JSON.parse(await response.text()) as SeedgenErrorResponse
+                } catch (e) {
+                  console.warn("Failed to parse error as JSON", e)
+                }
               }
 
-              errorMessage = [
-                response.message,
-                ...response.logs.map(record => `${record.level}: ${record.message}`)
-              ].join("\n")
+              if (typeof response === "string") {
+                errorMessage = response
+              } else if (response instanceof Blob) {
+                errorMessage = await response.text()
+              } else {
+                errorMessage = [
+                  response.message,
+                  ...response.logs.map(record => `${record.level}: ${record.message}`)
+                ].join("\n")
+              }
             }
           }
 

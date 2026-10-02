@@ -18,27 +18,73 @@
           inset
         />
       </v-col>
-      <v-col cols="12" md="6">
-        <v-autocomplete
+      <v-col cols="12" md="6" class="mb-4">
+        <v-select
           v-model="model.difficulty"
           :items="availableDifficultyListItems"
           label="Logic Difficulty"
-          prepend-inner-icon="mdi-gauge"
+          prepend-inner-icon="mdi-routes"
         />
-        <v-switch
-          v-model="model.hard"
-          v-tooltip="{
-            openDelay: 500,
-            text: 'This is the game difficulty that you select when creating a new save file in-game.',
-            maxWidth: 400,
-            contentClass: 'bg-surface-light',
-            target: 'cursor',
-          }"
-          label="Play on Hard Game Difficulty"
-          color="secondary"
-          hide-details
-          inset
-        />
+
+        <v-card variant="tonal" class="justify-start activated-opacity-input-field" block size="xl" @click="gameDifficultiesDialogOpen = true">
+          <div class="pa-3 d-flex align-center justify-start text-left ga-1">
+            <v-icon class="flex-shrink-0 opacity-70">mdi-gauge</v-icon>
+            <div class="pl-1 flex-grow-1">
+              <div class="text-label-medium opacity-70">
+                Game Difficulties:
+              </div>
+              <div>
+                {{ selectedDifficultyNames.length > 0 ? selectedDifficultyNames.join(" / ") : "-" }}
+                <em v-if="model.gameDifficulties.onlyShowSelected">(Enforced)</em>
+              </div>
+            </div>
+            <v-icon class="opacity-70">mdi-chevron-right</v-icon>
+          </div>
+        </v-card>
+        <v-dialog v-model="gameDifficultiesDialogOpen" max-width="750" :persistent="selectedDifficultyNames.length === 0">
+          <v-card title="Game Difficulties">
+            <v-card-text>
+              Select at least one difficulty the generated seed should be playable on.
+
+              <v-switch v-model="model.gameDifficulties.easy" color="secondary" inset hide-details>
+                <template #label>
+                  <div>
+                    <div>Easy</div>
+                    <div class="text-label-large opacity-70">Hit damage is halved, enemies have less health</div>
+                  </div>
+                </template>
+              </v-switch>
+              <v-switch v-model="model.gameDifficulties.normal" color="secondary" inset hide-details>
+                <template #label>
+                  <div>
+                    <div>Normal</div>
+                    <div class="text-label-large opacity-70">The way the game was meant to be played</div>
+                  </div>
+                </template>
+              </v-switch>
+              <v-switch v-model="model.gameDifficulties.hard" color="secondary" inset hide-details>
+                <template #label>
+                  <div>
+                    <div>Hard</div>
+                    <div class="text-label-large opacity-70">Hit damage is doubled, enemies have more health. Stronger enemies spawn in some places.</div>
+                  </div>
+                </template>
+              </v-switch>
+              <v-divider class="my-5" />
+              <v-switch v-model="model.gameDifficulties.onlyShowSelected" color="secondary" inset hide-details>
+                <template #label>
+                  <div>
+                    <div>Enforce selected Difficulties</div>
+                    <div class="text-label-large opacity-70">Restricts selectable difficulties to the ones above in the game's main menu</div>
+                  </div>
+                </template>
+              </v-switch>
+            </v-card-text>
+            <v-btn :disabled="selectedDifficultyNames.length === 0" class="close-button" icon variant="plain" @click="gameDifficultiesDialogOpen = false">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-card>
+        </v-dialog>
       </v-col>
     </v-row>
 
@@ -48,14 +94,15 @@
       :items="availableTrickListItems"
       closable-chips
       label="Tricks"
-      placeholder="None"
+      :placeholder="anyTricksAvailableWithSelectedLogicDifficulty ? 'None' : 'No Tricks available with selected Logic Difficulty'"
       persistent-placeholder
       prepend-inner-icon="mdi-transit-detour"
       chips
       :return-object="false"
+      :disabled="!anyTricksAvailableWithSelectedLogicDifficulty"
       glow
     >
-      <template #append-inner>
+      <template v-if="anyTricksAvailableWithSelectedLogicDifficulty" #append-inner>
         <v-btn v-if="allAvailableTricksSelected" variant="tonal" @mousedown.stop @click="toggleAllAvailableTricks()">
           <v-icon start>mdi-close-box-multiple-outline</v-icon>
           Disable All
@@ -107,7 +154,7 @@
   import type {
     Difficulty,
     DifficultyInfo,
-    HashMapStringSnippetInfo,
+    HashMapStringSchemaResultSnippetInfoString,
     SnippetInfo,
     Trick,
     TrickInfo,
@@ -116,7 +163,7 @@
 
   const props = defineProps<{
     modelValue: WorldSettings,
-    snippetsInfo: HashMapStringSnippetInfo,
+    snippetsInfo: HashMapStringSchemaResultSnippetInfoString,
     difficulties: DifficultyInfo[],
     tricks: TrickInfo[],
   }>()
@@ -130,8 +177,10 @@
   const invalidSelectedTricks = ref<Set<string>>(new Set())
   const tricksInvalidBecauseOfDifficultyChangeDialogOpen = ref(false)
   const difficultyToSwitchToWhenConfirmingTrickCleanup = ref<Difficulty>("Moki")
+  const gameDifficultiesDialogOpen = ref(false)
 
-  const visibleSnippetsInfo = computed(() => Object.fromEntries(Object.entries(props.snippetsInfo).filter(([, e]) => !e.metadata.hidden)))
+  const validSnippetsInfo = computed(() => Object.fromEntries(Object.entries(props.snippetsInfo).filter(([, e]) => e.status === "Ok")) as {[key: string]: Extract<HashMapStringSchemaResultSnippetInfoString[string], { status: "Ok" }>})
+  const visibleSnippetsInfo = computed(() => Object.fromEntries(Object.entries(validSnippetsInfo.value).filter(([, e]) => !e.metadata.hidden)))
   const categorizedSnippetsInfo = computed(() => {
     const categories: {[categoryName: string]: {identifier: string, snippetInfo: SnippetInfo}[]} = {}
 
@@ -176,6 +225,19 @@
     })
 
     return categories
+  })
+  const selectedDifficultyNames = computed(() => {
+    const names = []
+    if (model.value.gameDifficulties.easy) {
+      names.push("Easy")
+    }
+    if (model.value.gameDifficulties.normal) {
+      names.push("Normal")
+    }
+    if (model.value.gameDifficulties.hard) {
+      names.push("Hard")
+    }
+    return names
   })
 
   // TODO: Fetch from seedgen once API exists
@@ -224,7 +286,7 @@
 
   const availableTricks = computed(() => {
     const selectedDifficultyOrder = getDifficultyOrder(model.value.difficulty)
-    return props.tricks.filter(trickInfo => getDifficultyOrder(trickInfo.min_difficulty) <= selectedDifficultyOrder).map(trickInfo => trickInfo.name)
+    return props.tricks.filter(trickInfo => getDifficultyOrder(trickInfo.minDifficulty) <= selectedDifficultyOrder).map(trickInfo => trickInfo.name)
   })
 
   /**
@@ -240,7 +302,7 @@
 
     return props.tricks
       .map(trickInfo => {
-        const disabled = getDifficultyOrder(trickInfo.min_difficulty) > selectedDifficultyOrder
+        const disabled = getDifficultyOrder(trickInfo.minDifficulty) > selectedDifficultyOrder
 
         return {
           title: formatTrickName(trickInfo.name),
@@ -248,7 +310,7 @@
           props: {
             disabled,
             subtitle: disabled
-              ? `Available in ${trickInfo.min_difficulty} or higher. ${trickInfo.description}`
+              ? `Available in ${trickInfo.minDifficulty} or higher. ${trickInfo.description}`
               : trickInfo.description,
           },
         }
@@ -259,7 +321,7 @@
         }
 
         if (a.props.disabled) {
-          const difficultyCompare = getDifficultyOrder(trickByName.value[a.value]?.min_difficulty) - getDifficultyOrder(trickByName.value[b.value]?.min_difficulty)
+          const difficultyCompare = getDifficultyOrder(trickByName.value[a.value]?.minDifficulty) - getDifficultyOrder(trickByName.value[b.value]?.minDifficulty)
 
           if (difficultyCompare !== 0) {
             return difficultyCompare
@@ -270,6 +332,8 @@
       })
   })
 
+  const anyTricksAvailableWithSelectedLogicDifficulty = computed(() => availableTrickListItems.value.some(i => !i.props.disabled))
+
   watch(() => model.value.difficulty, (value, oldValue) => {
     const newDifficultyOrder = getDifficultyOrder(value)
     const oldDifficultyOrder = getDifficultyOrder(oldValue)
@@ -278,7 +342,7 @@
       return
     }
 
-    invalidSelectedTricks.value = new Set(model.value.tricks.filter(trick => getDifficultyOrder(trickByName.value[trick]?.min_difficulty) > newDifficultyOrder))
+    invalidSelectedTricks.value = new Set(model.value.tricks.filter(trick => getDifficultyOrder(trickByName.value[trick]?.minDifficulty) > newDifficultyOrder))
     if (invalidSelectedTricks.value.size > 0) {
       tricksInvalidBecauseOfDifficultyChangeDialogOpen.value = true
       difficultyToSwitchToWhenConfirmingTrickCleanup.value = value
@@ -329,5 +393,16 @@
       flex-wrap: wrap;
       gap: 0.5em;
     }
+  }
+
+  .close-button {
+    position: absolute;
+    right: 1em;
+    top: 1em;
+    z-index: 10;
+  }
+
+  .activated-opacity-input-field {
+    --v-activated-opacity: 0.04;
   }
 </style>

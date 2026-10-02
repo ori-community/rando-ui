@@ -36,7 +36,7 @@ export interface paths {
         post: {
             parameters: {
                 query?: {
-                    json_spoiler?: boolean | null;
+                    json_spoiler?: null | ("no_commands" | "full");
                     text_spoiler?: boolean | null;
                     max_log_level?: null | components["schemas"]["LogLevelFilter"];
                 };
@@ -63,7 +63,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": string;
+                        "application/json": components["schemas"]["GenerateError"];
                     };
                 };
             };
@@ -99,6 +99,14 @@ export interface paths {
                         "application/json": components["schemas"]["Graph"];
                     };
                 };
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
             };
         };
         put?: never;
@@ -132,6 +140,14 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["MapIcons"];
+                    };
+                };
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
                     };
                 };
             };
@@ -232,6 +248,14 @@ export interface paths {
                         "application/json": components["schemas"]["RelevantUberStates"];
                     };
                 };
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
             };
         };
         put?: never;
@@ -265,6 +289,14 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["SpawnAnchors"];
+                    };
+                };
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
                     };
                 };
             };
@@ -333,7 +365,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": string[];
+                        "application/json": components["schemas"]["CompileError"];
                     };
                 };
             };
@@ -413,7 +445,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["HashMap_String_UniversePresetInfo"];
+                        "application/json": components["schemas"]["HashMap_String_SchemaResult_UniversePresetInfo_String"];
                     };
                 };
             };
@@ -498,7 +530,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["HashMap_String_WorldPresetInfo"];
+                        "application/json": components["schemas"]["HashMap_String_SchemaResult_WorldPresetInfo_String"];
                     };
                 };
             };
@@ -757,7 +789,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["HashMap_String_SnippetInfo"];
+                        "application/json": components["schemas"]["HashMap_String_SchemaResult_SnippetInfo_String"];
                     };
                 };
             };
@@ -1494,6 +1526,10 @@ export interface components {
          * @enum {integer}
          */
         Comparator: 0 | 1 | 2 | 3 | 4 | 5;
+        CompileError: {
+            errors: string[];
+            logs: components["schemas"]["Record"][];
+        };
         ConfigValue: {
             default: boolean;
             /** @enum {string} */
@@ -1568,6 +1604,40 @@ export interface components {
          */
         Equipment: 1000 | 1001 | 1002 | 1003 | 1004 | 1005 | 2000 | 2001 | 2002 | 2003 | 2004 | 2005 | 2006 | 2007 | 2008 | 2009 | 2010 | 2011 | 2012 | 2013 | 2014 | 2015 | 2016 | 2017 | 2018 | 2019 | 3000 | 3001 | 3002 | 3003 | 3004 | 3005 | 4000 | 4001 | 4002 | 4003 | 4004 | 4005 | 4006 | 4007 | 4008 | 4009;
         /**
+         * @default {
+         *       "easy": true,
+         *       "hard": false,
+         *       "normal": true,
+         *       "onlyShowSelected": false
+         *     }
+         */
+        GameDifficulties: {
+            /**
+             * @description Whether seedgen should ensure the seed is possible on easy
+             * @default true
+             */
+            easy: boolean;
+            /**
+             * @description Whether seedgen should ensure the seed is possible on hard
+             * @default false
+             */
+            hard: boolean;
+            /**
+             * @description Whether seedgen should ensure the seed is possible on normal
+             * @default true
+             */
+            normal: boolean;
+            /**
+             * @description Whether the main menu should limit the shown difficulties to only the selected ones
+             * @default false
+             */
+            onlyShowSelected: boolean;
+        };
+        GenerateError: {
+            logs: components["schemas"]["Record"][];
+            message: string;
+        };
+        /**
          * @description Generic icons
          * @enum {integer}
          */
@@ -1595,15 +1665,49 @@ export interface components {
                 [key: string]: string;
             };
         };
-        HashMap_String_SnippetInfo: {
-            [key: string]: {
+        HashMap_String_SchemaResult_SnippetInfo_String: {
+            [key: string]: ({
                 /** @description Metadata about the snippet */
                 metadata: components["schemas"]["Metadata"];
                 /** @description Where this snippet came from */
                 origin: components["schemas"]["AssetOrigin"];
                 /** @description Whether this snippet or anything in its include tree requires local files */
                 treeRequiresLocalFiles: boolean;
-            };
+            } & {
+                /** @enum {string} */
+                status: "Ok";
+            }) | (string & {
+                /** @enum {string} */
+                status: "Err";
+            });
+        };
+        HashMap_String_SchemaResult_UniversePresetInfo_String: {
+            [key: string]: ({
+                /** @description The universe preset */
+                content: components["schemas"]["UniversePreset"];
+                /** @description Where this universe preset came from */
+                origin: components["schemas"]["AssetOrigin"];
+            } & {
+                /** @enum {string} */
+                status: "Ok";
+            }) | (string & {
+                /** @enum {string} */
+                status: "Err";
+            });
+        };
+        HashMap_String_SchemaResult_WorldPresetInfo_String: {
+            [key: string]: ({
+                /** @description The world preset */
+                content: components["schemas"]["WorldPreset"];
+                /** @description Where this world preset came from */
+                origin: components["schemas"]["AssetOrigin"];
+            } & {
+                /** @enum {string} */
+                status: "Ok";
+            }) | (string & {
+                /** @enum {string} */
+                status: "Err";
+            });
         };
         HashMap_String_Source: {
             [key: string]: {
@@ -1621,27 +1725,11 @@ export interface components {
                 id: string;
             };
         };
-        HashMap_String_UniversePresetInfo: {
-            [key: string]: {
-                /** @description The universe preset */
-                content: components["schemas"]["UniversePreset"];
-                /** @description Where this universe preset came from */
-                origin: components["schemas"]["AssetOrigin"];
-            };
-        };
-        HashMap_String_WorldPresetInfo: {
-            [key: string]: {
-                /** @description The world preset */
-                content: components["schemas"]["WorldPreset"];
-                /** @description Where this world preset came from */
-                origin: components["schemas"]["AssetOrigin"];
-            };
-        };
         HashMap_i32_i32: {
             [key: string]: number;
         };
         HashSet_String: string[];
-        HashSet_Trick: ("SwordSentryJump" | "HammerSentryJump" | "ShurikenBreak" | "SentryBreak" | "HammerBreak" | "SpearBreak" | "SentryBurn" | "RemoveKillPlane" | "LaunchSwap" | "SentrySwap" | "FlashSwap" | "BlazeSwap" | "WaveDash" | "GrenadeJump" | "SwordJump" | "AerialHammerJump" | "GlideJump" | "GlideHammerJump" | "CoyoteHammerJump" | "WallHammerJump" | "GroundedHammerJump" | "HammerExtension" | "GrenadeRedirect" | "SentryRedirect" | "PauseFloat" | "SpearJump" | "GlideBashChain" | "DoubleJumpBashChain" | "DashBashChain" | "LaunchBashChain" | "Unpopular")[];
+        HashSet_Trick: ("SwordSentryJump" | "HammerSentryJump" | "ShurikenBreak" | "SentryBreak" | "HammerBreak" | "SpearBreak" | "SentryBurn" | "RemoveKillPlane" | "LaunchSwap" | "SentrySwap" | "FlashSwap" | "BlazeSwap" | "Wavedash" | "RegenJump" | "GrenadeJump" | "SwordJump" | "AerialHammerJump" | "GlideJump" | "GlideHammerJump" | "CoyoteHammerJump" | "WallHammerJump" | "GroundedHammerJump" | "HammerExtension" | "GrenadeRedirect" | "SentryRedirect" | "PauseFloat" | "SpearJump" | "GlideBashChain" | "DoubleJumpBashChain" | "DashBashChain" | "LaunchBashChain" | "Unpopular")[];
         /**
          * @description Horizontal anchor of message boxes
          *
@@ -1669,6 +1757,8 @@ export interface components {
         } | {
             Bundle: string;
         };
+        /** @enum {string} */
+        LevelSchema: "ERROR" | "WARN" | "INFO" | "DEBUG" | "TRACE";
         /** @description Information about a pickup location */
         LocDataEntry: {
             /** @description Unique identifier for this pickup location which is used in `paths.wotwl` */
@@ -1906,6 +1996,10 @@ export interface components {
                 number
             ][];
         };
+        Record: {
+            level: components["schemas"]["LevelSchema"];
+            message: string;
+        };
         Refill: {
             requirement: components["schemas"]["Requirement"];
             value: components["schemas"]["RefillValue"];
@@ -1932,6 +2026,8 @@ export interface components {
             Trick: components["schemas"]["Trick"];
         } | {
             State: number;
+        } | {
+            ShopItemVisible: components["schemas"]["UberIdentifier"];
         } | "Water" | {
             Skill: components["schemas"]["Skill"];
         } | {
@@ -2055,8 +2151,7 @@ export interface components {
             reachable: components["schemas"]["NodeSummary"][][];
         };
         SpoilerItem: {
-            /** @description The placed command */
-            command: components["schemas"]["CommandVoid"];
+            command?: null | components["schemas"]["CommandVoid"];
             /** @description The readable name of the placed item, which usually varies from the `command`s [`Display`] implementation */
             name: string;
         };
@@ -2109,10 +2204,10 @@ export interface components {
          *     See the [Paths wiki page](https://wiki.orirando.com/seedgen/paths) for more information
          * @enum {string}
          */
-        Trick: "SwordSentryJump" | "HammerSentryJump" | "ShurikenBreak" | "SentryBreak" | "HammerBreak" | "SpearBreak" | "SentryBurn" | "RemoveKillPlane" | "LaunchSwap" | "SentrySwap" | "FlashSwap" | "BlazeSwap" | "WaveDash" | "GrenadeJump" | "SwordJump" | "AerialHammerJump" | "GlideJump" | "GlideHammerJump" | "CoyoteHammerJump" | "WallHammerJump" | "GroundedHammerJump" | "HammerExtension" | "GrenadeRedirect" | "SentryRedirect" | "PauseFloat" | "SpearJump" | "GlideBashChain" | "DoubleJumpBashChain" | "DashBashChain" | "LaunchBashChain" | "Unpopular";
+        Trick: "SwordSentryJump" | "HammerSentryJump" | "ShurikenBreak" | "SentryBreak" | "HammerBreak" | "SpearBreak" | "SentryBurn" | "RemoveKillPlane" | "LaunchSwap" | "SentrySwap" | "FlashSwap" | "BlazeSwap" | "Wavedash" | "RegenJump" | "GrenadeJump" | "SwordJump" | "AerialHammerJump" | "GlideJump" | "GlideHammerJump" | "CoyoteHammerJump" | "WallHammerJump" | "GroundedHammerJump" | "HammerExtension" | "GrenadeRedirect" | "SentryRedirect" | "PauseFloat" | "SpearJump" | "GlideBashChain" | "DoubleJumpBashChain" | "DashBashChain" | "LaunchBashChain" | "Unpopular";
         TrickInfo: {
             description: string;
-            min_difficulty: components["schemas"]["Difficulty"];
+            minDifficulty: components["schemas"]["Difficulty"];
             name: components["schemas"]["Trick"];
         };
         Tricks: "All" | {
@@ -2313,8 +2408,7 @@ export interface components {
          */
         WorldPresetSettings: {
             difficulty?: null | components["schemas"]["Difficulty"];
-            /** @description Logically assume hard in-game difficulty */
-            hard?: boolean | null;
+            gameDifficulties?: null | components["schemas"]["GameDifficulties"];
             includes?: null | components["schemas"]["HashSet_String"];
             /** @description Randomize settings before applying further changes */
             randomSettings?: boolean | null;
@@ -2331,7 +2425,12 @@ export interface components {
          *     See the [Multiplayer wiki page](https://wiki.orirando.com/features/multiplayer) for an explanation of worlds
          * @default {
          *       "difficulty": "Moki",
-         *       "hard": false,
+         *       "gameDifficulties": {
+         *         "easy": true,
+         *         "hard": false,
+         *         "normal": true,
+         *         "onlyShowSelected": false
+         *       },
          *       "randomizeEntrances": null,
          *       "snippetConfig": {},
          *       "snippets": [],
@@ -2345,10 +2444,14 @@ export interface components {
             /** @default Moki */
             difficulty: components["schemas"]["Difficulty"];
             /**
-             * @description Logically assume hard in-game difficulty
-             * @default false
+             * @default {
+             *       "easy": true,
+             *       "hard": false,
+             *       "normal": true,
+             *       "onlyShowSelected": false
+             *     }
              */
-            hard: boolean;
+            gameDifficulties: components["schemas"]["GameDifficulties"];
             /** @default null */
             randomizeEntrances: null | components["schemas"]["GreaterOneU8"];
             /** @default {} */
@@ -2392,6 +2495,7 @@ export type CommandString = components['schemas']['CommandString'];
 export type CommandVoid = components['schemas']['CommandVoid'];
 export type CommandZone = components['schemas']['CommandZone'];
 export type Comparator = components['schemas']['Comparator'];
+export type CompileError = components['schemas']['CompileError'];
 export type ConfigValue = components['schemas']['ConfigValue'];
 export type Connection = components['schemas']['Connection'];
 export type CoordinateSystem = components['schemas']['CoordinateSystem'];
@@ -2400,21 +2504,24 @@ export type DifficultyInfo = components['schemas']['DifficultyInfo'];
 export type Entrance = components['schemas']['Entrance'];
 export type EquipSlot = components['schemas']['EquipSlot'];
 export type Equipment = components['schemas']['Equipment'];
+export type GameDifficulties = components['schemas']['GameDifficulties'];
+export type GenerateError = components['schemas']['GenerateError'];
 export type GenericIcon = components['schemas']['GenericIcon'];
 export type Graph = components['schemas']['Graph'];
 export type GreaterOneU8 = components['schemas']['GreaterOneU8'];
 export type GromIcon = components['schemas']['GromIcon'];
 export type HashMapStringConfigArg = components['schemas']['HashMap_String_ConfigArg'];
 export type HashMapStringHashMapStringString = components['schemas']['HashMap_String_HashMap_String_String'];
-export type HashMapStringSnippetInfo = components['schemas']['HashMap_String_SnippetInfo'];
+export type HashMapStringSchemaResultSnippetInfoString = components['schemas']['HashMap_String_SchemaResult_SnippetInfo_String'];
+export type HashMapStringSchemaResultUniversePresetInfoString = components['schemas']['HashMap_String_SchemaResult_UniversePresetInfo_String'];
+export type HashMapStringSchemaResultWorldPresetInfoString = components['schemas']['HashMap_String_SchemaResult_WorldPresetInfo_String'];
 export type HashMapStringSource = components['schemas']['HashMap_String_Source'];
-export type HashMapStringUniversePresetInfo = components['schemas']['HashMap_String_UniversePresetInfo'];
-export type HashMapStringWorldPresetInfo = components['schemas']['HashMap_String_WorldPresetInfo'];
 export type HashMapI32I32 = components['schemas']['HashMap_i32_i32'];
 export type HashSetString = components['schemas']['HashSet_String'];
 export type HashSetTrick = components['schemas']['HashSet_Trick'];
 export type HorizontalAnchor = components['schemas']['HorizontalAnchor'];
 export type Icon = components['schemas']['Icon'];
+export type LevelSchema = components['schemas']['LevelSchema'];
 export type LocDataEntry = components['schemas']['LocDataEntry'];
 export type LogLevelFilter = components['schemas']['LogLevelFilter'];
 export type LupoIcon = components['schemas']['LupoIcon'];
@@ -2440,6 +2547,7 @@ export type PresetGroup = components['schemas']['PresetGroup'];
 export type PresetInfo = components['schemas']['PresetInfo'];
 export type ReachCheck = components['schemas']['ReachCheck'];
 export type ReachCheckBody = components['schemas']['ReachCheckBody'];
+export type Record = components['schemas']['Record'];
 export type Refill = components['schemas']['Refill'];
 export type RefillValue = components['schemas']['RefillValue'];
 export type RelevantUberStates = components['schemas']['RelevantUberStates'];

@@ -25,13 +25,26 @@ jobs:
           cache-dependency-path: |
             ./launcher/package-lock.json
             ./shared/package-lock.json
+            ./web/package-lock.json
           cache: npm
 
-      - run: npm ci
+      - name: Install launcher dependencies
+        run: npm ci
         working-directory: ./launcher
 
-      - run: npm ci
+      - name: Install shared dependencies
+        run: npm ci
         working-directory: ./shared
+
+      - name: Install web dependencies
+        run: npm ci
+        working-directory: ./web
+
+      - name: Generate static web assets
+        working-directory: ./web
+        run: |
+          npm run generate
+          cp -vr ./dist/* ../launcher/web-build/
 
       - run: npm run package
         working-directory: ./launcher

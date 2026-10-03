@@ -60,6 +60,7 @@ export class SettingsService {
       ServerTLS: true,
       DeveloperMode: false,
       DebugControls: false,
+      LogDebugMessagesToFile: false,
       AlwaysShowKeystones: true,
       EnableWorldMap: true,
       GrappleMouseControl: false,

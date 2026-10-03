@@ -16,6 +16,7 @@ export const useSettingsStore = defineStore("settings", () => {
     ServerTLS: ref<boolean>(false),
     DeveloperMode: ref<boolean>(false),
     DebugControls: ref<boolean>(false),
+    LogDebugMessagesToFile: ref<boolean>(false),
     AlwaysShowKeystones: ref<boolean>(false),
     EnableWorldMap: ref<boolean>(false),
     GrappleMouseControl: ref<boolean>(false),

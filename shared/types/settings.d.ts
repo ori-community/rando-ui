@@ -3,6 +3,7 @@ export type Settings = {
   ServerTLS: boolean,
   DeveloperMode: boolean,
   DebugControls: boolean,
+  LogDebugMessagesToFile: boolean,
   AlwaysShowKeystones: boolean,
   EnableWorldMap: boolean,
   GrappleMouseControl: boolean,

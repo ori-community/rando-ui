@@ -102,7 +102,7 @@ const trackedUberStates = [
   {uberId: {group: 23, state: 105}, trackingId: "questsRequired"},
   {uberId: {group: 23, state: 106}, trackingId: "relicsCount"},
   {uberId: {group: 23, state: 107}, trackingId: "relicsRequired"},
-  {uberId: {group: 24, state: 200}, trackingId: "showVisitedEntranceCount"},
+  {uberId: {group: 23, state: 200}, trackingId: "showVisitedEntranceCount"},
   {uberId: {group: 23, state: 500}, trackingId: "relicCurrentAreaUncollected"},
 
   {uberId: {group: 16155, state: 42976}, trackingId: "heartWindSpinners"},

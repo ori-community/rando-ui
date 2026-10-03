@@ -12,7 +12,7 @@ jobs:
   build_launcher:
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-2022 ]
+        os: [ ubuntu-latest ]
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:

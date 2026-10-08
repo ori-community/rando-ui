@@ -968,6 +968,7 @@
         presets,
       })
       worldSettings.value = data.worldSettings
+      seedStringInput.value = data.seed
       selectedTab.value = worldSettings.value.length > 0 ? 0 : "world-setup"
       seedgenTransitionToggle.value = !seedgenTransitionToggle.value
     } catch (e) {

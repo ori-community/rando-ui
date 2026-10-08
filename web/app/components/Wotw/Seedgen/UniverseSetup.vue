@@ -18,13 +18,13 @@
     Set up your worlds and save the settings at the bottom of the seed generator interface.
   </div>
 
-  <template v-if="lastSettings !== null">
+  <template v-if="lastSeedgenUiState !== null">
     <h2 class="mb-2 mt-4">Other Options</h2>
     <wotw-seedgen-preset-button
       large
       preset-id="lastSettings"
       :disabled="loading"
-      @click="restoreLastSettings"
+      @click="restoreLastSeedgenUiState"
     >
       <div class="d-flex ga-3 align-center">
         <v-icon>mdi-backup-restore</v-icon>
@@ -51,7 +51,7 @@
     UniverseSettings,
     UniversePreset,
   } from "@shared/types/seedgen"
-  import type {ValidUniversePresets} from "@shared/types/seedgen-extra"
+  import type {SeedgenUiState, ValidUniversePresets} from "@shared/types/seedgen-extra"
 
   const {
     universePresets,
@@ -64,23 +64,24 @@
   const emit = defineEmits<{
     presetsSelected: [UniversePreset[]],
     settingsSelected: [UniverseSettings],
+    restoreUiState: [SeedgenUiState]
     tempScheduleAssetRefresh: [],
   }>()
 
   const electronApi = useElectronApi()
-  const lastSettings = ref<UniverseSettings | null>(null)
+  const lastSeedgenUiState = ref<SeedgenUiState | null>(null)
   const presetContextMenuOpen = ref(false)
   const presetContextMenuX = ref(0)
   const presetContextMenuY = ref(0)
   const presetContextMenuPresetId = ref("")
 
   onMounted(async () => {
-    lastSettings.value = await electronApi?.fs.getLastSeedgenSettings.query() ?? null
+    lastSeedgenUiState.value = await electronApi?.fs.getLastSeedgenUiState.query() ?? null
   })
 
-  function restoreLastSettings() {
-    if (lastSettings.value !== null) {
-      emit("settingsSelected", lastSettings.value)
+  function restoreLastSeedgenUiState() {
+    if (lastSeedgenUiState.value !== null) {
+      emit("restoreUiState", lastSeedgenUiState.value)
     }
   }
 

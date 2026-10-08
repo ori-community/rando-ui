@@ -4,6 +4,7 @@ import {getSeedgenUserDataPath, getSeedsUserDataPath} from "@launcher/paths"
 import nodeFs from "node:fs"
 import path from "node:path"
 import {UniverseSettings} from "@shared/types/seedgen"
+import {SeedgenUiState} from "@shared/types/seedgen-extra"
 
 export const fs = router({
   /**
@@ -54,29 +55,29 @@ export const fs = router({
   /**
    * Save a given universe preset as the special Last Config universe preset
    */
-  saveLastSeedgenSettings: publicProcedure
+  saveLastSeedgenUiState: publicProcedure
     .input(
       z.object({
-        universeSettings: z.any(),
+        seedgenUiState: z.any(),
       })
     )
     .query(async ({input}): Promise<void> => {
       await nodeFs.promises.mkdir(getSeedgenUserDataPath(), {recursive: true})
-      await nodeFs.promises.writeFile(getSeedgenUserDataPath("last_settings.json"), JSON.stringify(input.universeSettings, null, 2), {encoding: "utf8"})
+      await nodeFs.promises.writeFile(getSeedgenUserDataPath("last_seedgen_ui_state.json"), JSON.stringify(input.seedgenUiState, null, 2), {encoding: "utf8"})
     }),
   /**
    * Save a given universe preset as the special Last Config universe preset
    */
-  getLastSeedgenSettings: publicProcedure
-    .query(async (): Promise<UniverseSettings | null> => {
-      const lastSettingsPath = getSeedgenUserDataPath("last_settings.json")
+  getLastSeedgenUiState: publicProcedure
+    .query(async (): Promise<SeedgenUiState | null> => {
+      const lastSettingsPath = getSeedgenUserDataPath("last_seedgen_ui_state.json")
 
       if (!nodeFs.existsSync(lastSettingsPath)) {
         return null
       }
 
       const fileContents = await nodeFs.promises.readFile(lastSettingsPath, {encoding: "utf8"})
-      return JSON.parse(fileContents) as UniverseSettings
+      return JSON.parse(fileContents) as SeedgenUiState
     }),
   /**
    * Save a given world user preset to disk

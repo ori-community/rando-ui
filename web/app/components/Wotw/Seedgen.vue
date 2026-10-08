@@ -51,7 +51,7 @@
         </v-tabs>
         <v-btn v-if="worldSettings.length > 0" variant="text" @click="resetEverything()">
           <v-icon start>mdi-restore</v-icon>
-          Reset everything
+          Start over
         </v-btn>
       </div>
       <v-card :loading="runningSeedgenActionId !== null">
@@ -105,6 +105,7 @@
                 :universe-presets="validUniversePresets"
                 @presets-selected="onUniverseSetupPresetsSelected"
                 @settings-selected="onUniverseSetupSettingsSelected"
+                @restore-ui-state="restoreSeedgenUiState"
                 @temp-schedule-asset-refresh="scheduleAssetRefresh()"
               />
             </v-window-item>
@@ -213,7 +214,7 @@
         </v-btn>
 
         <div class="opacity-30 pt-2 max-width-600 mx-auto">
-          When generating a seed, all selected settings will be automatically stored and can be loaded by selecting "Previous Settings" in the seed generator.
+          When generating a seed, all selected settings will be automatically stored and can be loaded by selecting "Last Settings" in the seed generator.
         </div>
       </div>
     </div>
@@ -285,7 +286,11 @@
   import {decode} from "cbor2"
   import {clone} from "@shared/utils/clone"
   import {type AxiosError, isAxiosError} from "axios"
-  import type {ValidUniversePresets, ValidWorldPresets} from "@shared/types/seedgen-extra"
+  import type {
+    SeedgenUiState,
+    ValidUniversePresets,
+    ValidWorldPresets,
+  } from "@shared/types/seedgen-extra"
 
   function getDefaultBingoSettings(): BingoSettings {
     return {
@@ -378,28 +383,13 @@
     "Painting murals in Windtorn Ruins…",
   ])
 
-  type SeedgenSessionSettings = {
-    worldSettings: typeof worldSettings.value,
-    seedString: typeof seedString.value,
-    bingoSettings: typeof bingoSettings.value,
-    enableRaceMode: typeof enableRaceMode.value,
-  }
-
   onMounted(async () => {
     await loadSeedgenAssets()
 
     const storedSettingsJson = sessionStorage.getItem("seedgen-settings")
     if (storedSettingsJson !== null) {
-      const storedSettings = JSON.parse(storedSettingsJson) as SeedgenSessionSettings
-
-      worldSettings.value = storedSettings.worldSettings
-      seedString.value = storedSettings.seedString
-      bingoSettings.value = storedSettings.bingoSettings
-      enableRaceMode.value = storedSettings.enableRaceMode
-
-      if (worldSettings.value.length > 0) {
-        selectedTab.value = worldSettings.value.length - 1
-      }
+      const state = JSON.parse(storedSettingsJson) as SeedgenUiState
+      restoreSeedgenUiState(state)
     }
   })
 
@@ -407,24 +397,58 @@
     worldSettings.value = []
     seedString.value = null
     bingoSettings.value = getDefaultBingoSettings()
+    enableBingo.value = false
     enableRaceMode.value = false
     selectedTab.value = "world-setup"
     seedgenTransitionToggle.value = !seedgenTransitionToggle.value
     sessionStorage.removeItem("seedgen-settings")
   }
 
-  function saveSessionSettings() {
-    const sessionSettings: SeedgenSessionSettings = {
+  const SEEDGEN_UI_STATE_VERSION = 1
+
+  function getSeedgenUiState(): SeedgenUiState {
+    return {
+      version: SEEDGEN_UI_STATE_VERSION,
       worldSettings: worldSettings.value,
       seedString: seedString.value,
       bingoSettings: bingoSettings.value,
+      enableBingo: enableBingo.value,
       enableRaceMode: enableRaceMode.value,
     }
-
-    sessionStorage.setItem("seedgen-settings", JSON.stringify(sessionSettings))
   }
 
-  watch([worldSettings, seedString, bingoSettings, enableRaceMode], () => {
+  function restoreSeedgenUiState(state: SeedgenUiState) {
+    if (state.version !== SEEDGEN_UI_STATE_VERSION) {
+      snackbarStore.add({
+        title: "Failed to restore settings",
+        text: "The stored settings are incompatible. Please set up your worlds manually.",
+        prependIcon: "mdi-close-octagon-outline",
+        color: "error",
+        timer: "bottom",
+        timerColor: "error-darken-2",
+        timeout: 6000,
+      })
+      return
+    }
+
+    worldSettings.value = state.worldSettings
+    seedString.value = state.seedString
+    bingoSettings.value = state.bingoSettings
+    enableBingo.value = state.enableBingo
+    enableRaceMode.value = state.enableRaceMode
+
+    if (worldSettings.value.length > 0) {
+      selectedTab.value = worldSettings.value.length - 1
+    }
+
+    seedgenTransitionToggle.value = !seedgenTransitionToggle.value
+  }
+
+  function saveSessionSettings() {
+    sessionStorage.setItem("seedgen-settings", JSON.stringify(getSeedgenUiState()))
+  }
+
+  watch([worldSettings, seedString, bingoSettings, enableRaceMode, enableBingo], () => {
     saveSessionSettings()
   }, {deep: true})
 
@@ -632,14 +656,19 @@
     })
   }
 
+  async function saveLastSeedgenUiState() {
+    if (electronApi !== null) {
+      await electronApi.fs.saveLastSeedgenUiState.query({seedgenUiState: getSeedgenUiState()})
+      sessionStorage.removeItem("seedgen-settings")
+    }
+  }
+
   /**
    * Generates a seed for offline use. This does not necessarily use the local
    * seed generator.
    */
   async function generateOfflineSeedFromCurrentSettings() {
-    if (electronApi !== null) {
-      await electronApi.fs.saveLastSeedgenSettings.query({universeSettings: getUniverseSettings()})
-    }
+    await saveLastSeedgenUiState()
 
     const {data}: { data: Blob } = await seedgenAxios.post("/generate", getUniverseSettings(), {
       responseType: "blob",
@@ -673,6 +702,8 @@
    * Always uses the server-side seedgen.
    */
   async function generateOnlineGameFromCurrentSettings() {
+    await saveLastSeedgenUiState()
+
     const universeSettings = getUniverseSettings()
     const clonedUniverseSettings = clone(universeSettings)
 

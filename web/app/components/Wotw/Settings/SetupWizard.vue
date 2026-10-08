@@ -117,7 +117,7 @@
     modloaderMethodsMetadata,
   } from '~/assets/uiMetadata'
 
-  const emits = defineEmits<{
+  const emit = defineEmits<{
     setupFinished: [],
   }>()
 
@@ -230,7 +230,7 @@
       setupErrorMessages.value = (await electronApi.launcher.validateSetup.query()).map(e => launchSetupValidationErrorMessages[e])
 
       if (setupErrorMessages.value.length === 0) {
-        emits("setupFinished")
+        emit("setupFinished")
       }
     } catch (e) {
       setupErrorMessages.value = [String(e)]

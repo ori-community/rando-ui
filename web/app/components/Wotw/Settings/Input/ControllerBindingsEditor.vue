@@ -35,11 +35,11 @@
     modelValue: ControllerInputBinding | null,
   }>()
 
-  const emits = defineEmits<{
+  const emit = defineEmits<{
     "update:modelValue": [ControllerInputBinding | null],
   }>()
 
-  const model = useVModel(props, "modelValue", emits)
+  const model = useVModel(props, "modelValue", emit)
   const gamepad = shallowRef<Gamepad | null>(null)
   const updateIntervalId = ref<number | null>(null)
 

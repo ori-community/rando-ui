@@ -91,11 +91,11 @@
     worldSnippetConfig: HashMapStringHashMapStringString,
   }>()
 
-  const emits = defineEmits<{
+  const emit = defineEmits<{
     'update:worldSnippetConfig': [HashMapStringHashMapStringString],
   }>()
 
-  const worldSnippetConfigModel = useVModel(props, 'worldSnippetConfig', emits)
+  const worldSnippetConfigModel = useVModel(props, 'worldSnippetConfig', emit)
   const stringConfigValue = computed({
     get() {
       return worldSnippetConfigModel.value?.[props.snippetIdentifier]?.[props.configIdentifier] ?? valueToString(props.configMetadata.value.default)

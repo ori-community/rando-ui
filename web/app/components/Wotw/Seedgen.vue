@@ -12,136 +12,212 @@
     </v-list>
   </v-menu>
 
-  <v-tabs v-if="seedgenAssetsError === null" v-model="selectedWorldIndex" color="primary">
-    <v-expand-x-transition group>
-      <template v-if="worldSettings.length >= 2 || selectedWorldIndex === null">
-        <div v-for="nth in worldSettings.length" :key="nth - 1">
-          <v-tab
-            :value="nth - 1"
-            :variant="worldContextMenuOpen && worldContextMenuSelectedWorldIndex === nth - 1 ? 'tonal' : 'text'"
-            @contextmenu="(event: MouseEvent) => onWorldTabContextMenu(nth - 1, event)"
-          >
-            <v-icon start>mdi-earth</v-icon>
-            {{ nth }}
+  <v-scroll-y-reverse-transition mode="out-in">
+    <div :key="String(seedgenTransitionToggle)">
+      <div class="d-flex ga-4">
+        <v-tabs v-if="seedgenAssetsError === null" v-model="selectedTab" color="primary" class="flex-grow-1">
+          <v-expand-x-transition>
+            <div v-show="worldSettings.length >= 2 || selectedTab === 'world-setup'" class="d-flex">
+              <v-expand-x-transition group>
+                <div v-for="nth in worldSettings.length" :key="nth - 1">
+                  <v-tab
+                    :value="nth - 1"
+                    :variant="worldContextMenuOpen && worldContextMenuSelectedWorldIndex === nth - 1 ? 'tonal' : 'text'"
+                    @contextmenu="(event: MouseEvent) => onWorldTabContextMenu(nth - 1, event)"
+                  >
+                    <v-icon start>mdi-earth</v-icon>
+                    {{ nth }}
+                  </v-tab>
+                </div>
+              </v-expand-x-transition>
+            </div>
+          </v-expand-x-transition>
+
+          <v-tab value="world-setup">
+            <v-icon start>mdi-plus</v-icon>
+            <template v-if="worldSettings.length === 0">Create World</template>
+            <template v-else-if="worldSettings.length === 1">Multiworld</template>
+            <template v-else>Add World</template>
           </v-tab>
-        </div>
-      </template>
-    </v-expand-x-transition>
 
-    <v-tab :disabled="worldSettings.length === 0" :value="null">
-      <v-icon start>mdi-plus</v-icon>
-      <template v-if="worldSettings.length <= 1">Multiworld</template>
-      <template v-else>Add World</template>
-    </v-tab>
-  </v-tabs>
-  <v-card :loading="runningSeedgenActionId !== null">
-    <v-alert v-if="seedgenAssetsError !== null" color="error" icon="mdi-close-octagon-outline">
-      <v-alert-title>Failed to start seedgen server</v-alert-title>
-      <div>
-        {{ seedgenAssetsError }}
-      </div>
-      <div>
-        More details might have been written to the launcher log.
-      </div>
-
-      <div class="mt-2">
-        <v-btn variant="tonal" @click="loadSeedgenAssets()">Retry</v-btn>
-      </div>
-    </v-alert>
-    <v-skeleton-loader
-      v-else-if="universePresets === null || worldPresets === null || difficulties === null || snippetsInfo === null || spawnableAnchors === null"
-      class="ma-4"
-      type="article"
-    />
-    <template v-else>
-      <v-window :model-value="selectedWorldIndex ?? worldSettings.length" :show-arrows="false">
-        <v-window-item v-for="nth in worldSettings.length" :key="nth - 1" class="pa-4">
-          <wotw-seedgen-world-settings
-            v-model="worldSettings[nth - 1]!"
-            :snippets-info="snippetsInfo"
-            :difficulties="difficulties"
-            :tricks="tricks"
-            :spawnable-anchors="spawnableAnchors"
-          />
-        </v-window-item>
-        <v-window-item :key="worldSettings.length" class="pa-3">
-          <wotw-seedgen-world-setup
-            :grouped-world-preset-ids="groupedWorldPresetIds"
-            :world-presets="worldPresets"
-            :existing-world-settings="worldSettings"
-            :loading="worldSetupLoading"
-            @presets-selected="onWorldSetupPresetsSelected"
-            @settings-selected="onWorldSetupSettingsSelected"
-          />
-        </v-window-item>
-      </v-window>
-    </template>
-  </v-card>
-
-  <div v-if="worldSettings.length > 0" class="mt-4">
-    <v-card class="pa-4 mt-2">
-      <v-row>
-        <v-col cols="6">
-          <div class="d-flex flex-column">
-            <div>
-              <span>Seed</span>
+          <v-expand-x-transition>
+            <div v-show="worldSettings.length === 0">
+              <v-tab value="universe-setup">
+                <v-icon start>mdi-backup-restore</v-icon>
+                Load Universe
+              </v-tab>
             </div>
-            <div class="text-caption opacity-70">
-              Value to initialize the random number generator with. Changing the seed even just slightly will result
-              in completely different item placements.
-            </div>
-          </div>
-        </v-col>
-        <v-col cols="6" class="d-flex align-center">
-          <v-text-field
-            v-model="seedStringInput"
-            hide-details
-            append-icon="mdi-dice-multiple-outline"
-            placeholder="Leave empty for random seed"
-            clearable
-          />
-        </v-col>
-      </v-row>
-    </v-card>
-    <v-card class="pa-4 mt-2">
-      <v-switch v-model="enableRaceMode" inset hide-details color="secondary" append-icon="mdi-timer-play-outline">
-        <template #label>
+          </v-expand-x-transition>
+        </v-tabs>
+        <v-btn v-if="worldSettings.length > 0" variant="text" @click="resetEverything()">
+          <v-icon start>mdi-restore</v-icon>
+          Reset everything
+        </v-btn>
+      </div>
+      <v-card :loading="runningSeedgenActionId !== null">
+        <v-alert v-if="seedgenAssetsError !== null" color="error" icon="mdi-close-octagon-outline">
+          <v-alert-title>Failed to start seedgen server</v-alert-title>
           <div>
-            <div>Race Mode</div>
-            <div class="text-caption opacity-70">
-              Enable an in-game lobby that starts the game for all players at the same time when they are ready.
-            </div>
+            {{ seedgenAssetsError }}
           </div>
-        </template>
-      </v-switch>
-    </v-card>
+          <div>
+            More details might have been written to the launcher log.
+          </div>
 
-    <v-card class="mt-2">
-      <div class="pa-4">
-        <v-switch v-model="enableBingo" inset hide-details color="secondary" append-icon="mdi-checkerboard">
-          <template #label>
-            <div>
-              <div>Play Bingo</div>
-              <div class="text-caption opacity-70">
-                Play online bingo alone or with friends.
-                When playing with friends, players in the same universe work as one team while optionally racing players
-                in other universes.
+          <div class="mt-2">
+            <v-btn variant="tonal" @click="loadSeedgenAssets()">Retry</v-btn>
+          </div>
+        </v-alert>
+        <v-skeleton-loader
+          v-else-if="validUniversePresets === null || validWorldPresets === null || difficulties === null || snippetsInfo === null || spawnableAnchors === null"
+          class="ma-4"
+          type="article"
+        />
+        <template v-else>
+          <v-window :model-value="selectedTab" :show-arrows="false">
+            <v-window-item v-for="nth in worldSettings.length" :key="nth - 1" :value="nth - 1">
+              <wotw-seedgen-world-settings
+                v-model="worldSettings[nth - 1]!"
+                :snippets-info="snippetsInfo"
+                :difficulties="difficulties"
+                :tricks="tricks"
+                :spawnable-anchors="spawnableAnchors"
+                :world-presets="validWorldPresets ?? {}"
+                @delete="deleteWorld(nth - 1)"
+                @duplicate="duplicateWorld(nth - 1)"
+                @temp-schedule-asset-refresh="scheduleAssetRefresh()"
+              />
+            </v-window-item>
+            <v-window-item :key="worldSettings.length" class="pa-3" value="world-setup" eager>
+              <wotw-seedgen-world-setup
+                :grouped-world-preset-ids="groupedWorldPresetIds"
+                :world-presets="validWorldPresets"
+                :existing-world-settings="worldSettings"
+                :loading="worldSetupLoading"
+                @presets-selected="onWorldSetupPresetsSelected"
+                @settings-selected="onWorldSetupSettingsSelected"
+                @temp-schedule-asset-refresh="scheduleAssetRefresh()"
+              />
+            </v-window-item>
+            <v-window-item :key="worldSettings.length + 1" class="pa-3" value="universe-setup" eager>
+              <wotw-seedgen-universe-setup
+                :loading="universeSetupLoading"
+                :universe-presets="validUniversePresets"
+                @presets-selected="onUniverseSetupPresetsSelected"
+                @settings-selected="onUniverseSetupSettingsSelected"
+                @temp-schedule-asset-refresh="scheduleAssetRefresh()"
+              />
+            </v-window-item>
+          </v-window>
+        </template>
+      </v-card>
+
+      <div v-if="worldSettings.length > 0" class="mt-4">
+        <v-card class="pa-4 mt-2">
+          <v-row>
+            <v-col cols="6">
+              <div class="d-flex flex-column">
+                <div>
+                  <span>Seed</span>
+                </div>
+                <div class="text-caption opacity-70">
+                  Value to initialize the random number generator with. Changing the seed even just slightly will result
+                  in completely different item placements.
+                </div>
+              </div>
+            </v-col>
+            <v-col cols="6" class="d-flex align-center">
+              <v-text-field
+                v-model="seedStringInput"
+                hide-details
+                append-icon="mdi-dice-multiple-outline"
+                placeholder="Leave empty for random seed"
+                clearable
+              />
+            </v-col>
+          </v-row>
+        </v-card>
+        <v-card class="pa-4 mt-2">
+          <v-switch v-model="enableRaceMode" inset hide-details color="secondary" append-icon="mdi-timer-play-outline">
+            <template #label>
+              <div>
+                <div>Race Mode</div>
+                <div class="text-caption opacity-70">
+                  Enable an in-game lobby that starts the game for all players at the same time when they are ready.
+                </div>
+              </div>
+            </template>
+          </v-switch>
+        </v-card>
+
+        <v-card class="mt-2">
+          <div class="pa-4">
+            <v-switch v-model="enableBingo" inset hide-details color="secondary" append-icon="mdi-checkerboard">
+              <template #label>
+                <div>
+                  <div>Play Bingo</div>
+                  <div class="text-caption opacity-70">
+                    Play online bingo alone or with friends.
+                    When playing with friends, players in the same universe work as one team while optionally racing players
+                    in other universes.
+                  </div>
+                </div>
+              </template>
+            </v-switch>
+          </div>
+
+          <v-expand-transition>
+            <div v-if="enableBingo">
+              <v-divider/>
+              <div class="pa-4">
+                <wotw-seedgen-bingo-settings v-model="bingoSettings"/>
               </div>
             </div>
-          </template>
-        </v-switch>
+          </v-expand-transition>
+        </v-card>
       </div>
 
-      <v-expand-transition>
-        <div v-if="enableBingo">
-          <v-divider/>
-          <div class="pa-4">
-            <wotw-seedgen-bingo-settings v-model="bingoSettings"/>
-          </div>
+      <div class="mt-6 d-flex justify-center gap-6">
+        <div
+          v-for="action in seedgenActions"
+          :key="action.id"
+        >
+          <v-btn
+            :ref="
+          (component) => {
+            if (component && action.id === runningSeedgenActionId) {
+              runningSeedgenActionButtonElement = (component as ComponentPublicInstance).$el
+            }
+          }
+        "
+            :loading="runningSeedgenActionId === action.id"
+            :disabled="action.disabled || runningSeedgenActionId !== null"
+            size="x-large"
+            color="accent"
+            :variant="action.disabled ? 'tonal' : 'elevated'"
+            @click="action.handler"
+          >
+            <v-icon start>{{ action.icon }}</v-icon>
+            {{ action.label }}
+          </v-btn>
+          <v-tooltip v-if="!!action.hint" activator="parent" location="bottom" open-delay="400">
+            <span class="text-pre">{{ action.hint }}</span>
+          </v-tooltip>
         </div>
-      </v-expand-transition>
-    </v-card>
-  </div>
+      </div>
+
+      <div v-if="isElectron && seedgenActions.length > 0" class="mt-8 text-center gap-6">
+        <v-btn variant="tonal" @click="openSaveUniversePresetDialog()">
+          <v-icon start>mdi-content-save-outline</v-icon>
+          Save As Custom Universe Preset
+        </v-btn>
+
+        <div class="opacity-30 pt-2 max-width-600 mx-auto">
+          When generating a seed, all selected settings will be automatically stored and can be loaded by selecting "Previous Settings" in the seed generator.
+        </div>
+      </div>
+    </div>
+  </v-scroll-y-reverse-transition>
 
   <v-dialog :model-value="runningSeedgenActionId !== null" persistent max-width="600" opacity="0.75">
     <v-card class="pa-16 text-center loading-text">
@@ -162,34 +238,26 @@
     </v-card>
   </v-dialog>
 
-  <div class="mt-6 d-flex justify-center gap-6">
-    <div
-      v-for="action in seedgenActions"
-      :key="action.id"
-    >
-      <v-btn
-        :ref="
-          (component) => {
-            if (component && action.id === runningSeedgenActionId) {
-              runningSeedgenActionButtonElement = (component as ComponentPublicInstance).$el
-            }
-          }
-        "
-        :loading="runningSeedgenActionId === action.id"
-        :disabled="action.disabled || runningSeedgenActionId !== null"
-        size="x-large"
-        color="accent"
-        :variant="action.disabled ? 'tonal' : 'elevated'"
-        @click="action.handler"
-      >
-        <v-icon start>{{ action.icon }}</v-icon>
-        {{ action.label }}
-      </v-btn>
-      <v-tooltip v-if="!!action.hint" activator="parent" location="bottom" open-delay="400">
-        <span class="text-pre">{{ action.hint }}</span>
-      </v-tooltip>
-    </div>
-  </div>
+  <v-dialog v-model="saveUniversePresetDialogOpen" max-width="550">
+    <v-card title="Save Universe Preset">
+      <v-card-text>
+        <v-text-field v-model="saveUniversePresetDialogPresetName" :disabled="saveUniversePresetDialogLoading" autofocus label="Preset name" />
+        <v-textarea
+          v-model="saveUniversePresetDialogPresetDescription"
+          :disabled="saveUniversePresetDialogLoading"
+          label="Preset description"
+          auto-grow
+          rows="3"
+        />
+
+        <div class="d-flex justify-end">
+          <v-btn color="accent" variant="flat" :loading="saveUniversePresetDialogLoading" @click="saveUniversePreset">
+            Save
+          </v-btn>
+        </div>
+      </v-card-text>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -200,7 +268,7 @@
     UniverseSettings,
     WorldPreset,
     WorldSettings, SpawnAnchors, HashMapStringSchemaResultWorldPresetInfoString,
-    HashMapStringSchemaResultUniversePresetInfoString, HashMapStringSchemaResultSnippetInfoString,
+    HashMapStringSchemaResultUniversePresetInfoString, HashMapStringSchemaResultSnippetInfoString, UniversePreset,
   } from "@shared/types/seedgen"
   import type {
     BingoSettings,
@@ -217,6 +285,18 @@
   import {decode} from "cbor2"
   import {clone} from "@shared/utils/clone"
   import {type AxiosError, isAxiosError} from "axios"
+  import type {ValidUniversePresets, ValidWorldPresets} from "@shared/types/seedgen-extra"
+
+  function getDefaultBingoSettings(): BingoSettings {
+    return {
+      discovery: null,
+      revealFirstNCompletedGoals: 0,
+      lockout: false,
+      size: 5,
+      goalType: "lines",
+      goalAmount: 3,
+    }
+  }
 
   const isElectron = useIsElectron()
   const electronApi = useElectronApi()
@@ -224,30 +304,29 @@
   const {axios} = useAxios()
   const launcherHelper = useLauncherHelper()
   const snackbarStore = useSnackbarStore()
+  const seedgenTransitionToggle = ref(false)
   const worldSetupLoading = ref(false)
   const worldContextMenuOpen = ref(false)
   const worldContextMenuX = ref(0.0)
   const worldContextMenuY = ref(0.0)
   const worldContextMenuSelectedWorldIndex = ref(0)
+  const universeSetupLoading = ref(false)
+  const saveUniversePresetDialogOpen = ref(false)
+  const saveUniversePresetDialogPresetName = ref("")
+  const saveUniversePresetDialogPresetDescription = ref("")
+  const saveUniversePresetDialogLoading = ref(false)
   const seedString = ref<string | null>(null)
   const worldSettings = ref<WorldSettings[]>([])
   const universePresets = ref<HashMapStringSchemaResultUniversePresetInfoString | null>(null)
   const worldPresets = ref<HashMapStringSchemaResultWorldPresetInfoString | null>(null)
   const difficulties = ref<DifficultyInfo[]>([])
   const tricks = ref<TrickInfo[]>([])
-  const selectedWorldIndex = ref<number | null>(null)
+  const selectedTab = ref<number | "world-setup" | "universe-setup">("world-setup")  // number = world index
   const snippetsInfo = ref<HashMapStringSchemaResultSnippetInfoString | null>(null)
   const spawnableAnchors = ref<SpawnAnchors | null>(null)
   const enableBingo = ref(false)
   const enableRaceMode = ref(false)
-  const bingoSettings = ref<BingoSettings>({
-    discovery: null,
-    revealFirstNCompletedGoals: 0,
-    lockout: false,
-    size: 5,
-    goalType: "lines",
-    goalAmount: 3,
-  })
+  const bingoSettings = ref<BingoSettings>(getDefaultBingoSettings())
   const userStore = useUserStore()
   const generatingMessageIndex = ref(0)
   const seedgenAssetsError = ref<string | null>(null)
@@ -299,9 +378,55 @@
     "Painting murals in Windtorn Ruins…",
   ])
 
-  onMounted(() => {
-    loadSeedgenAssets()
+  type SeedgenSessionSettings = {
+    worldSettings: typeof worldSettings.value,
+    seedString: typeof seedString.value,
+    bingoSettings: typeof bingoSettings.value,
+    enableRaceMode: typeof enableRaceMode.value,
+  }
+
+  onMounted(async () => {
+    await loadSeedgenAssets()
+
+    const storedSettingsJson = sessionStorage.getItem("seedgen-settings")
+    if (storedSettingsJson !== null) {
+      const storedSettings = JSON.parse(storedSettingsJson) as SeedgenSessionSettings
+
+      worldSettings.value = storedSettings.worldSettings
+      seedString.value = storedSettings.seedString
+      bingoSettings.value = storedSettings.bingoSettings
+      enableRaceMode.value = storedSettings.enableRaceMode
+
+      if (worldSettings.value.length > 0) {
+        selectedTab.value = worldSettings.value.length - 1
+      }
+    }
   })
+
+  function resetEverything() {
+    worldSettings.value = []
+    seedString.value = null
+    bingoSettings.value = getDefaultBingoSettings()
+    enableRaceMode.value = false
+    selectedTab.value = "world-setup"
+    seedgenTransitionToggle.value = !seedgenTransitionToggle.value
+    sessionStorage.removeItem("seedgen-settings")
+  }
+
+  function saveSessionSettings() {
+    const sessionSettings: SeedgenSessionSettings = {
+      worldSettings: worldSettings.value,
+      seedString: seedString.value,
+      bingoSettings: bingoSettings.value,
+      enableRaceMode: enableRaceMode.value,
+    }
+
+    sessionStorage.setItem("seedgen-settings", JSON.stringify(sessionSettings))
+  }
+
+  watch([worldSettings, seedString, bingoSettings, enableRaceMode], () => {
+    saveSessionSettings()
+  }, {deep: true})
 
   const seedStringInput = computed<string>({
     set(value) {
@@ -367,20 +492,13 @@
   const validUniversePresets = computed(() =>
     universePresets.value === null
       ? null
-      : Object.fromEntries(Object.entries(universePresets.value).filter(([, e]) => e.status === "Ok")) as {[key: string]: Extract<HashMapStringSchemaResultUniversePresetInfoString[string], { status: "Ok" }> }
+      : Object.fromEntries(Object.entries(universePresets.value).filter(([, e]) => e.status === "Ok")) as ValidUniversePresets
   )
 
   const validWorldPresets = computed(() =>
     worldPresets.value === null
       ? null
-      : Object.fromEntries(Object.entries(worldPresets.value).filter(([, e]) => e.status === "Ok")) as {[key: string]: Extract<HashMapStringSchemaResultWorldPresetInfoString[string], { status: "Ok" }> }
-  )
-
-  // TODO: Show custom universe presets
-  const _groupedUniversePresetIds = computed(
-    () => validUniversePresets.value !== null
-      ? groupPresets(validUniversePresets.value)
-      : {},
+      : Object.fromEntries(Object.entries(worldPresets.value).filter(([, e]) => e.status === "Ok")) as ValidWorldPresets
   )
 
   const groupedWorldPresetIds = computed(
@@ -412,8 +530,8 @@
             return difficultyValuesByName.value[difficultyA] - difficultyValuesByName.value[difficultyB]
           }
 
-          const tricksA = presetA.tricks ?? {Some: []}
-          const tricksB = presetB.tricks ?? {Some: []}
+          const tricksA = presetA.tricks ?? []
+          const tricksB = presetB.tricks ?? []
 
           if (tricksA === "All" && tricksB !== "All") {
             return -1
@@ -423,8 +541,8 @@
             return 1
           }
 
-          if (tricksA !== "All" && tricksB !== "All" && tricksA.Some.length !== tricksB.Some.length) {
-            return tricksA.Some.length - tricksB.Some.length
+          if (tricksA !== "All" && tricksB !== "All" && tricksA.length !== tricksB.length) {
+            return tricksA.length - tricksB.length
           }
 
           return a.localeCompare(b)
@@ -519,6 +637,10 @@
    * seed generator.
    */
   async function generateOfflineSeedFromCurrentSettings() {
+    if (electronApi !== null) {
+      await electronApi.fs.saveLastSeedgenSettings.query({universeSettings: getUniverseSettings()})
+    }
+
     const {data}: { data: Blob } = await seedgenAxios.post("/generate", getUniverseSettings(), {
       responseType: "blob",
       params: {
@@ -770,7 +892,7 @@
     try {
       const {data}: { data: WorldSettings } = await seedgenAxios.post('/presets/world/apply', {presets})
       worldSettings.value.push(data)
-      selectedWorldIndex.value = worldSettings.value.length - 1
+      selectedTab.value = worldSettings.value.length - 1
     } catch (e) {
       console.error(e)
     }
@@ -780,23 +902,21 @@
 
   function onWorldSetupSettingsSelected(settings: WorldSettings) {
     worldSettings.value.push(settings)
-    selectedWorldIndex.value = worldSettings.value.length - 1
+    selectedTab.value = worldSettings.value.length - 1
   }
 
   function duplicateWorld(worldIndex: number) {
     worldSettings.value.push(clone(worldSettings.value[worldIndex]!))
-
-    // Workaround for visual glitch
-    setTimeout(() => selectedWorldIndex.value = worldSettings.value.length - 1, 0)
+    setTimeout(() => selectedTab.value = worldSettings.value.length - 1, 0)
   }
 
   function deleteWorld(worldIndex: number) {
     worldSettings.value.splice(worldIndex, 1)
     setTimeout(() => {
       if (worldSettings.value.length === 0) {
-        selectedWorldIndex.value = null
-      } else if (selectedWorldIndex.value !== null && selectedWorldIndex.value >= worldIndex) {
-        selectedWorldIndex.value = Math.max(selectedWorldIndex.value - 1, 0)
+        selectedTab.value = "world-setup"
+      } else if (typeof selectedTab.value === "number" && selectedTab.value >= worldIndex) {
+        selectedTab.value = Math.max(selectedTab.value - 1, 0)
       }
     }, 0)
   }
@@ -806,6 +926,82 @@
     worldContextMenuY.value = event.clientY
     worldContextMenuOpen.value = true
     worldContextMenuSelectedWorldIndex.value = worldIndex
+  }
+
+  async function onUniverseSetupPresetsSelected(presets: UniversePreset[]) {
+    universeSetupLoading.value = true
+
+    try {
+      const {data}: { data: UniverseSettings } = await seedgenAxios.post('/presets/universe/apply', {
+        seed: "",
+        presets,
+      })
+      worldSettings.value = data.worldSettings
+      selectedTab.value = worldSettings.value.length > 0 ? 0 : "world-setup"
+      seedgenTransitionToggle.value = !seedgenTransitionToggle.value
+    } catch (e) {
+      console.error(e)
+    }
+
+    universeSetupLoading.value = false
+  }
+
+  function onUniverseSetupSettingsSelected(settings: UniverseSettings) {
+    worldSettings.value = settings.worldSettings
+    selectedTab.value = worldSettings.value.length > 0 ? 0 : "world-setup"
+    seedgenTransitionToggle.value = !seedgenTransitionToggle.value
+  }
+
+  function openSaveUniversePresetDialog() {
+    saveUniversePresetDialogPresetName.value = ""
+    saveUniversePresetDialogPresetDescription.value = ""
+    saveUniversePresetDialogOpen.value = true
+  }
+
+  async function saveUniversePreset() {
+    if (electronApi === null) {
+      return
+    }
+
+    saveUniversePresetDialogLoading.value = true
+
+    try {
+      const trimmedName = saveUniversePresetDialogPresetName.value.trim()
+      const trimmedDescription = saveUniversePresetDialogPresetDescription.value.trim()
+
+      const preset: UniversePreset = {
+        info: {
+          name: trimmedName,
+          description: trimmedDescription.length === 0 ? null : trimmedDescription,
+          group: null,
+        },
+        seed: seedString.value,
+        worldSettings: worldSettings.value,
+      }
+
+      await electronApi.fs.saveUniversePreset.query({
+        name: trimmedName,
+        preset,
+      })
+
+      snackbarStore.add({
+        text: "Universe preset saved",
+        timer: "bottom",
+        timeout: 4000,
+      })
+      scheduleAssetRefresh()
+
+      saveUniversePresetDialogOpen.value = false
+    } catch (e) {
+      console.error(e)
+    }
+
+    saveUniversePresetDialogLoading.value = false
+  }
+
+  // TODO: Temporary until we have a websocket
+  function scheduleAssetRefresh() {
+    setTimeout(() => loadSeedgenAssets(), 2000)
   }
 </script>
 
@@ -832,5 +1028,9 @@
       justify-content: center;
       align-items: center;
     }
+  }
+
+  .max-width-600 {
+    max-width: 600px;
   }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pa-4">
     <h3 class="mb-1">General</h3>
 
     <v-row>
@@ -147,6 +147,78 @@
       </v-card>
     </v-dialog>
   </div>
+  <v-card v-if="isElectron" tile variant="tonal" class="px-4 py-2">
+    <div class="d-flex align-center ga-4">
+      <div class="d-flex ga-1 align-center">
+        <div class="pr-1">World</div>
+        <v-btn size="36" variant="flat" icon @click="emit('delete')">
+          <v-icon>mdi-delete-outline</v-icon>
+          <v-tooltip activator="parent" content-class="bg-surface-light" location="top">
+            Delete this world
+          </v-tooltip>
+        </v-btn>
+        <v-btn size="36" variant="flat" icon @click="emit('duplicate')">
+          <v-icon>mdi-content-duplicate</v-icon>
+          <v-tooltip activator="parent" content-class="bg-surface-light" location="top">
+            Duplicate this world
+          </v-tooltip>
+        </v-btn>
+      </div>
+      <v-divider vertical />
+      <v-spacer />
+      <v-divider vertical />
+      <div class="d-flex ga-1 align-center">
+        <div class="pr-1">World Presets</div>
+        <v-btn size="36" variant="flat" icon @click="openSaveWorldPresetDialog()">
+          <v-icon>mdi-content-save-outline</v-icon>
+          <v-tooltip activator="parent" content-class="bg-surface-light" location="top">
+            Save current world settings as base preset
+          </v-tooltip>
+        </v-btn>
+        <v-btn size="36" variant="flat" icon>
+          <v-icon>mdi-folder-arrow-up-outline</v-icon>
+          <v-tooltip activator="parent" content-class="bg-surface-light" location="top">
+            Apply a preset to current world settings
+          </v-tooltip>
+
+          <v-menu activator="parent" location="top end" :persistent="presetIdApplying !== null">
+            <v-list>
+              <v-list-item v-for="presetId in Object.keys(nonBasePresets)" :key="presetId" :disabled="presetIdApplying !== null" @click="applyPreset(presetId)">
+                <div class="d-flex align-center ga-3">
+                  <v-icon>mdi-import</v-icon>
+                  <div>
+                    <v-list-item-title>{{ nonBasePresets[presetId]?.content.info?.name ?? presetId }}</v-list-item-title>
+                    <v-list-item-subtitle v-if="!!nonBasePresets[presetId]?.content.info?.description">{{ nonBasePresets[presetId].content.info.description }}</v-list-item-subtitle>
+                  </div>
+                </div>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-btn>
+      </div>
+
+      <v-dialog v-model="saveWorldPresetDialogOpen" max-width="550">
+        <v-card title="Save World Preset">
+          <v-card-text>
+            <v-text-field v-model="presetName" :disabled="saveWorldPresetDialogLoading" autofocus label="Preset name" />
+            <v-textarea
+              v-model="presetDescription"
+              :disabled="saveWorldPresetDialogLoading"
+              label="Preset description"
+              auto-grow
+              rows="3"
+            />
+
+            <div class="d-flex justify-end">
+              <v-btn color="accent" variant="flat" :loading="saveWorldPresetDialogLoading" @click="saveWorldPreset">
+                Save
+              </v-btn>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+    </div>
+  </v-card>
 </template>
 
 <script lang="ts" setup>
@@ -157,9 +229,11 @@
     HashMapStringSchemaResultSnippetInfoString,
     SnippetInfo, SpawnAnchors,
     Trick,
-    TrickInfo,
+    TrickInfo, WorldPreset,
     WorldSettings,
   } from "@shared/types/seedgen"
+  import type {ValidWorldPresets} from "@shared/types/seedgen-extra"
+  import {useSeedgenAxios} from "~/composables/useSeedgenAxios"
 
   const props = defineProps<{
     modelValue: WorldSettings,
@@ -167,18 +241,35 @@
     difficulties: DifficultyInfo[],
     tricks: TrickInfo[],
     spawnableAnchors: SpawnAnchors,
+    worldPresets: ValidWorldPresets,
   }>()
 
-  const emits = defineEmits<{
+  const emit = defineEmits<{
     "update:modelValue": [WorldSettings],
+    "delete": [],
+    "duplicate": [],
+    "tempScheduleAssetRefresh": [],
   }>()
 
-  const model = useVModel(props, "modelValue", emits)
+  const model = useVModel(props, "modelValue", emit)
 
   const invalidSelectedTricks = ref<Set<string>>(new Set())
   const tricksInvalidBecauseOfDifficultyChangeDialogOpen = ref(false)
   const difficultyToSwitchToWhenConfirmingTrickCleanup = ref<Difficulty>("Moki")
   const gameDifficultiesDialogOpen = ref(false)
+  const saveWorldPresetDialogOpen = ref(false)
+  const saveWorldPresetDialogLoading = ref(false)
+  const presetName = ref("")
+  const presetDescription = ref("")
+  const presetIdApplying = ref<string | null>(null)
+  const seedgenAxios = useSeedgenAxios()
+  const nonBasePresets = computed(() => Object.fromEntries(
+    Object.entries(props.worldPresets).filter(p => !p[1].content.info || p[1].content.info.group !== "Base")
+  ))
+
+  const isElectron = useIsElectron()
+  const electronApi = useElectronApi()
+  const snackbarStore = useSnackbarStore()
 
   const validSnippetsInfo = computed(() => Object.fromEntries(Object.entries(props.snippetsInfo).filter(([, e]) => e.status === "Ok")) as {[key: string]: Extract<HashMapStringSchemaResultSnippetInfoString[string], { status: "Ok" }>})
   const visibleSnippetsInfo = computed(() => Object.fromEntries(Object.entries(validSnippetsInfo.value).filter(([, e]) => !e.metadata.hidden)))
@@ -391,6 +482,86 @@
     } else {
       model.value.tricks = availableTricks.value
     }
+  }
+
+  function openSaveWorldPresetDialog() {
+    presetName.value = ""
+    presetDescription.value = ""
+    saveWorldPresetDialogOpen.value = true
+  }
+
+  async function saveWorldPreset() {
+    if (electronApi === null) {
+      return
+    }
+
+    saveWorldPresetDialogLoading.value = true
+
+    try {
+      const trimmedName = presetName.value.trim()
+      const trimmedDescription = presetDescription.value.trim()
+
+      const preset: WorldPreset = {
+        info: {
+          name: trimmedName,
+          description: trimmedDescription.length === 0 ? null : trimmedDescription,
+          group: "Base",
+        },
+        difficulty: model.value.difficulty,
+        gameDifficulties: model.value.gameDifficulties,
+        tricks: model.value.tricks,
+        spawn: model.value.spawn,
+        randomizeEntrances: model.value.randomizeEntrances,
+        snippetConfig: model.value.snippetConfig,
+        snippets: model.value.snippets,
+      }
+
+      await electronApi.fs.saveWorldPreset.query({
+        name: trimmedName,
+        preset,
+      })
+
+      snackbarStore.add({
+        text: "World preset saved",
+        timer: "bottom",
+        timeout: 4000,
+      })
+      emit("tempScheduleAssetRefresh")
+
+      saveWorldPresetDialogOpen.value = false
+    } catch (e) {
+      console.error(e)
+    }
+
+    saveWorldPresetDialogLoading.value = false
+  }
+
+  async function applyPreset(presetId: string) {
+    const preset = props.worldPresets[presetId]
+
+    if (!preset) {
+      return
+    }
+
+    presetIdApplying.value = presetId
+
+    try {
+      const {data}: { data: WorldSettings } = await seedgenAxios.post("/presets/world/apply", {
+        presets: [preset.content],
+        settings: model.value,
+      })
+      model.value = data
+
+      snackbarStore.add({
+        text: `Preset '${preset.content.info?.name ?? presetId}' applied`,
+        timer: "bottom",
+        timeout: 4000,
+      })
+    } catch (e) {
+      console.error(e)
+    }
+
+    presetIdApplying.value = null
   }
 </script>
 

@@ -60,15 +60,15 @@
     worldSnippetConfig: HashMapStringHashMapStringString,
   }>()
 
-  const emits = defineEmits<{
+  const emit = defineEmits<{
     'update:worldSnippets': [string[]],
     'update:worldSnippetConfig': [HashMapStringHashMapStringString],
   }>()
 
   const configDialogOpen = ref(false)
 
-  const worldSnippetsModel = useVModel(props, 'worldSnippets', emits)
-  const worldSnippetConfigModel = useVModel(props, 'worldSnippetConfig', emits)
+  const worldSnippetsModel = useVModel(props, 'worldSnippets', emit)
+  const worldSnippetConfigModel = useVModel(props, 'worldSnippetConfig', emit)
   const snippetHasConfig = computed(() => Object.keys(props.snippetInfo.metadata.config).length > 0)
   const snippetActive = computed(() => worldSnippetsModel.value.includes(props.snippetIdentifier))
   const snippetHasNonDefaultValues = computed(() =>

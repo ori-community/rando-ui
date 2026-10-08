@@ -3,7 +3,7 @@ import {z} from "zod"
 import {getSeedgenUserDataPath, getSeedsUserDataPath} from "@launcher/paths"
 import nodeFs from "node:fs"
 import path from "node:path"
-import {UniversePreset} from "@shared/types/seedgen"
+import {UniverseSettings} from "@shared/types/seedgen"
 
 export const fs = router({
   /**
@@ -54,28 +54,111 @@ export const fs = router({
   /**
    * Save a given universe preset as the special Last Config universe preset
    */
-  saveLastSeedgenConfig: publicProcedure
+  saveLastSeedgenSettings: publicProcedure
     .input(
       z.object({
-        universePreset: z.object(),
+        universeSettings: z.any(),
       })
     )
     .query(async ({input}): Promise<void> => {
       await nodeFs.promises.mkdir(getSeedgenUserDataPath(), {recursive: true})
-      await nodeFs.promises.writeFile(getSeedgenUserDataPath("last_config.json"), JSON.stringify(input, null, 2), {encoding: "utf8"})
+      await nodeFs.promises.writeFile(getSeedgenUserDataPath("last_settings.json"), JSON.stringify(input.universeSettings, null, 2), {encoding: "utf8"})
     }),
   /**
    * Save a given universe preset as the special Last Config universe preset
    */
-  getLastSeedgenConfig: publicProcedure
-    .query(async (): Promise<UniversePreset | null> => {
-      const lastConfigPath = getSeedgenUserDataPath("last_config.json")
+  getLastSeedgenSettings: publicProcedure
+    .query(async (): Promise<UniverseSettings | null> => {
+      const lastSettingsPath = getSeedgenUserDataPath("last_settings.json")
 
-      if (!nodeFs.existsSync(lastConfigPath)) {
+      if (!nodeFs.existsSync(lastSettingsPath)) {
         return null
       }
 
-      const fileContents = await nodeFs.promises.readFile(lastConfigPath, {encoding: "utf8"})
-      return JSON.parse(fileContents) as UniversePreset
+      const fileContents = await nodeFs.promises.readFile(lastSettingsPath, {encoding: "utf8"})
+      return JSON.parse(fileContents) as UniverseSettings
+    }),
+  /**
+   * Save a given world user preset to disk
+   */
+  saveWorldPreset: publicProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        preset: z.any(),
+      })
+    )
+    .query(async ({input}): Promise<void> => {
+      await nodeFs.promises.mkdir(getSeedgenUserDataPath("world_presets"), {recursive: true})
+
+      const trimmedInputName = input.name.trim()
+      const filename = trimmedInputName.replaceAll(/[^a-zA-Z0-9\-_]/g, "_")
+
+      let count = 0
+      while (true) {
+        const fullFilename = filename + (count > 0 ? `_${count + 1}` : "")
+        const path = getSeedgenUserDataPath(`world_presets/${fullFilename}.json`)
+
+        if (!nodeFs.existsSync(path)) {
+          await nodeFs.promises.writeFile(path, JSON.stringify(input.preset, null, 2), {encoding: "utf8"})
+          return
+        }
+
+        count++
+      }
+    }),
+  /**
+   * Save a given universe user preset to disk
+   */
+  saveUniversePreset: publicProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        description: z.string().optional(),
+        preset: z.any(),
+      })
+    )
+    .query(async ({input}): Promise<void> => {
+      await nodeFs.promises.mkdir(getSeedgenUserDataPath("universe_presets"), {recursive: true})
+
+      const trimmedInputName = input.name.trim()
+      const filename = trimmedInputName.replaceAll(/[^a-zA-Z0-9\-_]/g, "_")
+
+      let count = 0
+      while (true) {
+        const fullFilename = filename + (count > 0 ? `_${count + 1}` : "")
+        const path = getSeedgenUserDataPath(`universe_presets/${fullFilename}.json`)
+
+        if (!nodeFs.existsSync(path)) {
+          await nodeFs.promises.writeFile(path, JSON.stringify(input.preset, null, 2), {encoding: "utf8"})
+          return
+        }
+
+        count++
+      }
+    }),
+  /**
+   * Delete a given world user preset from disk
+   */
+  deleteWorldPreset: publicProcedure
+    .input(
+      z.object({
+        id: z.string()
+      })
+    )
+    .query(async ({input}): Promise<void> => {
+      await nodeFs.promises.rm(getSeedgenUserDataPath(`world_presets/${input.id}.json`), {force: true})
+    }),
+  /**
+   * Delete a given universe user preset from disk
+   */
+  deleteUniversePreset: publicProcedure
+    .input(
+      z.object({
+        id: z.string()
+      })
+    )
+    .query(async ({input}): Promise<void> => {
+      await nodeFs.promises.rm(getSeedgenUserDataPath(`universe_presets/${input.id}.json`), {force: true})
     }),
 })

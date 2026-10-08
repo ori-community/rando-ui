@@ -19,11 +19,11 @@
     worldSnippetConfig: HashMapStringHashMapStringString,
   }>()
 
-  const emits = defineEmits<{
+  const emit = defineEmits<{
     'update:worldSnippetConfig': [HashMapStringHashMapStringString],
   }>()
 
-  const worldSnippetConfigModel = useVModel(props, 'worldSnippetConfig', emits)
+  const worldSnippetConfigModel = useVModel(props, 'worldSnippetConfig', emit)
 </script>
 
 <style lang="scss" scoped>

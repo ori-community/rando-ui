@@ -17,7 +17,6 @@
   </div>
 
   <h2 class="mb-2">Presets</h2>
-
   <template v-for="presetId in groupedWorldPresetIds['Base']" :key="presetId">
     <div class="pb-2">
       <wotw-seedgen-preset-button
@@ -26,7 +25,9 @@
         icon="mdi-format-list-bulleted-type"
         :preset-id="presetId"
         :preset-info="(worldPresets[presetId] as WorldPresetInfo).content.info"
+        :is-custom="(worldPresets[presetId] as WorldPresetInfo).origin.kind === 'UserDataDir'"
         @click="onBaseWorldPresetSelected(presetId)"
+        @contextmenu="(event: MouseEvent) => onPresetButtonContextMenu(presetId, event)"
       />
     </div>
 
@@ -37,15 +38,16 @@
 
           <div class="d-flex flex-wrap gap-6">
             <wotw-seedgen-preset-button
-              v-for="ungroupedPreset in Object.keys(presetsWithoutGroup)"
-              :key="ungroupedPreset"
-              :disabled="selectedBasePreset.preset.includes?.includes(ungroupedPreset)"
-              :selected="selectedAdditionalPresets.has(ungroupedPreset) || selectedBasePreset.preset.includes?.includes(ungroupedPreset)"
-              :preset-id="ungroupedPreset"
-              :preset-info="(worldPresets[ungroupedPreset] as WorldPresetInfo).content.info"
-              :description-append="selectedBasePreset.preset.includes?.includes(ungroupedPreset) ? `Included in the '${selectedBasePreset.preset.info?.name ?? selectedBasePreset.id}' preset` : null"
+              v-for="ungroupedPresetId in Object.keys(presetsWithoutGroup)"
+              :key="ungroupedPresetId"
+              :selected="selectedAdditionalPresets.has(ungroupedPresetId) || selectedBasePreset.preset.includes?.includes(ungroupedPresetId)"
+              :preset-id="ungroupedPresetId"
+              :preset-info="(worldPresets[ungroupedPresetId] as WorldPresetInfo).content.info"
               icon="mdi-plus"
-              @click="onAdditionalPresetSelected(ungroupedPreset)"
+              :is-included-in="selectedBasePreset.preset.includes?.includes(ungroupedPresetId) ? (selectedBasePreset.preset.info?.name ?? selectedBasePreset.id) : null"
+              :is-custom="(worldPresets[ungroupedPresetId] as WorldPresetInfo).origin.kind === 'UserDataDir'"
+              @click="onAdditionalPresetSelected(ungroupedPresetId)"
+              @contextmenu="(event: MouseEvent) => onPresetButtonContextMenu(ungroupedPresetId, event)"
             />
 
             <v-btn variant="flat" color="accent" :loading="loading" @click="finishPresetSelection">
@@ -59,20 +61,21 @@
   </template>
 
   <h2 class="mb-2 mt-4">Other Options</h2>
-  <wotw-seedgen-preset-button
-    large
-    class="mb-2"
-    preset-id="random"
-    @click="selectRandomWorldSettings"
-  >
-    <div class="d-flex ga-3 align-center">
-      <v-icon>mdi-dice-multiple-outline</v-icon>
-      <div>
-        <h3>Random Settings</h3>
-        <p>Let the randomizer randomize all your settings</p>
+  <div class="mb-2">
+    <wotw-seedgen-preset-button
+      large
+      preset-id="random"
+      @click="selectRandomWorldSettings"
+    >
+      <div class="d-flex ga-3 align-center">
+        <v-icon>mdi-dice-multiple-outline</v-icon>
+        <div>
+          <h3>Random Settings</h3>
+          <p>Let the randomizer randomize all your settings</p>
+        </div>
       </div>
-    </div>
-  </wotw-seedgen-preset-button>
+    </wotw-seedgen-preset-button>
+  </div>
   <wotw-seedgen-preset-button
     large
     preset-id="random"
@@ -86,13 +89,23 @@
       </div>
     </div>
   </wotw-seedgen-preset-button>
+
+  <v-menu v-model="presetContextMenuOpen" :target="[presetContextMenuX, presetContextMenuY]" >
+    <v-list>
+      <v-list-item @click="deleteUserPreset(presetContextMenuPresetId)">
+        <v-icon start>mdi-delete-outline</v-icon>
+        Delete
+      </v-list-item>
+    </v-list>
+  </v-menu>
 </template>
 
 <script lang="ts" setup>
-  import type {HashMapStringWorldPresetInfo, WorldPresetInfo, WorldPreset, WorldSettings} from "@shared/types/seedgen"
+  import type {WorldPresetInfo, WorldPreset, WorldSettings} from "@shared/types/seedgen"
   import type {GroupedPresetIds} from '~/assets/types/components/seedgen'
   import {clone} from "@shared/utils/clone"
   import {useSeedgenAxios} from "~/composables/useSeedgenAxios"
+  import type {ValidWorldPresets} from "@shared/types/seedgen-extra"
 
   const {
     groupedWorldPresetIds,
@@ -101,7 +114,7 @@
     loading = false,
   } = defineProps<{
     groupedWorldPresetIds: GroupedPresetIds,
-    worldPresets: HashMapStringWorldPresetInfo,
+    worldPresets: ValidWorldPresets,
     existingWorldSettings: WorldSettings[],
     loading?: boolean,
   }>()
@@ -109,10 +122,16 @@
   const emit = defineEmits<{
     presetsSelected: [WorldPreset[]],
     settingsSelected: [WorldSettings],
+    tempScheduleAssetRefresh: [],
   }>()
 
   const seedgenAxios = useSeedgenAxios()
+  const electronApi = useElectronApi()
   const randomSettingsLoading = ref(false)
+  const presetContextMenuOpen = ref(false)
+  const presetContextMenuX = ref(0)
+  const presetContextMenuY = ref(0)
+  const presetContextMenuPresetId = ref("")
 
   type WorldPresetAndId = {
     id: string,
@@ -180,6 +199,29 @@
     const {data: randomSettings}: {data: WorldSettings} = await seedgenAxios.get("/settings/world/random")
     emit("settingsSelected", randomSettings)
     randomSettingsLoading.value = false
+  }
+
+  function onPresetButtonContextMenu(presetId: string, event: MouseEvent) {
+    const preset = worldPresets[presetId]
+
+    if (!preset || preset.origin.kind !== "UserDataDir") {
+      presetContextMenuOpen.value = false
+      return
+    }
+
+    presetContextMenuX.value = event.clientX
+    presetContextMenuY.value = event.clientY
+    presetContextMenuPresetId.value = presetId
+    presetContextMenuOpen.value = true
+  }
+
+  async function deleteUserPreset(presetId: string) {
+    if (electronApi === null) {
+      return
+    }
+
+    await electronApi.fs.deleteWorldPreset.query({id: presetId})
+    emit("tempScheduleAssetRefresh")
   }
 </script>
 

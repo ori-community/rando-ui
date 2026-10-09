@@ -76,6 +76,23 @@
       </div>
     </wotw-seedgen-preset-button>
   </div>
+
+  <div v-if="clipboardWorldSettings !== null" class="mb-2">
+    <wotw-seedgen-preset-button
+      large
+      preset-id="random"
+      @click="pasteSettings"
+    >
+      <div class="d-flex ga-3 align-center">
+        <v-icon>mdi-content-paste</v-icon>
+        <div>
+          <h3>Paste</h3>
+          <p>Create a world with the settings copied to your clipboard</p>
+        </div>
+      </div>
+    </wotw-seedgen-preset-button>
+  </div>
+
   <wotw-seedgen-preset-button
     large
     preset-id="random"
@@ -106,6 +123,9 @@
   import {clone} from "@shared/utils/clone"
   import {useSeedgenAxios} from "~/composables/useSeedgenAxios"
   import type {ValidWorldPresets} from "@shared/types/seedgen-extra"
+  import {WORLD_SETTINGS_CLIPBOARD_TAG} from "~/assets/constants"
+  import {decompressFromBase64} from "lz-string"
+  import {useTaggedStringFromClipboard} from "~/composables/useTaggedStringFromClipboard"
 
   const {
     groupedWorldPresetIds,
@@ -127,11 +147,13 @@
 
   const seedgenAxios = useSeedgenAxios()
   const electronApi = useElectronApi()
+  const snackbarStore = useSnackbarStore()
   const randomSettingsLoading = ref(false)
   const presetContextMenuOpen = ref(false)
   const presetContextMenuX = ref(0)
   const presetContextMenuY = ref(0)
   const presetContextMenuPresetId = ref("")
+  const {content: clipboardWorldSettings} = useTaggedStringFromClipboard(WORLD_SETTINGS_CLIPBOARD_TAG)
 
   type WorldPresetAndId = {
     id: string,
@@ -222,6 +244,23 @@
 
     await electronApi.fs.deleteWorldPreset.query({id: presetId})
     emit("tempScheduleAssetRefresh")
+  }
+
+  async function pasteSettings() {
+    if (clipboardWorldSettings.value === null) {
+      snackbarStore.add({
+        title: "No world settings found in clipboard",
+        text: `The string should start with '${WORLD_SETTINGS_CLIPBOARD_TAG}'`,
+        prependIcon: "mdi-close-octagon-outline",
+        color: "error",
+        timer: "bottom",
+        timerColor: "error-darken-2",
+        timeout: 6000,
+      })
+      return
+    }
+
+    emit("settingsSelected", JSON.parse(decompressFromBase64(clipboardWorldSettings.value)))
   }
 </script>
 

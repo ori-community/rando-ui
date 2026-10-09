@@ -40,6 +40,7 @@
     "file-saver": "^2.0.5",
     "konva": "^10.7.1",
     "lodash": "^4.18.1",
+    "lz-string": "^1.5.0",
     "sass-embedded": "^1.105.1",
     "semver": "^7.8.5",
     "simple-icons": "^16.34.0",

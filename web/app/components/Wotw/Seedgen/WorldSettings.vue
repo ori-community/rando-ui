@@ -151,16 +151,29 @@
     <div class="d-flex align-center ga-4">
       <div class="d-flex ga-1 align-center">
         <div class="pr-1">World</div>
-        <v-btn size="36" variant="flat" icon @click="emit('delete')">
-          <v-icon>mdi-delete-outline</v-icon>
+        <v-btn size="36" variant="flat" icon @click="copySettings()">
+          <v-icon>mdi-content-copy</v-icon>
           <v-tooltip activator="parent" content-class="bg-surface-light" location="top">
-            Delete this world
+            Copy these world settings as string to share with others
+          </v-tooltip>
+        </v-btn>
+        <v-btn size="36" variant="flat" :disabled="clipboardWorldSettings === null" icon @click="pasteSettings()">
+          <v-icon>mdi-content-paste</v-icon>
+          <v-tooltip activator="parent" content-class="bg-surface-light" location="top">
+            Paste a world settings string from your clipboard.<br>
+            Will override existing settings.
           </v-tooltip>
         </v-btn>
         <v-btn size="36" variant="flat" icon @click="emit('duplicate')">
           <v-icon>mdi-content-duplicate</v-icon>
           <v-tooltip activator="parent" content-class="bg-surface-light" location="top">
             Duplicate this world
+          </v-tooltip>
+        </v-btn>
+        <v-btn size="36" variant="flat" icon @click="emit('delete')">
+          <v-icon>mdi-delete-outline</v-icon>
+          <v-tooltip activator="parent" content-class="bg-surface-light" location="top">
+            Delete this world
           </v-tooltip>
         </v-btn>
       </div>
@@ -234,6 +247,9 @@
   } from "@shared/types/seedgen"
   import type {ValidWorldPresets} from "@shared/types/seedgen-extra"
   import {useSeedgenAxios} from "~/composables/useSeedgenAxios"
+  import {compressToBase64, decompressFromBase64} from "lz-string"
+  import {WORLD_SETTINGS_CLIPBOARD_TAG} from "~/assets/constants"
+  import {useTaggedStringFromClipboard} from "~/composables/useTaggedStringFromClipboard"
 
   const props = defineProps<{
     modelValue: WorldSettings,
@@ -270,6 +286,10 @@
   const isElectron = useIsElectron()
   const electronApi = useElectronApi()
   const snackbarStore = useSnackbarStore()
+  const {
+    content: clipboardWorldSettings,
+    setContent: setClipboardWorldSettings,
+  } = useTaggedStringFromClipboard(WORLD_SETTINGS_CLIPBOARD_TAG)
 
   const validSnippetsInfo = computed(() => Object.fromEntries(Object.entries(props.snippetsInfo).filter(([, e]) => e.status === "Ok")) as {[key: string]: Extract<HashMapStringSchemaResultSnippetInfoString[string], { status: "Ok" }>})
   const visibleSnippetsInfo = computed(() => Object.fromEntries(Object.entries(validSnippetsInfo.value).filter(([, e]) => !e.metadata.hidden)))
@@ -562,6 +582,27 @@
     }
 
     presetIdApplying.value = null
+  }
+
+  async function copySettings() {
+    await setClipboardWorldSettings(compressToBase64(JSON.stringify(model.value)))
+  }
+
+  async function pasteSettings() {
+    if (clipboardWorldSettings.value === null) {
+      snackbarStore.add({
+        title: "No world settings found in clipboard",
+        text: `The string should start with '${WORLD_SETTINGS_CLIPBOARD_TAG}'`,
+        prependIcon: "mdi-close-octagon-outline",
+        color: "error",
+        timer: "bottom",
+        timerColor: "error-darken-2",
+        timeout: 6000,
+      })
+      return
+    }
+
+    model.value = JSON.parse(decompressFromBase64(clipboardWorldSettings.value))
   }
 </script>
 

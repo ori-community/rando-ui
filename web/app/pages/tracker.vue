@@ -46,6 +46,7 @@
   import {decodePacket} from "@shared/proto/ProtoUtil"
   import {confettiFromElement} from "~/assets/utils/confetti"
   import type {TRACKED_UBER_STATES} from "@shared/itemTracker/trackedUberStates"
+  import combineURLs from "~/assets/utils/combileURLs"
 
   definePageMeta({
     layout: "plain",
@@ -245,9 +246,7 @@
     }
 
     const baseUrls = await useBaseUrls()
-    const url = new URL(baseUrls.apiBaseUrl)
-    url.protocol = "wss:"
-    url.pathname = `/remote-tracker/${source}`
+    const url = new URL(combineURLs(baseUrls.apiBaseUrl, `remote-tracker/${source}`))
 
     return url.href
   }
@@ -283,7 +282,7 @@
       const handlePacket = () => {
         switch (packet.$type) {
           case TrackerUpdate.$type:
-            trackedValues.value[packet.id] = packet.value
+            trackedValues.value[packet.id as typeof TRACKED_UBER_STATES[number]["trackingId"]] = packet.value
             receivedPacket.value = true
             break
           case TrackerTagsUpdate.$type:
@@ -341,7 +340,7 @@
       return
     }
 
-    if (trackedValues.value.game_finished) {
+    if (trackedValues.value.gameFinished) {
       displayedTime.value = Math.max(inGameTime.value, 0)
     } else if (timerShouldRun.value) {
       displayedTime.value = Math.max((Date.now() / 1000.0) - timerStartTimestamp.value, 0)

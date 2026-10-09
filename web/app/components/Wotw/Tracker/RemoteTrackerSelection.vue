@@ -41,6 +41,7 @@
   const authStore = useAuthStore()
   const electronApi = useElectronApi()
   const router = useRouter()
+  const snackbarStore = useSnackbarStore()
 
   const props = defineProps<{
     userIsLoggedIn: boolean
@@ -52,34 +53,30 @@
   const hideWillowHeartsUntilFirstHeart = ref(true)
 
   const remoteTrackerUrlCopying = ref(false)
-  const emit = defineEmits("created")
+  const emit = defineEmits<{
+    "created": [],
+  }>()
 
   onMounted(() => {
     isRemote.value = props.userIsLoggedIn
   })
 
   const exposeTracker = (async () => {
+    const {apiBaseUrl} = await useBaseUrls()
     remoteTrackerUrlCopying.value = true
 
     const args: Record<string, string> = {}
 
-    console.log(authStore.jwt)
-
-    // remote
-    if (isRemote.value) {
-
-      const remoteId = undefined
-      // TODO expose tracker
-      // const remoteId = await electronApi?.localTrackerWebSocket.expose.query({
-      //   baseUrl: WS_BASE_URL,
-      //   jwt: authStore.jwt!,
-      // })
+    if (isRemote.value && authStore.jwt !== null) {
+      const remoteId = await electronApi?.localTrackerWebSocket.expose.query({
+        baseUrl: apiBaseUrl,
+        jwt: authStore.jwt,
+      })
 
       if (remoteId) {
         args.source = remoteId
       }
     }
-
 
     // timer
     if (showTimer.value) {
@@ -101,18 +98,16 @@
       query: args,
     })
 
-    // TODO use global baseURL variable
-    const url = new URL(targetRoute.href.replace('#/', ''), "https://wotw.orirando.com/api")
+    const url = new URL(targetRoute.href.replace('#/', ''), apiBaseUrl)
 
     await window.navigator.clipboard.writeText(url.toString())
     remoteTrackerUrlCopying.value = false
 
-    // TODO notification
-    // EventBus.$emit('notification', {
-    //   message: `Copied to clipboard`,
-    //   color: 'success darken-3',
-    //   timeout: 1000,
-    // })
+    snackbarStore.add({
+      text: "URL copied to clipboard",
+      timer: "bottom",
+      timeout: 4000,
+    })
 
     emit("created")
   })

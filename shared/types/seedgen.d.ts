@@ -309,7 +309,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/plando/compile": {
+    "/plandos/compile": {
         parameters: {
             query?: never;
             header?: never;
@@ -348,7 +348,7 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["HashMap_String_Source"];
+                    "application/json": components["schemas"]["CompileBody"];
                 };
             };
             responses: {
@@ -370,6 +370,41 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/plandos/info": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get detailed info about available plandos */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HashMap_String_SchemaResult_PlandoInfo_String"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1526,6 +1561,12 @@ export interface components {
          * @enum {integer}
          */
         Comparator: 0 | 1 | 2 | 3 | 4 | 5;
+        CompileBody: {
+            /** @description Entry point for compilation */
+            entry: string;
+            /** @description All necessary snippets for the compilation. Should include `entry` as key. */
+            snippets: components["schemas"]["HashMap_String_Source"];
+        };
         CompileError: {
             errors: string[];
             logs: components["schemas"]["Record"][];
@@ -1665,49 +1706,75 @@ export interface components {
                 [key: string]: string;
             };
         };
-        HashMap_String_SchemaResult_SnippetInfo_String: {
-            [key: string]: ({
-                /** @description Metadata about the snippet */
-                metadata: components["schemas"]["Metadata"];
-                /** @description Where this snippet came from */
-                origin: components["schemas"]["AssetOrigin"];
-                /** @description Whether this snippet or anything in its include tree requires local files */
-                treeRequiresLocalFiles: boolean;
-            } & {
+        HashMap_String_SchemaResult_PlandoInfo_String: {
+            [key: string]: {
                 /** @enum {string} */
                 status: "Ok";
-            }) | (string & {
+                /** @description Information about a plando */
+                value: {
+                    /** @description Attributes specified by the plando author */
+                    attributes: components["schemas"]["PlandoAttributes"];
+                    /** @description Where this plando came from */
+                    origin: components["schemas"]["AssetOrigin"];
+                };
+            } | {
                 /** @enum {string} */
                 status: "Err";
-            });
+                value: string;
+            };
+        };
+        HashMap_String_SchemaResult_SnippetInfo_String: {
+            [key: string]: {
+                /** @enum {string} */
+                status: "Ok";
+                /** @description Information about a snippet */
+                value: {
+                    /** @description Metadata about the snippet */
+                    metadata: components["schemas"]["Metadata"];
+                    /** @description Where this snippet came from */
+                    origin: components["schemas"]["AssetOrigin"];
+                    /** @description Whether this snippet or anything in its include tree requires local files */
+                    treeRequiresLocalFiles: boolean;
+                };
+            } | {
+                /** @enum {string} */
+                status: "Err";
+                value: string;
+            };
         };
         HashMap_String_SchemaResult_UniversePresetInfo_String: {
-            [key: string]: ({
-                /** @description The universe preset */
-                content: components["schemas"]["UniversePreset"];
-                /** @description Where this universe preset came from */
-                origin: components["schemas"]["AssetOrigin"];
-            } & {
+            [key: string]: {
                 /** @enum {string} */
                 status: "Ok";
-            }) | (string & {
+                /** @description Information about a universe preset */
+                value: {
+                    /** @description The universe preset */
+                    content: components["schemas"]["UniversePreset"];
+                    /** @description Where this universe preset came from */
+                    origin: components["schemas"]["AssetOrigin"];
+                };
+            } | {
                 /** @enum {string} */
                 status: "Err";
-            });
+                value: string;
+            };
         };
         HashMap_String_SchemaResult_WorldPresetInfo_String: {
-            [key: string]: ({
-                /** @description The world preset */
-                content: components["schemas"]["WorldPreset"];
-                /** @description Where this world preset came from */
-                origin: components["schemas"]["AssetOrigin"];
-            } & {
+            [key: string]: {
                 /** @enum {string} */
                 status: "Ok";
-            }) | (string & {
+                /** @description Information about a world preset */
+                value: {
+                    /** @description The world preset */
+                    content: components["schemas"]["WorldPreset"];
+                    /** @description Where this world preset came from */
+                    origin: components["schemas"]["AssetOrigin"];
+                };
+            } | {
                 /** @enum {string} */
                 status: "Err";
-            });
+                value: string;
+            };
         };
         HashMap_String_Source: {
             [key: string]: {
@@ -1950,6 +2017,18 @@ export interface components {
          * @enum {integer}
          */
         OpherIcon: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
+        /** @description Attributes specified by a plando source */
+        PlandoAttributes: {
+            description?: string | null;
+            name?: string | null;
+        };
+        /** @description Information about a plando */
+        PlandoInfo: {
+            /** @description Attributes specified by the plando author */
+            attributes: components["schemas"]["PlandoAttributes"];
+            /** @description Where this plando came from */
+            origin: components["schemas"]["AssetOrigin"];
+        };
         /** @description `x`/`y` position */
         Position: {
             /** Format: float */
@@ -2103,21 +2182,6 @@ export interface components {
             origin: components["schemas"]["AssetOrigin"];
             /** @description Whether this snippet or anything in its include tree requires local files */
             treeRequiresLocalFiles: boolean;
-        };
-        /** @description Representation of a source file with the necessary information to display useful error messages. */
-        Source: {
-            /**
-             * @description The contents of the file, which will be referenced for better error messages.
-             *
-             *     This should be the same contents you were parsing, otherwise error messages will reference arbitrary spans in your source and possibly panic.
-             */
-            content: string;
-            /**
-             * @description An identifier to be used in error messages that should allow the reader to determine which file the error originated from.
-             *
-             *     This might be the file path relative to the workspace root, or just the filename.
-             */
-            id: string;
         };
         /** @description The Spawn location, which may either be fixed or randomly decided during seed generation */
         Spawn: {
@@ -2499,6 +2563,7 @@ export type CommandString = components['schemas']['CommandString'];
 export type CommandVoid = components['schemas']['CommandVoid'];
 export type CommandZone = components['schemas']['CommandZone'];
 export type Comparator = components['schemas']['Comparator'];
+export type CompileBody = components['schemas']['CompileBody'];
 export type CompileError = components['schemas']['CompileError'];
 export type ConfigValue = components['schemas']['ConfigValue'];
 export type Connection = components['schemas']['Connection'];
@@ -2516,6 +2581,7 @@ export type GreaterOneU8 = components['schemas']['GreaterOneU8'];
 export type GromIcon = components['schemas']['GromIcon'];
 export type HashMapStringConfigArg = components['schemas']['HashMap_String_ConfigArg'];
 export type HashMapStringHashMapStringString = components['schemas']['HashMap_String_HashMap_String_String'];
+export type HashMapStringSchemaResultPlandoInfoString = components['schemas']['HashMap_String_SchemaResult_PlandoInfo_String'];
 export type HashMapStringSchemaResultSnippetInfoString = components['schemas']['HashMap_String_SchemaResult_SnippetInfo_String'];
 export type HashMapStringSchemaResultUniversePresetInfoString = components['schemas']['HashMap_String_SchemaResult_UniversePresetInfo_String'];
 export type HashMapStringSchemaResultWorldPresetInfoString = components['schemas']['HashMap_String_SchemaResult_WorldPresetInfo_String'];
@@ -2546,6 +2612,8 @@ export type OperationCommandStringConcatenator = components['schemas']['Operatio
 export type OperationCommandStringEqualityComparator = components['schemas']['Operation_CommandString_EqualityComparator'];
 export type OperationCommandZoneEqualityComparator = components['schemas']['Operation_CommandZone_EqualityComparator'];
 export type OpherIcon = components['schemas']['OpherIcon'];
+export type PlandoAttributes = components['schemas']['PlandoAttributes'];
+export type PlandoInfo = components['schemas']['PlandoInfo'];
 export type Position = components['schemas']['Position'];
 export type PresetGroup = components['schemas']['PresetGroup'];
 export type PresetInfo = components['schemas']['PresetInfo'];
@@ -2560,7 +2628,6 @@ export type SeedSpoiler = components['schemas']['SeedSpoiler'];
 export type Shard = components['schemas']['Shard'];
 export type Skill = components['schemas']['Skill'];
 export type SnippetInfo = components['schemas']['SnippetInfo'];
-export type Source = components['schemas']['Source'];
 export type Spawn = components['schemas']['Spawn'];
 export type SpawnAnchors = components['schemas']['SpawnAnchors'];
 export type SpoilerGroup = components['schemas']['SpoilerGroup'];

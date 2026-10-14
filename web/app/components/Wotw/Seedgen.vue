@@ -516,13 +516,21 @@
   const validUniversePresets = computed(() =>
     universePresets.value === null
       ? null
-      : Object.fromEntries(Object.entries(universePresets.value).filter(([, e]) => e.status === "Ok")) as ValidUniversePresets
+      : Object.fromEntries(
+        Object.entries(universePresets.value)
+          .filter(([, e]) => e.status === "Ok")
+          .map(([k, v]) => [k, v.value])
+      ) as ValidUniversePresets
   )
 
   const validWorldPresets = computed(() =>
     worldPresets.value === null
       ? null
-      : Object.fromEntries(Object.entries(worldPresets.value).filter(([, e]) => e.status === "Ok")) as ValidWorldPresets
+      : Object.fromEntries(
+        Object.entries(worldPresets.value)
+          .filter(([, e]) => e.status === "Ok")
+          .map(([k, v]) => [k, v.value])
+      ) as ValidWorldPresets
   )
 
   const groupedWorldPresetIds = computed(

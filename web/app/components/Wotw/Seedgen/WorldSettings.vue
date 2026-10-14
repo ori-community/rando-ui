@@ -245,7 +245,7 @@
     TrickInfo, WorldPreset,
     WorldSettings,
   } from "@shared/types/seedgen"
-  import type {ValidWorldPresets} from "@shared/types/seedgen-extra"
+  import type {ValidSnippetsInfos, ValidWorldPresets} from "@shared/types/seedgen-extra"
   import {useSeedgenAxios} from "~/composables/useSeedgenAxios"
   import {compressToBase64, decompressFromBase64} from "lz-string"
   import {WORLD_SETTINGS_CLIPBOARD_TAG} from "~/assets/constants"
@@ -291,7 +291,12 @@
     setContent: setClipboardWorldSettings,
   } = useTaggedStringFromClipboard(WORLD_SETTINGS_CLIPBOARD_TAG)
 
-  const validSnippetsInfo = computed(() => Object.fromEntries(Object.entries(props.snippetsInfo).filter(([, e]) => e.status === "Ok")) as {[key: string]: Extract<HashMapStringSchemaResultSnippetInfoString[string], { status: "Ok" }>})
+  const validSnippetsInfo = computed(
+    () => Object.fromEntries(
+      Object.entries(props.snippetsInfo)
+        .filter(([, e]) => e.status === "Ok")
+        .map(([k, v]) => [k, v.value])) as ValidSnippetsInfos
+  )
   const visibleSnippetsInfo = computed(() => Object.fromEntries(Object.entries(validSnippetsInfo.value).filter(([, e]) => !e.metadata.hidden)))
   const categorizedSnippetsInfo = computed(() => {
     const categories: {[categoryName: string]: {identifier: string, snippetInfo: SnippetInfo}[]} = {}

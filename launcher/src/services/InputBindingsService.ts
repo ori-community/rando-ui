@@ -1,5 +1,5 @@
 import fs from "fs"
-import {getRandomizerUserDataPath} from "@launcher/paths"
+import {getClientUserDataPath} from "@launcher/paths"
 import {
   ComposableControllerInputBinding,
   ControllerBindings, ControllerInputBindings,
@@ -72,11 +72,11 @@ export class InputBindingsService {
   public static readonly events: EventEmitter<InputBindingsEvent> = new EventEmitter()
 
   private static getControllerBindingsPath() {
-    return getRandomizerUserDataPath("controller_bindings.json")
+    return getClientUserDataPath("controller_bindings.json")
   }
 
   private static getKeyboardBindingsPath() {
-    return getRandomizerUserDataPath("keyboard_bindings.json")
+    return getClientUserDataPath("keyboard_bindings.json")
   }
 
   static async makeSureControllerBindingsFileExists() {

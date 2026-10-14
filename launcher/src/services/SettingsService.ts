@@ -1,5 +1,5 @@
 import {EventEmitter} from "events"
-import {getRandomizerUserDataPath, getUserDataPath} from "@launcher/paths"
+import {getClientUserDataPath, getUserDataPath} from "@launcher/paths"
 import fs from "fs"
 import {merge} from "lodash"
 import log from "electron-log/main"
@@ -8,6 +8,7 @@ import {SettingKey, Settings} from "@shared/types/settings"
 import {LauncherService} from "@launcher/services/LauncherService"
 import {RandoIPCService} from "@launcher/services/RandoIPCService"
 import {UpdateService} from "@launcher/services/UpdateService"
+import semver from "semver"
 
 type SettingsEvent = {
   /** Emitted when a single setting changed */
@@ -108,11 +109,15 @@ export class SettingsService {
    * the default settings are loaded.
    */
   private async loadSettingsToCache() {
-    const settingsFilePath = getRandomizerUserDataPath("settings.json")
+    const settingsFilePath = getUserDataPath("settings.json")
+    const legacySettingsFilePath = getUserDataPath("randomizer/settings.json")
     let settingsObject: Settings = await SettingsService.getDefaultSettings()
 
     if (fs.existsSync(settingsFilePath)) {
       const settingsContent = await fs.promises.readFile(settingsFilePath, {encoding: "utf-8"})
+      settingsObject = merge(settingsObject, JSON.parse(settingsContent))
+    } else if (fs.existsSync(legacySettingsFilePath)) {
+      const settingsContent = await fs.promises.readFile(legacySettingsFilePath, {encoding: "utf-8"})
       settingsObject = merge(settingsObject, JSON.parse(settingsContent))
     } else {
       log.info("Settings file not found. Using default settings.")
@@ -121,10 +126,17 @@ export class SettingsService {
     this.settingsCache = {...settingsObject}
 
     const currentVersion = await UpdateService.getVersion()
-    if (settingsObject.LastUsedVersion !== currentVersion) {
+    if (settingsObject.LastUsedVersion !== currentVersion && currentVersion !== "develop") {
       log.info(`Migrating from ${settingsObject.LastUsedVersion} to ${currentVersion}`)
 
       // Run migrations here...
+      if (semver.lt(settingsObject.LastUsedVersion, "5.0.0-alpha.87")) {
+        log.info("Migration: Moving <user>/randomizer directory to <user>/client")
+        await fs.promises.rm(getClientUserDataPath(), {recursive: true, force: true})
+        await fs.promises.rename(getUserDataPath("randomizer"), getUserDataPath("client"))
+        log.info("Migration: Removing old <user>/client/settings.json")
+        await fs.promises.rm(getClientUserDataPath("settings.json"), {force: true})
+      }
 
       this.settingsCache.LastUsedVersion = currentVersion
       await this.flushSettings()
@@ -178,7 +190,7 @@ export class SettingsService {
    * Flush settings to disk immediately.
    */
   public async flushSettings() {
-    const settingsFilePath = getRandomizerUserDataPath("settings.json")
+    const settingsFilePath = getUserDataPath("settings.json")
 
     if (this.settingsFlushTimeoutId !== null) {
       clearTimeout(this.settingsFlushTimeoutId)

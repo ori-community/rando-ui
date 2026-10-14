@@ -3,7 +3,7 @@ import {SettingsService} from "@launcher/services/SettingsService"
 import fs from "node:fs"
 import {execa} from "execa"
 import path from "node:path"
-import {getInstallDataPath, getRandomizerUserDataPath, getUserDataPath} from "@launcher/paths"
+import {getInstallDataPath, getClientUserDataPath, getUserDataPath} from "@launcher/paths"
 import {fromFile as hashFile} from "hasha"
 import {Settings} from "@shared/types/settings"
 import os from "node:os"
@@ -239,12 +239,12 @@ export class LauncherService {
    */
   static async setNewGameSeedSource(seedSource: string) {
     let append = ""
-    if (fs.existsSync(getRandomizerUserDataPath(".newgameseedsource"))) {
-      const contents = await fs.promises.readFile(getRandomizerUserDataPath(".newgameseedsource"), {encoding: "utf-8"})
+    if (fs.existsSync(getClientUserDataPath(".newgameseedsource"))) {
+      const contents = await fs.promises.readFile(getClientUserDataPath(".newgameseedsource"), {encoding: "utf-8"})
       append = "\n" + contents.split("\n").slice(1).join("\n")
     }
 
-    await fs.promises.writeFile(getRandomizerUserDataPath(".newgameseedsource"), seedSource.trim() + append, {encoding: "utf-8"})
+    await fs.promises.writeFile(getClientUserDataPath(".newgameseedsource"), seedSource.trim() + append, {encoding: "utf-8"})
     this.events.emit("newGameSeedSourceChanged", seedSource)
   }
 
@@ -252,7 +252,7 @@ export class LauncherService {
    * Gets the seed source for new games. (aka reads from .newgameseedsource)
    */
   static async getNewGameSeedSource() {
-    const contents = await fs.promises.readFile(getRandomizerUserDataPath(".newgameseedsource"), {encoding: "utf-8"})
+    const contents = await fs.promises.readFile(getClientUserDataPath(".newgameseedsource"), {encoding: "utf-8"})
     return contents.split("\n")[0].trim()
   }
 

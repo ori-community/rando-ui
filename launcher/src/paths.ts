@@ -28,8 +28,8 @@ export function getInstallDataPath(relativePath = "."): string {
 }
 
 // Wrappers for well-known directories:
-export function getRandomizerUserDataPath(relativePath = ".") {
-  return getUserDataPath(path.join("randomizer", relativePath))
+export function getClientUserDataPath(relativePath = ".") {
+  return getUserDataPath(path.join("client", relativePath))
 }
 
 export function getLogsUserDataPath(relativePath = ".") {

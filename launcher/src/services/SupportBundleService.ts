@@ -171,13 +171,14 @@ export class SupportBundleService {
     const directoryEntries: Entry[] = [
       {source: getInstallDataPath("versions"), target: "versions"},
       {source: getUserDataPath("logs"), target: "logs"},
+      {source: getUserDataPath("client/event_streams"), target: "client/event_streams"},
     ]
     const fileEntries: Entry[] = [
-      {source: getUserDataPath("randomizer/.newgameseedsource"), target: "randomizer"},
-      {source: getUserDataPath("randomizer/controller_bindings.json"), target: "randomizer"},
-      {source: getUserDataPath("randomizer/keyboard_bindings.json"), target: "randomizer"},
-      {source: getUserDataPath("randomizer/midi_bindings.json"), target: "randomizer"},
-      {source: getUserDataPath("randomizer/settings.json"), target: "randomizer"},
+      {source: getUserDataPath("client/.newgameseedsource"), target: "client"},
+      {source: getUserDataPath("client/controller_bindings.json"), target: "client"},
+      {source: getUserDataPath("client/keyboard_bindings.json"), target: "client"},
+      {source: getUserDataPath("client/midi_bindings.json"), target: "client"},
+      {source: getUserDataPath("settings.json"), target: ""},
     ]
 
     // Collect crash dump

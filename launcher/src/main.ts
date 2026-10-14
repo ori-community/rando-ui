@@ -5,7 +5,7 @@ import {createIPCHandler} from "electron-trpc/main"
 import {appRouter} from "@launcher/api/api"
 import {
   getLogsUserDataPath,
-  getRandomizerUserDataPath,
+  getClientUserDataPath,
   getSeedsUserDataPath,
   getTemporaryUserDataPath,
   getUserDataPath,
@@ -66,7 +66,7 @@ if (!app.requestSingleInstanceLock()) {
 
     // Create user data directory
     await fs.promises.mkdir(getUserDataPath(), {recursive: true})
-    await fs.promises.mkdir(getRandomizerUserDataPath(), {recursive: true})
+    await fs.promises.mkdir(getClientUserDataPath(), {recursive: true})
     await fs.promises.mkdir(getLogsUserDataPath(), {recursive: true})
     await fs.promises.mkdir(getSeedsUserDataPath(), {recursive: true})
     await fs.promises.mkdir(getTemporaryUserDataPath(), {recursive: true})

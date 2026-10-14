@@ -109,7 +109,7 @@
         <h3>Launcher Setup</h3>
 
         <div>
-          Current method:
+          Current launch method:
           <strong>
             {{ gameLaunchMethodsMetadata[settings.GameLaunchMethod.value].name }}
             <v-tooltip location="top" activator="parent" max-width="400">
@@ -129,7 +129,7 @@
           <template #activator="{ props: activatorProps }">
             <v-btn v-bind="activatorProps" color="accent" flat class="mt-4">
               <v-icon start>mdi-restore</v-icon>
-              Change setup
+              Change Launch Method
             </v-btn>
           </template>
           <template #default="{ isActive }">
@@ -138,6 +138,13 @@
             </v-card>
           </template>
         </v-dialog>
+
+        <div v-if="platform === 'linux'" class="mt-2" @click="createDesktopEntry">
+          <v-btn color="accent" flat>
+            <v-icon start>mdi-link-plus</v-icon>
+            Create Desktop Entry
+          </v-btn>
+        </div>
       </div>
     </v-col>
     <v-col cols="12" md="6">
@@ -280,6 +287,8 @@
   const electronApi = useElectronApi()
   const devtoolsStore = useDevtoolsStore()
   const {includePrereleases} = useReleases()
+  const platform = await usePlatform()
+  const snackbarStore = useSnackbarStore()
 
   const developerSettingsContainer = useTemplateRef('developerSettingsContainer')
   const debugStreak = ref(0)
@@ -357,15 +366,18 @@
     }, 2000)
   })
 
+  async function createDesktopEntry() {
+    if (!electronApi) {
+      return
+    }
 
-  const downloadAndInstallUpdate = (async () => {
-    // TODO post update handling
-    // await Promise.all([
-    //   this.$router.push({path: '/electron'}),
-    //   await this.$store.dispatch('electron/downloadAndInstallUpdate'),
-    // ])
-  })
-
+    await electronApi.fs.createDesktopEntry.query()
+    snackbarStore.add({
+      text: "Desktop entry created",
+      timer: "bottom",
+      timeout: 4000,
+    })
+  }
 </script>
 
 <style lang="scss" scoped>

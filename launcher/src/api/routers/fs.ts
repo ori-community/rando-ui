@@ -1,10 +1,11 @@
 import {publicProcedure, router} from "@launcher/api/trpc"
 import {z} from "zod"
-import {getSeedgenUserDataPath, getSeedsUserDataPath} from "@launcher/paths"
+import {getInstallDataPath, getSeedgenUserDataPath, getSeedsUserDataPath} from "@launcher/paths"
 import nodeFs from "node:fs"
 import path from "node:path"
-import {UniverseSettings} from "@shared/types/seedgen"
 import {SeedgenUiState} from "@shared/types/seedgen-extra"
+import os from "node:os"
+import {app} from "electron"
 
 export const fs = router({
   /**
@@ -162,4 +163,29 @@ export const fs = router({
     .query(async ({input}): Promise<void> => {
       await nodeFs.promises.rm(getSeedgenUserDataPath(`universe_presets/${input.id}.json`), {force: true})
     }),
+  /**
+   * Creates a .desktop file on linux systems
+   */
+  createDesktopEntry: publicProcedure
+    .query(async (): Promise<void> => {
+      if (os.platform() !== "linux") {
+        throw new Error("Unable to create a desktop entry on non-linux platforms")
+      }
+
+      const desktopFileContents = [
+        "[Desktop Entry]",
+        "Type=Application",
+        "Version=1.5",
+        "Name=Ori and the Will of the Wisps Randomizer",
+        `Exec=${app.getPath("exe")} %F`,
+        `Path=${getInstallDataPath()}`,
+        `Icon=${getInstallDataPath("icon.png")}`,
+        "SingleMainWindow=true",
+      ]
+
+      await nodeFs.promises.writeFile(path.join(
+        app.getPath("home"),
+        ".local/share/applications/ori-wotw-randomizer.desktop"
+      ), desktopFileContents.join("\n"))
+    })
 })

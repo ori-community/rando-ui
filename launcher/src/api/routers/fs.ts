@@ -176,10 +176,13 @@ export const fs = router({
         "[Desktop Entry]",
         "Type=Application",
         "Version=1.5",
+        "Terminal=false",
+        "Categories=Game;",
         "Name=Ori and the Will of the Wisps Randomizer",
-        `Exec=${app.getPath("exe")} %F`,
-        `Path=${getInstallDataPath()}`,
-        `Icon=${getInstallDataPath("icon.png")}`,
+        "StartupWMClass=ori-and-the-will-of-the-wisps-randomizer",
+        `Exec="${app.getPath("exe")}" %F`,
+        `Path="${getInstallDataPath()}"`,
+        `Icon="${getInstallDataPath("icon.png")}"`,
         "SingleMainWindow=true",
       ]
 

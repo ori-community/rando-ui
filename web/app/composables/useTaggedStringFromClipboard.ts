@@ -1,17 +1,26 @@
 export function useTaggedStringFromClipboard(tag: string) {
-  const content = ref<string | null>(null)
+  /**
+   * string = tagged value found
+   * null = no tagged value in clipboard
+   * undefined = clipboard hasn't been read yet
+   */
+  const content = ref<string | null | undefined>(undefined)
   const tagPrefix = `${tag}-`
+  const isElectron = useIsElectron()
 
   onMounted(async () => {
-    window.navigator.clipboard.addEventListener("clipboardchange", checkClipboardContent)
-    await checkClipboardContent()
+    window.navigator.clipboard.addEventListener("clipboardchange", updateContent)
+
+    if (isElectron) {
+      await updateContent()
+    }
   })
 
   onBeforeUnmount(() => {
-    window.navigator.clipboard.removeEventListener("clipboardchange", checkClipboardContent)
+    window.navigator.clipboard.removeEventListener("clipboardchange", updateContent)
   })
 
-  async function checkClipboardContent() {
+  async function updateContent() {
     const clipboardContent = await window.navigator.clipboard.readText()
     content.value = clipboardContent.startsWith(tagPrefix)
       ? clipboardContent.substring(tagPrefix.length)
@@ -22,5 +31,5 @@ export function useTaggedStringFromClipboard(tag: string) {
     await window.navigator.clipboard.writeText(`${tagPrefix}${content}`)
   }
 
-  return {content, setContent}
+  return {content, setContent, updateContent}
 }

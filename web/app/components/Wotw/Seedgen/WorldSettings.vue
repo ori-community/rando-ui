@@ -147,7 +147,7 @@
       </v-card>
     </v-dialog>
   </div>
-  <v-card v-if="isElectron" tile variant="tonal" class="px-4 py-2">
+  <v-card tile variant="tonal" class="px-4 py-2">
     <div class="d-flex align-center ga-4">
       <div class="d-flex ga-1 align-center">
         <div class="pr-1">World</div>
@@ -179,36 +179,38 @@
       </div>
       <v-divider vertical />
       <v-spacer />
-      <v-divider vertical />
-      <div class="d-flex ga-1 align-center">
-        <div class="pr-1">World Presets</div>
-        <v-btn size="36" variant="flat" icon @click="openSaveWorldPresetDialog()">
-          <v-icon>mdi-content-save-outline</v-icon>
-          <v-tooltip activator="parent" content-class="bg-surface-light" location="top">
-            Save current world settings as base preset
-          </v-tooltip>
-        </v-btn>
-        <v-btn size="36" variant="flat" icon>
-          <v-icon>mdi-folder-arrow-up-outline</v-icon>
-          <v-tooltip activator="parent" content-class="bg-surface-light" location="top">
-            Apply a preset to current world settings
-          </v-tooltip>
+      <template v-if="isElectron">
+        <v-divider vertical />
+        <div class="d-flex ga-1 align-center">
+          <div class="pr-1">World Presets</div>
+          <v-btn size="36" variant="flat" icon @click="openSaveWorldPresetDialog()">
+            <v-icon>mdi-content-save-outline</v-icon>
+            <v-tooltip activator="parent" content-class="bg-surface-light" location="top">
+              Save current world settings as base preset
+            </v-tooltip>
+          </v-btn>
+          <v-btn size="36" variant="flat" icon>
+            <v-icon>mdi-folder-arrow-up-outline</v-icon>
+            <v-tooltip activator="parent" content-class="bg-surface-light" location="top">
+              Apply a preset to current world settings
+            </v-tooltip>
 
-          <v-menu activator="parent" location="top end" :persistent="presetIdApplying !== null">
-            <v-list>
-              <v-list-item v-for="presetId in Object.keys(nonBasePresets)" :key="presetId" :disabled="presetIdApplying !== null" @click="applyPreset(presetId)">
-                <div class="d-flex align-center ga-3">
-                  <v-icon>mdi-import</v-icon>
-                  <div>
-                    <v-list-item-title>{{ nonBasePresets[presetId]?.content.info?.name ?? presetId }}</v-list-item-title>
-                    <v-list-item-subtitle v-if="!!nonBasePresets[presetId]?.content.info?.description">{{ nonBasePresets[presetId].content.info.description }}</v-list-item-subtitle>
+            <v-menu activator="parent" location="top end" :persistent="presetIdApplying !== null">
+              <v-list>
+                <v-list-item v-for="presetId in Object.keys(nonBasePresets)" :key="presetId" :disabled="presetIdApplying !== null" @click="applyPreset(presetId)">
+                  <div class="d-flex align-center ga-3">
+                    <v-icon>mdi-import</v-icon>
+                    <div>
+                      <v-list-item-title>{{ nonBasePresets[presetId]?.content.info?.name ?? presetId }}</v-list-item-title>
+                      <v-list-item-subtitle v-if="!!nonBasePresets[presetId]?.content.info?.description">{{ nonBasePresets[presetId].content.info.description }}</v-list-item-subtitle>
+                    </div>
                   </div>
-                </div>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </v-btn>
-      </div>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-btn>
+        </div>
+      </template>
 
       <v-dialog v-model="saveWorldPresetDialogOpen" max-width="550">
         <v-card title="Save World Preset">
@@ -289,6 +291,7 @@
   const {
     content: clipboardWorldSettings,
     setContent: setClipboardWorldSettings,
+    updateContent: updateClipboardWorldSettings,
   } = useTaggedStringFromClipboard(WORLD_SETTINGS_CLIPBOARD_TAG)
 
   const validSnippetsInfo = computed(
@@ -594,7 +597,11 @@
   }
 
   async function pasteSettings() {
-    if (clipboardWorldSettings.value === null) {
+    if (clipboardWorldSettings.value === undefined) {
+      await updateClipboardWorldSettings()
+    }
+
+    if (!clipboardWorldSettings.value) {
       snackbarStore.add({
         title: "No world settings found in clipboard",
         text: `The string should start with '${WORLD_SETTINGS_CLIPBOARD_TAG}'`,

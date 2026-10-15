@@ -153,7 +153,10 @@
   const presetContextMenuX = ref(0)
   const presetContextMenuY = ref(0)
   const presetContextMenuPresetId = ref("")
-  const {content: clipboardWorldSettings} = useTaggedStringFromClipboard(WORLD_SETTINGS_CLIPBOARD_TAG)
+  const {
+    content: clipboardWorldSettings,
+    updateContent: updateClipboardWorldSettings
+  } = useTaggedStringFromClipboard(WORLD_SETTINGS_CLIPBOARD_TAG)
 
   type WorldPresetAndId = {
     id: string,
@@ -247,7 +250,11 @@
   }
 
   async function pasteSettings() {
-    if (clipboardWorldSettings.value === null) {
+    if (clipboardWorldSettings.value === undefined) {
+      await updateClipboardWorldSettings()
+    }
+
+    if (!clipboardWorldSettings.value) {
       snackbarStore.add({
         title: "No world settings found in clipboard",
         text: `The string should start with '${WORLD_SETTINGS_CLIPBOARD_TAG}'`,

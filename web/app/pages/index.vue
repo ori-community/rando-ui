@@ -142,7 +142,7 @@
       </v-menu>
       <v-btn variant="text" border="md" size="x-large" target="_blank" href="https://github.com/ori-community">
         <v-icon start>mdi-github</v-icon>
-        Github
+        GitHub
       </v-btn>
     </div>
   </div>

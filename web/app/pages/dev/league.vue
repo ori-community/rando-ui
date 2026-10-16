@@ -87,7 +87,8 @@
         backgroundImageUrl: createBackgroundImageUrl.value,
       })).data
 
-      await router.push({name: 'league-seasons-seasonId', params: {seasonId: seasonId}})
+      const routerData = router.resolve({name: 'league-seasons-seasonId', params: {seasonId: seasonId}})
+      window.open(routerData.href, '_blank');
     } catch (e) {
       alert(e)
       console.error(e)

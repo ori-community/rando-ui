@@ -81,7 +81,7 @@
             border="md"
             v-bind="props"
           >
-            <v-icon class="mr-3">
+            <v-icon start>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path
                   fill="currentColor"
@@ -104,6 +104,10 @@
           </v-list-item>
         </v-list>
       </v-menu>
+      <v-btn variant="text" border="md" size="x-large" target="_blank" href="https://github.com/ori-community">
+        <v-icon start>mdi-github</v-icon>
+        Github
+      </v-btn>
     </div>
   </div>
 </template>

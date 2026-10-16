@@ -85,7 +85,6 @@
                 :world-presets="validWorldPresets ?? {}"
                 @delete="deleteWorld(nth - 1)"
                 @duplicate="duplicateWorld(nth - 1)"
-                @temp-schedule-asset-refresh="scheduleAssetRefresh()"
               />
             </v-window-item>
             <v-window-item :key="worldSettings.length" class="pa-3" value="world-setup" eager>
@@ -96,7 +95,6 @@
                 :loading="worldSetupLoading"
                 @presets-selected="onWorldSetupPresetsSelected"
                 @settings-selected="onWorldSetupSettingsSelected"
-                @temp-schedule-asset-refresh="scheduleAssetRefresh()"
               />
             </v-window-item>
             <v-window-item :key="worldSettings.length + 1" class="pa-3" value="universe-setup" eager>
@@ -106,7 +104,6 @@
                 @presets-selected="onUniverseSetupPresetsSelected"
                 @settings-selected="onUniverseSetupSettingsSelected"
                 @restore-ui-state="restoreSeedgenUiState"
-                @temp-schedule-asset-refresh="scheduleAssetRefresh()"
               />
             </v-window-item>
           </v-window>
@@ -262,14 +259,21 @@
 </template>
 
 <script lang="ts" setup>
+  /// <reference types="C:/Users/Timo/AppData/Local/Programs/WebStorm/plugins/vuejs-plugin/vue-language-tools/typescript-plugin/3.3.5/node_modules/@vue/typescript-plugin/types/template-helpers.d.ts" />
+  /// <reference types="C:/Users/Timo/AppData/Local/Programs/WebStorm/plugins/vuejs-plugin/vue-language-tools/typescript-plugin/3.3.5/node_modules/@vue/typescript-plugin/types/props-fallback.d.ts" />
   import type {
     Difficulty,
     DifficultyInfo,
     TrickInfo,
     UniverseSettings,
     WorldPreset,
-    WorldSettings, SpawnAnchors, HashMapStringSchemaResultWorldPresetInfoString,
-    HashMapStringSchemaResultUniversePresetInfoString, HashMapStringSchemaResultSnippetInfoString, UniversePreset,
+    WorldSettings,
+    SpawnAnchors,
+    HashMapStringSchemaResultWorldPresetInfoString,
+    HashMapStringSchemaResultUniversePresetInfoString,
+    HashMapStringSchemaResultSnippetInfoString,
+    UniversePreset,
+    ChangedAssets,
   } from "@shared/types/seedgen"
   import type {
     BingoSettings,
@@ -291,6 +295,7 @@
     ValidUniversePresets,
     ValidWorldPresets,
   } from "@shared/types/seedgen-extra"
+  import combineURLs from "~/assets/utils/combileURLs"
 
   function getDefaultBingoSettings(): BingoSettings {
     return {
@@ -383,6 +388,8 @@
     "Painting murals in Windtorn Ruins…",
   ])
 
+  let seedgenNotificationWebSocket: WebSocket | null = null
+
   onMounted(async () => {
     await loadSeedgenAssets()
 
@@ -391,6 +398,33 @@
       const state = JSON.parse(storedSettingsJson) as SeedgenUiState
       restoreSeedgenUiState(state)
     }
+
+    if (isElectron && seedgenAxios.defaults.baseURL !== undefined) {
+      seedgenNotificationWebSocket = new WebSocket(combineURLs(seedgenAxios.defaults.baseURL, "/assets/watch"))
+      seedgenNotificationWebSocket.onmessage = async (message: MessageEvent<string>) => {
+        const promises = []
+        const event = JSON.parse(message.data) as ChangedAssets
+
+        if (event.snippets.length > 0) {
+          promises.push(updateSnippetsInfo())
+        }
+
+        if (event.universePresets.length > 0) {
+          promises.push(updateUniversePresets())
+        }
+
+        if (event.worldPresets.length > 0) {
+          promises.push(updateWorldPresets())
+        }
+
+        await Promise.all(promises)
+      }
+    }
+  })
+
+  onBeforeUnmount(() => {
+    seedgenNotificationWebSocket?.close()
+    seedgenNotificationWebSocket = null
   })
 
   function resetEverything() {
@@ -1029,7 +1063,6 @@
         timer: "bottom",
         timeout: 4000,
       })
-      scheduleAssetRefresh()
 
       saveUniversePresetDialogOpen.value = false
     } catch (e) {
@@ -1037,11 +1070,6 @@
     }
 
     saveUniversePresetDialogLoading.value = false
-  }
-
-  // TODO: Temporary until we have a websocket
-  function scheduleAssetRefresh() {
-    setTimeout(() => loadSeedgenAssets(), 2000)
   }
 </script>
 

@@ -4,6 +4,47 @@
  */
 
 export interface paths {
+    "/assets/watch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Receive Websocket messages when assets used by seedgen change */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                101: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/generate": {
         parameters: {
             query?: never;
@@ -56,6 +97,14 @@ export interface paths {
                     };
                     content: {
                         "application/octet-stream": number[];
+                    };
+                };
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
                     };
                 };
                 500: {
@@ -648,6 +697,51 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/settings/universe/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Check universe settings */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UniverseSettings"];
+                };
+            };
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/settings/universe/inline-snippets": {
         parameters: {
             query?: never;
@@ -726,6 +820,51 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/settings/world/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Check world settings */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["WorldSettings"];
+                };
+            };
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -868,6 +1007,14 @@ export interface paths {
                         "text/plain": string;
                     };
                 };
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": string;
+                    };
+                };
             };
         };
         delete?: never;
@@ -902,6 +1049,25 @@ export interface components {
             /** @enum {string} */
             kind: "UserDataDir";
             path: string;
+        };
+        ChangeDetails: {
+            Create: string;
+        } | {
+            Modify: string;
+        } | {
+            Remove: string;
+        } | {
+            Rename: string[];
+        };
+        ChangedAssets: {
+            locData: boolean;
+            paths: boolean;
+            plandos: components["schemas"]["ChangeDetails"][];
+            snippets: components["schemas"]["ChangeDetails"][];
+            stateData: boolean;
+            uberStateDump: boolean;
+            universePresets: components["schemas"]["ChangeDetails"][];
+            worldPresets: components["schemas"]["ChangeDetails"][];
         };
         /** @enum {string} */
         ClientEvent: "Spawn" | "Reload" | "Respawn" | "Binding1" | "Binding2" | "Binding3" | "Binding4" | "Binding5" | "ProgressMessage" | "Tick" | "InkwaterTrialTextRequest" | "HollowTrialTextRequest" | "WellspringTrialTextRequest" | "WoodsTrialTextRequest" | "ReachTrialTextRequest" | "DepthsTrialTextRequest" | "LumaTrialTextRequest" | "WastesTrialTextRequest";
@@ -981,6 +1147,11 @@ export interface components {
                 x2: components["schemas"]["CommandFloat"];
                 y1: components["schemas"]["CommandFloat"];
                 y2: components["schemas"]["CommandFloat"];
+            };
+        } | {
+            StringContains: {
+                haystack: components["schemas"]["CommandString"];
+                needle: components["schemas"]["CommandString"];
             };
         };
         /** @description Command which returns [`f32`] */
@@ -2555,6 +2726,8 @@ export interface components {
 export type Alignment = components['schemas']['Alignment'];
 export type Anchor = components['schemas']['Anchor'];
 export type AssetOrigin = components['schemas']['AssetOrigin'];
+export type ChangeDetails = components['schemas']['ChangeDetails'];
+export type ChangedAssets = components['schemas']['ChangedAssets'];
 export type ClientEvent = components['schemas']['ClientEvent'];
 export type CommandBoolean = components['schemas']['CommandBoolean'];
 export type CommandFloat = components['schemas']['CommandFloat'];

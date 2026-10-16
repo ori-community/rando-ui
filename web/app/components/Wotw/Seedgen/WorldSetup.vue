@@ -142,7 +142,6 @@
   const emit = defineEmits<{
     presetsSelected: [WorldPreset[]],
     settingsSelected: [WorldSettings],
-    tempScheduleAssetRefresh: [],
   }>()
 
   const seedgenAxios = useSeedgenAxios()
@@ -246,7 +245,6 @@
     }
 
     await electronApi.fs.deleteWorldPreset.query({id: presetId})
-    emit("tempScheduleAssetRefresh")
   }
 
   async function pasteSettings() {

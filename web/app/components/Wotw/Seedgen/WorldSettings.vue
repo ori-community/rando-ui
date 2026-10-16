@@ -266,7 +266,6 @@
     "update:modelValue": [WorldSettings],
     "delete": [],
     "duplicate": [],
-    "tempScheduleAssetRefresh": [],
   }>()
 
   const model = useVModel(props, "modelValue", emit)
@@ -554,7 +553,6 @@
         timer: "bottom",
         timeout: 4000,
       })
-      emit("tempScheduleAssetRefresh")
 
       saveWorldPresetDialogOpen.value = false
     } catch (e) {

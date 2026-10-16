@@ -65,7 +65,6 @@
     presetsSelected: [UniversePreset[]],
     settingsSelected: [UniverseSettings],
     restoreUiState: [SeedgenUiState]
-    tempScheduleAssetRefresh: [],
   }>()
 
   const electronApi = useElectronApi()
@@ -109,7 +108,6 @@
     }
 
     await electronApi.fs.deleteUniversePreset.query({id: presetId})
-    emit("tempScheduleAssetRefresh")
   }
 </script>
 

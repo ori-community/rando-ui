@@ -157,8 +157,12 @@ if (!app.requestSingleInstanceLock()) {
     try {
       await createWindow()
 
-      const commandLineArgumentHandler = async (args: string[]) => {
+      const commandLineArgumentHandler = async (args: string[], focus: boolean = false) => {
         const lastArg = args[args.length - 1]
+
+        if (focus) {
+          mainWindow?.focus()
+        }
 
         if (lastArg.endsWith(".wotwr") && fs.existsSync(lastArg)) {
           // We got a seed!
@@ -180,7 +184,7 @@ if (!app.requestSingleInstanceLock()) {
         }
       }
 
-      app.on("second-instance", (_event, args) => commandLineArgumentHandler(args))
+      app.on("second-instance", (_event, args) => commandLineArgumentHandler(args, true))
       await commandLineArgumentHandler(process.argv)
     } catch (e) {
       console.error(e)

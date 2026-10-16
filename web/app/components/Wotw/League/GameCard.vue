@@ -68,12 +68,12 @@
 </template>
 
 <script lang="ts" setup>
-  
+
   import type {PropType} from "vue"
   import type {LeagueSeasonInfo, LeagueGameInfo} from "@shared/types/league";
   import type {Timeout} from "unenv/node/internal/timers/timeout";
-  import {formatTime} from "assets/utils/formatTime"
-  import {formatDateEpoch} from "assets/utils/formatsDates";
+  import {formatTime} from "@web/app/assets/utils/formatTime"
+  import {formatDateEpoch} from "@web/app/assets/utils/formatsDates";
 
   const props = defineProps({
     game: {
@@ -218,6 +218,8 @@
       width: 100%;
       height: 100%;
       opacity: 1;
+      margin: auto;
+      object-fit: cover;
 
       &:not(.behind) {
         transform: scale(1.8);

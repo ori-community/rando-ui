@@ -259,8 +259,6 @@
 </template>
 
 <script lang="ts" setup>
-  /// <reference types="C:/Users/Timo/AppData/Local/Programs/WebStorm/plugins/vuejs-plugin/vue-language-tools/typescript-plugin/3.3.5/node_modules/@vue/typescript-plugin/types/template-helpers.d.ts" />
-  /// <reference types="C:/Users/Timo/AppData/Local/Programs/WebStorm/plugins/vuejs-plugin/vue-language-tools/typescript-plugin/3.3.5/node_modules/@vue/typescript-plugin/types/props-fallback.d.ts" />
   import type {
     Difficulty,
     DifficultyInfo,

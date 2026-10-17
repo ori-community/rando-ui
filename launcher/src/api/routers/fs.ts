@@ -181,8 +181,8 @@ export const fs = router({
         "Name=Ori and the Will of the Wisps Randomizer",
         "StartupWMClass=ori-and-the-will-of-the-wisps-randomizer",
         `Exec="${app.getPath("exe")}" %F`,
-        `Path="${getInstallDataPath()}"`,
-        `Icon="${getInstallDataPath("icon.png")}"`,
+        `Path=${getInstallDataPath()}`,
+        `Icon=${getInstallDataPath("icon.png")}`,
         "SingleMainWindow=true",
       ]
 

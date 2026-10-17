@@ -182,12 +182,12 @@
         >
           <v-btn
             :ref="
-          (component) => {
-            if (component && action.id === runningSeedgenActionId) {
-              runningSeedgenActionButtonElement = (component as ComponentPublicInstance).$el
-            }
-          }
-        "
+              (component) => {
+                if (component && action.id === runningSeedgenActionId) {
+                  runningSeedgenActionButtonElement = (component as ComponentPublicInstance).$el
+                }
+              }
+            "
             :loading="runningSeedgenActionId === action.id"
             :disabled="action.disabled || runningSeedgenActionId !== null"
             size="x-large"

@@ -75,7 +75,7 @@ export class SettingsService {
       ShowStatsAfterFinish: true,
       ShowAllSecrets: true,
       DisableAutoAim: false,
-      EnableAutomaticCutsceneSkipping: false,
+      EnableAutomaticCutsceneSkipping: true,
       EnableMinimap: false,
       EnableNativeControllerSupport: true,
       ShowTransparentOutOfLogicIcons: true,

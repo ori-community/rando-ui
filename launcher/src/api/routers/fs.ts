@@ -189,6 +189,6 @@ export const fs = router({
       await nodeFs.promises.writeFile(path.join(
         app.getPath("home"),
         ".local/share/applications/ori-wotw-randomizer.desktop"
-      ), desktopFileContents.join("\n"))
+      ), `${desktopFileContents.join("\n")}\n`)
     })
 })

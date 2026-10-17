@@ -9,6 +9,7 @@ import {LauncherService} from "@launcher/services/LauncherService"
 import {RandoIPCService} from "@launcher/services/RandoIPCService"
 import {UpdateService} from "@launcher/services/UpdateService"
 import semver from "semver"
+import os from "os"
 
 type SettingsEvent = {
   /** Emitted when a single setting changed */
@@ -93,7 +94,7 @@ export class SettingsService {
       LocalTrackerIgnoreMouse: false,
       LocalTrackerShowWillowHearts: true,
       LocalTrackerHideHeartsUntilFirstHeart: true,
-      GameLaunchMethod: "steam",
+      GameLaunchMethod: os.platform() === "linux" ? "standalone" : "steam",
       ModloaderMethod: "proxy",
       ValidateProxyModloader: true,
       GameBinaryPath: SettingsService.getDefaultGameBinaryPath(),

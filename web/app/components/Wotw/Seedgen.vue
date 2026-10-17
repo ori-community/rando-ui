@@ -859,6 +859,7 @@
       actions.push({
         label: "Play Online",
         icon: "mdi-account-multiple-outline",
+        disabled: !userStore.isLoggedIn,
         hint: userStore.isLoggedIn
           ? "Play online co-op with and/or race against friends.\nWorlds inside Universes play together. Universes compete against other Universes."
           : "You must be logged in to play online games.",

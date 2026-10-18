@@ -1,4 +1,5 @@
 import type {
+  HashMapStringSchemaResultPlandoInfoString,
   HashMapStringSchemaResultSnippetInfoString,
   HashMapStringSchemaResultUniversePresetInfoString,
   HashMapStringSchemaResultWorldPresetInfoString, WorldSettings,
@@ -13,6 +14,9 @@ type ValidWorldPresets = {
 }
 type ValidSnippetsInfos = {
   [key: string]: Extract<HashMapStringSchemaResultSnippetInfoString[string], { status: "Ok" }>["value"]
+}
+type ValidPlandoInfos = {
+  [key: string]: Extract<HashMapStringSchemaResultPlandoInfoString[string], { status: "Ok" }>["value"]
 }
 
 type SeedgenUiState = {

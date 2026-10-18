@@ -7,7 +7,7 @@
         icon="mdi-format-list-bulleted-type"
         :preset-id="presetId"
         :preset-info="preset.content.info"
-        :is-custom="preset.origin.kind === 'UserDataDir'"
+        :is-custom="preset.origin.dir === 'UserData'"
         @click="onPresetSelected(preset.content)"
         @contextmenu="(event: MouseEvent) => onPresetButtonContextMenu(presetId, event)"
       />
@@ -91,7 +91,7 @@
   function onPresetButtonContextMenu(presetId: string, event: MouseEvent) {
     const preset = universePresets[presetId]
 
-    if (!preset || preset.origin.kind !== "UserDataDir") {
+    if (!preset || preset.origin.dir !== "UserData") {
       presetContextMenuOpen.value = false
       return
     }

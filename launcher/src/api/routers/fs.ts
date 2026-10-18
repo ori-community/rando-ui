@@ -190,5 +190,13 @@ export const fs = router({
         app.getPath("home"),
         ".local/share/applications/ori-wotw-randomizer.desktop"
       ), `${desktopFileContents.join("\n")}\n`)
-    })
+    }),
+  /**
+   * Returns a full path to the installation data directory, or a path within.
+   */
+  getInstallDataPath: publicProcedure
+    .input(z.string().optional())
+    .query(async ({input}): Promise<string> => {
+      return getInstallDataPath(input)
+    }),
 })

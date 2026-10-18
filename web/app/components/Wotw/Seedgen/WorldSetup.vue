@@ -25,7 +25,7 @@
         icon="mdi-format-list-bulleted-type"
         :preset-id="presetId"
         :preset-info="(worldPresets[presetId] as WorldPresetInfo).content.info"
-        :is-custom="(worldPresets[presetId] as WorldPresetInfo).origin.kind === 'UserDataDir'"
+        :is-custom="(worldPresets[presetId] as WorldPresetInfo).origin.dir === 'UserData'"
         @click="onBaseWorldPresetSelected(presetId)"
         @contextmenu="(event: MouseEvent) => onPresetButtonContextMenu(presetId, event)"
       />
@@ -45,7 +45,7 @@
               :preset-info="(worldPresets[ungroupedPresetId] as WorldPresetInfo).content.info"
               icon="mdi-plus"
               :is-included-in="selectedBasePreset.preset.includes?.includes(ungroupedPresetId) ? (selectedBasePreset.preset.info?.name ?? selectedBasePreset.id) : null"
-              :is-custom="(worldPresets[ungroupedPresetId] as WorldPresetInfo).origin.kind === 'UserDataDir'"
+              :is-custom="(worldPresets[ungroupedPresetId] as WorldPresetInfo).origin.dir === 'UserData'"
               @click="onAdditionalPresetSelected(ungroupedPresetId)"
               @contextmenu="(event: MouseEvent) => onPresetButtonContextMenu(ungroupedPresetId, event)"
             />
@@ -228,7 +228,7 @@
   function onPresetButtonContextMenu(presetId: string, event: MouseEvent) {
     const preset = worldPresets[presetId]
 
-    if (!preset || preset.origin.kind !== "UserDataDir") {
+    if (!preset || preset.origin.dir !== "UserData") {
       presetContextMenuOpen.value = false
       return
     }

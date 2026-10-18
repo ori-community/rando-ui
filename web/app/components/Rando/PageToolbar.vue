@@ -104,6 +104,10 @@
               <v-icon start>mdi-leak</v-icon>
               Create Web Tracker
             </v-list-item>
+            <v-list-item size="x-large" variant="text" :to="{name: 'electron-plandos'}">
+              <v-icon start>mdi-map-marker-path</v-icon>
+              Plandomizers
+            </v-list-item>
             <v-list-item size="x-large" variant="text" @click="openToolsWindow">
               <v-icon start>mdi-tools</v-icon>
               Tools

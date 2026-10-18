@@ -10,9 +10,10 @@ export const localTracker = router({
   openWindow: publicProcedure
     .input(z.object({
       demoMode: z.boolean()
-    }))
+    }).optional())
     .query(async ({input}) => {
-      return LocalTrackerService.openLocalTracker(input.demoMode, input.demoMode)
+      const demoMode = input?.demoMode
+      return LocalTrackerService.openLocalTracker(demoMode, demoMode)
     }),
   /**
    * Closes the Local Tracker window

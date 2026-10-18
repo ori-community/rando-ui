@@ -38,7 +38,7 @@
       </v-btn>
       <v-badge :model-value="snippetHasNonDefaultValues" floating color="bg-primary" offset-x="13" offset-y="-10" bordered dot />
     </template>
-    <span v-if="snippetInfo.origin.kind === 'UserDataDir'">
+    <span v-if="snippetInfo.origin.dir === 'UserData'">
       <v-btn variant="plain" size="x-small" class="mx-1" icon readonly>
         <v-icon icon="mdi-account-outline" size="x-large" />
       </v-btn>

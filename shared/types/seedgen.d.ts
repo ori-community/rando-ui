@@ -1043,13 +1043,14 @@ export interface components {
         };
         /** @description Origin of an asset */
         AssetOrigin: {
-            /** @enum {string} */
-            kind: "ExecutableDir";
-        } | {
-            /** @enum {string} */
-            kind: "UserDataDir";
+            dir: components["schemas"]["AssetOriginDir"];
             path: string;
         };
+        /**
+         * @description Origin directory of an asset
+         * @enum {string}
+         */
+        AssetOriginDir: "Executable" | "UserData";
         ChangeDetails: {
             Create: string;
         } | {
@@ -1060,11 +1061,11 @@ export interface components {
             Rename: string[];
         };
         ChangedAssets: {
-            locData: boolean;
             paths: boolean;
+            pickups: boolean;
             plandos: components["schemas"]["ChangeDetails"][];
             snippets: components["schemas"]["ChangeDetails"][];
-            stateData: boolean;
+            states: boolean;
             uberStateDump: boolean;
             universePresets: components["schemas"]["ChangeDetails"][];
             worldPresets: components["schemas"]["ChangeDetails"][];
@@ -1997,28 +1998,6 @@ export interface components {
         };
         /** @enum {string} */
         LevelSchema: "ERROR" | "WARN" | "INFO" | "DEBUG" | "TRACE";
-        /** @description Information about a pickup location */
-        LocDataEntry: {
-            /** @description Unique identifier for this pickup location which is used in `paths.wotwl` */
-            identifier: string;
-            /** @description Vanilla map icon */
-            mapIcon: components["schemas"]["MapIcon"];
-            mapPosition?: components["schemas"]["Position"] | null;
-            position?: components["schemas"]["Position"] | null;
-            /**
-             * @description `UberIdentifier` where this pickup location's corresponding world state is stored
-             *
-             *     pickup locations are either stored as booleans or as integers where being above a certain value means the pickup is collected
-             */
-            uberIdentifier: components["schemas"]["UberIdentifier"];
-            /**
-             * Format: int32
-             * @description `None` if `uber_identifier` holds a boolean value. Otherwise, has the minimum integer value at which this pickup is collected
-             */
-            value?: number | null;
-            /** @description Map zone containing this pickup location */
-            zone: components["schemas"]["Zone"];
-        };
         /**
          * @default INFO
          * @enum {string}
@@ -2079,13 +2058,13 @@ export interface components {
         Node: {
             Anchor: components["schemas"]["Anchor"];
         } | {
-            Pickup: components["schemas"]["LocDataEntry"];
+            Pickup: components["schemas"]["PickupsEntry"];
         } | {
-            State: components["schemas"]["StateDataEntry"];
+            State: components["schemas"]["StatesEntry"];
         } | {
             LogicalState: string;
         };
-        /** @description Select data from a [`LocDataEntry`] */
+        /** @description Select data from a [`PickupsEntry`] */
         NodeSummary: {
             /** @description The identifier */
             identifier: string;
@@ -2188,6 +2167,28 @@ export interface components {
          * @enum {integer}
          */
         OpherIcon: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
+        /** @description Information about a pickup location */
+        PickupsEntry: {
+            /** @description Unique identifier for this pickup location which is used in `paths.wotwl` */
+            identifier: string;
+            /** @description Vanilla map icon */
+            mapIcon: components["schemas"]["MapIcon"];
+            mapPosition?: components["schemas"]["Position"] | null;
+            position?: components["schemas"]["Position"] | null;
+            /**
+             * @description `UberIdentifier` where this pickup location's corresponding world state is stored
+             *
+             *     pickup locations are either stored as booleans or as integers where being above a certain value means the pickup is collected
+             */
+            uberIdentifier: components["schemas"]["UberIdentifier"];
+            /**
+             * Format: int32
+             * @description `None` if `uber_identifier` holds a boolean value. Otherwise, has the minimum integer value at which this pickup is collected
+             */
+            value?: number | null;
+            /** @description Map zone containing this pickup location */
+            zone: components["schemas"]["Zone"];
+        };
         /** @description Attributes specified by a plando source */
         PlandoAttributes: {
             description?: string | null;
@@ -2393,7 +2394,7 @@ export interface components {
             targetWorldIndex: number;
         };
         /** @description Information about an obtainable world state */
-        StateDataEntry: {
+        StatesEntry: {
             /** @description Unique identifier for this world state which is used in `paths.wotwl` */
             identifier: string;
             /**
@@ -2726,6 +2727,7 @@ export interface components {
 export type Alignment = components['schemas']['Alignment'];
 export type Anchor = components['schemas']['Anchor'];
 export type AssetOrigin = components['schemas']['AssetOrigin'];
+export type AssetOriginDir = components['schemas']['AssetOriginDir'];
 export type ChangeDetails = components['schemas']['ChangeDetails'];
 export type ChangedAssets = components['schemas']['ChangedAssets'];
 export type ClientEvent = components['schemas']['ClientEvent'];
@@ -2765,7 +2767,6 @@ export type HashSetTrick = components['schemas']['HashSet_Trick'];
 export type HorizontalAnchor = components['schemas']['HorizontalAnchor'];
 export type Icon = components['schemas']['Icon'];
 export type LevelSchema = components['schemas']['LevelSchema'];
-export type LocDataEntry = components['schemas']['LocDataEntry'];
 export type LogLevelFilter = components['schemas']['LogLevelFilter'];
 export type LupoIcon = components['schemas']['LupoIcon'];
 export type MapIcon = components['schemas']['MapIcon'];
@@ -2785,6 +2786,7 @@ export type OperationCommandStringConcatenator = components['schemas']['Operatio
 export type OperationCommandStringEqualityComparator = components['schemas']['Operation_CommandString_EqualityComparator'];
 export type OperationCommandZoneEqualityComparator = components['schemas']['Operation_CommandZone_EqualityComparator'];
 export type OpherIcon = components['schemas']['OpherIcon'];
+export type PickupsEntry = components['schemas']['PickupsEntry'];
 export type PlandoAttributes = components['schemas']['PlandoAttributes'];
 export type PlandoInfo = components['schemas']['PlandoInfo'];
 export type Position = components['schemas']['Position'];
@@ -2806,7 +2808,7 @@ export type SpawnAnchors = components['schemas']['SpawnAnchors'];
 export type SpoilerGroup = components['schemas']['SpoilerGroup'];
 export type SpoilerItem = components['schemas']['SpoilerItem'];
 export type SpoilerPlacement = components['schemas']['SpoilerPlacement'];
-export type StateDataEntry = components['schemas']['StateDataEntry'];
+export type StatesEntry = components['schemas']['StatesEntry'];
 export type String = components['schemas']['String'];
 export type StringOrPlaceholder = components['schemas']['StringOrPlaceholder'];
 export type Teleporter = components['schemas']['Teleporter'];

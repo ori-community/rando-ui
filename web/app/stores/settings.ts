@@ -60,12 +60,34 @@ export const useSettingsStore = defineStore("settings", () => {
   if (electronApi !== null) {
     (async () => {
       const currentSettings = await electronApi.settings.getSettings.query()
+      const submittingSettingsKeys = new Set<SettingKey>()
 
       for (const key in settingsRefs) {
-        settingsRefs[key as SettingKey].value = currentSettings[key as SettingKey]
+        const settingKey = key as SettingKey
+        settingsRefs[settingKey].value = currentSettings[settingKey]
+        let pendingValue: undefined | Settings[settingsKey] = undefined
 
-        watch(() => settingsRefs[key as SettingKey].value, async (newValue) => {
-          await electronApi.settings.setSetting.query({key, value: newValue})
+        async function submitSetting(value: Settings[settingsKey]) {
+          if (!electronApi) {
+            return
+          }
+
+          if (submittingSettingsKeys.has(settingKey)) {
+            pendingValue = value
+            return
+          }
+
+          submittingSettingsKeys.add(settingKey)
+          await electronApi.settings.setSetting.query({key, value})
+          submittingSettingsKeys.delete(settingKey)
+
+          if (pendingValue !== undefined) {
+            submitSetting(pendingValue)
+          }
+        }
+
+        watch(() => settingsRefs[settingKey].value, (newValue) => {
+          submitSetting(newValue)
         })
       }
 

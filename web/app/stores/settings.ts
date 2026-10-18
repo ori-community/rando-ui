@@ -65,9 +65,9 @@ export const useSettingsStore = defineStore("settings", () => {
       for (const key in settingsRefs) {
         const settingKey = key as SettingKey
         settingsRefs[settingKey].value = currentSettings[settingKey]
-        let pendingValue: undefined | Settings[settingsKey] = undefined
+        let pendingValue: undefined | Settings[SettingKey] = undefined
 
-        async function submitSetting(value: Settings[settingsKey]) {
+        async function submitSetting(value: Settings[SettingKey]) {
           if (!electronApi) {
             return
           }

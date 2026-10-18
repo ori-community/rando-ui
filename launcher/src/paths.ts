@@ -8,7 +8,7 @@ function getBaseUserDataPath() {
     return path.join(userDataHome, "ori-wotw-randomizer")
   }
 
-  return app.getPath("userData")
+  return path.join(process.env.APPDATA, "ori-wotw-randomizer")
 }
 
 export function getUserDataPath(relativePath = "."): string {

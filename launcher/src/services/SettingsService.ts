@@ -94,6 +94,7 @@ export class SettingsService {
       LocalTrackerIgnoreMouse: false,
       LocalTrackerShowWillowHearts: true,
       LocalTrackerHideHeartsUntilFirstHeart: true,
+      InitialSetupCompleted: false,
       GameLaunchMethod: os.platform() === "linux" ? "standalone" : "steam",
       ModloaderMethod: "proxy",
       ValidateProxyModloader: true,

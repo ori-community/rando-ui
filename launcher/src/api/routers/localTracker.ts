@@ -1,14 +1,25 @@
 import {publicProcedure, router} from "@launcher/api/trpc"
 import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
 import {SettingsService} from "@launcher/services/SettingsService"
+import {z} from "zod"
 
 export const localTracker = router({
   /**
    * Opens the Local Tracker window
    */
   openWindow: publicProcedure
+    .input(z.object({
+      demoMode: z.boolean()
+    }))
+    .query(async ({input}) => {
+      return LocalTrackerService.openLocalTracker(input.demoMode, input.demoMode)
+    }),
+  /**
+   * Closes the Local Tracker window
+   */
+  closeWindow: publicProcedure
     .query(async () => {
-      return LocalTrackerService.openLocalTracker()
+      return LocalTrackerService.close()
     }),
   /**
    * Resets the Local Tracker window to its default dimensions.
@@ -23,5 +34,6 @@ export const localTracker = router({
       await SettingsService.instance.setSetting('LocalTrackerWindowPositionHeight', rect.height)
 
       LocalTrackerService.resetWindowRect()
+      LocalTrackerService.focusIfOpen()
     }),
 })

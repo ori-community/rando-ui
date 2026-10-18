@@ -3,6 +3,7 @@
     <div id="backdrop" class="backdrop"/>
 
     <wotw-launcher-helper-dialogs v-if="isElectron" />
+    <rando-initial-setup-dialog />
 
     <!--    TODO always show toolbar / keep visible on scroll -->
     <v-container class="toolbar">

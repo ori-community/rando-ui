@@ -35,6 +35,7 @@ export type Settings = {
   LocalTrackerIgnoreMouse: boolean,
   LocalTrackerShowWillowHearts: boolean,
   LocalTrackerHideHeartsUntilFirstHeart: boolean,
+  InitialSetupCompleted: boolean,
   GameLaunchMethod: "steam" | "microsoft-store" | "standalone",
   ModloaderMethod: "proxy" | "inject",
   ValidateProxyModloader: boolean,

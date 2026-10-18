@@ -37,7 +37,7 @@
       :current-area-has-uncollected-relic="(trackedValues.relicCurrentAreaUncollected ?? 0) > 0"
       :show-timer="showTimer"
       :time="time"
-      :show-visited-entrances="(trackedValues.showVisitedEntranceCount ?? 0) > 0"
+      :show-visited-entrance-count="(trackedValues.showVisitedEntranceCount ?? 0) > 0"
       :visited-entrance-count="visitedEntranceCount"
       :total-entrance-count="32"
     />

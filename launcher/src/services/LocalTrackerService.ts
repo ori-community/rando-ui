@@ -9,6 +9,7 @@ import {PopupWindow} from "@launcher/services/PopupWindow"
 export class LocalTrackerService {
   private static window: BrowserWindow | null = null
   private static isSubscribedToSettings: boolean = false
+  private static isDemoMode: boolean = false
 
   private static onSettingChanged(key: SettingKey, value: any) {
     if (
@@ -17,7 +18,7 @@ export class LocalTrackerService {
     ) {
       switch (key) {
         case "LocalTrackerTransparent":
-          LocalTrackerService.openLocalTracker(true)
+          LocalTrackerService.openLocalTracker(true, LocalTrackerService.isDemoMode)
           break
 
         case "LocalTrackerAlwaysOnTop":
@@ -60,7 +61,7 @@ export class LocalTrackerService {
     }
   }
 
-  static async openLocalTracker(forceReopenWindow = false) {
+  static async openLocalTracker(forceReopenWindow = false, demoMode = false) {
     if (!this.isSubscribedToSettings) {
       SettingsService.instance.events.on("settingChanged", LocalTrackerService.onSettingChanged)
       this.isSubscribedToSettings = true
@@ -123,11 +124,14 @@ export class LocalTrackerService {
         debounce(() => this.saveWindowRect(), 500),
       )
 
-      await this.window.loadURL(
-        getElectronUrl(
-          `/tracker?source=ws://127.0.0.1:${LocalTrackerWebSocketService.port}`,
-        ),
-      )
+      let url = `/tracker?source=ws://127.0.0.1:${LocalTrackerWebSocketService.port}`
+
+      LocalTrackerService.isDemoMode = demoMode
+      if (demoMode) {
+        url += "&demo=true"
+      }
+
+      await this.window.loadURL(getElectronUrl(url))
     } else {
       this.window.focus()
     }
@@ -148,6 +152,12 @@ export class LocalTrackerService {
       const rect = this.getInitialWindowRect()
       this.window.setPosition(rect.x, rect.y)
       this.window.setSize(rect.width, rect.height)
+    }
+  }
+
+  static focusIfOpen() {
+    if (this.window && !this.window.isDestroyed()) {
+      this.window.focus()
     }
   }
 }

@@ -179,7 +179,7 @@ if (!app.requestSingleInstanceLock()) {
               }
             }
           } catch (e: any) {
-            log.error("Could not parse URL", e.message)
+            log.error("Could not parse URL:", e.message)
           }
         }
       }

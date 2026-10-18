@@ -101,7 +101,7 @@
 
       <div class="d-flex justify-end">
         <v-btn class="mt-6" color="accent" :loading="setupLoading" flat @click="installAndValidate">
-          <v-icon start>mdi-check</v-icon>
+          <v-icon v-if="completeSetupButtonIcon !== null" start>{{ completeSetupButtonIcon }}</v-icon>
           {{ completeSetupButtonLabel }}
         </v-btn>
       </div>
@@ -125,9 +125,11 @@
     defineProps<{
       loadDefaultsFromSettings?: boolean,
       completeSetupButtonLabel?: string
+      completeSetupButtonIcon?: string | null
     }>(), {
       loadDefaultsFromSettings: true,
       completeSetupButtonLabel: "Complete Setup",
+      completeSetupButtonIcon: "mdi-check",
     }
   )
 

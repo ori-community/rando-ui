@@ -90,7 +90,16 @@
   const isOBS = (() => {
     return false
   }) // TODO isOBS
+
+  const isDemo = computed(() => {
+    return route.query.demo === "true"
+  })
+
   const showWillowHearts = computed(() => {
+    if (isDemo.value) {
+      return true
+    }
+
     const showWillowHearts = route.query.hearts === "true" || (settings?.LocalTrackerShowWillowHearts.value)
     const hideHeartsUntilFirstOne =
       route.query.hideHeartsUntilFirst === "true" || (settings?.LocalTrackerHideHeartsUntilFirstHeart.value)
@@ -98,7 +107,7 @@
     return showWillowHearts && (!hideHeartsUntilFirstOne || heartCount.value > 0)
   })
   const showTimer = computed(() => {
-    return route.query.timer === "true" || (isElectron && !!settings?.LocalTrackerShowTimer.value)
+    return isDemo.value || route.query.timer === "true" || (isElectron && !!settings?.LocalTrackerShowTimer.value)
   })
   const showErrors = computed(() => {
     return route.query.errors === "true"
@@ -228,6 +237,31 @@
     }
 
     timerStartTimestamp.value = (Date.now() / 1000.0)
+
+    if (isDemo.value) {
+      trackedValues.value.relicsCount = 3
+      trackedValues.value.relicsRequired = 8
+      trackedValues.value.skillBash = 1
+      trackedValues.value.skillBow = 1
+      trackedValues.value.skillDoubleJump = 1
+      trackedValues.value.skillCleanWater = 1
+      trackedValues.value.skillFlap = 1
+      trackedValues.value.skillSword = 1
+      trackedValues.value.meltingSword = 1
+      trackedValues.value.skillBurrow = 1
+      trackedValues.value.heartBoulderEscape = 1
+      trackedValues.value.heartBurrowHeart = 1
+      trackedValues.value.skillSentry = 1
+      trackedValues.value.resourceGorlekOre = 3
+      trackedValues.value.resourceGorlekOreCollected = 9
+      trackedValues.value.resourceKeystones = 5
+      trackedValues.value.resourceSpiritLight = 3141
+      displayedTime.value = 2859.2
+      receivedPacket.value = true
+      connected.value = true
+      return
+    }
+
     connect()
   })
   onUnmounted(() => {

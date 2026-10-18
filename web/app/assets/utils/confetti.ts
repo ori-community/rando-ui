@@ -22,7 +22,7 @@ export function confettiFromElement(element: HTMLElement, opts: confetti.Options
   const x = (left + width / 2) / window.innerWidth
   const y = (top + height / 2) / window.innerHeight
   const origin = {x, y}
-  confetti({origin, disableForReducedMotion: true, ...opts})
+  confetti({origin, disableForReducedMotion: true, zIndex: 999999, ...opts})
 
   const oriOpts = {
     ...opts,
@@ -34,5 +34,5 @@ export function confettiFromElement(element: HTMLElement, opts: confetti.Options
       ? opts.scalar * 3
       : 3,
   }
-  confetti({origin, disableForReducedMotion: true, ...oriOpts})
+  confetti({origin, disableForReducedMotion: true, zIndex: 999999, ...oriOpts})
 }

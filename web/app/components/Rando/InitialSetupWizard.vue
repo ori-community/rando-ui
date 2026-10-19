@@ -78,6 +78,12 @@
           label="Mouse Control"
           description="Control Burrow, Grapple and Water Dash with your cursor instead of keyboard keys"
         />
+        <rando-settings-checkbox
+          v-if="platform === 'linux'"
+          v-model="createDesktopEntry"
+          label="Create Desktop Entry"
+          description="Makes it possible to find the randomizer in your applications list"
+        />
       </div>
       <div class="d-flex align-center pa-5">
         <p class="opacity-70 text-label-large">
@@ -119,11 +125,13 @@
   import {confettiFromElement} from "~/assets/utils/confetti"
   import type {RouteLocationRaw} from "vue-router"
 
+  const platform = await usePlatform()
   const electronApi = useElectronApi()
   const settings = useSettingsStore()
   const step = ref<'welcome' | 'launch-setup' | 'tracker' | 'common-settings' | 'done'>('welcome')
   const oriHiRef = ref<null | HTMLElement>(null)
   const router = useRouter()
+  const createDesktopEntry = ref(true)
 
   const emit = defineEmits<{
     (e: "completed"): void
@@ -164,6 +172,11 @@
       case "common-settings":
         step.value = "done"
         settings.InitialSetupCompleted = true
+
+        if (platform === "linux" && createDesktopEntry.value && electronApi) {
+          await electronApi.fs.createDesktopEntry.query()
+        }
+
         setTimeout(() => {
           if (oriHiRef.value !== null) {
             confettiFromElement(oriHiRef.value)

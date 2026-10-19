@@ -20,6 +20,7 @@ import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
 import {ToolsWindowService} from "@launcher/services/ToolsWindowService"
 import {SupportBundleService} from "@launcher/services/SupportBundleService"
 import {DEFAULT_PROTOCOL} from "@shared/utils/protocol"
+import {shell} from "electron"
 
 // Override session data path to have a clean app data directory.
 // Otherwise, Chromium will pollute it...
@@ -120,6 +121,13 @@ if (!app.requestSingleInstanceLock()) {
       webPreferences: {
         preload: path.join(__dirname, "preload.js"),
       },
+    })
+
+    mainWindow.webContents.on("will-navigate", (event) => {
+      if (!event.url.startsWith("app://bundle")) {
+        event.preventDefault()
+        shell.openExternal(event.url)
+      }
     })
 
     mainWindow.on("close", () => {

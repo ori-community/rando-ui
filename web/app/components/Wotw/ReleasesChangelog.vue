@@ -7,7 +7,12 @@
           <v-chip v-if="release.isNew" color="accent" variant="flat" size="small" class="ml-1">NEW</v-chip>
         </div>
         <div>
-          <vue-markdown :source="release.notes" />
+          <vue-markdown
+            :source="release.notes"
+            :options="{linkify: true}"
+            :plugins="plugins"
+            class="markdown"
+          />
         </div>
         <div class="metadata d-flex justify-end align-center ga-2 text-body-small">
           <div class="actions d-flex">
@@ -33,11 +38,22 @@
 
 <script lang="ts" setup>
   import VueMarkdown from "vue-markdown-render"
+  import Shiki from '@shikijs/markdown-it'
   import {formatDistanceToNow} from "date-fns"
+  import seedLanguage from "~/assets/grammars/wotws"
 
   const emit = defineEmits<{
     installRelease: [Release],
   }>()
+  const plugins = [
+    await Shiki({
+      themes: {
+        light: 'github-dark-dimmed',
+        dark: 'github-dark-dimmed',
+      },
+      langs: [seedLanguage],
+    })
+  ]
 
   defineProps<{
     releases: Release[]
@@ -67,6 +83,32 @@
         transform: translateX(0);
         pointer-events: all;
       }
+    }
+  }
+
+  .markdown {
+    :deep(h1),
+    :deep(h2),
+    :deep(h3),
+    :deep(h4),
+    :deep(h5),
+    :deep(h6) {
+      &:not(:first-child) {
+        margin-top: 0.75rem;
+      }
+
+      margin-bottom: 0.2rem;
+    }
+
+    :deep(code) {
+      display: block;
+      padding: 0.3rem 0.7rem;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+    }
+
+    :deep(pre) {
+      margin: 0.3rem 0;
     }
   }
 </style>

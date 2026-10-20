@@ -257,10 +257,9 @@
 
   async function login(event: MouseEvent) {
     const {apiBaseUrl} = await useBaseUrls()
+    authStore.redirectPath = route.fullPath
 
     if (!electronApi) {
-      authStore.redirectPath = route.fullPath
-
       const url = new URL(apiBaseUrl)
       url.pathname += "/login"
       url.searchParams.set("redirect", `${window.location.origin}/auth/callback`)

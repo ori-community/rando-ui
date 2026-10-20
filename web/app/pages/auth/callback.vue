@@ -7,8 +7,17 @@
   const router = useRouter()
   const {axios} = useAxios()
   const authStore = useAuthStore()
+  const isElectron = useIsElectron()
 
   const shortLivedJwt = route.query.jwt
+
+  async function goHome() {
+    await router.replace(
+      isElectron
+        ? {name: "electron-index"}
+        : {name: "index"}
+    )
+  }
 
   // Exchange short-lived token with a long-lived one
   if (shortLivedJwt) {
@@ -25,8 +34,11 @@
         authStore.redirectPath = null
         await router.replace(redirectPath)
       } catch (e) {
-        // Noop
+        console.error(e)
+        await goHome()
       }
+    } else {
+      await goHome()
     }
   }
 </script>

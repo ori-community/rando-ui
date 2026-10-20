@@ -101,7 +101,6 @@
     }
 
     :deep(code) {
-      display: block;
       padding: 0.3rem 0.7rem;
       background-color: rgba(0, 0, 0, 0.2);
       border-radius: 3px;
@@ -109,6 +108,10 @@
 
     :deep(pre) {
       margin: 0.3rem 0;
+
+      code {
+        display: block;
+      }
     }
   }
 </style>

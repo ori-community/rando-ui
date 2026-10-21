@@ -125,7 +125,6 @@ export class UpdateService {
           await SeedgenServerService.kill()
 
           log.info(`UpdateService: Replacing AppImage at '${appImagePath}'`)
-
           const updateScriptPath = getTemporaryUserDataPath("wotw-randomizer-update.sh")
 
           const escapedTemporaryPath = temporaryPath.replaceAll("\"", "\\\"")
@@ -155,16 +154,40 @@ export class UpdateService {
         app.quit()
       } else {
         // Linux Portable
+        const installDataPath = getInstallDataPath()
         const temporaryPath = getTemporaryUserDataPath("randomizer_update.tar.gz")
         await this.downloadUpdate(urls.linuxPortable, temporaryPath)
 
         app.on("quit", async () => {
           await SeedgenServerService.kill()
+
+          log.info(`UpdateService: Replacing portable installation at '${installDataPath}'`)
+          const updateScriptPath = getTemporaryUserDataPath("wotw-randomizer-update.sh")
+
+          const escapedTemporaryPath = temporaryPath.replaceAll("\"", "\\\"")
+          const escapedInstallDataPath = installDataPath.replaceAll("\"", "\\\"")
+          const escapedExecutablePath = app.getPath("exe").replaceAll("\"", "\\\"")
+
+          await fs.promises.writeFile(updateScriptPath, [
+            "#!/usr/bin/env sh",
+            "tries=0",
+            "while true; do",
+            "  if [ $tries -gt 5 ]; then",
+            "    exit 1;",
+            "  fi",
+            `  rm -rf "${escapedInstallDataPath}" && mkdir "${escapedInstallDataPath}" && tar -xzf "${escapedTemporaryPath}" -C "${escapedInstallDataPath}" && break`,
+            "  tries=$(expr $tries + 1)",
+            "  sleep 3",
+            "done",
+            `exec "${escapedExecutablePath}"`,
+          ].join("\n"), {encoding: "utf8"})
+
+          spawn("sh", [updateScriptPath], {
+            detached: true,
+            stdio: "ignore",
+          }).unref()
         })
 
-        // TODO: Maybe extract automatically, not sure yet whether the portable version
-        //       should be supported at all in the end...
-        electronShell.showItemInFolder(temporaryPath)
         app.quit()
       }
     }

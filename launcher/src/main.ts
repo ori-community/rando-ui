@@ -144,19 +144,11 @@ if (!app.requestSingleInstanceLock()) {
 
       // Open the DevTools.
       mainWindow.webContents.openDevTools()
-
-      // Minimize to not disturb development
-      setTimeout(() => {
-        // Windows is epic
-        mainWindow.setFocusable(false)
-        mainWindow.maximize()
-        mainWindow.minimize()
-        mainWindow.setFocusable(true)
-      }, 500)
     } else {
       await mainWindow.loadURL("app://bundle/electron")
-      mainWindow.maximize()
     }
+
+    mainWindow.maximize()
 
     await RandoIPCService.startIPCServer()
     LocalTrackerWebSocketService.start()
@@ -183,9 +175,9 @@ if (!app.requestSingleInstanceLock()) {
             const url = new URL(lastArg)
             if (url.protocol === `${DEFAULT_PROTOCOL}:` && url.pathname.startsWith("/")) {
               if (import.meta.env.DEV) {
-                await mainWindow.loadURL(`http://localhost:3000${url.pathname}${url.search}${url.hash}`)
+                await mainWindow?.loadURL(`http://localhost:3000${url.pathname}${url.search}${url.hash}`)
               } else {
-                await mainWindow.loadURL(`app://bundle${url.pathname}${url.search}${url.hash}`)
+                await mainWindow?.loadURL(`app://bundle${url.pathname}${url.search}${url.hash}`)
               }
             }
           } catch (e: any) {

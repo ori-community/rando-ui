@@ -258,12 +258,14 @@ export class LauncherService {
    */
   static async setNewGameSeedSource(seedSource: string) {
     let append = ""
-    if (fs.existsSync(getClientUserDataPath(".newgameseedsource"))) {
-      const contents = await fs.promises.readFile(getClientUserDataPath(".newgameseedsource"), {encoding: "utf-8"})
+    const newGameSeedSourcePath = getClientUserDataPath(".newgameseedsource")
+
+    if (fs.existsSync(newGameSeedSourcePath)) {
+      const contents = await fs.promises.readFile(newGameSeedSourcePath, {encoding: "utf-8"})
       append = "\n" + contents.split("\n").slice(1).join("\n")
     }
 
-    await fs.promises.writeFile(getClientUserDataPath(".newgameseedsource"), seedSource.trim() + append, {
+    await fs.promises.writeFile(newGameSeedSourcePath, seedSource.trim() + append, {
       encoding: "utf-8",
     })
     this.events.emit("newGameSeedSourceChanged", seedSource)
@@ -298,6 +300,7 @@ export class LauncherService {
       this.isLaunching = false
       return result
     } catch (e) {
+      console.log(e)
       this.launchResult = {
         launchedSuccessfully: false,
         errorType: "unknown_error",
@@ -384,7 +387,7 @@ export class LauncherService {
         }
         break
       case "microsoft-store":
-        powershellExec("explorer.exe", ["shell:AppsFolder\\Microsoft.Patagonia_8wekyb3d8bbwe!App"]).unref()
+        powershellExec("explorer.exe", ["shell:AppsFolder\\Microsoft.Patagonia_8wekyb3d8bbwe!App"]).nodeChildProcess.unref()
         await waitForProcess("oriandthewillofthewisps-pc.exe")
         break
       case "standalone":
@@ -396,7 +399,7 @@ export class LauncherService {
           case "linux":
             const wineprefixLocation = getUserDataPath("wineprefix")
 
-            const wineEnv: {[key: string]: string | null} = {
+            const wineEnv: Record<string, string> = {
               WINEPREFIX: wineprefixLocation,
               WINEDLLOVERRIDES: "winhttp.dll=n,b",
               WINENTSYNC: "1",

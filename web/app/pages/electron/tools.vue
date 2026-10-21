@@ -6,16 +6,16 @@
       <v-tab value="uberstates">Uberstate Log</v-tab>
       <!--   TODO show TAS if dev (dev because feature unfinished)   -->
     </v-tabs>
-    <wotw-tools-hierarchy v-if="tab === 'hierarchy'"/>
-    <wotw-tools-uberstate-log v-else-if="tab === 'uberstates'"/>
-    <wotw-tools-areas-map v-else-if="tab === 'map'"/>
+    <wotw-tools-hierarchy v-if="tab === 'hierarchy'" />
+    <wotw-tools-uberstate-log v-else-if="tab === 'uberstates'" />
+    <wotw-tools-areas-map v-else-if="tab === 'map'" />
   </div>
 </template>
 
 <script lang="ts" setup>
 
   definePageMeta({
-    layout: 'plain'
+    layout: "plain",
   })
 
   useHead({title: "Tools"})

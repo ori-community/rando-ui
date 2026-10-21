@@ -1,11 +1,12 @@
-import {publicProcedure, router} from "@launcher/api/trpc"
-import {z} from "zod"
-import {getInstallDataPath, getSeedgenUserDataPath, getSeedsUserDataPath} from "@launcher/paths"
 import nodeFs from "node:fs"
-import path from "node:path"
-import {SeedgenUiState} from "@shared/types/seedgen-extra"
 import os from "node:os"
+import path from "node:path"
+
+import {publicProcedure, router} from "@launcher/api/trpc"
+import {getInstallDataPath, getSeedgenUserDataPath, getSeedsUserDataPath} from "@launcher/paths"
+import {SeedgenUiState} from "@shared/types/seedgen-extra"
 import {app} from "electron"
+import {z} from "zod"
 
 export const fs = router({
   /**
@@ -17,7 +18,7 @@ export const fs = router({
     .input(
       z.object({
         worlds: z.array(z.instanceof(Uint8Array<ArrayBuffer>)),
-      })
+      }),
     )
     .query(async ({input}): Promise<string[]> => {
       const seedsDir = getSeedsUserDataPath()
@@ -28,9 +29,7 @@ export const fs = router({
       const filePaths = []
       for (let worldIndex = 0; worldIndex < input.worlds.length; worldIndex++) {
         const generateSeedFilePath = (offset: number = 0) => {
-          let fileName = input.worlds.length === 1
-            ? `${id}`
-            : `${id}-${worldIndex}`
+          let fileName = input.worlds.length === 1 ? `${id}` : `${id}-${worldIndex}`
 
           if (offset > 0) {
             fileName += `-${offset}`
@@ -60,26 +59,29 @@ export const fs = router({
     .input(
       z.object({
         seedgenUiState: z.any(),
-      })
+      }),
     )
     .query(async ({input}): Promise<void> => {
       await nodeFs.promises.mkdir(getSeedgenUserDataPath(), {recursive: true})
-      await nodeFs.promises.writeFile(getSeedgenUserDataPath("last_seedgen_ui_state.json"), JSON.stringify(input.seedgenUiState, null, 2), {encoding: "utf8"})
+      await nodeFs.promises.writeFile(
+        getSeedgenUserDataPath("last_seedgen_ui_state.json"),
+        JSON.stringify(input.seedgenUiState, null, 2),
+        {encoding: "utf8"},
+      )
     }),
   /**
    * Save a given universe preset as the special Last Config universe preset
    */
-  getLastSeedgenUiState: publicProcedure
-    .query(async (): Promise<SeedgenUiState | null> => {
-      const lastSettingsPath = getSeedgenUserDataPath("last_seedgen_ui_state.json")
+  getLastSeedgenUiState: publicProcedure.query(async (): Promise<SeedgenUiState | null> => {
+    const lastSettingsPath = getSeedgenUserDataPath("last_seedgen_ui_state.json")
 
-      if (!nodeFs.existsSync(lastSettingsPath)) {
-        return null
-      }
+    if (!nodeFs.existsSync(lastSettingsPath)) {
+      return null
+    }
 
-      const fileContents = await nodeFs.promises.readFile(lastSettingsPath, {encoding: "utf8"})
-      return JSON.parse(fileContents) as SeedgenUiState
-    }),
+    const fileContents = await nodeFs.promises.readFile(lastSettingsPath, {encoding: "utf8"})
+    return JSON.parse(fileContents) as SeedgenUiState
+  }),
   /**
    * Save a given world user preset to disk
    */
@@ -88,7 +90,7 @@ export const fs = router({
       z.object({
         name: z.string(),
         preset: z.any(),
-      })
+      }),
     )
     .query(async ({input}): Promise<void> => {
       await nodeFs.promises.mkdir(getSeedgenUserDataPath("world_presets"), {recursive: true})
@@ -118,7 +120,7 @@ export const fs = router({
         name: z.string(),
         description: z.string().optional(),
         preset: z.any(),
-      })
+      }),
     )
     .query(async ({input}): Promise<void> => {
       await nodeFs.promises.mkdir(getSeedgenUserDataPath("universe_presets"), {recursive: true})
@@ -145,8 +147,8 @@ export const fs = router({
   deleteWorldPreset: publicProcedure
     .input(
       z.object({
-        id: z.string()
-      })
+        id: z.string(),
+      }),
     )
     .query(async ({input}): Promise<void> => {
       await nodeFs.promises.rm(getSeedgenUserDataPath(`world_presets/${input.id}.json`), {force: true})
@@ -157,8 +159,8 @@ export const fs = router({
   deleteUniversePreset: publicProcedure
     .input(
       z.object({
-        id: z.string()
-      })
+        id: z.string(),
+      }),
     )
     .query(async ({input}): Promise<void> => {
       await nodeFs.promises.rm(getSeedgenUserDataPath(`universe_presets/${input.id}.json`), {force: true})
@@ -166,37 +168,34 @@ export const fs = router({
   /**
    * Creates a .desktop file on linux systems
    */
-  createDesktopEntry: publicProcedure
-    .query(async (): Promise<void> => {
-      if (os.platform() !== "linux") {
-        throw new Error("Unable to create a desktop entry on non-linux platforms")
-      }
+  createDesktopEntry: publicProcedure.query(async (): Promise<void> => {
+    if (os.platform() !== "linux") {
+      throw new Error("Unable to create a desktop entry on non-linux platforms")
+    }
 
-      const desktopFileContents = [
-        "[Desktop Entry]",
-        "Type=Application",
-        "Version=1.5",
-        "Terminal=false",
-        "Categories=Game;",
-        "Name=Ori and the Will of the Wisps Randomizer",
-        "StartupWMClass=ori-and-the-will-of-the-wisps-randomizer",
-        `Exec="${app.getPath("exe")}" %F`,
-        `Path=${getInstallDataPath()}`,
-        `Icon=${getInstallDataPath("icon.png")}`,
-        "SingleMainWindow=true",
-      ]
+    const desktopFileContents = [
+      "[Desktop Entry]",
+      "Type=Application",
+      "Version=1.5",
+      "Terminal=false",
+      "Categories=Game;",
+      "Name=Ori and the Will of the Wisps Randomizer",
+      "StartupWMClass=ori-and-the-will-of-the-wisps-randomizer",
+      `Exec="${app.getPath("exe")}" %F`,
+      `Path=${getInstallDataPath()}`,
+      `Icon=${getInstallDataPath("icon.png")}`,
+      "SingleMainWindow=true",
+    ]
 
-      await nodeFs.promises.writeFile(path.join(
-        app.getPath("home"),
-        ".local/share/applications/ori-wotw-randomizer.desktop"
-      ), `${desktopFileContents.join("\n")}\n`)
-    }),
+    await nodeFs.promises.writeFile(
+      path.join(app.getPath("home"), ".local/share/applications/ori-wotw-randomizer.desktop"),
+      `${desktopFileContents.join("\n")}\n`,
+    )
+  }),
   /**
    * Returns a full path to the installation data directory, or a path within.
    */
-  getInstallDataPath: publicProcedure
-    .input(z.string().optional())
-    .query(async ({input}): Promise<string> => {
-      return getInstallDataPath(input)
-    }),
+  getInstallDataPath: publicProcedure.input(z.string().optional()).query(async ({input}): Promise<string> => {
+    return getInstallDataPath(input)
+  }),
 })

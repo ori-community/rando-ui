@@ -1,13 +1,18 @@
+import {EventEmitter} from "events"
 import fs from "fs"
+
 import {getClientUserDataPath} from "@launcher/paths"
+import {RandoIPCService} from "@launcher/services/RandoIPCService"
 import {
   ComposableControllerInputBinding,
-  ControllerBindings, ControllerInputBindings,
+  ControllerBindings,
+  ControllerInputBindings,
   ControllerRebindableAction,
   GameAction,
   GameActionMetadata,
   gameActionMetadata,
-  KeyboardAndMouseBindings, KeyboardAndMouseInputBindings,
+  KeyboardAndMouseBindings,
+  KeyboardAndMouseInputBindings,
   KeyboardAndMouseRebindableAction,
   SingleControllerInputBinding,
 } from "@shared/data/actions"
@@ -18,16 +23,17 @@ import {
   keyboardAndMouseInputMetadata,
   keyboardAndMouseInputsByUnityId,
 } from "@shared/data/input"
-import {EventEmitter} from "events"
-import {RandoIPCService} from "@launcher/services/RandoIPCService"
 
 // The following ...File types are the structure saved to and loaded from the
 // actual .json files.
 type ControllerBindingsFile = Record<ControllerRebindableAction, number[][]>
-type KeyboardAndMouseBindingsFile = Record<KeyboardAndMouseRebindableAction, {
-  keys: number[],
-  exact_modifier_keys: boolean
-}[]>
+type KeyboardAndMouseBindingsFile = Record<
+  KeyboardAndMouseRebindableAction,
+  {
+    keys: number[]
+    exact_modifier_keys: boolean
+  }[]
+>
 
 function getDefaultControllerBindings(): ControllerBindings {
   const bindings: ControllerBindings = {} as ControllerBindings
@@ -59,9 +65,9 @@ function getDefaultKeyboardAndMouseBindings(): KeyboardAndMouseBindings {
 
 type InputBindingsEvent = {
   /** Emitted when controller bindings changed */
-  controllerBindingsChanged: [ControllerBindings],
+  controllerBindingsChanged: [ControllerBindings]
   /** Emitted when keyboard and mouse bindings changed */
-  keyboardAndMouseBindingsChanged: [KeyboardAndMouseBindings],
+  keyboardAndMouseBindingsChanged: [KeyboardAndMouseBindings]
 }
 
 export class InputBindingsService {
@@ -90,7 +96,9 @@ export class InputBindingsService {
       return getDefaultControllerBindings()
     }
 
-    const storedBindingsFile: Partial<ControllerBindingsFile> = JSON.parse(await fs.promises.readFile(controllerBindingsPath, {encoding: "utf-8"}))
+    const storedBindingsFile: Partial<ControllerBindingsFile> = JSON.parse(
+      await fs.promises.readFile(controllerBindingsPath, {encoding: "utf-8"}),
+    )
     const storedBindings: Partial<ControllerBindings> = {}
 
     for (const [action, inputBindings] of Object.entries(storedBindingsFile)) {
@@ -101,11 +109,15 @@ export class InputBindingsService {
 
       switch (controllerMetadata.type) {
         case "single":
-          storedBindings[action as ControllerRebindableAction] = inputBindings.map(unityIds => controllerInputsByUnityId.get(unityIds[0]))
-          break;
+          storedBindings[action as ControllerRebindableAction] = inputBindings.map((unityIds) =>
+            controllerInputsByUnityId.get(unityIds[0]),
+          )
+          break
         case "composable":
-          storedBindings[action as ControllerRebindableAction] = inputBindings.map(compositions => compositions.map(unityId => controllerInputsByUnityId.get(unityId)))
-          break;
+          storedBindings[action as ControllerRebindableAction] = inputBindings.map((compositions) =>
+            compositions.map((unityId) => controllerInputsByUnityId.get(unityId)),
+          )
+          break
       }
     }
 
@@ -123,9 +135,16 @@ export class InputBindingsService {
         continue
       }
 
-      file[action as ControllerRebindableAction] = (inputBindings.length > 0 && !Array.isArray(inputBindings[0]))
-        ? [...(inputBindings as SingleControllerInputBinding[]).map((input: ControllerInput) => [controllerInputMetadata[input].unityId])]
-        : (inputBindings as ComposableControllerInputBinding[]).map((inputs: ControllerInput[]) => inputs.map(input => controllerInputMetadata[input].unityId))
+      file[action as ControllerRebindableAction] =
+        inputBindings.length > 0 && !Array.isArray(inputBindings[0])
+          ? [
+              ...(inputBindings as SingleControllerInputBinding[]).map((input: ControllerInput) => [
+                controllerInputMetadata[input].unityId,
+              ]),
+            ]
+          : (inputBindings as ComposableControllerInputBinding[]).map((inputs: ControllerInput[]) =>
+              inputs.map((input) => controllerInputMetadata[input].unityId),
+            )
     }
 
     await fs.promises.writeFile(this.getControllerBindingsPath(), JSON.stringify(file, null, 2), {encoding: "utf-8"})
@@ -148,7 +167,9 @@ export class InputBindingsService {
       return getDefaultKeyboardAndMouseBindings()
     }
 
-    const storedBindingsFile: Partial<KeyboardAndMouseBindingsFile> = JSON.parse(await fs.promises.readFile(keyboardBindingsPath, {encoding: "utf-8"}))
+    const storedBindingsFile: Partial<KeyboardAndMouseBindingsFile> = JSON.parse(
+      await fs.promises.readFile(keyboardBindingsPath, {encoding: "utf-8"}),
+    )
     const storedBindings: Partial<KeyboardAndMouseBindings> = {}
 
     for (const [action, inputBindings] of Object.entries(storedBindingsFile)) {
@@ -158,7 +179,7 @@ export class InputBindingsService {
       }
 
       storedBindings[action as KeyboardAndMouseRebindableAction] = inputBindings.map((fileBindings) => ({
-        inputs: fileBindings.keys.map(unityId => keyboardAndMouseInputsByUnityId.get(unityId)),
+        inputs: fileBindings.keys.map((unityId) => keyboardAndMouseInputsByUnityId.get(unityId)),
         exactModifiers: fileBindings.exact_modifier_keys,
       }))
     }
@@ -177,8 +198,8 @@ export class InputBindingsService {
         continue
       }
 
-      file[action as KeyboardAndMouseRebindableAction] = inputBindings.map(binding => ({
-        keys: binding.inputs.map(input => keyboardAndMouseInputMetadata[input].unityId),
+      file[action as KeyboardAndMouseRebindableAction] = inputBindings.map((binding) => ({
+        keys: binding.inputs.map((input) => keyboardAndMouseInputMetadata[input].unityId),
         exact_modifier_keys: binding.exactModifiers,
       }))
     }
@@ -215,7 +236,10 @@ export class InputBindingsService {
     this.flushBindingsThrottled()
   }
 
-  static async setKeyboardAndMouseActionBindings(action: KeyboardAndMouseRebindableAction, bindings: KeyboardAndMouseInputBindings) {
+  static async setKeyboardAndMouseActionBindings(
+    action: KeyboardAndMouseRebindableAction,
+    bindings: KeyboardAndMouseInputBindings,
+  ) {
     await this.getKeyboardAndMouseBindings()
     this.keyboardAndMouseBindingsCache[action] = bindings
     this.events.emit("keyboardAndMouseBindingsChanged", this.keyboardAndMouseBindingsCache)

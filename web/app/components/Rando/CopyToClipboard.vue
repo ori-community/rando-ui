@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <slot :copy-to-clipboard="copyToClipboard" :is-triggered="isTriggered"/>
+    <slot :copy-to-clipboard="copyToClipboard" :is-triggered="isTriggered" />
     <v-tooltip
       :model-value="showTooltip && isTriggered"
       activator="parent"
@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-  import type {Anchor} from "vuetify/lib/util";
+  import type {Anchor} from "vuetify/lib/util"
 
   const props = withDefaults(defineProps<{
       value: string,
@@ -28,10 +28,10 @@
     }>(), {
       timeout: 1500,
       showTooltip: false,
-      tooltipText: 'Copied!',
-      tooltipLocation: 'right',
-      tooltipTransition: 'slide-x-transition',
-    }
+      tooltipText: "Copied!",
+      tooltipLocation: "right",
+      tooltipTransition: "slide-x-transition",
+    },
   )
 
   const isTriggered = ref(false)
@@ -40,7 +40,7 @@
     try {
       await navigator.clipboard.writeText(props.value)
     } catch (e) {
-      console.error('Clipboard failed', e)
+      console.error("Clipboard failed", e)
       return
     }
 

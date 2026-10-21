@@ -54,7 +54,7 @@
                   />
                 </div>
                 <!-- TODO divider not shown if only pending games are listed and not upcoming seasons-->
-                <v-divider class="my-6"/>
+                <v-divider class="my-6" />
               </div>
             </div>
           </v-scroll-x-transition>
@@ -70,14 +70,17 @@
       <v-col cols="12" md="3" order-md="1" order="0">
         <div class="sticky">
           <div class="buttons">
-            <rando-launch-button :subtitle="displayedNewGameSeedSource" :show-confetti="true" label="Launch" @click="launch()"/>
+            <rando-launch-button :subtitle="displayedNewGameSeedSource" :show-confetti="true" label="Launch"
+                                 @click="launch()" />
 
-            <v-card :loading="isFetchingReleases" :class="availableUpdate !== null ? `bg-warning-darken-1` : `bg-background-lighten-1`">
+            <v-card :loading="isFetchingReleases"
+                    :class="availableUpdate !== null ? `bg-warning-darken-1` : `bg-background-lighten-1`">
               <v-expand-transition>
                 <div v-if="availableUpdate !== null">
                   <div class="pa-4">
                     <h3>Version {{ availableUpdate.version }} is available!</h3>
-                    <v-btn variant="flat" block class="mt-3" @click="installUpdate(availableUpdate)">Install Update</v-btn>
+                    <v-btn variant="flat" block class="mt-3" @click="installUpdate(availableUpdate)">Install Update
+                    </v-btn>
                   </div>
                 </div>
                 <div v-else>
@@ -208,7 +211,7 @@
         state: "upcoming",
         checkmark: season.memberships?.some((m) => m.user.id === userStore.user?.id),
       })),
-    ] as { season: LeagueSeasonInfo, state: "active" | "upcoming", checkmark: boolean }[]
+    ] as {season: LeagueSeasonInfo, state: "active" | "upcoming", checkmark: boolean}[]
   })
 
   async function loadUserData() {

@@ -156,7 +156,8 @@
                   <div>Play Bingo</div>
                   <div class="text-caption opacity-70">
                     Play online bingo alone or with friends.
-                    When playing with friends, players in the same universe work as one team while optionally racing players
+                    When playing with friends, players in the same universe work as one team while optionally racing
+                    players
                     in other universes.
                   </div>
                 </div>
@@ -166,9 +167,9 @@
 
           <v-expand-transition>
             <div v-if="enableBingo">
-              <v-divider/>
+              <v-divider />
               <div class="pa-4">
-                <wotw-seedgen-bingo-settings v-model="bingoSettings"/>
+                <wotw-seedgen-bingo-settings v-model="bingoSettings" />
               </div>
             </div>
           </v-expand-transition>
@@ -211,7 +212,8 @@
         </v-btn>
 
         <div class="opacity-30 pt-2 max-width-600 mx-auto">
-          When generating a seed, all selected settings will be automatically stored and can be loaded by selecting "Last Settings" in the seed generator.
+          When generating a seed, all selected settings will be automatically stored and can be loaded by selecting
+          "Last Settings" in the seed generator.
         </div>
       </div>
     </div>
@@ -239,7 +241,8 @@
   <v-dialog v-model="saveUniversePresetDialogOpen" max-width="550">
     <v-card title="Save Universe Preset">
       <v-card-text>
-        <v-text-field v-model="saveUniversePresetDialogPresetName" :disabled="saveUniversePresetDialogLoading" autofocus label="Preset name" />
+        <v-text-field v-model="saveUniversePresetDialogPresetName" :disabled="saveUniversePresetDialogLoading" autofocus
+                      label="Preset name" />
         <v-textarea
           v-model="saveUniversePresetDialogPresetDescription"
           :disabled="saveUniversePresetDialogLoading"
@@ -494,7 +497,7 @@
     },
     get() {
       return seedString.value ?? ""
-    }
+    },
   })
 
   const difficultyValuesByName = computed(() => difficulties.value.reduce((map, difficultyInfo: DifficultyInfo, index) => {
@@ -551,8 +554,8 @@
       : Object.fromEntries(
         Object.entries(universePresets.value)
           .filter(([, e]) => e.status === "Ok")
-          .map(([k, v]) => [k, v.value])
-      ) as ValidUniversePresets
+          .map(([k, v]) => [k, v.value]),
+      ) as ValidUniversePresets,
   )
 
   const validWorldPresets = computed(() =>
@@ -561,8 +564,8 @@
       : Object.fromEntries(
         Object.entries(worldPresets.value)
           .filter(([, e]) => e.status === "Ok")
-          .map(([k, v]) => [k, v.value])
-      ) as ValidWorldPresets
+          .map(([k, v]) => [k, v.value]),
+      ) as ValidWorldPresets,
   )
 
   const groupedWorldPresetIds = computed(
@@ -710,7 +713,7 @@
   async function generateOfflineSeedFromCurrentSettings() {
     await saveLastSeedgenUiState()
 
-    const {data}: { data: Blob } = await seedgenAxios.post("/generate", getUniverseSettings(), {
+    const {data}: {data: Blob} = await seedgenAxios.post("/generate", getUniverseSettings(), {
       responseType: "blob",
       params: {
         text_spoiler: true,
@@ -780,7 +783,7 @@
       }
       : null
 
-    const {data: multiverseId}: { data: string } = await axios.post("/multiverses", {
+    const {data: multiverseId}: {data: string} = await axios.post("/multiverses", {
       seedId: response.seedId,
       bingoConfig: bingoCreationConfig,
       raceMode: enableRaceMode.value,
@@ -792,7 +795,7 @@
         name: "game-multiverseId",
         params: {
           multiverseId,
-        }
+        },
       })
     }, 100)
   }
@@ -904,7 +907,7 @@
               } else {
                 errorMessage = [
                   response.message,
-                  ...response.logs.map(record => `${record.level}: ${record.message}`)
+                  ...response.logs.map(record => `${record.level}: ${record.message}`),
                 ].join("\n")
               }
             }
@@ -935,34 +938,34 @@
   })
 
   async function updateUniversePresets() {
-    universePresets.value = (await seedgenAxios.get('/presets/universe/list')).data
+    universePresets.value = (await seedgenAxios.get("/presets/universe/list")).data
   }
 
   async function updateWorldPresets() {
-    worldPresets.value = (await seedgenAxios.get('/presets/world/list')).data
+    worldPresets.value = (await seedgenAxios.get("/presets/world/list")).data
   }
 
   async function updateDifficulties() {
-    difficulties.value = (await seedgenAxios.get('/settings/difficulties')).data
+    difficulties.value = (await seedgenAxios.get("/settings/difficulties")).data
   }
 
   async function updateTricks() {
-    tricks.value = (await seedgenAxios.get('/settings/tricks')).data
+    tricks.value = (await seedgenAxios.get("/settings/tricks")).data
   }
 
   async function updateSnippetsInfo() {
-    snippetsInfo.value = (await seedgenAxios.get('/snippets/info')).data
+    snippetsInfo.value = (await seedgenAxios.get("/snippets/info")).data
   }
 
   async function updateSpawnableAnchors() {
-    spawnableAnchors.value = (await seedgenAxios.get('/logic/spawn-anchors')).data
+    spawnableAnchors.value = (await seedgenAxios.get("/logic/spawn-anchors")).data
   }
 
   async function onWorldSetupPresetsSelected(presets: WorldPreset[]) {
     worldSetupLoading.value = true
 
     try {
-      const {data}: { data: WorldSettings } = await seedgenAxios.post('/presets/world/apply', {presets})
+      const {data}: {data: WorldSettings} = await seedgenAxios.post("/presets/world/apply", {presets})
       worldSettings.value.push(data)
       selectedTab.value = worldSettings.value.length - 1
     } catch (e) {
@@ -1004,7 +1007,7 @@
     universeSetupLoading.value = true
 
     try {
-      const {data}: { data: UniverseSettings } = await seedgenAxios.post('/presets/universe/apply', {
+      const {data}: {data: UniverseSettings} = await seedgenAxios.post("/presets/universe/apply", {
         seed: "",
         presets,
       })

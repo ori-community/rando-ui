@@ -39,7 +39,7 @@
     }>(), {
       description: undefined,
       noMargin: false,
-    }
+    },
   )
 </script>
 

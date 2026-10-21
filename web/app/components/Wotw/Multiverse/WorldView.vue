@@ -1,16 +1,16 @@
 <template>
   <v-card ref="worldViewRef" class="world-view" outlined color="background-lighten-2">
-    <v-sheet :color="world.color" class="flex-shrink-0" height="0.5em"/>
+    <v-sheet :color="world.color" class="flex-shrink-0" height="0.5em" />
     <v-card-title class="d-flex">
       <div class="world-title">
         <div>
           {{ world.name }}
-          <rando-copyable-info v-if="devtoolsEnabled" :value="world.id.toString()"/>
+          <rando-copyable-info v-if="devtoolsEnabled" :value="world.id.toString()" />
           <span v-if="finishedAt !== null && showWorldFinishedTime" class="finished-time">{{
               formatTime(finishedAt)
             }}</span>
         </div>
-<!--        <wotw-seed-button v-if="!!world.seedId && !isElectron" :world-seed-id="world.seedId"/>-->
+        <!--        <wotw-seed-button v-if="!!world.seedId && !isElectron" :world-seed-id="world.seedId"/>-->
       </div>
     </v-card-title>
     <v-card-text>
@@ -39,7 +39,9 @@
                 :class="{forfeited: playerFinishedTimes[membership.id] === 0.0}"
                 title="Finished time"
               >
-                {{ playerFinishedTimes[membership.id] !== 0.0 ? formatTime(playerFinishedTimes[membership.id]!) : "DNF" }}
+                {{
+                  playerFinishedTimes[membership.id] !== 0.0 ? formatTime(playerFinishedTimes[membership.id]!) : "DNF"
+                }}
               </span>
               <span
                 v-else-if="raceStartingAt && raceStartingAt > 0 && membership.id in playerInGameTimes && !(membership.id in playerFinishedTimes)"
@@ -52,7 +54,7 @@
         </wotw-multiverse-player-view>
       </v-scroll-x-transition>
     </v-card-text>
-    <div class="spacer"/>
+    <div class="spacer" />
     <v-btn v-if="canJoinInternal" :disabled="disabled" block color="accent" tile @click="emits('join')"> Join</v-btn>
   </v-card>
 </template>
@@ -60,7 +62,7 @@
 <script lang="ts" setup>
   import type {WorldInfo} from "@shared/types/http-api"
   import {formatTime} from "@web/app/assets/utils/formatTime"
-  import {confettiFromElement} from "~/assets/utils/confetti";
+  import {confettiFromElement} from "~/assets/utils/confetti"
   import {useDevtoolsStore} from "~/stores/devtools"
 
   const props = withDefaults(defineProps<{
@@ -68,8 +70,8 @@
     connectedUserIds?: string[],
     disabled?: boolean,
     finishedAt?: number | null,
-    playerFinishedTimes?: { [key: number]: number },
-    playerInGameTimes?: { [key: number]: number },
+    playerFinishedTimes?: {[key: number]: number},
+    playerInGameTimes?: {[key: number]: number},
     raceReadyUserIds?: string[],
     raceStartingAt?: number | null,
     seedSpoilerDownloadedByIds?: string[],
@@ -90,7 +92,7 @@
 
   const userStore = useUserStore()
   const isElectron = useIsElectron()
-  const worldViewRef = ref<{ $el: HTMLElement } | null>(null)
+  const worldViewRef = ref<{$el: HTMLElement} | null>(null)
   const {devtoolsEnabled} = storeToRefs(useDevtoolsStore())
 
   const emits = defineEmits(["join"])
@@ -105,7 +107,7 @@
   watch(() => props.finishedAt, (value) => {
     if (value && worldViewRef.value) {
       confettiFromElement(worldViewRef.value.$el, {
-        disableForReducedMotion: true
+        disableForReducedMotion: true,
       })
     }
   })

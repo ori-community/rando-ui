@@ -14,7 +14,7 @@
             <span>Log in to create remote tracker</span>
           </v-tooltip>
         </div>
-        <rando-settings-checkbox v-model="showTimer" label="Show Timer" description="Show the run timer."/>
+        <rando-settings-checkbox v-model="showTimer" label="Show Timer" description="Show the run timer." />
         <rando-settings-checkbox
           v-model="showWillowHearts"
           label="Show Willow Hearts"
@@ -80,25 +80,25 @@
 
     // timer
     if (showTimer.value) {
-      args.timer = 'true'
+      args.timer = "true"
     }
 
     // willow hearts
     if (showWillowHearts.value) {
-      args.hearts = 'true'
+      args.hearts = "true"
 
       // hide willow hearts until first is destroyed
       if (hideWillowHeartsUntilFirstHeart.value) {
-        args.hideHeartsUntilFirst = 'true'
+        args.hideHeartsUntilFirst = "true"
       }
     }
 
     const targetRoute = router.resolve({
-      name: 'tracker',
+      name: "tracker",
       query: args,
     })
 
-    const url = new URL(targetRoute.href.replace('#/', ''), apiBaseUrl)
+    const url = new URL(targetRoute.href.replace("#/", ""), apiBaseUrl)
 
     await window.navigator.clipboard.writeText(url.toString())
     remoteTrackerUrlCopying.value = false

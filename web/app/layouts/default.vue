@@ -1,17 +1,17 @@
 <template>
   <v-app>
-    <div id="backdrop" class="backdrop"/>
+    <div id="backdrop" class="backdrop" />
 
     <wotw-launcher-helper-dialogs v-if="isElectron" />
     <rando-initial-setup-dialog />
 
     <!--    TODO always show toolbar / keep visible on scroll -->
     <v-container class="toolbar">
-      <rando-page-toolbar/>
+      <rando-page-toolbar />
     </v-container>
 
     <v-main class="content">
-      <nuxt-page/>
+      <nuxt-page />
     </v-main>
 
     <footer>

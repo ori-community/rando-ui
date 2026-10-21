@@ -1,111 +1,101 @@
 import {publicProcedure, router} from "@launcher/api/trpc"
-import {z} from "zod"
 import {LauncherService} from "@launcher/services/LauncherService"
-import {observable} from "@trpc/server/observable"
 import {LaunchResult} from "@shared/types/launcher"
 import {Settings} from "@shared/types/settings"
+import {observable} from "@trpc/server/observable"
+import {z} from "zod"
 
 export const launcher = router({
   /**
    * @see LauncherService.getPlatform
    */
-  getPlatform: publicProcedure
-    .query(() => {
-      return LauncherService.getPlatform()
-    }),
+  getPlatform: publicProcedure.query(() => {
+    return LauncherService.getPlatform()
+  }),
   /**
    * @see LauncherService.validateSetup
    */
-  validateSetup: publicProcedure
-    .query(async () => {
-      return await LauncherService.validateSetup()
-    }),
+  validateSetup: publicProcedure.query(async () => {
+    return await LauncherService.validateSetup()
+  }),
   /**
    * @see LauncherService.installOrUpdateProxyModloader
    */
-  installOrUpdateProxyModloader: publicProcedure
-    .query(async () => {
-      await LauncherService.installOrUpdateProxyModloader()
-    }),
+  installOrUpdateProxyModloader: publicProcedure.query(async () => {
+    await LauncherService.installOrUpdateProxyModloader()
+  }),
   /**
    * @see LauncherService.launchOrFocusRandomizer
    */
-  launchOrFocusRandomizer: publicProcedure
-    .input(z.string().optional())
-    .query(async ({input}) => {
-      return await LauncherService.launchOrFocusRandomizer(input)
-    }),
+  launchOrFocusRandomizer: publicProcedure.input(z.string().optional()).query(async ({input}) => {
+    return await LauncherService.launchOrFocusRandomizer(input)
+  }),
   /**
    * @see LauncherService.getGameLaunchMethodsAvailableOnPlatform
    */
-  getGameLaunchMethodsAvailableOnPlatform: publicProcedure
-    .query(async () => {
-      return await LauncherService.getGameLaunchMethodsAvailableOnPlatform()
-    }),
+  getGameLaunchMethodsAvailableOnPlatform: publicProcedure.query(async () => {
+    return await LauncherService.getGameLaunchMethodsAvailableOnPlatform()
+  }),
   /**
    * @see LauncherService.getModloaderMethodsAvailableOnPlatform
    */
-  getModloaderMethodsAvailableOnPlatform: publicProcedure
-    .query(async () => {
-      return await LauncherService.getModloaderMethodsAvailableOnPlatform()
-    }),
+  getModloaderMethodsAvailableOnPlatform: publicProcedure.query(async () => {
+    return await LauncherService.getModloaderMethodsAvailableOnPlatform()
+  }),
   /**
    * @see LauncherService.getModloaderMethodsAvailableOnForGameLaunchMethod
    */
-  getModloaderMethodsAvailableOnForGameLaunchMethod: publicProcedure
-    .input(z.string())
-    .query(async ({input}) => {
-      return await LauncherService.getModloaderMethodsAvailableOnForGameLaunchMethod(input as Settings['GameLaunchMethod'])
-    }),
+  getModloaderMethodsAvailableOnForGameLaunchMethod: publicProcedure.input(z.string()).query(async ({input}) => {
+    return await LauncherService.getModloaderMethodsAvailableOnForGameLaunchMethod(
+      input as Settings["GameLaunchMethod"],
+    )
+  }),
   /**
    * Subscribe to get the isLaunching state of LauncherService
    * Will emit its current value on subscription.
    */
-  isLaunching: publicProcedure
-    .subscription(() => {
-      return observable<boolean>((emit) => {
-        const onIsLaunchingChanged = (value: boolean) => emit.next(value)
-        LauncherService.events.on("isLaunchingChanged", onIsLaunchingChanged)
+  isLaunching: publicProcedure.subscription(() => {
+    return observable<boolean>((emit) => {
+      const onIsLaunchingChanged = (value: boolean) => emit.next(value)
+      LauncherService.events.on("isLaunchingChanged", onIsLaunchingChanged)
 
-        emit.next(LauncherService.isLaunching)
+      emit.next(LauncherService.isLaunching)
 
-        return () => {
-          LauncherService.events.off("isLaunchingChanged", onIsLaunchingChanged)
-        }
-      })
-    }),
+      return () => {
+        LauncherService.events.off("isLaunchingChanged", onIsLaunchingChanged)
+      }
+    })
+  }),
   /**
    * Subscribe to get the new game seed source string.
    * Will emit its current value on subscription.
    */
-  newGameSeedSource: publicProcedure
-    .subscription(() => {
-      return observable<string>((emit) => {
-        const onNewGameSeedSourceChanged = (value: string) => emit.next(value)
-        LauncherService.events.on("newGameSeedSourceChanged", onNewGameSeedSourceChanged)
+  newGameSeedSource: publicProcedure.subscription(() => {
+    return observable<string>((emit) => {
+      const onNewGameSeedSourceChanged = (value: string) => emit.next(value)
+      LauncherService.events.on("newGameSeedSourceChanged", onNewGameSeedSourceChanged)
 
-        LauncherService.getNewGameSeedSource().then(emit.next)
+      LauncherService.getNewGameSeedSource().then(emit.next)
 
-        return () => {
-          LauncherService.events.off("newGameSeedSourceChanged", onNewGameSeedSourceChanged)
-        }
-      })
-    }),
+      return () => {
+        LauncherService.events.off("newGameSeedSourceChanged", onNewGameSeedSourceChanged)
+      }
+    })
+  }),
   /**
    * Subscribe to get LaunchResults when LauncherService launches the game or fails to do so.
    * Will emit its current value on subscription.
    */
-  launchResult: publicProcedure
-    .subscription(() => {
-      return observable<LaunchResult>((emit) => {
-        const onLaunchResultChanged = (value: LaunchResult) => emit.next(value)
-        LauncherService.events.on("launchResult", onLaunchResultChanged)
+  launchResult: publicProcedure.subscription(() => {
+    return observable<LaunchResult>((emit) => {
+      const onLaunchResultChanged = (value: LaunchResult) => emit.next(value)
+      LauncherService.events.on("launchResult", onLaunchResultChanged)
 
-        emit.next(LauncherService.launchResult)
+      emit.next(LauncherService.launchResult)
 
-        return () => {
-          LauncherService.events.off("launchResult", onLaunchResultChanged)
-        }
-      })
-    }),
+      return () => {
+        LauncherService.events.off("launchResult", onLaunchResultChanged)
+      }
+    })
+  }),
 })

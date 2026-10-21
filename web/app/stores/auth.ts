@@ -1,12 +1,12 @@
-import {defineStore} from 'pinia'
+import {defineStore} from "pinia"
 
-const REDIRECT_PATH_LOCAL_STORAGE_KEY = 'auth.redirectPath'
-const JWT_LOCAL_STORAGE_KEY = 'auth.jwt'
+const REDIRECT_PATH_LOCAL_STORAGE_KEY = "auth.redirectPath"
+const JWT_LOCAL_STORAGE_KEY = "auth.jwt"
 
 const isElectron = useIsElectron()
 const electronApi = isElectron ? useElectronApi() : null
 
-export const useAuthStore = defineStore('auth', () => {
+export const useAuthStore = defineStore("auth", () => {
   const userStore = useUserStore()
 
   const jwt = ref<null | string>(null)
@@ -27,9 +27,9 @@ export const useAuthStore = defineStore('auth', () => {
     const {axios} = useAxios()
 
     if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`
     } else {
-      delete axios.defaults.headers.common['Authorization']
+      delete axios.defaults.headers.common["Authorization"]
     }
 
     // Persist the new token

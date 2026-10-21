@@ -1,19 +1,19 @@
 <template>
   <div v-if="bingoBoard" class="bingo-grid py-1" :style="gridStyle">
     <template v-if="edgeLabels">
-      <wotw-bingo-edge-label label="X" @click="selectLine(1, 1, 1, 1)"/>
+      <wotw-bingo-edge-label label="X" @click="selectLine(1, 1, 1, 1)" />
       <wotw-bingo-edge-label
         v-for="x in bingoBoard.size"
         :key="`${x}-top`"
         :label="alphabet[x - 1]!"
         @click="selectLine(x, 1, 0, 1)"
       />
-      <wotw-bingo-edge-label label="Y" @click="selectLine(1, bingoBoard.size, 1, -1)"/>
+      <wotw-bingo-edge-label label="Y" @click="selectLine(1, bingoBoard.size, 1, -1)" />
     </template>
 
     <template v-for="y in bingoBoard.size">
       <template v-if="edgeLabels">
-        <wotw-bingo-edge-label :key="`${y}-left`" :label="y.toString()" @click="selectLine(1, y, 1, 0)"/>
+        <wotw-bingo-edge-label :key="`${y}-left`" :label="y.toString()" @click="selectLine(1, y, 1, 0)" />
       </template>
       <template v-for="x in bingoBoard.size" :key="`${x}${y}`">
         <wotw-bingo-card
@@ -30,25 +30,25 @@
       </template>
 
       <template v-if="edgeLabels">
-        <wotw-bingo-edge-label :key="`${y}-right`" :label="y.toString()" @click="selectLine(1, y, 1, 0)"/>
+        <wotw-bingo-edge-label :key="`${y}-right`" :label="y.toString()" @click="selectLine(1, y, 1, 0)" />
       </template>
     </template>
 
     <template v-if="edgeLabels">
-      <wotw-bingo-edge-label label="Y" @click="selectLine(1, bingoBoard.size, 1, -1)"/>
+      <wotw-bingo-edge-label label="Y" @click="selectLine(1, bingoBoard.size, 1, -1)" />
       <wotw-bingo-edge-label
         v-for="x in bingoBoard.size"
         :key="`${x}-bottom`"
         :label="alphabet[x - 1]!"
         @click="selectLine(x, 1, 0, 1)"
       />
-      <wotw-bingo-edge-label label="X" @click="selectLine(1, 1, 1, 1)"/>
+      <wotw-bingo-edge-label label="X" @click="selectLine(1, 1, 1, 1)" />
     </template>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import type {BingoSquare, MultiverseInfo, BingoBoard} from "@shared/types/http-api";
+  import type {BingoSquare, MultiverseInfo, BingoBoard} from "@shared/types/http-api"
 
   const markedCards = ref<string[]>([])
 
@@ -69,11 +69,11 @@
     highlightedUniverseId: null,
     ownUniverseId: null,
     cardAttentionEffect: false,
-    spectatorDisplayAll: false
+    spectatorDisplayAll: false,
   })
 
   const alphabet = computed(() => {
-    return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    return "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   })
   const gridStyle = computed(() => {
     if (props.edgeLabels) {
@@ -92,7 +92,7 @@
     const boardSize = props.bingoBoard.size + 1
     const squares: (BingoSquare | null)[][] =
       Array.from({length: boardSize}, () =>
-        Array.from({length: boardSize}, () => null)
+        Array.from({length: boardSize}, () => null),
       )
     for (const positionedSquare of props.bingoBoard.squares) {
       if (!positionedSquare.position) {

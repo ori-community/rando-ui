@@ -1,13 +1,13 @@
 <template>
   <div class="card-container">
-    <div v-if="isPending" class="accent" :class="{ 'card-flash': attentionActive }"/>
+    <div v-if="isPending" class="accent" :class="{ 'card-flash': attentionActive }" />
 
     <v-card
       class="game-card"
       :class="{ accent: isPending }"
       :to="{ name: 'league-game-gameId', params: { gameId: game.id } }"
     >
-      <div class="gradient-overlay" :class="{ extreme: !!season?.backgroundImageUrl }"/>
+      <div class="gradient-overlay" :class="{ extreme: !!season?.backgroundImageUrl }" />
       <v-img
         v-if="!!season?.backgroundImageUrl"
         class="background-image behind"
@@ -22,7 +22,7 @@
           src="@shared/images/ori_running.png" alt="">
 
         <div class="game-number-container">
-          <div>{{ season !== null ? season.name : 'Game' }}</div>
+          <div>{{ season !== null ? season.name : "Game" }}</div>
           <div>
             <span class="hashtag">#</span><span class="game-number">{{ game.gameNumber }}</span>
             <template v-if="gameCount">
@@ -31,7 +31,7 @@
           </div>
         </div>
 
-        <div class="spacer"/>
+        <div class="spacer" />
 
         <div class="d-flex flex-column align-end">
           <div>
@@ -48,7 +48,7 @@
 
       <div v-if="playableUntil !== null" class="timer d-flex flex-column pa-2">
         <template v-if="typeof countdownTimerTextOrSecondsLeft === 'number'">
-          {{ isPending ? 'Time left to finish this game' : (isLast ? 'Season over in' : 'Next game in') }}<br>
+          {{ isPending ? "Time left to finish this game" : (isLast ? "Season over in" : "Next game in") }}<br>
           <span class="font-weight-bold">
             {{ formatTime(countdownTimerTextOrSecondsLeft, 0, true) }}
           </span>
@@ -57,9 +57,9 @@
           {{ countdownTimerTextOrSecondsLeft }}
         </template>
         <template v-else>
-          {{ isPending ? 'Finish this game until' : (isLast ? 'Season over at' : 'Next game at') }}<br>
+          {{ isPending ? "Finish this game until" : (isLast ? "Season over at" : "Next game at") }}<br>
           <span class="font-weight-bold">
-            {{ formatDateEpoch(playableUntil, 'P p') }}
+            {{ formatDateEpoch(playableUntil, "P p") }}
           </span>
         </template>
       </div>
@@ -70,10 +70,10 @@
 <script lang="ts" setup>
 
   import type {PropType} from "vue"
-  import type {LeagueSeasonInfo, LeagueGameInfo} from "@shared/types/league";
-  import type {Timeout} from "unenv/node/internal/timers/timeout";
+  import type {LeagueSeasonInfo, LeagueGameInfo} from "@shared/types/league"
+  import type {Timeout} from "unenv/node/internal/timers/timeout"
   import {formatTime} from "@web/app/assets/utils/formatTime"
-  import {formatDateEpoch} from "@web/app/assets/utils/formatsDates";
+  import {formatDateEpoch} from "@web/app/assets/utils/formatsDates"
 
   const props = defineProps({
     game: {
@@ -135,7 +135,7 @@
     attentionActive.value = true
 
     if (secondsLeft <= 0) {
-      countdownTimerTextOrSecondsLeft.value = 'Season will continue any second...'
+      countdownTimerTextOrSecondsLeft.value = "Season will continue any second..."
       return
     }
 

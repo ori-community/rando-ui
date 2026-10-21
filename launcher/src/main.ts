@@ -1,7 +1,7 @@
-import {app, BrowserWindow, net, protocol} from "electron"
+import fs from "fs"
+import os from "node:os"
 import path from "path"
-// eslint-disable-next-line import/no-unresolved
-import {createIPCHandler} from "electron-trpc/main"
+
 import {appRouter} from "@launcher/api/api"
 import {
   getLogsUserDataPath,
@@ -10,17 +10,18 @@ import {
   getTemporaryUserDataPath,
   getUserDataPath,
 } from "@launcher/paths"
-import fs from "fs"
-import {RandoIPCService} from "@launcher/services/RandoIPCService"
-import {LocalTrackerWebSocketService} from "@launcher/services/LocalTrackerWebSocketService"
-import log from "electron-log/main"
-import os from "node:os"
 import {LauncherService} from "@launcher/services/LauncherService"
 import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
-import {ToolsWindowService} from "@launcher/services/ToolsWindowService"
+import {LocalTrackerWebSocketService} from "@launcher/services/LocalTrackerWebSocketService"
+import {RandoIPCService} from "@launcher/services/RandoIPCService"
 import {SupportBundleService} from "@launcher/services/SupportBundleService"
+import {ToolsWindowService} from "@launcher/services/ToolsWindowService"
 import {DEFAULT_PROTOCOL} from "@shared/utils/protocol"
+import {app, BrowserWindow, net, protocol} from "electron"
 import {shell} from "electron"
+import log from "electron-log/main"
+// eslint-disable-next-line import/no-unresolved
+import {createIPCHandler} from "electron-trpc/main"
 
 // Override session data path to have a clean app data directory.
 // Otherwise, Chromium will pollute it...
@@ -49,7 +50,7 @@ if (!app.requestSingleInstanceLock()) {
     },
   ])
 
-  if (process.env.NODE_ENV !== "development") {
+  if (import.meta.env.DEV) {
     app.setAsDefaultProtocolClient(DEFAULT_PROTOCOL)
   }
 
@@ -115,11 +116,12 @@ if (!app.requestSingleInstanceLock()) {
       darkTheme: true,
       paintWhenInitiallyHidden: true,
       title: "Ori and the Will of the Wisps Randomizer",
-      icon: os.platform() === "win32"
-        ? path.join(__dirname, "../resources/icon.ico")
-        : path.join(__dirname, "../resources/icon.png"),
+      icon:
+        os.platform() === "win32"
+          ? path.join(__dirname, "../resources/icon.ico")
+          : path.join(__dirname, "../resources/icon.png"),
       webPreferences: {
-        preload: path.join(__dirname, "preload.js"),
+        preload: path.join(__dirname, "preload.cjs"),
       },
     })
 
@@ -137,7 +139,7 @@ if (!app.requestSingleInstanceLock()) {
 
     createIPCHandler({router: appRouter, windows: [mainWindow]})
 
-    if (process.env.NODE_ENV === "development") {
+    if (import.meta.env.DEV) {
       await mainWindow.loadURL("http://localhost:3000/electron")
 
       // Open the DevTools.
@@ -180,7 +182,7 @@ if (!app.requestSingleInstanceLock()) {
           try {
             const url = new URL(lastArg)
             if (url.protocol === `${DEFAULT_PROTOCOL}:` && url.pathname.startsWith("/")) {
-              if (process.env.NODE_ENV === "development") {
+              if (import.meta.env.DEV) {
                 await mainWindow.loadURL(`http://localhost:3000${url.pathname}${url.search}${url.hash}`)
               } else {
                 await mainWindow.loadURL(`app://bundle${url.pathname}${url.search}${url.hash}`)

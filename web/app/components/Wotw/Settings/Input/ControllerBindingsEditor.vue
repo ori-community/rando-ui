@@ -61,7 +61,7 @@
           if (pressedButtons.length > 0) {
             model.value = pressedButtons[0]!
           }
-          break;
+          break
         case "composable":
           if (model.value === null) {
             model.value = []
@@ -72,7 +72,7 @@
               (model.value as ComposableControllerInputBinding).push(button)
             }
           }
-          break;
+          break
       }
     }, 100)
   })

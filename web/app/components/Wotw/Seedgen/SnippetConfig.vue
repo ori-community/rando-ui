@@ -5,7 +5,10 @@
         <template #label>
           <div>
             <div>{{ configMetadata.name }}</div>
-            <div v-if="!!configMetadata.description" class="text-label-large opacity-60">{{ configMetadata.description }}</div>
+            <div v-if="!!configMetadata.description" class="text-label-large opacity-60">{{
+                configMetadata.description
+              }}
+            </div>
           </div>
         </template>
         <template #append>
@@ -79,8 +82,8 @@
 </template>
 
 <script lang="ts" setup>
-  import type {HashMapStringConfigArg, HashMapStringHashMapStringString} from '@shared/types/seedgen'
-  import {useVModel} from '@vueuse/core'
+  import type {HashMapStringConfigArg, HashMapStringHashMapStringString} from "@shared/types/seedgen"
+  import {useVModel} from "@vueuse/core"
 
   type ConfigArg = HashMapStringConfigArg[keyof HashMapStringConfigArg]
 
@@ -92,10 +95,10 @@
   }>()
 
   const emit = defineEmits<{
-    'update:worldSnippetConfig': [HashMapStringHashMapStringString],
+    "update:worldSnippetConfig": [HashMapStringHashMapStringString],
   }>()
 
-  const worldSnippetConfigModel = useVModel(props, 'worldSnippetConfig', emit)
+  const worldSnippetConfigModel = useVModel(props, "worldSnippetConfig", emit)
   const stringConfigValue = computed({
     get() {
       return worldSnippetConfigModel.value?.[props.snippetIdentifier]?.[props.configIdentifier] ?? valueToString(props.configMetadata.value.default)
@@ -119,26 +122,26 @@
     return stringToConfigType(stringConfigValue.value) === props.configMetadata.value.default
   })
 
-  function valueToString(value: ConfigArg['value']['default']) {
+  function valueToString(value: ConfigArg["value"]["default"]) {
     return String(value)
   }
 
   function stringToBoolean(value: string) {
-    return value === 'true'
+    return value === "true"
   }
 
   function stringToNumber(value: string) {
     return Number(value)
   }
 
-  function stringToConfigType(value: string): ConfigArg['value']['default'] {
+  function stringToConfigType(value: string): ConfigArg["value"]["default"] {
     switch (props.configMetadata.value.type) {
-      case 'Boolean':
+      case "Boolean":
         return stringToBoolean(value)
-      case 'Integer':
-      case 'IntegerRange':
-      case 'Float':
-      case 'FloatRange':
+      case "Integer":
+      case "IntegerRange":
+      case "Float":
+      case "FloatRange":
         return stringToNumber(value)
     }
   }

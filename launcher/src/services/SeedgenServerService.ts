@@ -1,21 +1,21 @@
-import {execa, ResultPromise} from "execa"
-import {LauncherService} from "@launcher/services/LauncherService"
-import {getInstallDataPath, getUserDataPath} from "@launcher/paths"
-import log from "electron-log/main"
 import {stripVTControlCharacters} from "node:util"
 
+import {getInstallDataPath, getUserDataPath} from "@launcher/paths"
+import {LauncherService} from "@launcher/services/LauncherService"
+import log from "electron-log/main"
+import {execa, ResultPromise} from "execa"
 
 type SeedgenExecaOptions = {
-  detached: true,
+  detached: true
   env: {
-    RANDOMIZER_USER_DATA_DIR: string,
-  },
+    RANDOMIZER_USER_DATA_DIR: string
+  }
   stdout: {
     transform: (line: string) => Generator
-  },
+  }
   stderr: {
     transform: (line: string) => Generator
-  },
+  }
 }
 
 export class SeedgenServerService {
@@ -87,11 +87,7 @@ export class SeedgenServerService {
 
         log.info("Starting seedgen server")
 
-        const seedgenCliArguments = [
-          "http-server",
-          "--inactivity-timeout",
-          "5m",
-        ]
+        const seedgenCliArguments = ["http-server", "--inactivity-timeout", "5m"]
 
         switch (LauncherService.getPlatform()) {
           case "windows":
@@ -102,17 +98,16 @@ export class SeedgenServerService {
             break
         }
 
-        this._process
-          .catch((err: Error) => {
-            // Seedgen HTTP server was started outside the launcher
-            if (this._process.exitCode === 2) {
-              resolve()
-              return
-            }
+        this._process.catch((err: Error) => {
+          // Seedgen HTTP server was started outside the launcher
+          if (this._process.exitCode === 2) {
+            resolve()
+            return
+          }
 
-            log.error("Seedgen server failed:", err)
-            reject(err)
-          })
+          log.error("Seedgen server failed:", err)
+          reject(err)
+        })
       }),
     ])
 

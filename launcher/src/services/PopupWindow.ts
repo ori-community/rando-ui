@@ -1,5 +1,6 @@
-import {BrowserWindow} from "electron"
 import path from "path"
+
+import {BrowserWindow} from "electron"
 import BrowserWindowConstructorOptions = Electron.BrowserWindowConstructorOptions
 
 export class PopupWindow {
@@ -9,7 +10,7 @@ export class PopupWindow {
       webPreferences: {
         nodeIntegration: Boolean(process.env.ELECTRON_NODE_INTEGRATION),
         contextIsolation: true,
-        preload: path.join(__dirname, "preload.js"),
+        preload: path.join(import.meta.dirname, "preload.cjs"),
       },
       paintWhenInitiallyHidden: true,
       show: false,

@@ -19,7 +19,7 @@
               :disabled="seasonLinkCopied"
               @click="copySeasonLink"
             >
-              <v-icon>{{ seasonLinkCopied ? 'mdi-clipboard-check-outline' : 'mdi-link' }}</v-icon>
+              <v-icon>{{ seasonLinkCopied ? "mdi-clipboard-check-outline" : "mdi-link" }}</v-icon>
               <v-tooltip location="top" open-delay="500" activator="parent">
                 <span>Copy season link</span>
               </v-tooltip>
@@ -45,7 +45,7 @@
                 Training
               </v-btn>
               <v-tooltip location="bottom" open-delay="300" activator="parent">
-                <span>{{ userStore.isLoggedIn ? 'Create a practice game' : 'Log in to create a practice game' }}</span>
+                <span>{{ userStore.isLoggedIn ? "Create a practice game" : "Log in to create a practice game" }}</span>
               </v-tooltip>
             </div>
             <div v-if="!isJoined && !seasonEnded" class="top-row-button">
@@ -59,7 +59,7 @@
                 Join
               </v-btn>
               <v-tooltip activator="parent" location="bottom" :disabled="canJoin">
-                <span>{{ userStore.isLoggedIn ? `You can't join running seasons` : 'Log in to join' }}</span>
+                <span>{{ userStore.isLoggedIn ? `You can't join running seasons` : "Log in to join" }}</span>
               </v-tooltip>
             </div>
           </div>
@@ -83,7 +83,7 @@
                 <!-- items -->
                 <template #[`item.rank`]="{ item }">
                   <div class="d-flex align-center">
-                    <rando-place-badge v-if="item.rank ?? false" :size="40" :place="item.rank"/>
+                    <rando-place-badge v-if="item.rank ?? false" :size="40" :place="item.rank" />
                     <template
                       v-if="item.lastRankDelta !== null && item.lastRankDelta !== 0 && leagueSeason.currentGameId !== null">
                       <template v-if="item.lastRankDelta < 0">
@@ -99,7 +99,7 @@
                 </template>
                 <template #[`item.user.name`]="{ item }">
                   <div class="d-flex text-no-wrap align-center">
-                    <rando-discord-avatar :user="item.user" class="mr-1"/>
+                    <rando-discord-avatar :user="item.user" class="mr-1" />
                     {{ item.user.name }}
                   </div>
                 </template>
@@ -123,7 +123,7 @@
                       :disabled="item.rankingCompensationPoints === 0">
                       <div class="text-right">
                         Includes {{ item.rankingCompensationPoints }}
-                        {{ item.rankingCompensationPoints === 1 ? 'point' : 'points' }} to compensate<br>
+                        {{ item.rankingCompensationPoints === 1 ? "point" : "points" }} to compensate<br>
                         missed or unusually bad games. These points<br>
                         disappear over time until the end of the season.
                       </div>
@@ -145,7 +145,7 @@
                 <div v-if="leagueSeason.memberships.length > 0" class="mt-3 mb-1">
                   <div class="background--text text--lighten-5">
                     {{ leagueSeason.memberships.length }}
-                    {{ leagueSeason.memberships.length === 1 ? 'player' : 'players' }}
+                    {{ leagueSeason.memberships.length === 1 ? "player" : "players" }}
                   </div>
                 </div>
               </div>
@@ -157,12 +157,12 @@
               class="season-start-container text-center pa-5"
               style="grid-row: 1"
             >
-              <div class="background-overlay"/>
-              <div class="gradient-overlay"/>
+              <div class="background-overlay" />
+              <div class="gradient-overlay" />
               <div class="starting-date-content">
                 <div>Starting at</div>
                 <span class="starting-date">
-                 {{ formatDateEpoch(leagueSeason?.nextContinuationAt, 'P p') }}
+                 {{ formatDateEpoch(leagueSeason?.nextContinuationAt, "P p") }}
               </span>
                 <div>
                   <template v-if="isJoined">Be prepared!</template>
@@ -311,12 +311,12 @@
   import type {
     LeagueGameSubmissionInfo,
     LeagueSeasonInfo,
-    LeagueSeasonMembershipInfo
+    LeagueSeasonMembershipInfo,
   } from "@shared/types/league"
   import type {DataTableHeader} from "vuetify/framework"
   import VueMarkdown from "vue-markdown-render"
   import {formatDateEpoch} from "~/assets/utils/formatsDates"
-  import {confettiFromElement} from "~/assets/utils/confetti";
+  import {confettiFromElement} from "~/assets/utils/confetti"
 
   const {axios} = useAxios()
   const route = useRoute()
@@ -338,13 +338,13 @@
   const trainingSeedLoading = ref(false)
   const showDiscordJoinPrompt = ref(false)
   const gameHeaders: DataTableHeader[] = [
-    {title: 'Number', value: 'gameNumber', align: 'center'},
-    {title: 'Your Rank', value: 'userMetadata.ownSubmission.rankingData.rank', align: 'start'},
-    {title: 'Your Points', value: 'userMetadata.ownSubmission.rankingData.points', align: 'start'},
-    {title: 'Your Time', value: 'userMetadata.ownSubmission.rankingData.time', align: 'end'},
+    {title: "Number", value: "gameNumber", align: "center"},
+    {title: "Your Rank", value: "userMetadata.ownSubmission.rankingData.rank", align: "start"},
+    {title: "Your Points", value: "userMetadata.ownSubmission.rankingData.points", align: "start"},
+    {title: "Your Time", value: "userMetadata.ownSubmission.rankingData.time", align: "end"},
   ]
-  const leaderboardTitleRef = ref<{ $el: HTMLElement } | null>(null)
-  const trainingSeedLaunchButtonRef = ref<{ $el: HTMLElement } | null>(null)
+  const leaderboardTitleRef = ref<{$el: HTMLElement} | null>(null)
+  const trainingSeedLaunchButtonRef = ref<{$el: HTMLElement} | null>(null)
 
   const isJoined = computed(() => {
     if (!userStore.isLoggedIn) return false
@@ -376,17 +376,17 @@
   })
   const memberHeaders = computed(() => {
     const headers: DataTableHeader[] = [
-      {title: 'Rank', value: 'rank', align: 'center', width: 0},
-      {title: 'Player', value: 'user.name',},
+      {title: "Rank", value: "rank", align: "center", width: 0},
+      {title: "Player", value: "user.name"},
     ]
     if (currentGame.value) {
       headers.push({
         title: `Game #${currentGame.value.gameNumber}`,
-        value: 'currentGame.submitted',
-        align: 'center',
+        value: "currentGame.submitted",
+        align: "center",
       })
     }
-    headers.push({title: 'Points', value: 'points', align: 'end'})
+    headers.push({title: "Points", value: "points", align: "end"})
     return headers
   })
 
@@ -421,6 +421,7 @@
       lurkAfterRandomTime()
     }, 2000 + Math.random() * 10000)
   }
+
   async function loadSeason() {
     try {
       leagueSeason.value = (await axios.get(`/league/seasons/${seasonId}`)).data
@@ -431,11 +432,15 @@
       console.error(error)
     }
   }
+
   async function joinSeason() {
     actionLoading.value = true
 
     try {
-      const {seasonInfo, promptToJoinLeagueDiscord}: {seasonInfo: LeagueSeasonInfo, promptToJoinLeagueDiscord: boolean} = (await axios.post(`/league/seasons/${route.params.seasonId}/membership`)).data
+      const {seasonInfo, promptToJoinLeagueDiscord}: {
+        seasonInfo: LeagueSeasonInfo,
+        promptToJoinLeagueDiscord: boolean
+      } = (await axios.post(`/league/seasons/${route.params.seasonId}/membership`)).data
       leagueSeason.value = seasonInfo
 
       if (promptToJoinLeagueDiscord) {
@@ -456,6 +461,7 @@
     showSeasonRules.value = false
     actionLoading.value = false
   }
+
   async function joinDiscord() {
     if (electronApi !== null) {
       await electronApi.shell.openUrl.query({url: "https://discord.gg/SUS57PWWnA"})
@@ -466,9 +472,10 @@
     showDiscordJoinPrompt.value = false
   }
 
-  async function openGamePage(gameId: number)  {
-    await router.push({name: 'league-game-gameId', params: {gameId}})
+  async function openGamePage(gameId: number) {
+    await router.push({name: "league-game-gameId", params: {gameId}})
   }
+
   async function copySeasonLink() {
     // TODO copy season link
     // const url = new URL(`/league/seasons/${leagueSeason.value?.id}`, $paths.UI_BASE_URL)
@@ -582,10 +589,10 @@
         left: 0;
         right: 0;
         background: linear-gradient(
-            to right,
-            rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.1) 50%,
-            rgba(255, 255, 255, 0) 100%
+          to right,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 0.1) 50%,
+          rgba(255, 255, 255, 0) 100%
         );
         z-index: 0;
       }
@@ -643,11 +650,11 @@
       z-index: 2;
       pointer-events: none;
       background: linear-gradient(
-          45deg,
-          rgba(0, 0, 0, 0.6) 0%,
-          rgba(0, 0, 0, 0.05) 40%,
-          rgba(0, 0, 0, 0.05) 60%,
-          rgba(0, 0, 0, 0.6) 100%
+        45deg,
+        rgba(0, 0, 0, 0.6) 0%,
+        rgba(0, 0, 0, 0.05) 40%,
+        rgba(0, 0, 0, 0.05) 60%,
+        rgba(0, 0, 0, 0.6) 100%
       );
     }
 

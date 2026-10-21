@@ -36,7 +36,8 @@
           </v-card>
         </v-dialog>
       </v-btn>
-      <v-badge :model-value="snippetHasNonDefaultValues" floating color="bg-primary" offset-x="13" offset-y="-10" bordered dot />
+      <v-badge :model-value="snippetHasNonDefaultValues" floating color="bg-primary" offset-x="13" offset-y="-10"
+               bordered dot />
     </template>
     <span v-if="snippetInfo.origin.dir === 'UserData'">
       <v-btn variant="plain" size="x-small" class="mx-1" icon readonly>
@@ -51,7 +52,7 @@
 
 <script lang="ts" setup>
   import type {HashMapStringHashMapStringString, SnippetInfo} from "@shared/types/seedgen"
-  import {useVModel} from '@vueuse/core'
+  import {useVModel} from "@vueuse/core"
 
   const props = defineProps<{
     snippetIdentifier: string,
@@ -61,14 +62,14 @@
   }>()
 
   const emit = defineEmits<{
-    'update:worldSnippets': [string[]],
-    'update:worldSnippetConfig': [HashMapStringHashMapStringString],
+    "update:worldSnippets": [string[]],
+    "update:worldSnippetConfig": [HashMapStringHashMapStringString],
   }>()
 
   const configDialogOpen = ref(false)
 
-  const worldSnippetsModel = useVModel(props, 'worldSnippets', emit)
-  const worldSnippetConfigModel = useVModel(props, 'worldSnippetConfig', emit)
+  const worldSnippetsModel = useVModel(props, "worldSnippets", emit)
+  const worldSnippetConfigModel = useVModel(props, "worldSnippetConfig", emit)
   const snippetHasConfig = computed(() => Object.keys(props.snippetInfo.metadata.config).length > 0)
   const snippetActive = computed(() => worldSnippetsModel.value.includes(props.snippetIdentifier))
   const snippetHasNonDefaultValues = computed(() =>

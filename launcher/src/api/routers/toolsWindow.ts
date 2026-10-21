@@ -5,8 +5,7 @@ export const toolsWindow = router({
   /**
    * Opens the tools window
    */
-  openWindow: publicProcedure
-    .query(async () => {
-      return ToolsWindowService.open()
-    }),
+  openWindow: publicProcedure.query(async () => {
+    return ToolsWindowService.open()
+  }),
 })

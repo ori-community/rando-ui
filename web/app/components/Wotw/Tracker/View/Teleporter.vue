@@ -9,7 +9,7 @@
 
 <script>
   export default {
-    name: 'TeleporterView',
+    name: "TeleporterView",
     props: {
       active: {
         type: Boolean,

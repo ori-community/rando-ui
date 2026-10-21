@@ -113,14 +113,14 @@
           <strong>
             {{ gameLaunchMethodsMetadata[settings.GameLaunchMethod.value].name }}
             <v-tooltip location="top" activator="parent" max-width="400">
-              <component :is="gameLaunchMethodsMetadata[settings.GameLaunchMethod.value].descriptionComponent"/>
+              <component :is="gameLaunchMethodsMetadata[settings.GameLaunchMethod.value].descriptionComponent" />
             </v-tooltip>
           </strong>
           +
           <strong>
             {{ modloaderMethodsMetadata[settings.ModloaderMethod.value].name }}
             <v-tooltip location="top" activator="parent" max-width="400">
-              <component :is="modloaderMethodsMetadata[settings.ModloaderMethod.value].descriptionComponent"/>
+              <component :is="modloaderMethodsMetadata[settings.ModloaderMethod.value].descriptionComponent" />
             </v-tooltip>
           </strong>
         </div>
@@ -134,7 +134,7 @@
           </template>
           <template #default="{ isActive }">
             <v-card class="pa-4">
-              <wotw-settings-setup-wizard @setup-finished="isActive.value = false"/>
+              <wotw-settings-setup-wizard @setup-finished="isActive.value = false" />
             </v-card>
           </template>
         </v-dialog>
@@ -280,7 +280,7 @@
 </template>
 
 <script lang="ts" setup>
-  import {gameLaunchMethodsMetadata, modloaderMethodsMetadata} from '~/assets/uiMetadata'
+  import {gameLaunchMethodsMetadata, modloaderMethodsMetadata} from "~/assets/uiMetadata"
 
   const settingsStore = useSettingsStore()
   const settings = storeToRefs(settingsStore)
@@ -290,7 +290,7 @@
   const platform = await usePlatform()
   const snackbarStore = useSnackbarStore()
 
-  const developerSettingsContainer = useTemplateRef('developerSettingsContainer')
+  const developerSettingsContainer = useTemplateRef("developerSettingsContainer")
   const debugStreak = ref(0)
   const ctrlPressed = ref(false)
   const localTrackerPositionReset = ref(false)
@@ -301,17 +301,17 @@
     },
     set(value) {
       devtoolsStore.forceDisplayPrereleaseVersions = value
-    }
+    },
   })
 
   onMounted(() => {
-    document.addEventListener('keyup', onKeyUp)
-    document.addEventListener('keydown', onKeyDown)
+    document.addEventListener("keyup", onKeyUp)
+    document.addEventListener("keydown", onKeyDown)
   })
 
   onUnmounted(() => {
-    document.removeEventListener('keyup', onKeyUp)
-    document.removeEventListener('keydown', onKeyDown)
+    document.removeEventListener("keyup", onKeyUp)
+    document.removeEventListener("keydown", onKeyDown)
   })
 
   const enableDeveloperTools = (() => {
@@ -319,28 +319,28 @@
     debugStreak.value = 0
 
     developerSettingsContainer.value?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'nearest',
+      behavior: "smooth",
+      block: "nearest",
     })
   })
 
   const disableDeveloperTools = (async () => {
     settings.DeveloperMode.value = false
-    settings.ServerHost.value = 'wotw.orirando.com'
+    settings.ServerHost.value = "wotw.orirando.com"
     settings.DebugControls.value = false
     settings.LogDebugMessagesToFile.value = false
     settings.ServerTLS.value = true
   })
 
   const onKeyUp = ((event: KeyboardEvent) => {
-    if (event.key === 'Control') {
+    if (event.key === "Control") {
       ctrlPressed.value = false
     }
   })
 
   const onKeyDown = ((event: KeyboardEvent) => {
     if (settingsStore.isInitialized && !settingsStore.DeveloperMode) {
-      if (event.key === 'Control') {
+      if (event.key === "Control") {
         if (!ctrlPressed.value) {
           ctrlPressed.value = true
           debugStreak.value++

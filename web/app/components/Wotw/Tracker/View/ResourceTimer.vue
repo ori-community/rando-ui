@@ -145,8 +145,8 @@
     totalEntranceCount: 0,
   })
 
-  const mainTimerText = ref('0:00')
-  const fractionTimerText = ref('.0')
+  const mainTimerText = ref("0:00")
+  const fractionTimerText = ref(".0")
 
   const showTrees = computed(() => {
     return props.treesRequired > 0
@@ -181,12 +181,12 @@
 
   watch(() => props.time, (value) => {
     const parts = formatTime(value).split(
-      '.',
+      ".",
       2,
     )
 
     mainTimerText.value = parts[0]!
-    fractionTimerText.value = '.' + parts[1]
+    fractionTimerText.value = "." + parts[1]
   }, {immediate: true})
 
 </script>

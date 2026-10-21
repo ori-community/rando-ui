@@ -128,7 +128,7 @@
   const platform = await usePlatform()
   const electronApi = useElectronApi()
   const settings = useSettingsStore()
-  const step = ref<'welcome' | 'launch-setup' | 'tracker' | 'common-settings' | 'done'>('welcome')
+  const step = ref<"welcome" | "launch-setup" | "tracker" | "common-settings" | "done">("welcome")
   const oriHiRef = ref<null | HTMLElement>(null)
   const router = useRouter()
   const createDesktopEntry = ref(true)
@@ -152,7 +152,7 @@
       settings.BurrowMouseControl = value
       settings.GrappleMouseControl = value
       settings.WaterDashMouseControl = value
-    }
+    },
   })
 
   async function goToNextStep() {

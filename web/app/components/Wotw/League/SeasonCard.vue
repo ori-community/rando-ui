@@ -2,13 +2,13 @@
   <v-card class="season-card" :flat="flat" :to="{ name: 'league-seasons-seasonId', params: { seasonId: season.id } }">
     <v-img
       v-if="!!season.backgroundImageUrl" cover class="background-image" alt=""
-      :src="season.backgroundImageUrl"/>
+      :src="season.backgroundImageUrl" />
 
     <div v-if="checkmarkOverlay" class="joined-overlay">
       <v-icon size="96">mdi-check</v-icon>
     </div>
 
-    <div class="gradient-overlay"/>
+    <div class="gradient-overlay" />
 
     <div class="card-tags">
       <div v-if="upcomingTag" class="px-2 bg-blue-darken-1">Upcoming</div>
@@ -22,16 +22,16 @@
       <h3>{{ season.name }}</h3>
       <div>{{ season.shortDescription }}</div>
 
-      <div class="spacer"/>
+      <div class="spacer" />
 
       <div v-if="showTime">
         <v-icon size="x-small">mdi-clock-outline</v-icon>
         starts at
-        {{ formatDateEpoch(season.nextContinuationAt, 'P p') }}
+        {{ formatDateEpoch(season.nextContinuationAt, "P p") }}
       </div>
       <div>
         <v-icon size="x-small">mdi-account-multiple-outline</v-icon>
-        {{ season.memberships.length }} {{ season.memberships.length === 1 ? 'player' : 'players' }},
+        {{ season.memberships.length }} {{ season.memberships.length === 1 ? "player" : "players" }},
         <v-icon size="x-small">mdi-gamepad-variant-outline</v-icon>
         {{ currentGameNumber }}/{{ season.gameCount }} games
       </div>
@@ -41,8 +41,8 @@
 
 <script lang="ts" setup>
   import type {LeagueSeasonInfo} from "@shared/types/league"
-  import type {PropType} from 'vue'
-  import {formatDateEpoch} from "assets/utils/formatsDates";
+  import type {PropType} from "vue"
+  import {formatDateEpoch} from "assets/utils/formatsDates"
 
   const props = withDefaults(defineProps<{
     season: LeagueSeasonInfo,

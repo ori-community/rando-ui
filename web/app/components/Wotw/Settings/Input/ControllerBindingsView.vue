@@ -1,5 +1,6 @@
 <template>
-  <v-card v-for="(inputs, inputsIndex) in inputsToDisplay" :key="inputsIndex" flat class="d-flex align-center ga-1 flex-wrap" color="green-darken-4">
+  <v-card v-for="(inputs, inputsIndex) in inputsToDisplay" :key="inputsIndex" flat
+          class="d-flex align-center ga-1 flex-wrap" color="green-darken-4">
     <template v-for="(input, index) in inputs" :key="input">
       <div v-if="index > 0">+</div>
       <v-card class="d-inline-block px-2" color="green-darken-4" flat>

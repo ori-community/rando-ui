@@ -3,7 +3,7 @@
     class="multiverse-card"
     :to="{ name: 'game-multiverseId', params: { multiverseId: multiverseMetadata.id } }"
   >
-    <div class="gradient-overlay"/>
+    <div class="gradient-overlay" />
 
     <div class="card-content pa-4">
       <div class="multiverse-id-container">
@@ -21,11 +21,11 @@
         </div>
       </div>
 
-      <div class="spacer"/>
+      <div class="spacer" />
 
       <div class="avatars">
         <div v-for="user in multiverseMetadata.members" :key="user.id" class="avatar">
-          <rando-discord-avatar :user="user"/>
+          <rando-discord-avatar :user="user" />
           <v-tooltip location="bottom" activator="parent" open-delay="250">
             <span>{{ user.name }}</span>
           </v-tooltip>
@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts" setup>
-  import type {MultiverseMetadataInfo} from '@shared/types/http-api'
+  import type {MultiverseMetadataInfo} from "@shared/types/http-api"
 
   defineProps<{
     multiverseMetadata: MultiverseMetadataInfo

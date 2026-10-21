@@ -15,8 +15,8 @@
     finishedTime: null,
   })
 
-  const mainTimerText = ref('0')
-  const fractionTimerText = ref('.0')
+  const mainTimerText = ref("0")
+  const fractionTimerText = ref(".0")
   const updateIntervalId = ref<NodeJS.Timeout | null>(null)
 
   onMounted(() => {
@@ -38,11 +38,11 @@
     // TODO + Server offset
     // const parts = formatTime(props.finishedTime !== null ? props.finishedTime : (Date.now() + this.offset - props.startingAt) / 1000).split(
     const parts = formatTime(props.finishedTime !== null ? props.finishedTime : (Date.now() - props.startingAt) / 1000).split(
-      '.',
+      ".",
       2,
     )
     mainTimerText.value = parts[0]
-    fractionTimerText.value = '.' + parts[1]
+    fractionTimerText.value = "." + parts[1]
   })
 </script>
 

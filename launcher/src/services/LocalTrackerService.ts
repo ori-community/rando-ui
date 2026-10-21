@@ -1,10 +1,10 @@
-import {BrowserWindow, Rectangle, screen} from "electron"
 import {getElectronUrl} from "@launcher/helpers"
 import {LocalTrackerWebSocketService} from "@launcher/services/LocalTrackerWebSocketService"
-import {debounce} from "lodash"
+import {PopupWindow} from "@launcher/services/PopupWindow"
 import {SettingsService} from "@launcher/services/SettingsService"
 import type {SettingKey} from "@shared/types/settings"
-import {PopupWindow} from "@launcher/services/PopupWindow"
+import {BrowserWindow, Rectangle, screen} from "electron"
+import {debounce} from "lodash"
 
 export class LocalTrackerService {
   private static window: BrowserWindow | null = null
@@ -12,29 +12,20 @@ export class LocalTrackerService {
   private static isDemoMode: boolean = false
 
   private static onSettingChanged(key: SettingKey, value: any) {
-    if (
-      LocalTrackerService.window &&
-      !LocalTrackerService.window.isDestroyed()
-    ) {
+    if (LocalTrackerService.window && !LocalTrackerService.window.isDestroyed()) {
       switch (key) {
         case "LocalTrackerTransparent":
           LocalTrackerService.openLocalTracker(true, LocalTrackerService.isDemoMode)
           break
 
         case "LocalTrackerAlwaysOnTop":
-          LocalTrackerService.window.setAlwaysOnTop(
-            value,
-            "normal",
-          )
+          LocalTrackerService.window.setAlwaysOnTop(value, "normal")
           break
 
         case "LocalTrackerIgnoreMouse":
-          LocalTrackerService.window.setIgnoreMouseEvents(
-            value,
-            {
-              forward: true,
-            },
-          )
+          LocalTrackerService.window.setIgnoreMouseEvents(value, {
+            forward: true,
+          })
           break
       }
     }
@@ -76,9 +67,7 @@ export class LocalTrackerService {
       const settings = await SettingsService.instance.getSettings()
 
       this.window = PopupWindow.create({
-        backgroundColor: settings["LocalTrackerTransparent"]
-          ? undefined
-          : "#050e17",
+        backgroundColor: settings["LocalTrackerTransparent"] ? undefined : "#050e17",
         backgroundMaterial: "none",
         transparent: settings["LocalTrackerTransparent"],
         frame: false,
@@ -87,7 +76,7 @@ export class LocalTrackerService {
         resizable: true,
       })
 
-      if (process.env.NODE_ENV === "development") {
+      if (import.meta.env.DEV) {
         this.window.webContents.openDevTools()
       }
 

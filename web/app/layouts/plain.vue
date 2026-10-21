@@ -1,7 +1,7 @@
 <template>
   <v-app dark>
     <v-main class='main'>
-      <nuxt-page/>
+      <nuxt-page />
     </v-main>
   </v-app>
 </template>

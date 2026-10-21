@@ -41,13 +41,13 @@
   //   return url.href
   // })
 
-  const images = import.meta.glob('@shared/images/tracker/skills/*.png', {eager: true})
+  const images = import.meta.glob("@shared/images/tracker/skills/*.png", {eager: true})
   const imageSource = computed(() => {
     const key = `${props.skill}.png`
     const fileEntry = Object.entries(images).find(([path]) =>
-      path.endsWith(key)
+      path.endsWith(key),
     )
-    return (fileEntry![1] as { default: string }).default
+    return (fileEntry![1] as {default: string}).default
   })
 
 

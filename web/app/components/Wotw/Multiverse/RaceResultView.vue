@@ -8,7 +8,7 @@
         :key="team.id"
         class="team"
       >
-        <rando-place-badge :place="team.finishedTime === 0.0 ? 'F' : index + 1"/>
+        <rando-place-badge :place="team.finishedTime === 0.0 ? 'F' : index + 1" />
         <v-card
           color="background-lighten-1"
           elevation="0"
@@ -16,9 +16,9 @@
         >
           <div class="team-members">
             <div v-for="member in team.members" :key="member.user.id" class="team-member">
-              <wotw-multiverse-player-view :user="member.user"/>
+              <wotw-multiverse-player-view :user="member.user" />
               <div class="member-time">{{
-                  member.finishedTime !== 0.0 ? formatTime(member.finishedTime ?? 0.0) : 'DNF'
+                  member.finishedTime !== 0.0 ? formatTime(member.finishedTime ?? 0.0) : "DNF"
                 }}
               </div>
             </div>
@@ -26,7 +26,7 @@
 
           <div class="team-info mt-5">
             <div v-if="team.members.length > 1" class="team-time">
-              {{ team.finishedTime !== 0.0 ? formatTime(team.finishedTime ?? 0.0) : 'DNF' }}
+              {{ team.finishedTime !== 0.0 ? formatTime(team.finishedTime ?? 0.0) : "DNF" }}
             </div>
           </div>
         </v-card>

@@ -64,7 +64,7 @@
     () => Object.fromEntries(
       Object.entries(plandos.value)
         .filter(([, e]) => e.status === "Ok")
-        .map(([k, v]) => [k, v.value])) as ValidPlandoInfos
+        .map(([k, v]) => [k, v.value])) as ValidPlandoInfos,
   )
   const launchingPlandoId = ref<string | null>(null)
 
@@ -91,7 +91,7 @@
   })
 
   async function updatePlandos() {
-    plandos.value = (await seedgenAxios.get('/plandos/info')).data
+    plandos.value = (await seedgenAxios.get("/plandos/info")).data
     plandosLoaded.value = true
   }
 

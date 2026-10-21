@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts" setup>
-  import type {LeagueGameSubmissionRankingDataInfo} from "@shared/types/league";
+  import type {LeagueGameSubmissionRankingDataInfo} from "@shared/types/league"
 
   const props = defineProps({
     rankingData: {

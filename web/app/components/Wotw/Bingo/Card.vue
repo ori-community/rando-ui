@@ -30,7 +30,7 @@
             </template>
           </template>
         </div>
-        <div class="attention-effect" :class="{ active: attentionEffect }"/>
+        <div class="attention-effect" :class="{ active: attentionEffect }" />
       </v-card>
       <v-card elevation="0" class="back" color="background-lighten-1">
         <img alt="" src="@shared/images/ori_think.png" class="ori-think">
@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts" setup>
-  import type {BingoSquare} from "@shared/types/http-api";
+  import type {BingoSquare} from "@shared/types/http-api"
 
   const props = withDefaults(defineProps<{
     attentionEffect?: boolean,
@@ -186,7 +186,7 @@
     }
 
     return {
-      background: `linear-gradient(to bottom left, ${stops.join(', ')})`,
+      background: `linear-gradient(to bottom left, ${stops.join(", ")})`,
     }
   })
 </script>

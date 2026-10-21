@@ -1,22 +1,23 @@
 import {EventEmitter} from "events"
-import {getClientUserDataPath, getUserDataPath} from "@launcher/paths"
 import fs from "fs"
-import {merge} from "lodash"
-import log from "electron-log/main"
-import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
-import {SettingKey, Settings} from "@shared/types/settings"
+import os from "os"
+
+import {getClientUserDataPath, getUserDataPath} from "@launcher/paths"
 import {LauncherService} from "@launcher/services/LauncherService"
+import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
 import {RandoIPCService} from "@launcher/services/RandoIPCService"
 import {UpdateService} from "@launcher/services/UpdateService"
+import {SettingKey, Settings} from "@shared/types/settings"
+import log from "electron-log/main"
+import {merge} from "lodash"
 import semver from "semver"
-import os from "os"
 
 type SettingsEvent = {
   /** Emitted when a single setting changed */
-  settingChanged: [SettingKey, Settings[SettingKey]],
+  settingChanged: [SettingKey, Settings[SettingKey]]
 
   /** Emitted when all settings were (re-)loaded */
-  settingsLoaded: [Settings],
+  settingsLoaded: [Settings]
 }
 
 export class SettingsService {

@@ -1,6 +1,7 @@
-import path from "path"
-import {app} from "electron"
 import os from "os"
+import path from "path"
+
+import {app} from "electron"
 
 function getBaseUserDataPath() {
   if (os.platform() === "linux") {
@@ -12,7 +13,7 @@ function getBaseUserDataPath() {
 }
 
 export function getUserDataPath(relativePath = "."): string {
-  if (process.env.NODE_ENV === "development") {
+  if (import.meta.env.DEV) {
     return path.join(process.cwd(), "development-user-data", relativePath)
   }
 
@@ -20,7 +21,7 @@ export function getUserDataPath(relativePath = "."): string {
 }
 
 export function getInstallDataPath(relativePath = "."): string {
-  if (process.env.NODE_ENV === "development") {
+  if (import.meta.env.DEV) {
     return path.join(process.cwd(), "development-install-data", relativePath)
   }
 

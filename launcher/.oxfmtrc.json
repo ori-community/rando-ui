@@ -1,0 +1,8 @@
+{
+  "singleQuote": false,
+  "printWidth": 120,
+  "bracketSpacing": false,
+  "sortImports": true,
+  "semi": false,
+  "sortPackageJson": false
+}

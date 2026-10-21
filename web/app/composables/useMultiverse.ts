@@ -73,7 +73,7 @@ class MultiverseConnection {
         if (error.status !== 401) {
           console.error(error)
         }
-      }
+      },
     )
   }
 

@@ -107,7 +107,7 @@
     </div>
   </wotw-seedgen-preset-button>
 
-  <v-menu v-model="presetContextMenuOpen" :target="[presetContextMenuX, presetContextMenuY]" >
+  <v-menu v-model="presetContextMenuOpen" :target="[presetContextMenuX, presetContextMenuY]">
     <v-list>
       <v-list-item @click="deleteUserPreset(presetContextMenuPresetId)">
         <v-icon start>mdi-delete-outline</v-icon>
@@ -119,7 +119,7 @@
 
 <script lang="ts" setup>
   import type {WorldPresetInfo, WorldPreset, WorldSettings} from "@shared/types/seedgen"
-  import type {GroupedPresetIds} from '~/assets/types/components/seedgen'
+  import type {GroupedPresetIds} from "~/assets/types/components/seedgen"
   import {clone} from "@shared/utils/clone"
   import {useSeedgenAxios} from "~/composables/useSeedgenAxios"
   import type {ValidWorldPresets} from "@shared/types/seedgen-extra"
@@ -154,7 +154,7 @@
   const presetContextMenuPresetId = ref("")
   const {
     content: clipboardWorldSettings,
-    updateContent: updateClipboardWorldSettings
+    updateContent: updateClipboardWorldSettings,
   } = useTaggedStringFromClipboard(WORLD_SETTINGS_CLIPBOARD_TAG)
 
   type WorldPresetAndId = {
@@ -166,7 +166,7 @@
   const selectedAdditionalPresets = ref<Set<string>>(new Set([]))
 
   const presetsWithoutGroup = computed(() => Object.fromEntries(
-    Object.entries(worldPresets).filter(p => !p[1].content.info || !p[1].content.info.group)
+    Object.entries(worldPresets).filter(p => !p[1].content.info || !p[1].content.info.group),
   ))
 
   function onBaseWorldPresetSelected(presetId: string) {
@@ -206,7 +206,7 @@
 
     emit("presetsSelected", [
       selectedBasePreset.value.preset,
-      ...selectedAdditionalPresets.value.values().map(presetId => worldPresets[presetId]?.content).filter(preset => !!preset)
+      ...selectedAdditionalPresets.value.values().map(presetId => worldPresets[presetId]?.content).filter(preset => !!preset),
     ])
   }
 

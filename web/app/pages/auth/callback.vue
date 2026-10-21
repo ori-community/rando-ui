@@ -15,16 +15,16 @@
     await router.replace(
       isElectron
         ? {name: "electron-index"}
-        : {name: "index"}
+        : {name: "index"},
     )
   }
 
   // Exchange short-lived token with a long-lived one
   if (shortLivedJwt) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${shortLivedJwt}`
+    axios.defaults.headers.common["Authorization"] = `Bearer ${shortLivedJwt}`
 
-    const longLivedJwt = (await axios.post('/tokens/', {
-      scopes: ['*'],
+    const longLivedJwt = (await axios.post("/tokens/", {
+      scopes: ["*"],
     })).data as string
     await authStore.setJwt(longLivedJwt)
 

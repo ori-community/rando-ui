@@ -1,26 +1,26 @@
-import {getInstallDataPath, getTemporaryUserDataPath} from "@launcher/paths"
-import fs from "fs"
-import axios, {AxiosResponseHeaders} from "axios"
-import {EventEmitter} from "events"
-import Stream from "node:stream"
-import {app} from "electron"
 import {spawn} from "child_process"
+import {EventEmitter} from "events"
+import fs from "fs"
+import os from "node:os"
+import Stream from "node:stream"
+
+import {getInstallDataPath, getTemporaryUserDataPath} from "@launcher/paths"
+import {SeedgenServerService} from "@launcher/services/SeedgenServerService"
+import axios, {AxiosResponseHeaders} from "axios"
+import {app} from "electron"
+import {shell as electronShell} from "electron"
 import log from "electron-log/main"
 import {throttle} from "lodash"
-import os from "node:os"
-import {shell as electronShell} from "electron"
-import {SeedgenServerService} from "@launcher/services/SeedgenServerService"
-
 
 type InputBindingsEvent = {
   /** Emitted when the update download progress changes, null if no update is in progress */
-  updateDownloadProgressChanged: [number | null],
+  updateDownloadProgressChanged: [number | null]
 }
 
 type DownloadUrls = {
-  windowsInstaller: string,
-  linuxAppimage: string,
-  linuxPortable: string,
+  windowsInstaller: string
+  linuxAppimage: string
+  linuxPortable: string
 }
 
 export class UpdateService {
@@ -38,9 +38,7 @@ export class UpdateService {
       return null
     }
 
-    return this.downloadTotalBytes === 0
-      ? 0
-      : this.downloadCompletedBytes / this.downloadTotalBytes
+    return this.downloadTotalBytes === 0 ? 0 : this.downloadCompletedBytes / this.downloadTotalBytes
   }
 
   public static async getVersion() {
@@ -54,7 +52,7 @@ export class UpdateService {
   }
 
   private static async downloadUpdate(url: string, targetFileName: string) {
-    const {data, headers}: { data: Stream, headers: AxiosResponseHeaders } = await axios.get(url, {
+    const {data, headers}: {data: Stream; headers: AxiosResponseHeaders} = await axios.get(url, {
       responseType: "stream",
     })
 
@@ -66,16 +64,16 @@ export class UpdateService {
     await new Promise<void>((resolve, reject) => {
       this.downloadCompletedBytes = 0
 
-      data.on("data", chunk => {
+      data.on("data", (chunk) => {
         this.downloadCompletedBytes += chunk.length
         this.throttledEmitUpdateDownloadProgress()
       })
 
-      data.on("error", error => {
+      data.on("error", (error) => {
         reject(error)
       })
 
-      writeStream.on("error", error => {
+      writeStream.on("error", (error) => {
         reject(error)
       })
 
@@ -92,7 +90,8 @@ export class UpdateService {
 
     this.isUpdating = true
 
-    if (os.platform() === "win32") {  // Windows Installer
+    if (os.platform() === "win32") {
+      // Windows Installer
       const installerPath = getTemporaryUserDataPath("randomizer_update.exe")
       await this.downloadUpdate(urls.windowsInstaller, installerPath)
 
@@ -107,11 +106,14 @@ export class UpdateService {
       })
       app.quit()
     } else if (os.platform() === "linux") {
-      if (process.env.APPIMAGE) {  // Linux AppImage
+      const appimagePath = process.env.APPIMAGE
+
+      if (typeof appimagePath === "string") {
+        // Linux AppImage
         const temporaryPath = getTemporaryUserDataPath("randomizer_update.AppImage")
 
-        if (!fs.existsSync(process.env.APPIMAGE)) {
-          log.error(`UpdateService: File at APPIMAGE (${process.env.APPIMAGE}) does not exist, aborting`)
+        if (!fs.existsSync(appimagePath)) {
+          log.error(`UpdateService: File at APPIMAGE (${appimagePath}) does not exist, aborting`)
           this.isUpdating = false
           this.throttledEmitUpdateDownloadProgress()
           return
@@ -122,19 +124,19 @@ export class UpdateService {
         app.on("quit", async () => {
           await SeedgenServerService.kill()
 
-          log.info("UpdateService: Replacing AppImage")
-          await fs.promises.copyFile(temporaryPath, process.env.APPIMAGE)
-          await fs.promises.chmod(process.env.APPIMAGE, 0o755)
+          log.info(`UpdateService: Replacing AppImage at '${appimagePath}'`)
+          await fs.promises.copyFile(temporaryPath, appimagePath)
+          await fs.promises.chmod(appimagePath, 0o755)
 
-          spawn(process.env.APPIMAGE, [], {
+          spawn(appimagePath, [], {
             detached: true,
             stdio: "ignore",
           }).unref()
         })
 
         app.quit()
-
-      } else {  // Linux Portable
+      } else {
+        // Linux Portable
         const temporaryPath = getTemporaryUserDataPath("randomizer_update.tar.gz")
         await this.downloadUpdate(urls.linuxPortable, temporaryPath)
 

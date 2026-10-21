@@ -16,7 +16,7 @@
 
 <script lang="ts" setup>
 
-  import {formatTime} from "assets/utils/formatTime";
+  import {formatTime} from "assets/utils/formatTime"
 
   withDefaults(defineProps<{
     time?: number | null,

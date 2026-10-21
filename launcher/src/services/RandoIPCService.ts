@@ -1,10 +1,11 @@
-import type {UberId} from "@shared/types/UberStates"
-import * as zmq from "zeromq"
 import {EventEmitter} from "events"
+
 import {LocalTrackerWebSocketService} from "@launcher/services/LocalTrackerWebSocketService"
-import log from "electron-log/main"
 import {SeedgenServerService} from "@launcher/services/SeedgenServerService"
+import type {UberId} from "@shared/types/UberStates"
 import {encode as cborEncode, decode as cborDecode} from "cbor2"
+import log from "electron-log/main"
+import * as zmq from "zeromq"
 
 let socket: zmq.Dealer | null = null
 let receiveLoopActive = false
@@ -31,17 +32,17 @@ interface QueuedRequest {
 
 type RandoIPCEvent = {
   /** Emitted when the randomizer client connected to or disconnected from RandoIPC. true = connected */
-  connectionStateChanged: [boolean],
+  connectionStateChanged: [boolean]
   /** Emitted when the league.run_submitted IPC event was fired */
-  leagueRunSubmitted: [],
+  leagueRunSubmitted: []
   /** Emitted when the notify_checkpoint_created event was fired */
-  checkpointCreated: [],
+  checkpointCreated: []
   /** Emitted when the gameFinished uber stats was set to true */
-  gameFinished: [],
+  gameFinished: []
 }
 
 const outgoingRequestHandlers: {
-  [requestId: number]: { resolve?: (arg?: unknown) => unknown; promise?: Promise<unknown> }
+  [requestId: number]: {resolve?: (arg?: unknown) => unknown; promise?: Promise<unknown>}
 } = {}
 const outgoingRequestQueue: QueuedRequest[] = []
 
@@ -125,7 +126,9 @@ export class RandoIPCService {
         const message = cborDecode<Request | Response>(messageString)
 
         if (message.type === "request") {
-          this.handleIncomingRequest(message).catch((error) => log.error(`RandoIPC: Could not handle incoming request '${message.method}'`, error))
+          this.handleIncomingRequest(message).catch((error) =>
+            log.error(`RandoIPC: Could not handle incoming request '${message.method}'`, error),
+          )
         } else if (message.type === "response") {
           if (message.id in outgoingRequestHandlers) {
             outgoingRequestHandlers[message.id].resolve?.(message.payload)
@@ -154,18 +157,18 @@ export class RandoIPCService {
           async_loading_time: asyncLoadingTime,
           timer_should_run: timerShouldRun,
         } = request.payload as {
-          in_game_time: number,
-          async_loading_time: number,
-          timer_should_run: boolean,
+          in_game_time: number
+          async_loading_time: number
+          timer_should_run: boolean
         }
         LocalTrackerWebSocketService.reportTimerState(inGameTime, asyncLoadingTime, timerShouldRun)
         break
       }
       case "notify_on_uber_state_changed": {
         const {group, state, value} = request.payload as {
-          group: number,
-          state: number,
-          value: number,
+          group: number
+          state: number
+          value: number
           previous_value: number
         }
 
@@ -187,7 +190,7 @@ export class RandoIPCService {
         break
       }
       case "notify_input": {
-        const {type, pressed} = request.payload as { type: string, pressed: boolean }
+        const {type, pressed} = request.payload as {type: string; pressed: boolean}
 
         if (pressed) {
           switch (type) {
@@ -238,7 +241,7 @@ export class RandoIPCService {
         try {
           if (!this.isConnected()) {
             // Stall for 3 seconds
-            await new Promise(resolve => setTimeout(resolve, 3000))
+            await new Promise((resolve) => setTimeout(resolve, 3000))
             tries++
             continue
           }
@@ -284,7 +287,7 @@ export class RandoIPCService {
     })
     outgoingRequestHandlers[request.id].promise = promise
 
-    this.handleOutgoingRequestQueue().catch(reason => {
+    this.handleOutgoingRequestQueue().catch((reason) => {
       log.error("RandoIPCService: Failed to process outgoing request queue: ", reason)
     })
 
@@ -296,7 +299,7 @@ export class RandoIPCService {
   }
 
   static async getUberStates(states: UberId[]): Promise<number[]> {
-    return await this.request("get_uber_states", states) as number[]
+    return (await this.request("get_uber_states", states)) as number[]
   }
 
   static async getUberState(group: number, state: number): Promise<number> {
@@ -304,7 +307,7 @@ export class RandoIPCService {
   }
 
   static async getSeedTags(): Promise<string[]> {
-    return await this.request("get_tags") as string[]
+    return (await this.request("get_tags")) as string[]
   }
 
   static async setUberState(group: number, state: number, value: number): Promise<void> {
@@ -312,25 +315,25 @@ export class RandoIPCService {
   }
 
   static async getGameObject(path: string, instanceId: number) {
-    return await this.request("get_game_object", {path, instance_id: instanceId}) as {
-      active: boolean,
-      active_self: boolean,
-      children_count: number,
-      instance_id: number,
-      name: string,
-      path: string,
+    return (await this.request("get_game_object", {path, instance_id: instanceId})) as {
+      active: boolean
+      active_self: boolean
+      children_count: number
+      instance_id: number
+      name: string
+      path: string
       type: string
     }
   }
 
   static async getGameObjectChildren(path: string, instanceId: number) {
-    return await this.request("get_children", {path, instance_id: instanceId}) as Array<{
-      active: boolean,
-      active_self: boolean,
-      children_count: number,
-      instance_id: number,
-      name: string,
-      path: string,
+    return (await this.request("get_children", {path, instance_id: instanceId})) as Array<{
+      active: boolean
+      active_self: boolean
+      children_count: number
+      instance_id: number
+      name: string
+      path: string
       type: string
     }>
   }
@@ -340,15 +343,14 @@ export class RandoIPCService {
   }
 
   static async getGameStatsSlotData(): Promise<number[]> {
-    const response = await this.request("stats.get_game_stats_slot_data") as {
-      data: number[],
+    const response = (await this.request("stats.get_game_stats_slot_data")) as {
+      data: number[]
     }
 
     return response.data
   }
 
   static async getDebugEnabled() {
-    return (await this.request("get_debug_enabled") as { debug_enabled: boolean }).debug_enabled
+    return ((await this.request("get_debug_enabled")) as {debug_enabled: boolean}).debug_enabled
   }
-
 }

@@ -3,7 +3,8 @@
     <div v-for="gameActionCategory in gameActionCategories" :key="gameActionCategory">
       <h2 class="mb-1">{{ gameActionCategoryMetadata[gameActionCategory].name }}</h2>
 
-      <div v-if="controllerBindings !== undefined && keyboardAndMouseBindings !== undefined" class="inputs-grid ga-1 mb-5">
+      <div v-if="controllerBindings !== undefined && keyboardAndMouseBindings !== undefined"
+           class="inputs-grid ga-1 mb-5">
         <wotw-settings-input-action-card
           v-for="action in gameActionsByCategory.get(gameActionCategory)?.filter(isRebindable)"
           :key="action"
@@ -77,7 +78,7 @@
           onData(value) {
             keyboardAndMouseBindings.value = value
           },
-        })
+        }),
       )
     }
   })

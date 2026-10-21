@@ -77,7 +77,7 @@
     `**Only Grenade and Soup projectiles** can **light furnaces** in Baur's Reach.`,
     `You can **reverse break into Midnight Burrows** from Marsh **only with Shuriken**.`,
   ]))
-  const currentTriviaHtml = computed(() => triviaList.value[triviaIndex.value] ?? '???')
+  const currentTriviaHtml = computed(() => triviaList.value[triviaIndex.value] ?? "???")
 
   function nextTrivia() {
     triviaIndex.value = triviaIndex.value >= triviaList.value.length - 1

@@ -1,17 +1,17 @@
+import {EventEmitter} from "events"
+import nodeFs from "node:fs"
 import os from "node:os"
-import log from "electron-log/main"
 import path from "node:path"
+
+import {getInstallDataPath, getUserDataPath} from "@launcher/paths"
 import {SettingsService} from "@launcher/services/SettingsService"
 import {SettingKey} from "@shared/types/settings"
-import {getInstallDataPath, getUserDataPath} from "@launcher/paths"
-import nodeFs from "node:fs"
 import {create as createArchive} from "archiver"
-import {EventEmitter} from "events"
-
+import log from "electron-log/main"
 
 type SupportBundleServiceEvent = {
   /** Emitted when a support bundle was created due to a crash */
-  onSupportBundleCreatedFromCrash: [string],
+  onSupportBundleCreatedFromCrash: [string]
 }
 
 export class SupportBundleService {
@@ -59,20 +59,14 @@ export class SupportBundleService {
                 "users",
                 "steamuser",
                 "AppData",
-              )
+              ),
             )
-            break;
+            break
           case "standalone":
             newPath = path.normalize(
-              path.join(
-                getUserDataPath("wineprefix"),
-                "drive_c",
-                "users",
-                process.env.USER ?? "user",
-                "AppData",
-              )
+              path.join(getUserDataPath("wineprefix"), "drive_c", "users", process.env.USER ?? "user", "AppData"),
             )
-            break;
+            break
           default:
         }
         break
@@ -111,12 +105,9 @@ export class SupportBundleService {
 
     return new Set(
       (await nodeFs.promises.readdir(crashDumpsPath, {withFileTypes: true}))
-        .filter(
-          item => item.isDirectory(),
-        ).map(
-          item => path.join(crashDumpsPath, item.name),
-        )
-        .toSorted()
+        .filter((item) => item.isDirectory())
+        .map((item) => path.join(crashDumpsPath, item.name))
+        .toSorted(),
     )
   }
 
@@ -133,10 +124,10 @@ export class SupportBundleService {
       log.info(`SupportBundleService: Detected crash (${crashDumpPath}), will create support bundle shortly...`)
 
       // Wait three seconds because the Unity crash handler needs a bit to write everything
-      await new Promise(resolve => setTimeout(resolve, 3000))
+      await new Promise((resolve) => setTimeout(resolve, 3000))
       const path = await this.createSupportBundle(crashDumpPath)
 
-      this.events.emit('onSupportBundleCreatedFromCrash', path)
+      this.events.emit("onSupportBundleCreatedFromCrash", path)
     }
 
     this.knownCrashDumpDirectories = discoveredCrashDumpPaths
@@ -164,8 +155,8 @@ export class SupportBundleService {
     log.info("SupportBundleService: Collecting data...")
 
     type Entry = {
-      source: string,
-      target: string,
+      source: string
+      target: string
     }
 
     const directoryEntries: Entry[] = [
@@ -191,11 +182,7 @@ export class SupportBundleService {
 
     // Collect save files
     if (this.appdataPath !== null) {
-      const saveFilesPath = path.join(
-        this.appdataPath,
-        "Local",
-        "Ori and the Will of The Wisps",
-      )
+      const saveFilesPath = path.join(this.appdataPath, "Local", "Ori and the Will of The Wisps")
 
       if (nodeFs.existsSync(saveFilesPath)) {
         for (const saveFilePath of await nodeFs.promises.readdir(saveFilesPath)) {
@@ -213,7 +200,7 @@ export class SupportBundleService {
     await nodeFs.promises.mkdir(getUserDataPath("support_bundles"), {recursive: true})
     const supportBundleFileName = getUserDataPath(`support_bundles/${Date.now()}.zip`)
     const outputStream = nodeFs.createWriteStream(supportBundleFileName, {emitClose: true})
-    const outputStreamFinishedPromise = new Promise(resolve => outputStream.on('close', resolve))
+    const outputStreamFinishedPromise = new Promise((resolve) => outputStream.on("close", resolve))
 
     const archive = createArchive("zip", {
       zlib: {
@@ -223,14 +210,14 @@ export class SupportBundleService {
     archive.pipe(outputStream)
 
     for (const directoryEntry of directoryEntries) {
-      if (!nodeFs.existsSync(directoryEntry.source) || !(await nodeFs.promises.lstat(directoryEntry.source)).isDirectory()) {
+      if (
+        !nodeFs.existsSync(directoryEntry.source) ||
+        !(await nodeFs.promises.lstat(directoryEntry.source)).isDirectory()
+      ) {
         continue
       }
 
-      archive.directory(
-        directoryEntry.source,
-        directoryEntry.target,
-      )
+      archive.directory(directoryEntry.source, directoryEntry.target)
     }
 
     for (const fileEntry of fileEntries) {
@@ -238,12 +225,9 @@ export class SupportBundleService {
         continue
       }
 
-      archive.file(
-        fileEntry.source,
-        {
-          name: `${fileEntry.target}/${path.basename(fileEntry.source)}`,
-        }
-      )
+      archive.file(fileEntry.source, {
+        name: `${fileEntry.target}/${path.basename(fileEntry.source)}`,
+      })
     }
 
     await archive.finalize()

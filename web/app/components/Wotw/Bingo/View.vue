@@ -25,7 +25,7 @@
 
         <v-menu offset-y :close-on-content-click="!embedUrlLoading && !bingothonTokenLoading">
           <template #activator="{ props }">
-            <v-btn variant="text" icon="mdi-dots-vertical" class="ml-2" v-bind="props"/>
+            <v-btn variant="text" icon="mdi-dots-vertical" class="ml-2" v-bind="props" />
           </template>
           <v-list>
             <v-list-item @click="boardSettingsOpen = true">
@@ -148,11 +148,12 @@
     <v-dialog v-model="spectateDialogOpen" :persistent="spectateLoading" max-width="500">
       <v-card class="pa-5 relative">
         <h2>Spectate this game</h2>
-        Spectating the game lets you see all squares or the those visible by the teams<br/>
+        Spectating the game lets you see all squares or the those visible by the teams<br />
         Please note that you <b>cannot join this game anymore</b> after you chose to spectate.
 
         <div class="d-flex justify-end">
-          <v-btn :disabled="spectateLoading" class="mr-1" variant="text" @click="spectateDialogOpen = false"> Cancel</v-btn>
+          <v-btn :disabled="spectateLoading" class="mr-1" variant="text" @click="spectateDialogOpen = false"> Cancel
+          </v-btn>
           <v-btn :loading="spectateLoading" color="accent" variant="flat" @click="spectate"> Spectate</v-btn>
         </div>
       </v-card>
@@ -161,8 +162,8 @@
 </template>
 
 <script lang="ts" setup>
-  import {ref} from 'vue'
-  import type {MultiverseInfo, BingoUniverseInfo, WorldInfo} from '@shared/types/http-api'
+  import {ref} from "vue"
+  import type {MultiverseInfo, BingoUniverseInfo, WorldInfo} from "@shared/types/http-api"
 
   const boardContainer = ref<null | HTMLElement>(null)
 
@@ -201,8 +202,8 @@
 
   const centerBoard = (() => {
     boardContainer.value?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
+      behavior: "smooth",
+      block: "start",
     })
   })
 
@@ -269,7 +270,7 @@
   const createBingothonToken = (async () => {
     bingothonTokenLoading.value = true
 
-    const token = await axios.post('/bingothon/token', {
+    const token = await axios.post("/bingothon/token", {
       multiverseId: props.multiverse.id,
     })
 
@@ -286,12 +287,12 @@
   const createEmbedUrl = (async () => {
     embedUrlLoading.value = true
 
-    const token = await axios.post('/tokens/', {
-      scopes: ['boards.read', 'user.info.read'],
+    const token = await axios.post("/tokens/", {
+      scopes: ["boards.read", "user.info.read"],
     })
 
     const targetRoute = router.resolve({
-      name: 'game-multiverseId',
+      name: "game-multiverseId",
       params: {
         multiverseId: props.multiverse.id,
       },
@@ -300,7 +301,7 @@
       },
     })
 
-    const url = new URL(targetRoute.href.replace('#/', ''), this.$paths.UI_BASE_URL)
+    const url = new URL(targetRoute.href.replace("#/", ""), this.$paths.UI_BASE_URL)
     await window.navigator.clipboard.writeText(url.toString())
 
     embedUrlLoading.value = false
@@ -330,7 +331,7 @@
   })
 
   const enableBingoOverlay = (async () => {
-    await electronApi.invoke('bingoBoardOverlay.prepare', props.multiverse.id)
+    await electronApi.invoke("bingoBoardOverlay.prepare", props.multiverse.id)
     bingoOverlayEnabled.value = true
 
     setTimeout(() => {

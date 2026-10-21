@@ -5,8 +5,14 @@
     <v-scroll-y-transition>
       <v-card v-show="settingsStore.isInitialized">
         <v-tabs v-model="tab">
-          <v-tab :value="1"><v-icon start>mdi-cog-outline</v-icon> General</v-tab>
-          <v-tab :value="2"><v-icon start>mdi-gamepad-right</v-icon> Input Bindings</v-tab>
+          <v-tab :value="1">
+            <v-icon start>mdi-cog-outline</v-icon>
+            General
+          </v-tab>
+          <v-tab :value="2">
+            <v-icon start>mdi-gamepad-right</v-icon>
+            Input Bindings
+          </v-tab>
         </v-tabs>
         <v-tabs-window v-model="tab">
           <v-tabs-window-item :value="1" class='pa-5'>

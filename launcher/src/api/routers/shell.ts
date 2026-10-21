@@ -1,11 +1,12 @@
+import fs from "fs"
+import {promises as fsPromises} from "node:fs"
+
 import {publicProcedure, router} from "@launcher/api/trpc"
-import {z} from "zod"
-import {dialog, shell as electronShell} from "electron"
 import {getMainWindow} from "@launcher/main"
 import {getSeedsUserDataPath, getUserDataPath} from "@launcher/paths"
-import {promises as fsPromises} from "node:fs"
-import fs from "fs"
+import {dialog, shell as electronShell} from "electron"
 import log from "electron-log/main"
+import {z} from "zod"
 
 async function openFileOrFolderInExplorer(path: string) {
   if (!fs.existsSync(path)) {
@@ -29,16 +30,18 @@ export const shell = router({
     .input(
       z.object({
         defaultPath: z.string().optional(),
-        filters: z.array(z.object({
-          name: z.string(),
-          extensions: z.array(z.string())
-        })),
-      })
+        filters: z.array(
+          z.object({
+            name: z.string(),
+            extensions: z.array(z.string()),
+          }),
+        ),
+      }),
     )
     .query(async ({input}): Promise<string | null> => {
       const result = await dialog.showOpenDialog(getMainWindow(), {
         defaultPath: input.defaultPath,
-        properties: ['openFile'],
+        properties: ["openFile"],
         filters: input.filters,
       })
 
@@ -55,7 +58,7 @@ export const shell = router({
     .input(
       z.object({
         path: z.string(),
-      })
+      }),
     )
     .query(async ({input}): Promise<void> => {
       await openFileOrFolderInExplorer(input.path)
@@ -67,7 +70,7 @@ export const shell = router({
     .input(
       z.object({
         wellKnownPath: z.enum(["user-data", "seeds"]),
-      })
+      }),
     )
     .query(async ({input}): Promise<void> => {
       switch (input.wellKnownPath) {
@@ -86,7 +89,7 @@ export const shell = router({
     .input(
       z.object({
         url: z.string(),
-      })
+      }),
     )
     .query(async ({input}): Promise<void> => {
       await electronShell.openExternal(input.url)

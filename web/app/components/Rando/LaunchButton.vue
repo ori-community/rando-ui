@@ -49,7 +49,7 @@
 
   const isLeek = ref(false) // funny (display lauch / leek)
   const confettiScheduledForNextSuccessfulLaunch = ref(false)
-  const buttonRef = ref<{ $el: HTMLElement } | null>(null)
+  const buttonRef = ref<{$el: HTMLElement} | null>(null)
   const {isLaunching, launchResult} = useLauncherHelper()
   const displayedIcon = computed(() => {
     if (props.icon) {

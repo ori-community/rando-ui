@@ -6,7 +6,7 @@
   >
     <v-sheet :color="universeHidden ? '' : universe.color" class="color-stripe">
       <div v-if="!!bingoUniverse" class="squares px-2">
-        {{ universeHidden && !isSpectating ? '?' : bingoUniverse.squares }}
+        {{ universeHidden && !isSpectating ? "?" : bingoUniverse.squares }}
       </div>
     </v-sheet>
     <div v-if="!!universe" class="pa-2 players">
@@ -19,17 +19,17 @@
         />
       </template>
     </div>
-    <v-spacer/>
+    <v-spacer />
     <div v-if="!!bingoUniverse" class="lines px-3">
       <v-icon size="16">mdi-vector-line</v-icon>
-      {{ universeHidden && !isSpectating ? '?' : bingoUniverse.lines }}
+      {{ universeHidden && !isSpectating ? "?" : bingoUniverse.lines }}
     </div>
   </v-card>
 </template>
 
 <script lang="ts" setup>
 
-  import type {UniverseInfo, BingoUniverseInfo} from "@shared/types/http-api";
+  import type {UniverseInfo, BingoUniverseInfo} from "@shared/types/http-api"
 
   const emits = defineEmits(["click"])
   const props = withDefaults(defineProps<{

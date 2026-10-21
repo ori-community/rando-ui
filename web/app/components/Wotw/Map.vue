@@ -1,5 +1,6 @@
 <template>
-  <div v-if="loading || engineLoading" class="position-absolute d-flex flex-column ga-2 justify-center align-center top-0 left-0 right-0 bottom-0">
+  <div v-if="loading || engineLoading"
+       class="position-absolute d-flex flex-column ga-2 justify-center align-center top-0 left-0 right-0 bottom-0">
     <v-progress-circular reveal indeterminate />
     <div>Loading</div>
   </div>
@@ -20,7 +21,7 @@
     {
       gameStatsSlotData: null,
       loading: false,
-    }
+    },
   )
 
   const canvas = ref<HTMLCanvasElement | null>(null)
@@ -62,19 +63,19 @@
         navigator.clipboard.write([
           new ClipboardItem({
             "image/png": new Blob([data], {type: "image/png"}),
-          })
+          }),
         ]).then(
-          copiedSnackbar.value = true
+          copiedSnackbar.value = true,
         )
       },
       call: () => {
         // This callback is replaced by the Engine at startup
         console.warn("Tried to call Godot bridge but the engine was not ready yet.")
-      }
+      },
     }
 
     engine.value = new Engine({
-      args: ['--main-pack', "/wotw-map/wotw-map.pck"],
+      args: ["--main-pack", "/wotw-map/wotw-map.pck"],
       canvasResizePolicy: 0,
       canvas: value,
       focusCanvas: false,

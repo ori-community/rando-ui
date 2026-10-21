@@ -5,7 +5,7 @@ import {FusesPlugin} from "@electron-forge/plugin-fuses"
 import {FuseV1Options, FuseVersion} from "@electron/fuses"
 import {namedHookWithTaskFn} from "@electron-forge/plugin-base"
 import {execa} from "execa"
-import packageJson from "./package.json"
+import packageJson from "./package.json" with { type: "json" }
 import path from "node:path"
 import fs from "node:fs"
 
@@ -21,7 +21,7 @@ const config: ForgeConfig = {
       // Include vite output, UI and resources
       return !["/.vite", "/web-build", "/resources"].some(f => file.startsWith(f))
     },
-    icon: path.join(__dirname, "resources/icon"),
+    icon: path.join(import.meta.dirname, "resources/icon"),
   },
   hooks: {
     packageAfterCopy: namedHookWithTaskFn<"packageAfterCopy">(
@@ -75,18 +75,19 @@ const config: ForgeConfig = {
   ],
   plugins: [
     new VitePlugin({
+      hotRestart: true,
       // `build` can specify multiple entry builds, which can be Main process, Preload scripts, Worker process, etc.
       // If you are familiar with Vite configuration, it will look really familiar.
       build: [
         {
           // `entry` is just an alias for `build.lib.entry` in the corresponding file of `config`.
           entry: "src/main.ts",
-          config: "vite.main.config.ts",
+          config: "vite.main.config.mts",
           target: "main",
         },
         {
           entry: "src/preload.ts",
-          config: "vite.preload.config.ts",
+          config: "vite.preload.config.mts",
           target: "preload",
         },
       ],

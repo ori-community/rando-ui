@@ -38,7 +38,7 @@
 
 <script lang="ts" setup>
   import VueMarkdown from "vue-markdown-render"
-  import Shiki from '@shikijs/markdown-it'
+  import Shiki from "@shikijs/markdown-it"
   import {formatDistanceToNow} from "date-fns"
   import seedLanguage from "~/assets/grammars/wotws"
 
@@ -48,11 +48,11 @@
   const plugins = [
     await Shiki({
       themes: {
-        light: 'github-dark-dimmed',
-        dark: 'github-dark-dimmed',
+        light: "github-dark-dimmed",
+        dark: "github-dark-dimmed",
       },
       langs: [seedLanguage],
-    })
+    }),
   ]
 
   defineProps<{

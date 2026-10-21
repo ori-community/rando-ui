@@ -45,7 +45,7 @@
               <v-icon>mdi-arrow-left-thin</v-icon>
               Season
             </v-btn>
-            <v-spacer/>
+            <v-spacer />
             <template v-if="didSubmit">
               <v-btn v-if="!ownSubmissionHasVideoUrl" variant="text" @click="showVideoSubmission = true">
                 <v-icon start>mdi-video-outline</v-icon>
@@ -85,14 +85,14 @@
                   </template>
                   <template #[`item.membership.user.name`]="{ item }">
                     <div class="d-flex align-center">
-                      <rando-discord-avatar :user="item.membership.user" class="mr-1"/>
+                      <rando-discord-avatar :user="item.membership.user" class="mr-1" />
                       {{ item.membership.user.name }}
                     </div>
                   </template>
                   <template #[`item.rankingData.time`]="{ item }">
                     <wotw-league-time-view
                       :time="item.rankingData?.time ?? null"
-                      :original-time="item.rankingData?.originalTime ?? null"/>
+                      :original-time="item.rankingData?.originalTime ?? null" />
                   </template>
                   <template #[`item.rankingData.points`]="{ item }">
                     <template v-if="!leagueGame.isCurrent && item.rankingData !== null">
@@ -235,7 +235,7 @@
   const videoUrlForSubmission = ref(null)
   const videoUrlSubmissionLoading = ref(false)
   const removeVideoUrlConfirmationDialogOpen = ref(false)
-  const errorMessage = ref('')
+  const errorMessage = ref("")
   const developerModeWarningOpen = ref(false)
 
   const launching = false // TODO replace with electron states
@@ -243,7 +243,7 @@
   const title = computed(() => {
     return leagueGame.value?.gameNumber && leagueSeason.value?.name
       ? `Game ${leagueGame.value.gameNumber} - ${leagueSeason.value?.name} - League`
-      : 'Game - League'
+      : "Game - League"
   })
 
   // ...mapState('multiverseState', ['multiverses']), TODO multiverses
@@ -277,22 +277,22 @@
     const headers: DataTableHeader[] = []
 
     if (leagueGame.value?.isCurrent === false) {
-      headers.push({title: 'Rank', value: 'rankingData.rank', align: 'center'})
+      headers.push({title: "Rank", value: "rankingData.rank", align: "center"})
     }
 
     headers.push(
-      {title: 'Player', value: 'membership.user.name'},
-      {title: 'Time', value: 'rankingData.time', align: 'end'},
+      {title: "Player", value: "membership.user.name"},
+      {title: "Time", value: "rankingData.time", align: "end"},
     )
 
     if (leagueGame.value?.isCurrent === false) {
-      headers.push({title: 'Points', value: 'rankingData.points', align: 'end'})
+      headers.push({title: "Points", value: "rankingData.points", align: "end"})
     }
     if (isElectron) {
-      headers.push({title: 'Route', value: 'traceMap', align: 'center', width: 0})
+      headers.push({title: "Route", value: "traceMap", align: "center", width: 0})
     }
 
-    headers.push({title: 'Video', value: 'rankingData.videoUrl', align: 'center', width: 0})
+    headers.push({title: "Video", value: "rankingData.videoUrl", align: "center", width: 0})
 
     return headers
   })
@@ -375,7 +375,7 @@
   })
 
   const openInLauncher = ((event: KeyboardEvent) => {
-    window.open(launcherUrl.value, '_self')
+    window.open(launcherUrl.value, "_self")
 
     if (event.ctrlKey) {
       setTimeout(() => {
@@ -398,10 +398,10 @@
         gameSubmissions.value = await axios.get(`/league/games/${route.params.gameId}/submissions`)
         showVideoSubmission.value = false
         removeVideoUrlConfirmationDialogOpen.value = false
-        errorMessage.value = ''
+        errorMessage.value = ""
       },
       async (e) => {
-        errorMessage.value = e.response?.data as string ?? 'Unknown Error'
+        errorMessage.value = e.response?.data as string ?? "Unknown Error"
         console.error(e)
       },
     )
@@ -470,10 +470,10 @@
         left: 0;
         right: 0;
         background: linear-gradient(
-            to right,
-            rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.1) 50%,
-            rgba(255, 255, 255, 0) 100%
+          to right,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 0.1) 50%,
+          rgba(255, 255, 255, 0) 100%
         );
         z-index: 0;
       }

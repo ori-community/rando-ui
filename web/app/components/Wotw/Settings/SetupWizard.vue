@@ -3,7 +3,7 @@
     <h2 class="mb-2">Choose how to launch the game:</h2>
 
     <v-item-group v-model="gameLaunchMethod" mandatory selected-class="bg-accent">
-      <v-row dense>
+      <v-row density="compact">
         <v-col v-for="(metadata, id) in gameLaunchMethodsMetadata" :key="id" cols="12" md="4">
           <v-item v-slot="{ selectedClass, toggle }" :value="id">
             <v-card
@@ -39,7 +39,7 @@
       <h2 class="mb-2 pt-4">Choose how to load the randomizer mod:</h2>
 
       <v-item-group v-model="modloaderMethod" mandatory selected-class="bg-accent">
-        <v-row dense>
+        <v-row density="compact">
           <v-col v-for="(metadata, id) in modloaderMethodsMetadata" :key="id" cols="12" md="4">
             <v-item v-slot="{ selectedClass, toggle }" :value="id">
               <v-card
@@ -110,12 +110,12 @@
 </template>
 
 <script lang="tsx" setup>
-  import type {Settings} from '@shared/types/settings'
+  import type {Settings} from "@shared/types/settings"
   import {
     gameLaunchMethodsMetadata,
     launchSetupValidationErrorMessages,
     modloaderMethodsMetadata,
-  } from '~/assets/uiMetadata'
+  } from "~/assets/uiMetadata"
 
   const emit = defineEmits<{
     setupFinished: [],
@@ -130,17 +130,17 @@
       loadDefaultsFromSettings: true,
       completeSetupButtonLabel: "Complete Setup",
       completeSetupButtonIcon: "mdi-check",
-    }
+    },
   )
 
   const platform = await usePlatform()
   const settingsStore = useSettingsStore()
   const settings = storeToRefs(settingsStore)
   const electronApi = useElectronApi()
-  const availableGameLaunchMethods = ref<Settings['GameLaunchMethod'][]>([])
-  const availableModloaderMethods = ref<Settings['ModloaderMethod'][]>([])
-  const gameLaunchMethod = ref<Settings['GameLaunchMethod'] | null>(props.loadDefaultsFromSettings ? settings.GameLaunchMethod.value : null)
-  const modloaderMethod = ref<Settings['ModloaderMethod'] | null>(props.loadDefaultsFromSettings ? settings.ModloaderMethod.value : null)
+  const availableGameLaunchMethods = ref<Settings["GameLaunchMethod"][]>([])
+  const availableModloaderMethods = ref<Settings["ModloaderMethod"][]>([])
+  const gameLaunchMethod = ref<Settings["GameLaunchMethod"] | null>(props.loadDefaultsFromSettings ? settings.GameLaunchMethod.value : null)
+  const modloaderMethod = ref<Settings["ModloaderMethod"] | null>(props.loadDefaultsFromSettings ? settings.ModloaderMethod.value : null)
   const steamBinaryPath = ref("")
   const gameBinaryPath = ref("")
   const setupLoading = ref(false)
@@ -193,7 +193,7 @@
   async function selectSteamPath() {
     const newPath = await electronApi?.shell.pickFile.query({
       defaultPath: steamBinaryPath.value,
-      filters: [{name: 'Executables', extensions: platform === "windows" ? ['exe'] : []}],
+      filters: [{name: "Executables", extensions: platform === "windows" ? ["exe"] : []}],
     })
 
     if (newPath) {
@@ -204,7 +204,7 @@
   async function selectGameBinaryPath() {
     const newPath = await electronApi?.shell.pickFile.query({
       defaultPath: gameBinaryPath.value,
-      filters: [{name: 'Executables', extensions: ['exe']}],
+      filters: [{name: "Executables", extensions: ["exe"]}],
     })
 
     if (newPath) {

@@ -1,5 +1,5 @@
 import axios from "axios"
-import type {SemVer} from "semver";
+import type {SemVer} from "semver"
 import semver from "semver"
 
 export type Release = {
@@ -88,7 +88,7 @@ async function fetchReleases() {
           linux: {
             appimage: linuxAppImageUrl,
             portable: linuxPortableUrl,
-          }
+          },
         },
       }
     })

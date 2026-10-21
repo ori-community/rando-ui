@@ -26,7 +26,8 @@
           <v-card class="pa-1 d-flex align-center" flat>
             <v-icon size="x-small">mdi-plus</v-icon>
 
-            <v-menu v-model="controllerRebindEditorOpen" activator="parent" scrim offset="4" :close-on-content-click="false">
+            <v-menu v-model="controllerRebindEditorOpen" activator="parent" scrim offset="4"
+                    :close-on-content-click="false">
               <v-card variant="tonal">
                 <div class="pa-3 d-flex flex-column align-center">
                   <wotw-settings-input-controller-bindings-editor
@@ -72,7 +73,8 @@
           <v-card class="pa-1 d-flex align-center" flat>
             <v-icon size="x-small">mdi-plus</v-icon>
 
-            <v-menu v-model="keyboardAndMouseRebindEditorOpen" activator="parent" scrim offset="4" :close-on-content-click="false">
+            <v-menu v-model="keyboardAndMouseRebindEditorOpen" activator="parent" scrim offset="4"
+                    :close-on-content-click="false">
               <v-card variant="tonal">
                 <div class="pa-3 d-flex flex-column align-center">
                   <wotw-settings-input-keyboard-and-mouse-bindings-editor
@@ -181,7 +183,7 @@
 
     await electronApi.inputBindings.setKeyboardAndMouseActionBindings.query({
       action: props.action as KeyboardAndMouseRebindableAction,
-      bindings: [...(props.keyboardAndMouseInputBindings ?? []), binding]
+      bindings: [...(props.keyboardAndMouseInputBindings ?? []), binding],
     })
   }
 
@@ -192,7 +194,7 @@
 
     await electronApi.inputBindings.setControllerActionBindings.query({
       action: props.action as ControllerRebindableAction,
-      bindings: props.controllerInputBindings.toSpliced(index, 1)
+      bindings: props.controllerInputBindings.toSpliced(index, 1),
     })
   }
 
@@ -203,7 +205,7 @@
 
     await electronApi.inputBindings.setKeyboardAndMouseActionBindings.query({
       action: props.action as KeyboardAndMouseRebindableAction,
-      bindings: props.keyboardAndMouseInputBindings.toSpliced(index, 1)
+      bindings: props.keyboardAndMouseInputBindings.toSpliced(index, 1),
     })
   }
 
@@ -218,14 +220,14 @@
     if (controllerMetadata !== false) {
       await electronApi.inputBindings.setControllerActionBindings.query({
         action: props.action as ControllerRebindableAction,
-        bindings: controllerMetadata.default
+        bindings: controllerMetadata.default,
       })
     }
 
     if (keyboardAndMouseMetadata !== false && keyboardAndMouseMetadata !== "in-game") {
       await electronApi.inputBindings.setKeyboardAndMouseActionBindings.query({
         action: props.action as KeyboardAndMouseRebindableAction,
-        bindings: keyboardAndMouseMetadata.default
+        bindings: keyboardAndMouseMetadata.default,
       })
     }
   }

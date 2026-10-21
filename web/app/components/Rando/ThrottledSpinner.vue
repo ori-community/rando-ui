@@ -4,7 +4,7 @@
       <slot name="content" />
     </div>
     <div v-else-if="show" key="progress" class="text-center" :class="{'ma-8': !noMargin}">
-      <v-progress-circular indeterminate v-bind="$attrs"/>
+      <v-progress-circular indeterminate v-bind="$attrs" />
     </div>
   </v-fade-transition>
 </template>

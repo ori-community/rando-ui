@@ -32,7 +32,7 @@
     Group as KGroup,
     Arrow as KArrow,
   } from "vue-konva"
-  import {type NodeTransform, MapToOverlay} from "~/assets/utils/mapHelper";
+  import {type NodeTransform, MapToOverlay} from "~/assets/utils/mapHelper"
 
   interface Item {
     name: string,
@@ -64,7 +64,7 @@
     return props.items
       .map((item) => ({
         ...item,
-        position: MapToOverlay(item.position, props.mapTransform)
+        position: MapToOverlay(item.position, props.mapTransform),
       }))
       .filter((item) => {
         return !(
@@ -75,7 +75,7 @@
         )
       })
       .map((item) => {
-        const angle = Math.atan2(item.position.y - centerY, item.position.x - centerX);
+        const angle = Math.atan2(item.position.y - centerY, item.position.x - centerX)
         const pos = intersectRayWithBorder(
           centerX,
           centerY,
@@ -104,8 +104,8 @@
     boxX2: number, boxY2: number,
   ): Konva.Vector2d | null => {
 
-    const intersections: { x: number, y: number, distance: number, direction: number }[] = []
-    const boxLines: { x1: number, y1: number, x2: number, y2: number }[] =
+    const intersections: {x: number, y: number, distance: number, direction: number}[] = []
+    const boxLines: {x1: number, y1: number, x2: number, y2: number}[] =
       [
         {x1: boxX1, y1: boxY1, x2: boxX1, y2: boxY2},
         {x1: boxX1, y1: boxY2, x2: boxX2, y2: boxY2},
@@ -121,7 +121,7 @@
           x: intersection.x,
           y: intersection.y,
           distance: getDistance(centerX, centerY, intersection.x, intersection.y),
-          direction: ((intersection.x - centerX) * dir.x + (intersection.y - centerY) * dir.y)
+          direction: ((intersection.x - centerX) * dir.x + (intersection.y - centerY) * dir.y),
         })
       }
     })
@@ -133,7 +133,7 @@
     return {
       x: intersections[0].x,
       y: intersections[0].y,
-    };
+    }
   })
 
   const lineLineIntersection = ((L1X1: number, L1Y1: number, L1X2: number, L1Y2: number, L2X1: number, L2Y1: number, L2X2: number, L2Y2: number) => {

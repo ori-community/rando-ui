@@ -111,9 +111,9 @@
             <template v-else><a :href="leagueDiscordChannelUrl" target="_blank">Ori Runs Discord server</a></template
             >
             , it is heavily advised to be part of it to receive pings and reminders for your joined seasons as well as
-            being added to spoiler discussion channels after you finished a game.<br/>
+            being added to spoiler discussion channels after you finished a game.<br />
             Once the season started, games will be created automatically in fixed intervals. You can then play these
-            games whenever you want until they expire and the next game is created or the season is over.<br/>
+            games whenever you want until they expire and the next game is created or the season is over.<br />
             You can also play training seeds to practice or try out the settings of a season.
           </v-expansion-panel-text>
         </v-expansion-panel>
@@ -126,11 +126,11 @@
 
             <ul class="mb-2">
               <li>
-                <span class="font-italic">Base Points</span><br/>
+                <span class="font-italic">Base Points</span><br />
                 Base Points are awarded to all players who submitted a run, regardless of their time.
               </li>
               <li>
-                <span class="font-italic">Speed Points</span><br/>
+                <span class="font-italic">Speed Points</span><br />
                 Speed Points are awarded to players depending on their run time in relation to the fastest player.
               </li>
             </ul>
@@ -184,7 +184,7 @@
   const seasonsLoading = ref(false)
   const leagueSeasons = ref<LeagueSeasonInfo[] | null>(null)
   const showLeagueInfo = ref(false)
-  const leagueDiscordChannelUrl = ref('https://discord.gg/kXuZSAuxZt')
+  const leagueDiscordChannelUrl = ref("https://discord.gg/kXuZSAuxZt")
 
   const categorizedSeasons = computed(() => {
     const value: {
@@ -216,7 +216,7 @@
   const loadSeasons = (async () => {
     seasonsLoading.value = true
     try {
-      leagueSeasons.value = (await axios.get('/league/seasons')).data
+      leagueSeasons.value = (await axios.get("/league/seasons")).data
     } catch (e) {
       console.error(e)
     }

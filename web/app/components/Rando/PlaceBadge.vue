@@ -20,7 +20,7 @@
     size?: number,
   }>(), {
     place: 1,
-    size: 64
+    size: 64,
   })
 
   const icon = computed(() => {
@@ -28,21 +28,21 @@
       case 1:
       case 2:
       case 3:
-        return 'mdi-decagram'
+        return "mdi-decagram"
       default:
-        return 'mdi-circle'
+        return "mdi-circle"
     }
   })
   const color = computed(() => {
     switch (Number(props.place)) {
       case 1:
-        return '#ffd200'
+        return "#ffd200"
       case 2:
-        return '#909090'
+        return "#909090"
       case 3:
-        return '#864b30'
+        return "#864b30"
       default:
-        return 'background-lighten-2'
+        return "background-lighten-2"
     }
   })
   const calcFontSize = computed(() => {

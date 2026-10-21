@@ -19,7 +19,7 @@
         label="Case sensitive search"
       />
     </div>
-    <v-divider class="border-opacity-50"/>
+    <v-divider class="border-opacity-50" />
     <template v-if="!randoIpcIsConnected">
       <div class="mt-2">Randomizer IPC not connected</div>
     </template>
@@ -75,7 +75,7 @@
   const openGameObjects = ref<GameObject[]>([])
   const activeGameObjects = ref<GameObject[]>([])
   const hierarchy = ref<GameObject[] | undefined>([])
-  const search = ref('')
+  const search = ref("")
   const caseSensitiveSearch = ref(false)
 
   interface GameObject {
@@ -110,7 +110,7 @@
     }
   })
 
-  const filter = ((name: string, search: string,) => {
+  const filter = ((name: string, search: string) => {
     return caseSensitiveSearch.value ? name.includes(search) : name.toLowerCase().includes(search.toLowerCase())
   })
   const reload = (async () => {
@@ -128,7 +128,7 @@
     }
 
     isLoading.value = true
-    const tree = await getSubtree('')
+    const tree = await getSubtree("")
 
     const loadSubtreeIfOpenOrBelowLevel = (async (root: GameObject, level: number) => {
       if (!root.childrenLoaded && (openGameObjects.value.some((o) => o.path === root.path) || level > 0)) {
@@ -172,7 +172,7 @@
     try {
       const fetchedItem = await electronApi?.randoIpc?.getGameObject.query({
         path: gameObject.path,
-        instanceId: gameObject.instance_id
+        instanceId: gameObject.instance_id,
       })
 
       // for (const key of Object.keys(fetchedItem)) {
@@ -189,7 +189,7 @@
     await electronApi?.randoIpc?.setGameObjectActive.query({
       path: gameObject.path,
       instanceId: gameObject.instance_id,
-      active: !gameObject.active
+      active: !gameObject.active,
     })
     await loadValueForItem(gameObject)
 

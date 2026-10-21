@@ -63,7 +63,6 @@
       navigator.clipboard.writeText(props.error.stack)
     }
   })
-
 </script>
 
 <style lang="scss" scoped>

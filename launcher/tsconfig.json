@@ -1,20 +1,27 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "es2020",
+    "module": "preserve",
+    "moduleResolution": "bundler",
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "noImplicitAny": true,
     "sourceMap": true,
-    "baseUrl": ".",
-    "outDir": "dist",
-    "moduleResolution": "node",
     "resolveJsonModule": true,
+    "types": [
+      "vite/client"
+    ],
     "paths": {
-      "@launcher/*": ["./src/*"],
-      "@shared/*": ["../shared/*"],
-      "@web/*": ["../web/*"]
+      "@launcher/*": [
+        "./src/*"
+      ],
+      "@shared/*": [
+        "../shared/*"
+      ],
+      "@web/*": [
+        "../web/*"
+      ]
     }
   }
 }

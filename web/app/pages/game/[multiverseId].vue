@@ -122,7 +122,8 @@
         Forfeiting from the game makes all players in your universe forfeit from this race.
 
         <div class="d-flex justify-end">
-          <v-btn :disabled="forfeitLoading" class="mr-1" variant="text" @click="forfeitDialogOpen = false"> Cancel</v-btn>
+          <v-btn :disabled="forfeitLoading" class="mr-1" variant="text" @click="forfeitDialogOpen = false"> Cancel
+          </v-btn>
           <v-btn :loading="forfeitLoading" color="error" variant="flat" @click="forfeit">Forfeit</v-btn>
         </div>
       </v-card>
@@ -135,7 +136,8 @@
           You can view the spoiler for this seed. Note that <b>all players can see that you looked at the spoiler.</b>
         </div>
         <div class="d-flex justify-end mt-4">
-          <v-btn :disabled="downloadSpoilerLoading" class="mr-1" variant="text" @click="downloadSpoilerDialogOpen = false">
+          <v-btn :disabled="downloadSpoilerLoading" class="mr-1" variant="text"
+                 @click="downloadSpoilerDialogOpen = false">
             Cancel
           </v-btn>
           <v-btn :loading="downloadSpoilerLoading" color="error" variant="flat" @click="downloadSpoiler">

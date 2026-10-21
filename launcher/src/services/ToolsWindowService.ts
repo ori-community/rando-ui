@@ -1,18 +1,17 @@
-import {BrowserWindow} from "electron"
 import {getElectronUrl} from "@launcher/helpers"
 import {PopupWindow} from "@launcher/services/PopupWindow"
-
+import {BrowserWindow} from "electron"
 
 export class ToolsWindowService {
   private static window: BrowserWindow | null = null
 
   static isOpen(): boolean {
-    return this.window && !this.window.isDestroyed()
+    return !!this.window && !this.window.isDestroyed()
   }
 
   static close() {
     if (this.isOpen()) {
-      this.window.close()
+      this.window?.close()
     }
   }
 

@@ -40,7 +40,7 @@
         <template #activator="{ props }">
           <div style="position: relative">
             <div class="ori-lurk-container">
-              <img class="ori-lurk" :class="{ lurking: buttonLurking }" src="@shared/images/ori_lurk.png"/>
+              <img class="ori-lurk" :class="{ lurking: buttonLurking }" src="@shared/images/ori_lurk.png" />
             </div>
             <v-btn
               color="accent"
@@ -78,7 +78,8 @@
                 </svg>
               </v-icon>
               <div>
-                <v-list-item-title>Linux AppImage <span class="text-label-medium opacity-70">(.AppImage)</span></v-list-item-title>
+                <v-list-item-title>Linux AppImage <span class="text-label-medium opacity-70">(.AppImage)</span>
+                </v-list-item-title>
                 <v-list-item-subtitle>No installation required</v-list-item-subtitle>
               </div>
             </div>
@@ -94,7 +95,8 @@
                 </svg>
               </v-icon>
               <div>
-                <v-list-item-title>Linux Package <span class="text-label-medium opacity-70">(.tar.gz)</span></v-list-item-title>
+                <v-list-item-title>Linux Package <span class="text-label-medium opacity-70">(.tar.gz)</span>
+                </v-list-item-title>
                 <v-list-item-subtitle>Requires additional software</v-list-item-subtitle>
               </div>
             </div>

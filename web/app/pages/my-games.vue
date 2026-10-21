@@ -32,7 +32,7 @@
                       </template>
                       <div class="avatars">
                         <div v-for="user in multiverseMetadata.members" :key="user.id" class="avatar">
-                          <rando-discord-avatar :user="user"/>
+                          <rando-discord-avatar :user="user" />
                           <v-tooltip location="bottom" activator="parent" open-delay="250">
                             <span>{{ user.name }}</span>
                           </v-tooltip>
@@ -42,11 +42,11 @@
                   </template>
                 </v-timeline>
               </div>
-              <v-divider vertical/>
+              <v-divider vertical />
               <div class="multiverse-view-container mt-4">
                 <v-scroll-x-reverse-transition leave-absolute>
                   <div v-if="route.query.game">
-                    <wotw-multiverse-preview-pane :multiverse-id="Number(route.query.game)"/>
+                    <wotw-multiverse-preview-pane :multiverse-id="Number(route.query.game)" />
                   </div>
                 </v-scroll-x-reverse-transition>
               </div>

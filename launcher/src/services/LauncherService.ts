@@ -1,31 +1,32 @@
-import {LaunchResult, LaunchSetupValidationError} from "@shared/types/launcher"
-import {SettingsService} from "@launcher/services/SettingsService"
-import fs from "node:fs"
-import {execa} from "execa"
-import path from "node:path"
-import {getInstallDataPath, getClientUserDataPath, getUserDataPath} from "@launcher/paths"
-import {fromFile as hashFile} from "hasha"
-import {Settings} from "@shared/types/settings"
-import os from "node:os"
-import {LauncherPlatform} from "@shared/types/platform"
-import log from "electron-log/main"
-import {waitForProcess} from "@launcher/helpers"
-import {RandoIPCService} from "@launcher/services/RandoIPCService"
-import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
 import {EventEmitter} from "events"
-import {lookpath} from "lookpath"
-import {SeedgenServerService} from "@launcher/services/SeedgenServerService"
+import fs from "node:fs"
+import os from "node:os"
+import path from "node:path"
+
+import {waitForProcess} from "@launcher/helpers"
+import {getInstallDataPath, getClientUserDataPath, getUserDataPath} from "@launcher/paths"
 import {InputBindingsService} from "@launcher/services/InputBindingsService"
+import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
+import {RandoIPCService} from "@launcher/services/RandoIPCService"
+import {SeedgenServerService} from "@launcher/services/SeedgenServerService"
+import {SettingsService} from "@launcher/services/SettingsService"
+import {LaunchResult, LaunchSetupValidationError} from "@shared/types/launcher"
+import {LauncherPlatform} from "@shared/types/platform"
+import {Settings} from "@shared/types/settings"
+import log from "electron-log/main"
+import {execa} from "execa"
+import {fromFile as hashFile} from "hasha"
+import {lookpath} from "lookpath"
 
 type LauncherEvent = {
   /** Emitted when the isLaunching property changed */
-  isLaunchingChanged: [boolean],
+  isLaunchingChanged: [boolean]
 
   /** Emitted when a LaunchResult is ready */
-  launchResult: [LaunchResult],
+  launchResult: [LaunchResult]
 
   /** Emitted when the new game seed source changed */
-  newGameSeedSourceChanged: [string],
+  newGameSeedSourceChanged: [string]
 }
 
 export class LauncherService {
@@ -93,7 +94,9 @@ export class LauncherService {
   /**
    * Returns the available Modloader methods on the current platform
    */
-  static async getModloaderMethodsAvailableOnForGameLaunchMethod(gameLaunchMethod: Settings["GameLaunchMethod"]): Promise<Settings["ModloaderMethod"][]> {
+  static async getModloaderMethodsAvailableOnForGameLaunchMethod(
+    gameLaunchMethod: Settings["GameLaunchMethod"],
+  ): Promise<Settings["ModloaderMethod"][]> {
     switch (gameLaunchMethod) {
       case "steam":
         return ["proxy", "inject"]
@@ -135,21 +138,27 @@ export class LauncherService {
       errors.push("invalid-game-binary-path")
     }
 
-    if (steamBinaryNeedsToBeValid && !fs.existsSync(settings.SteamBinaryPath) && await lookpath(settings.SteamBinaryPath) === undefined) {
+    if (
+      steamBinaryNeedsToBeValid &&
+      !fs.existsSync(settings.SteamBinaryPath) &&
+      (await lookpath(settings.SteamBinaryPath)) === undefined
+    ) {
       errors.push("invalid-steam-binary-path")
     }
 
     if (
       settings.ModloaderMethod === "proxy" &&
       settings.ValidateProxyModloader &&
-      !await LauncherService.isProxyModloaderUpToDate()
+      !(await LauncherService.isProxyModloaderUpToDate())
     ) {
       errors.push("invalid-proxy-modloader-file")
     }
 
     const gameLaunchMethodsAvailable = await this.getGameLaunchMethodsAvailableOnPlatform()
     const modloaderMethodsAvailableOnPlatform = await this.getModloaderMethodsAvailableOnPlatform()
-    const modloaderMethodsAvailableForGameLaunchMethod = await this.getModloaderMethodsAvailableOnForGameLaunchMethod(settings.GameLaunchMethod)
+    const modloaderMethodsAvailableForGameLaunchMethod = await this.getModloaderMethodsAvailableOnForGameLaunchMethod(
+      settings.GameLaunchMethod,
+    )
 
     if (!gameLaunchMethodsAvailable.includes(settings.GameLaunchMethod)) {
       errors.push("game-launch-method-not-available-on-current-platform")
@@ -177,7 +186,10 @@ export class LauncherService {
 
     const settings = await SettingsService.instance.getSettings()
     const sourceProxyFileName = await fs.promises.realpath(getInstallDataPath("client/winhttp.dll"))
-    const targetProxyFileName = path.join(await fs.promises.realpath(path.join(path.dirname(settings.GameBinaryPath))), "winhttp.dll")
+    const targetProxyFileName = path.join(
+      await fs.promises.realpath(path.join(path.dirname(settings.GameBinaryPath))),
+      "winhttp.dll",
+    )
 
     const powershellEscape = (value: string) => {
       return value.replaceAll(/([\[\]])/g, "``$1")
@@ -185,19 +197,23 @@ export class LauncherService {
 
     switch (this.getPlatform()) {
       case "windows":
-        await execa("Start-Process", [
-          "powershell",
-          "-ArgumentList",
-          `"New-Item -Path '${powershellEscape(targetProxyFileName)}' -ItemType SymbolicLink -Value '${powershellEscape(sourceProxyFileName)}' -Force; sleep 2;"`,
-          "-Verb",
-          "RunAs",
-          "-Wait",
-          "-WindowStyle",
-          "Hidden",
-        ], {
-          shell: "powershell",
-          windowsHide: true,
-        })
+        await execa(
+          "Start-Process",
+          [
+            "powershell",
+            "-ArgumentList",
+            `"New-Item -Path '${powershellEscape(targetProxyFileName)}' -ItemType SymbolicLink -Value '${powershellEscape(sourceProxyFileName)}' -Force; sleep 2;"`,
+            "-Verb",
+            "RunAs",
+            "-Wait",
+            "-WindowStyle",
+            "Hidden",
+          ],
+          {
+            shell: "powershell",
+            windowsHide: true,
+          },
+        )
         break
       case "linux":
         await fs.promises.rm(targetProxyFileName, {force: true})
@@ -222,7 +238,10 @@ export class LauncherService {
   static async isProxyModloaderUpToDate() {
     const settings = await SettingsService.instance.getSettings()
     const sourceProxyFileName = await fs.promises.realpath(getInstallDataPath("client/winhttp.dll"))
-    const targetProxyFileName = path.join(await fs.promises.realpath(path.join(path.dirname(settings.GameBinaryPath))), "winhttp.dll")
+    const targetProxyFileName = path.join(
+      await fs.promises.realpath(path.join(path.dirname(settings.GameBinaryPath))),
+      "winhttp.dll",
+    )
 
     if (!fs.existsSync(targetProxyFileName)) {
       return false
@@ -244,7 +263,9 @@ export class LauncherService {
       append = "\n" + contents.split("\n").slice(1).join("\n")
     }
 
-    await fs.promises.writeFile(getClientUserDataPath(".newgameseedsource"), seedSource.trim() + append, {encoding: "utf-8"})
+    await fs.promises.writeFile(getClientUserDataPath(".newgameseedsource"), seedSource.trim() + append, {
+      encoding: "utf-8",
+    })
     this.events.emit("newGameSeedSourceChanged", seedSource)
   }
 
@@ -252,7 +273,13 @@ export class LauncherService {
    * Gets the seed source for new games. (aka reads from .newgameseedsource)
    */
   static async getNewGameSeedSource() {
-    const contents = await fs.promises.readFile(getClientUserDataPath(".newgameseedsource"), {encoding: "utf-8"})
+    const path = getClientUserDataPath(".newgameseedsource")
+
+    if (!fs.existsSync(path)) {
+      return ""
+    }
+
+    const contents = await fs.promises.readFile(path, {encoding: "utf-8"})
     return contents.split("\n")[0].trim()
   }
 
@@ -293,7 +320,7 @@ export class LauncherService {
       await RandoIPCService.emit("load_new_game_source")
 
       if (this.getPlatform() === "windows") {
-        (await import("focus-ori")).focusOri()
+        ;(await import("focus-ori")).focusOri()
       }
 
       return {launchedSuccessfully: true}
@@ -325,7 +352,12 @@ export class LauncherService {
     if (settings.ModloaderMethod === "inject") {
       const injectorPathWithWindowsSlashes = getInstallDataPath("client/Injector.exe").replaceAll("/", "\\")
 
-      const startArguments = ["-FilePath", injectorPathWithWindowsSlashes, "-ArgumentList", `"-i",\`"${getInstallDataPath()}\`","-u",\`"${getUserDataPath()}\`"`]
+      const startArguments = [
+        "-FilePath",
+        injectorPathWithWindowsSlashes,
+        "-ArgumentList",
+        `"-i",\`"${getInstallDataPath()}\`","-u",\`"${getUserDataPath()}\`"`,
+      ]
       if (!settings.DeveloperMode) {
         startArguments.push("-WindowStyle", "Hidden")
       }
@@ -384,7 +416,8 @@ export class LauncherService {
 
               await fs.promises.cp(
                 path.join(process.env.WOTW_RANDOMIZER_APPIMAGE_ROOT, "opt/dxvk/x64"),
-                path.join(wineprefixLocation, "drive_c/windows/system32"), {
+                path.join(wineprefixLocation, "drive_c/windows/system32"),
+                {
                   force: true,
                   recursive: true,
                 },

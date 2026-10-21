@@ -48,7 +48,7 @@
           <span> You ran out of space in your multiverse. </span>
         </v-tooltip>
       </div>
-      <slot name="additional-buttons"/>
+      <slot name="additional-buttons" />
     </div>
   </div>
 </template>
@@ -63,10 +63,10 @@
     preview?: boolean,
     multiverse: MultiverseInfo,
     raceStartingAt?: number | null,
-    playerInGameTimes?: { [key: number]: number },
-    playerFinishedTimes?: { [key: number]: number },
-    worldFinishedTimes?: { [key: number]: number },
-    universeFinishedTimes?: { [key: number]: number },
+    playerInGameTimes?: {[key: number]: number},
+    playerFinishedTimes?: {[key: number]: number},
+    worldFinishedTimes?: {[key: number]: number},
+    universeFinishedTimes?: {[key: number]: number},
     showSpectatorNotice?: boolean,
   }>(), {
     preview: false,
@@ -106,13 +106,13 @@
       Object.entries(props.universeFinishedTimes)
         .filter(([, time]) => time !== 0.0)
         .sort(([, aTime], [, bTime]) => aTime - bTime)
-        .map((entry, index) => [entry[0], index + 1])
+        .map((entry, index) => [entry[0], index + 1]),
     )
 
     return Object.fromEntries(
       Object.entries(props.universeFinishedTimes)
         .sort(([, aTime], [, bTime]) => aTime - bTime)
-        .map((entry) => [/** universe id → */ entry[0], entry[1] !== 0.0 ? universePlaces[entry[0]] : 'F'])
+        .map((entry) => [/** universe id → */ entry[0], entry[1] !== 0.0 ? universePlaces[entry[0]] : "F"]),
     )
   })
 

@@ -1,5 +1,6 @@
 <template>
-  <v-card v-if="large" class="pa-3 d-flex align-center" :color="color" :variant="variant" :disabled="isDisabled" @click="emit('click')">
+  <v-card v-if="large" class="pa-3 d-flex align-center" :color="color" :variant="variant" :disabled="isDisabled"
+          @click="emit('click')">
     <div class="flex-grow-1">
       <div class="d-flex align-center ga-3">
         <v-icon v-if="icon !== null">{{ icon }}</v-icon>
@@ -50,7 +51,7 @@
 </template>
 
 <script lang="ts" setup>
-  import type {PresetInfo} from '@shared/types/seedgen'
+  import type {PresetInfo} from "@shared/types/seedgen"
 
   const {
     presetInfo = null,

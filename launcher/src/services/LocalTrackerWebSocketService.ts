@@ -1,12 +1,13 @@
-import {AddressInfo, WebSocket, WebSocketServer} from "ws"
-import type {UberId, UberState} from "@shared/types/UberStates"
+import {EventEmitter} from "events"
+
 import {RandoIPCService} from "@launcher/services/RandoIPCService"
+import {UpdateService} from "@launcher/services/UpdateService"
+import {TRACKED_UBER_STATES, TrackedUberState} from "@shared/itemTracker/trackedUberStates"
 import {Proto} from "@shared/proto"
 import {decodePacket, makePacket} from "@shared/proto/ProtoUtil"
-import {UpdateService} from "@launcher/services/UpdateService"
-import {EventEmitter} from "events"
+import type {UberId, UberState} from "@shared/types/UberStates"
 import log from "electron-log/main"
-import {TRACKED_UBER_STATES, TrackedUberState} from "@shared/itemTracker/trackedUberStates"
+import {AddressInfo, WebSocket, WebSocketServer} from "ws"
 
 type TrackedUberStatesLookupTable = {
   [uberHash: string]: TrackedUberState
@@ -14,7 +15,7 @@ type TrackedUberStatesLookupTable = {
 
 type LocalTrackerWebSocketEvent = {
   /** Emitted when the local tracker WebSocket server is started or stopped. true = started */
-  serverStateChanged: [boolean],
+  serverStateChanged: [boolean]
 }
 
 export class LocalTrackerWebSocketService {
@@ -114,10 +115,10 @@ export class LocalTrackerWebSocketService {
       in_game_time: inGameTime,
       async_loading_time: asyncLoadingTime,
       timer_should_run: timerShouldRun,
-    } = await RandoIPCService.request("timer.get_timer_state") as {
-      in_game_time: number,
-      async_loading_time: number,
-      timer_should_run: boolean,
+    } = (await RandoIPCService.request("timer.get_timer_state")) as {
+      in_game_time: number
+      async_loading_time: number
+      timer_should_run: boolean
     }
     this.reportTimerState(inGameTime, asyncLoadingTime, timerShouldRun)
   }
@@ -131,10 +132,10 @@ export class LocalTrackerWebSocketService {
       in_game_time: inGameTime,
       async_loading_time: asyncLoadingTime,
       timer_should_run: timerShouldRun,
-    } = await RandoIPCService.request("timer.get_timer_state") as {
-      in_game_time: number,
-      async_loading_time: number,
-      timer_should_run: boolean,
+    } = (await RandoIPCService.request("timer.get_timer_state")) as {
+      in_game_time: number
+      async_loading_time: number
+      timer_should_run: boolean
     }
     this.reportTimerStateToClient(client, inGameTime, asyncLoadingTime, timerShouldRun)
   }
@@ -149,7 +150,12 @@ export class LocalTrackerWebSocketService {
     }
   }
 
-  static reportTimerStateToClient(client: WebSocket, inGameTime: number, asyncLoadingTime: number, timerShouldRun: boolean) {
+  static reportTimerStateToClient(
+    client: WebSocket,
+    inGameTime: number,
+    asyncLoadingTime: number,
+    timerShouldRun: boolean,
+  ) {
     client.send(
       makePacket(Proto.TrackerTimerStateUpdate, {
         inGameTime,
@@ -195,13 +201,13 @@ export class LocalTrackerWebSocketService {
     }
 
     const trackedValues = await RandoIPCService.getUberStates(TRACKED_UBER_STATES.map((s) => s.uberId))
-    const trackerUpdates: Proto.TrackerUpdate[] = trackedValues.map(
-      (value, index) => ({
-        $type: "Proto.TrackerUpdate",
-        id: TRACKED_UBER_STATES[index].trackingId,
-        value: TRACKED_UBER_STATES[index].valueConverter ? TRACKED_UBER_STATES[index].valueConverter?.(value) ?? value : value,
-      }),
-    )
+    const trackerUpdates: Proto.TrackerUpdate[] = trackedValues.map((value, index) => ({
+      $type: "Proto.TrackerUpdate",
+      id: TRACKED_UBER_STATES[index].trackingId,
+      value: TRACKED_UBER_STATES[index].valueConverter
+        ? (TRACKED_UBER_STATES[index].valueConverter?.(value) ?? value)
+        : value,
+    }))
 
     for (const update of trackerUpdates) {
       client.send(makePacket(Proto.TrackerUpdate, update))
@@ -281,7 +287,11 @@ export class LocalTrackerWebSocketService {
 
         ws.on("close", (code, reason) => {
           if (this.ws) {
-            log.info("LocalTrackerWebSocketService: Client socket closed, reconnecting in 4s...", code, reason.toString())
+            log.info(
+              "LocalTrackerWebSocketService: Client socket closed, reconnecting in 4s...",
+              code,
+              reason.toString(),
+            )
             setTimeout(() => connect(true), 4000)
           }
         })
@@ -305,9 +315,12 @@ export class LocalTrackerWebSocketService {
   }
 
   private static async subscribeToUberStates() {
-    await RandoIPCService.emit("subscribe_uber_states", TRACKED_UBER_STATES.map(trackedUberState => ({
-      group: trackedUberState.uberId.group,
-      state: trackedUberState.uberId.state,
-    })))
+    await RandoIPCService.emit(
+      "subscribe_uber_states",
+      TRACKED_UBER_STATES.map((trackedUberState) => ({
+        group: trackedUberState.uberId.group,
+        state: trackedUberState.uberId.state,
+      })),
+    )
   }
 }

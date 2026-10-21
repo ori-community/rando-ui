@@ -28,17 +28,17 @@
 </template>
 
 <script lang="ts" setup>
-  import {ref} from "vue";
-  import type Konva from "konva";
-  import {Group as KGroup} from 'vue-konva'
-  import type {NodeTransform} from "~/assets/utils/mapHelper";
+  import {ref} from "vue"
+  import type Konva from "konva"
+  import {Group as KGroup} from "vue-konva"
+  import type {NodeTransform} from "~/assets/utils/mapHelper"
 
-  const layerRef = ref<{ getNode: () => Konva.Layer } | null>(null)
+  const layerRef = ref<{getNode: () => Konva.Layer} | null>(null)
   const mapTransform = ref<NodeTransform>()
 
   // temp display until seedgen data is available
   const teleporterImage = ref<HTMLImageElement | null>(null)
-  const images = import.meta.glob('@shared/images/map/*', {eager: true})
+  const images = import.meta.glob("@shared/images/map/*", {eager: true})
   const teleporters: {
     x: number,
     y: number,
@@ -66,7 +66,7 @@
   ]
 
   const displayedTeleporters = computed(() => {
-    const tps: { x: number, y: number, name: string, image: HTMLImageElement | null }[] = []
+    const tps: {x: number, y: number, name: string, image: HTMLImageElement | null}[] = []
     teleporters.forEach(({x, y, name}) => {
       tps.push({x, y, name, image: teleporterImage.value})
     })
@@ -85,13 +85,13 @@
 
       const image = new Image()
       const fileEntry = Object.entries(images).find(([path]) =>
-        path.endsWith(imageName)
+        path.endsWith(imageName),
       )
       if (!fileEntry) {
         resolve(null)
         return
       }
-      image.src = (fileEntry![1] as { default: string }).default
+      image.src = (fileEntry![1] as {default: string}).default
       image.onload = () => {
         resolve(image)
       }

@@ -2,17 +2,17 @@
   <div class="universe-view-container">
     <v-fab-transition>
       <div v-if="rank !== null" class="badge-container">
-        <rando-place-badge class="badge" :place="rank"/>
+        <rando-place-badge class="badge" :place="rank" />
       </div>
     </v-fab-transition>
     <v-card class="universe-view">
-      <v-sheet v-if="!hideColor" :color="universe.color" height="0.5em"/>
+      <v-sheet v-if="!hideColor" :color="universe.color" height="0.5em" />
       <v-card-title class="card-title">
         <div>
           {{ universe.name }}
-          <rando-copyable-info v-if="devtoolsEnabled" :value="universe.id.toString()"/>
+          <rando-copyable-info v-if="devtoolsEnabled" :value="universe.id.toString()" />
           <span v-if="finishedAt !== null" class="finished-time" :class="{forfeited: finishedAt === 0.0}">{{
-              finishedAt !== 0.0 ? formatTime(finishedAt) : 'DNF'
+              finishedAt !== 0.0 ? formatTime(finishedAt) : "DNF"
             }}</span>
         </div>
       </v-card-title>
@@ -64,13 +64,13 @@
     hideColor?: boolean,
     isSpectating?: boolean,
     rank?: number | string | null,
-    playerFinishedTimes?: { [key: number]: number },
-    playerInGameTimes?: { [key: number]: number },
+    playerFinishedTimes?: {[key: number]: number},
+    playerInGameTimes?: {[key: number]: number},
     raceReadyUserIds?: string[],
     raceStartingAt?: number | null,
     seedSpoilerDownloadedByIds?: string[],
     universe: UniverseInfo,
-    worldFinishedTimes?: { [key: number]: number },
+    worldFinishedTimes?: {[key: number]: number},
   }>(), {
     canCreateWorld: true,
     canJoin: true,

@@ -6,7 +6,7 @@ export const gameLaunchMethodsMetadata: {
   [key in Settings["GameLaunchMethod"]]: {
     name: string,
     descriptionComponent: (platform?: Platform) => JSX.Element,
-    alerts?: {[platform in Platform]?: JSX.Element}
+    alerts?: { [platform in Platform]?: JSX.Element }
   }
 } = {
   "steam": {
@@ -14,7 +14,7 @@ export const gameLaunchMethodsMetadata: {
     descriptionComponent: (platform) => {
       switch (platform) {
         case "windows":
-          return <span><strong><em>Recommended if you have the game on Steam.</em></strong> Launch the game through Steam.</span>;
+          return <span><strong><em>Recommended if you have the game on Steam.</em></strong> Launch the game through Steam.</span>
         case "linux":
         case "other":
         default:
@@ -35,8 +35,14 @@ export const gameLaunchMethodsMetadata: {
           <ol>
             <li>Start the vanilla game at least once</li>
             <li>Right-click the game in Steam and go to Properties → General</li>
-            <li>Set Launch Options to <code class="bg-warning-lighten-1 pa-1">WINEDLLOVERRIDES=winhttp.dll=n,b %command%</code></li>
-            <li>Install the required runtime dependencies using Protontricks: <code class="bg-warning-lighten-1 pa-1">protontricks 1057090 vcrun2022</code></li>
+            <li>
+              Set Launch Options to <code class="bg-warning-lighten-1 pa-1">WINEDLLOVERRIDES=winhttp.dll=n,b
+              %command%</code>
+            </li>
+            <li>
+              Install the required runtime dependencies using Protontricks: <code class="bg-warning-lighten-1 pa-1">protontricks
+              1057090 vcrun2022</code>
+            </li>
           </ol>
         </div>
         <div class="mt-3">
@@ -44,20 +50,22 @@ export const gameLaunchMethodsMetadata: {
           <ul>
             <li>Check that you are using the latest version of Proton available</li>
             <li>
-              If you have started the game before, you might need to delete its Proton Prefix. For that, delete the directory
-              <code class="bg-warning-lighten-1 pa-1">&lt;Steam Root&gt;/steamapps/compatdata/1057090</code> and try again.
+              If you have started the game before, you might need to delete its Proton Prefix. For that, delete the
+              directory
+              <code class="bg-warning-lighten-1 pa-1">&lt;Steam Root&gt;/steamapps/compatdata/1057090</code> and try
+              again.
             </li>
           </ul>
         </div>
-      </div>
-    }
+      </div>,
+    },
   },
   "standalone": {
     name: "Standalone",
     descriptionComponent: (platform) => {
       switch (platform) {
         case "windows":
-          return <span>Launch the game binary directly. Use this if you want to launch the game directly.</span>;
+          return <span>Launch the game binary directly. Use this if you want to launch the game directly.</span>
         case "linux":
         case "other":
         default:

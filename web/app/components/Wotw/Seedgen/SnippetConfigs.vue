@@ -10,8 +10,8 @@
 </template>
 
 <script lang="ts" setup>
-  import type {HashMapStringConfigArg, HashMapStringHashMapStringString} from '@shared/types/seedgen'
-  import {useVModel} from '@vueuse/core'
+  import type {HashMapStringConfigArg, HashMapStringHashMapStringString} from "@shared/types/seedgen"
+  import {useVModel} from "@vueuse/core"
 
   const props = defineProps<{
     snippetIdentifier: string,
@@ -20,10 +20,10 @@
   }>()
 
   const emit = defineEmits<{
-    'update:worldSnippetConfig': [HashMapStringHashMapStringString],
+    "update:worldSnippetConfig": [HashMapStringHashMapStringString],
   }>()
 
-  const worldSnippetConfigModel = useVModel(props, 'worldSnippetConfig', emit)
+  const worldSnippetConfigModel = useVModel(props, "worldSnippetConfig", emit)
 </script>
 
 <style lang="scss" scoped>

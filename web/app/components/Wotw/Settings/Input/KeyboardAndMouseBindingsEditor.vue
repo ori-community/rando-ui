@@ -4,7 +4,8 @@
       Press keys for <strong>{{ gameActionMetadata[action].name }}</strong>...
     </div>
 
-    <v-card flat variant="tonal" color="blue" class="pa-4 mb-3 mouse-target" @mousedown="onMouseDown" @mouseup="onMouseUp">
+    <v-card flat variant="tonal" color="blue" class="pa-4 mb-3 mouse-target" @mousedown="onMouseDown"
+            @mouseup="onMouseUp">
       <v-icon>mdi-cursor-default-click-outline</v-icon>
       Click here for mouse inputs
     </v-card>

@@ -26,7 +26,8 @@
           prepend-inner-icon="mdi-routes"
         />
 
-        <v-card variant="tonal" class="justify-start activated-opacity-input-field" block size="xl" @click="gameDifficultiesDialogOpen = true">
+        <v-card variant="tonal" class="justify-start activated-opacity-input-field" block size="xl"
+                @click="gameDifficultiesDialogOpen = true">
           <div class="pa-3 d-flex align-center justify-start text-left ga-1">
             <v-icon class="flex-shrink-0 opacity-70">mdi-gauge</v-icon>
             <div class="pl-1 flex-grow-1">
@@ -41,7 +42,8 @@
             <v-icon class="opacity-70">mdi-chevron-right</v-icon>
           </div>
         </v-card>
-        <v-dialog v-model="gameDifficultiesDialogOpen" max-width="750" :persistent="selectedDifficultyNames.length === 0">
+        <v-dialog v-model="gameDifficultiesDialogOpen" max-width="750"
+                  :persistent="selectedDifficultyNames.length === 0">
           <v-card title="Game Difficulties">
             <v-card-text>
               Select at least one difficulty the generated seed should be playable on.
@@ -66,7 +68,9 @@
                 <template #label>
                   <div>
                     <div>Hard</div>
-                    <div class="text-label-large opacity-70">Hit damage is doubled, enemies have more health. Stronger enemies spawn in some places.</div>
+                    <div class="text-label-large opacity-70">Hit damage is doubled, enemies have more health. Stronger
+                      enemies spawn in some places.
+                    </div>
                   </div>
                 </template>
               </v-switch>
@@ -75,12 +79,15 @@
                 <template #label>
                   <div>
                     <div>Enforce selected Difficulties</div>
-                    <div class="text-label-large opacity-70">Restricts selectable difficulties to the ones above in the game's main menu</div>
+                    <div class="text-label-large opacity-70">Restricts selectable difficulties to the ones above in the
+                      game's main menu
+                    </div>
                   </div>
                 </template>
               </v-switch>
             </v-card-text>
-            <v-btn :disabled="selectedDifficultyNames.length === 0" class="close-button" icon variant="plain" @click="gameDifficultiesDialogOpen = false">
+            <v-btn :disabled="selectedDifficultyNames.length === 0" class="close-button" icon variant="plain"
+                   @click="gameDifficultiesDialogOpen = false">
               <v-icon>mdi-close</v-icon>
             </v-btn>
           </v-card>
@@ -141,8 +148,12 @@
           Do you want to deselect these tricks?
         </v-card-text>
         <div class="ma-3 d-flex justify-end gap-4">
-          <v-btn prepend-icon="mdi-close" variant="tonal" @click="tricksInvalidBecauseOfDifficultyChangeDialogOpen = false">Cancel</v-btn>
-          <v-btn prepend-icon="mdi-checkbox-blank-off-outline" color="error" flat @click="cleanInvalidTricks()">Deselect {{ invalidSelectedTricks.size }} Trick{{ invalidSelectedTricks.size === 1 ? '' : 's' }}</v-btn>
+          <v-btn prepend-icon="mdi-close" variant="tonal"
+                 @click="tricksInvalidBecauseOfDifficultyChangeDialogOpen = false">Cancel
+          </v-btn>
+          <v-btn prepend-icon="mdi-checkbox-blank-off-outline" color="error" flat @click="cleanInvalidTricks()">Deselect
+            {{ invalidSelectedTricks.size }} Trick{{ invalidSelectedTricks.size === 1 ? "" : "s" }}
+          </v-btn>
         </div>
       </v-card>
     </v-dialog>
@@ -197,12 +208,18 @@
 
             <v-menu activator="parent" location="top end" :persistent="presetIdApplying !== null">
               <v-list>
-                <v-list-item v-for="presetId in Object.keys(nonBasePresets)" :key="presetId" :disabled="presetIdApplying !== null" @click="applyPreset(presetId)">
+                <v-list-item v-for="presetId in Object.keys(nonBasePresets)" :key="presetId"
+                             :disabled="presetIdApplying !== null" @click="applyPreset(presetId)">
                   <div class="d-flex align-center ga-3">
                     <v-icon>mdi-import</v-icon>
                     <div>
-                      <v-list-item-title>{{ nonBasePresets[presetId]?.content.info?.name ?? presetId }}</v-list-item-title>
-                      <v-list-item-subtitle v-if="!!nonBasePresets[presetId]?.content.info?.description">{{ nonBasePresets[presetId].content.info.description }}</v-list-item-subtitle>
+                      <v-list-item-title>{{
+                          nonBasePresets[presetId]?.content.info?.name ?? presetId
+                        }}
+                      </v-list-item-title>
+                      <v-list-item-subtitle v-if="!!nonBasePresets[presetId]?.content.info?.description">
+                        {{ nonBasePresets[presetId].content.info.description }}
+                      </v-list-item-subtitle>
                     </div>
                   </div>
                 </v-list-item>
@@ -237,7 +254,7 @@
 </template>
 
 <script lang="ts" setup>
-  import {useVModel} from '@vueuse/core'
+  import {useVModel} from "@vueuse/core"
   import type {
     Difficulty,
     DifficultyInfo,
@@ -281,7 +298,7 @@
   const presetIdApplying = ref<string | null>(null)
   const seedgenAxios = useSeedgenAxios()
   const nonBasePresets = computed(() => Object.fromEntries(
-    Object.entries(props.worldPresets).filter(p => !p[1].content.info || p[1].content.info.group !== "Base")
+    Object.entries(props.worldPresets).filter(p => !p[1].content.info || p[1].content.info.group !== "Base"),
   ))
 
   const isElectron = useIsElectron()
@@ -297,7 +314,7 @@
     () => Object.fromEntries(
       Object.entries(props.snippetsInfo)
         .filter(([, e]) => e.status === "Ok")
-        .map(([k, v]) => [k, v.value])) as ValidSnippetsInfos
+        .map(([k, v]) => [k, v.value])) as ValidSnippetsInfos,
   )
   const visibleSnippetsInfo = computed(() => Object.fromEntries(Object.entries(validSnippetsInfo.value).filter(([, e]) => !e.metadata.hidden)))
   const categorizedSnippetsInfo = computed(() => {
@@ -373,8 +390,8 @@
     ...teleporterAnchorNames.value.map(anchorName => ({
       title: anchorName,
       value: {Set: anchorName},
-      props: {prependIcon: "mdi-map-marker-outline"}
-    }))
+      props: {prependIcon: "mdi-map-marker-outline"},
+    })),
   ]))
 
   const availableDifficultyListItems = computed(() => props.difficulties.map(difficultyInfo => ({
@@ -386,7 +403,7 @@
   })))
 
   const difficultyOrderByName = computed(() => {
-    const difficultyOrderByName: {[key in Difficulty]?: number} = {}
+    const difficultyOrderByName: { [key in Difficulty]?: number } = {}
 
     props.difficulties.forEach((difficultyInfo, index) => {
       difficultyOrderByName[difficultyInfo.name] = index
@@ -396,7 +413,7 @@
   })
 
   const trickByName = computed(() => {
-    const trickByName: {[key in Trick]?: TrickInfo} = {}
+    const trickByName: { [key in Trick]?: TrickInfo } = {}
 
     for (const trickInfo of props.tricks) {
       trickByName[trickInfo.name] = trickInfo
@@ -491,7 +508,7 @@
     },
     set(value) {
       model.value.randomizeEntrances = value ? 2 : null
-    }
+    },
   })
 
   const allAvailableTricksSelected = computed(() => {
@@ -572,7 +589,7 @@
     presetIdApplying.value = presetId
 
     try {
-      const {data}: { data: WorldSettings } = await seedgenAxios.post("/presets/world/apply", {
+      const {data}: {data: WorldSettings} = await seedgenAxios.post("/presets/world/apply", {
         presets: [preset.content],
         settings: model.value,
       })

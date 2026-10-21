@@ -37,7 +37,7 @@ export const useLauncherHelper = (): LauncherHelper => {
     }
 
     const launch = async (newGameSeedSource: string | undefined = undefined): Promise<LaunchResult> => {
-      const launchWrapper = async(): Promise<LaunchResult> => {
+      const launchWrapper = async (): Promise<LaunchResult> => {
         if (!electronApi) {
           return {
             launchedSuccessfully: false,

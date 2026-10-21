@@ -19,18 +19,18 @@
             :config="groupConfig"
           >
             <!-- invisible rect for dragging -->
-            <k-rect :x="-5000" :y="-8000" :width="11000" :height="8000"/>
+            <k-rect :x="-5000" :y="-8000" :width="11000" :height="8000" />
 
             <k-image
               v-for="(tile, index) in mapTiles"
               :key="index"
               :config="tile"
             />
-            <slot/>
+            <slot />
           </k-group>
         </k-layer>
         <div>
-          <slot name="overlay"/>
+          <slot name="overlay" />
         </div>
       </k-stage>
     </div>
@@ -38,21 +38,21 @@
 </template>
 
 <script lang="ts" setup>
-  import {ref, onMounted} from 'vue'
+  import {ref, onMounted} from "vue"
   import Konva from "konva"
   import {Stage as KStage, Group as KGroup, Layer as KLayer, Image as KImage, Rect as KRect} from "vue-konva"
   import {type NodeTransform, GetMapTransform} from "~/assets/utils/mapHelper"
 
-  const stageRef = ref<{ getNode: () => Konva.Stage } | null>(null)
-  const layerRef = ref<{ getNode: () => Konva.Layer } | null>(null)
-  const groupRef = ref<{ getNode: () => Konva.Group } | null>(null)
+  const stageRef = ref<{getNode: () => Konva.Stage} | null>(null)
+  const layerRef = ref<{getNode: () => Konva.Layer} | null>(null)
+  const groupRef = ref<{getNode: () => Konva.Group} | null>(null)
   const imageNode = ref(null)
 
   const containerRef = ref<HTMLElement | null>(null)
   const mapTiles = ref<Konva.ImageConfig[]>([])
   const emit = defineEmits<{
-    (e: 'mouseclick' | 'mousemove', event: MouseEvent, point: Konva.Vector2d): void,
-    (e: 'transformChanged', transform: NodeTransform): void,
+    (e: "mouseclick" | "mousemove", event: MouseEvent, point: Konva.Vector2d): void,
+    (e: "transformChanged", transform: NodeTransform): void,
   }>()
 
   withDefaults(defineProps<{
@@ -86,10 +86,10 @@
     }
   })
 
-  const images = import.meta.glob('@shared/images/map/tiles/tile-*.png', {eager: true})
+  const images = import.meta.glob("@shared/images/map/tiles/tile-*.png", {eager: true})
   onMounted(() => {
     updateStageSize()
-    window.addEventListener('resize', updateStageSize)
+    window.addEventListener("resize", updateStageSize)
 
     for (let x = 0; x < constants.value.tilesX; x++) {
       for (let y = 0; y < constants.value.tilesY; y++) {
@@ -99,8 +99,8 @@
   })
 
   onBeforeUnmount(() => {
-    window.removeEventListener('resize', updateStageSize)
-  });
+    window.removeEventListener("resize", updateStageSize)
+  })
 
   const updateStageSize = (() => {
     if (!containerRef.value) {
@@ -125,7 +125,7 @@
         width: stageConfig.value.width,
       }
     }
-    emit('transformChanged', transform)
+    emit("transformChanged", transform)
   })
 
   const onStageWheel = ((e: WheelEvent) => {
@@ -205,12 +205,12 @@
   const getImage = (async (x: number, y: number): Promise<HTMLImageElement | null> => {
     const image = new Image()
     const fileEntry = Object.entries(images).find(([path]) =>
-      path.endsWith(`tile-${x}_${y}.png`)
+      path.endsWith(`tile-${x}_${y}.png`),
     )
     if (!fileEntry) {
       return null
     }
-    image.src = (fileEntry![1] as { default: string }).default
+    image.src = (fileEntry![1] as {default: string}).default
     return await new Promise((resolve) => {
       image.onload = () => {
         resolve(image)

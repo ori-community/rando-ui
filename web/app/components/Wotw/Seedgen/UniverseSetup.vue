@@ -36,7 +36,7 @@
     </wotw-seedgen-preset-button>
   </template>
 
-  <v-menu v-model="presetContextMenuOpen" :target="[presetContextMenuX, presetContextMenuY]" >
+  <v-menu v-model="presetContextMenuOpen" :target="[presetContextMenuX, presetContextMenuY]">
     <v-list>
       <v-list-item @click="deleteUserPreset(presetContextMenuPresetId)">
         <v-icon start>mdi-delete-outline</v-icon>

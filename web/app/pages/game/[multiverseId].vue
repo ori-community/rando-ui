@@ -45,7 +45,7 @@
               Forfeit
             </v-btn>
 
-            <v-btn v-if="canDownloadSpoiler" variant="text" @click="downloadSpoilerDialogOpen = true">
+            <v-btn v-if="canDownloadSpoiler" variant="text" @click="requestingSpoiler">
               <v-icon start>mdi-eye-outline</v-icon>
               View Spoiler
             </v-btn>
@@ -78,16 +78,16 @@
                   :world-finished-times="normalGameHandlerState?.worldFinishedTimes"
                   :universe-finished-times="normalGameHandlerState?.universeFinishedTimes"
                 />
-                <wotw-multiverse-race-result-view v-if="!!multiverse.race" :race="multiverse.race" />
+                <wotw-multiverse-race-result-view v-if="!!multiverse.race" :race="multiverse.race"/>
               </div>
 
               <div v-if="devtoolsEnabled" class="mt-5">
                 <v-card class="pa-4">
                   <h3>Dispatch custom event</h3>
-                  <v-text-field v-model="devDebugEventName" label="Event" />
+                  <v-text-field v-model="devDebugEventName" label="Event"/>
 
                   <div class="d-flex">
-                    <v-spacer />
+                    <v-spacer/>
                     <v-btn variant="flat" color="accent" @click="dispatchDebugEvent">Dispatch</v-btn>
                   </div>
                 </v-card>
@@ -137,7 +137,7 @@
         </div>
         <div class="d-flex justify-end mt-4">
           <v-btn :disabled="downloadSpoilerLoading" class="mr-1" variant="text"
-                 @click="downloadSpoilerDialogOpen = false">
+                 @click="requestingSpoiler">
             Cancel
           </v-btn>
           <v-btn :loading="downloadSpoilerLoading" color="error" variant="flat" @click="downloadSpoiler">
@@ -148,23 +148,11 @@
     </v-dialog>
 
     <v-dialog v-model="viewSpoilerDialogOpen" transition="dialog-bottom-transition" fullscreen>
-      <v-sheet v-if="hasSeed" class="fill-height d-flex flex-column">
-        <v-toolbar color="secondary">
-          <v-toolbar-title>Spoiler</v-toolbar-title>
-          <div class="ml-3">
-            <rando-discord-avatar
-              v-for="user in multiverse.seedSpoilerDownloadedBy"
-              :key="user.id"
-              v-tooltip="user.name"
-              :user="user"
-            />
-          </div>
-          <v-btn icon @click="viewSpoilerDialogOpen = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-toolbar>
-        <div class="spoiler-text pa-3">{{ spoilerText }}</div>
-      </v-sheet>
+      <wotw-seedgen-spoiler-view
+        :spoiler-content="spoilerText"
+        :viewed-by="multiverse.seedSpoilerDownloadedBy"
+        @close="viewSpoilerDialogOpen = false"
+      />
     </v-dialog>
   </div>
 </template>
@@ -388,6 +376,15 @@
     forfeitDialogOpen.value = false
   }
 
+  function requestingSpoiler() {
+    // if user already accepted the consequences, just reopen the spoiler
+    if (userStore.isLoggedIn && userStore.user?.id && multiverse.value.seedSpoilerDownloadedBy.map(u => u.id).includes(userStore.user.id)) {
+      downloadSpoiler()
+    } else {
+      downloadSpoilerDialogOpen.value = true
+    }
+  }
+
   async function downloadSpoiler() {
     downloadSpoilerLoading.value = true
     spoilerText.value = (await axios.get(`/seeds/${multiverse.value.seedId}/spoiler`, {
@@ -482,12 +479,5 @@
       opacity: 0.4;
       filter: grayscale(1);
     }
-  }
-
-  .spoiler-text {
-    font-family: Consolas, 'Fira Code', monospace;
-    overflow-y: scroll;
-    flex-grow: 1;
-    white-space: pre;
   }
 </style>

@@ -17,6 +17,10 @@ export default defineNuxtConfig({
     head: {},
   },
 
+  nitro: {
+    compressPublicAssets: import.meta.env.NUXT_COMPRESS_ASSETS === "true",
+  },
+
   vuetify: {
     moduleOptions: {
       styles: {
@@ -40,7 +44,6 @@ export default defineNuxtConfig({
 
   hooks: {
     "nitro:config": nitroConfig => {
-      nitroConfig.compressPublicAssets = true
       nitroConfig.publicAssets ||= []
       nitroConfig.publicAssets.push({
         dir: resolve(__dirname, "node_modules/@ori-community/wotw-map/dist"),
@@ -50,7 +53,7 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ["@nuxt/eslint", "@pinia/nuxt", "vuetify-nuxt-module"],
+  modules: ["@baptistecrouzet/nuxt-oxlint", "@pinia/nuxt", "vuetify-nuxt-module"],
 
   compatibilityDate: "2024-07-28",
 })

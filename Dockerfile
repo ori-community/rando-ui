@@ -9,7 +9,7 @@ RUN cd /build/shared && \
     npm ci && \
     cd /build/web && \
     npm ci && \
-    npm run build
+    NUXT_COMPRESS_ASSETS=true npm run build
 
 
 FROM node:lts-alpine

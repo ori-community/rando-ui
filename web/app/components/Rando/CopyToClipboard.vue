@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts" setup>
-  import type {Anchor} from "vuetify/lib/util"
+  import type {Anchor} from "vuetify/framework"
 
   const props = withDefaults(defineProps<{
       value: string,

@@ -106,14 +106,14 @@ export class UpdateService {
       })
       app.quit()
     } else if (os.platform() === "linux") {
-      const appimagePath = process.env.APPIMAGE
+      const appImagePath = process.env.APPIMAGE
 
-      if (typeof appimagePath === "string") {
+      if (typeof appImagePath === "string") {
         // Linux AppImage
         const temporaryPath = getTemporaryUserDataPath("randomizer_update.AppImage")
 
-        if (!fs.existsSync(appimagePath)) {
-          log.error(`UpdateService: File at APPIMAGE (${appimagePath}) does not exist, aborting`)
+        if (!fs.existsSync(appImagePath)) {
+          log.error(`UpdateService: File at APPIMAGE (${appImagePath}) does not exist, aborting`)
           this.isUpdating = false
           this.throttledEmitUpdateDownloadProgress()
           return
@@ -124,11 +124,29 @@ export class UpdateService {
         app.on("quit", async () => {
           await SeedgenServerService.kill()
 
-          log.info(`UpdateService: Replacing AppImage at '${appimagePath}'`)
-          await fs.promises.copyFile(temporaryPath, appimagePath)
-          await fs.promises.chmod(appimagePath, 0o755)
+          log.info(`UpdateService: Replacing AppImage at '${appImagePath}'`)
 
-          spawn(appimagePath, [], {
+          const updateScriptPath = getTemporaryUserDataPath("wotw-randomizer-update.sh")
+
+          const escapedTemporaryPath = temporaryPath.replaceAll("\"", "\\\"")
+          const escapedAppImagePath = appImagePath.replaceAll("\"", "\\\"")
+
+          await fs.promises.writeFile(updateScriptPath, [
+            "#!/usr/bin/env sh",
+            "tries=0",
+            "while true; do",
+            "  if [ $tries -gt 5 ]; then",
+            "    exit 1;",
+            "  fi",
+            `  cp -f "${escapedTemporaryPath}" "${escapedAppImagePath}" && break`,
+            "  tries=$(expr $tries + 1)",
+            "  sleep 3",
+            "done",
+            `chmod +x "${escapedAppImagePath}"`,
+            `exec "${escapedAppImagePath}"`,
+          ].join("\n"), {encoding: "utf8"})
+
+          spawn("sh", [updateScriptPath], {
             detached: true,
             stdio: "ignore",
           }).unref()

@@ -129,7 +129,11 @@ export class SettingsService {
     this.settingsCache = {...settingsObject}
 
     const currentVersion = await UpdateService.getVersion()
-    if (settingsObject.LastUsedVersion !== currentVersion && currentVersion !== "develop") {
+    if (
+      settingsObject.LastUsedVersion !== currentVersion &&
+      settingsObject.LastUsedVersion !== "develop" &&
+      currentVersion !== "develop"
+    ) {
       log.info(`Migrating from ${settingsObject.LastUsedVersion} to ${currentVersion}`)
 
       // Run migrations here...
@@ -161,6 +165,10 @@ export class SettingsService {
       await this.loadSettingsToCache()
     }
 
+    if (this.settingsCache === null) {
+      throw new Error("Failed to load settings")
+    }
+
     return {...this.settingsCache}
   }
 
@@ -173,6 +181,10 @@ export class SettingsService {
   public async setSetting<K extends SettingKey>(key: K, value: Settings[K]) {
     if (this.settingsCache === null) {
       await this.loadSettingsToCache()
+    }
+
+    if (this.settingsCache === null) {
+      return
     }
 
     if (this.settingsCache[key] === value) {

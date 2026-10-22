@@ -3,7 +3,6 @@
   "printWidth": 120,
   "semi": false,
   "bracketSpacing": false,
-  "sortImports": true,
   "vueIndentScriptAndStyle": true,
   "sortPackageJson": false
 }

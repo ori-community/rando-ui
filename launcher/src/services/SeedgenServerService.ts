@@ -1,21 +1,16 @@
 import {stripVTControlCharacters} from "node:util"
-
 import {getInstallDataPath, getUserDataPath} from "@launcher/paths"
 import {LauncherService} from "@launcher/services/LauncherService"
 import log from "electron-log/main"
-import {execa, ResultPromise} from "execa"
+import {execa, ResultPromise, StdoutStderrOption} from "execa"
 
 type SeedgenExecaOptions = {
   detached: true
   env: {
     RANDOMIZER_USER_DATA_DIR: string
   }
-  stdout: {
-    transform: (line: string) => Generator
-  }
-  stderr: {
-    transform: (line: string) => Generator
-  }
+  stdout: StdoutStderrOption
+  stderr: StdoutStderrOption
 }
 
 export class SeedgenServerService {
@@ -38,7 +33,7 @@ export class SeedgenServerService {
       return
     }
 
-    this._process.kill("SIGTERM")
+    this._process?.kill("SIGTERM")
   }
 
   /**
@@ -53,23 +48,36 @@ export class SeedgenServerService {
         return
       }
 
-      this._process.kill()
+      this._process?.kill()
       this._process = null
     }
 
     this._currentStartupPromise = Promise.race([
-      new Promise<void>((_resolve, reject) => setTimeout(reject, readyTimeoutMs)),
+      new Promise<void>((_resolve, reject) =>
+        setTimeout(() => reject("Timeout while starting seedgen HTTP server"), readyTimeoutMs),
+      ),
       new Promise<void>((resolve, reject) => {
-        const logInfo = function* (line: string) {
+        const logInfo = function* (line: unknown) {
+          if (typeof line !== "string") {
+            return
+          }
+
           log.info("Seedgen: " + stripVTControlCharacters(line))
+          yield ""
         }
 
-        const logError = function* (line: string) {
+        const logError = function* (line: unknown) {
+          if (typeof line !== "string") {
+            return
+          }
+
           log.error("Seedgen: " + stripVTControlCharacters(line))
 
           if (line.startsWith("Listening on")) {
             resolve()
           }
+
+          yield ""
         }
 
         const seedgenExec = execa<SeedgenExecaOptions>({
@@ -100,7 +108,7 @@ export class SeedgenServerService {
 
         this._process.catch((err: Error) => {
           // Seedgen HTTP server was started outside the launcher
-          if (this._process.exitCode === 2) {
+          if (this._process?.exitCode === 2) {
             resolve()
             return
           }

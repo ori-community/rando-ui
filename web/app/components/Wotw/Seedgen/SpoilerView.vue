@@ -87,21 +87,21 @@
     if (!term) return 0
 
     const regex = new RegExp(
-      escapeRegExp(escapeHtml(term)),
+      escapeRegExp(term),
       'gi'
     )
 
-    return escapeHtml(props.spoilerContent).match(regex)?.length ?? 0
+    return props.spoilerContent.match(regex)?.length ?? 0
   })
 
   const highlightedText = computed(() => {
-    const escapedText = escapeHtml(props.spoilerContent)
+    const escapedText = props.spoilerContent
     const term = search.value.trim()
 
     if (!term) return escapedText
 
     const regex = new RegExp(
-      `(${escapeRegExp(escapeHtml(term))})`,
+      `(${escapeRegExp(term)})`,
       'gi'
     )
 
@@ -118,15 +118,6 @@
     >${match}</mark>`
     })
   })
-
-  function escapeHtml(value: string): string {
-    return value
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;')
-  }
 
   function escapeRegExp(value: string): string {
     return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -195,7 +186,7 @@
 
   .text-content :deep(.search-match) {
     background-color: rgb(var(--v-theme-primary-darken-2));
-    color: #000;
+    color: black;
     border-radius: 2px;
     padding: 0 2px;
   }

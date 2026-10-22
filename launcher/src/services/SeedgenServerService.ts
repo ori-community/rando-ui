@@ -22,7 +22,7 @@ export class SeedgenServerService {
    * @private
    */
   static #isSeedgenProcessRunning() {
-    return this._process !== null && this._process.exitCode === null
+    return this._process !== null && this._process.nodeChildProcess.exitCode === null
   }
 
   /**
@@ -108,7 +108,7 @@ export class SeedgenServerService {
 
         this._process.catch((err: Error) => {
           // Seedgen HTTP server was started outside the launcher
-          if (this._process?.exitCode === 2) {
+          if (this._process?.nodeChildProcess.exitCode === 2) {
             resolve()
             return
           }

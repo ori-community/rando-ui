@@ -754,9 +754,9 @@
       for (const settings of clonedUniverseSettings.worldSettings) {
         settings.snippets.push("bingo")
         settings.snippetConfig["bingo"] = {
-          "lines": bingoSettings.value.goalType === "lines"
-            ? "true"
-            : "false",
+          "cards": bingoSettings.value.goalType === "lines"
+            ? "false"
+            : "true",
           "amount": String(bingoSettings.value.goalAmount),
         }
       }

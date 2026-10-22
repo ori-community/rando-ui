@@ -61,7 +61,7 @@
     isRemote.value = props.userIsLoggedIn
   })
 
-  const exposeTracker = (async () => {
+  async function exposeTracker() {
     const {apiBaseUrl} = await useBaseUrls()
     remoteTrackerUrlCopying.value = true
 
@@ -110,7 +110,7 @@
     })
 
     emit("created")
-  })
+  }
 
 </script>
 

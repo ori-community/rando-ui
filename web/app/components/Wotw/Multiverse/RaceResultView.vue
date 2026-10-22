@@ -47,7 +47,7 @@
     // TODO clonedeep
     const teams: RaceTeamInfo[] = JSON.parse(JSON.stringify(props.race.teams))
 
-    const compareFinishedTime = (a: number | null | undefined, b: number | null | undefined) => {
+    function compareFinishedTime(a: number | null | undefined, b: number | null | undefined) {
       if (a === 0.0 || a === null || a === undefined) {
         return 1
       }

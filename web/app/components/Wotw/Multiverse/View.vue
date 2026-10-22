@@ -116,13 +116,13 @@
     )
   })
 
-  const join = (async (worldId: number) => {
+  async function join(worldId: number) {
     await axios.post(`/multiverses/${props.multiverse.id}/worlds/${worldId}`)
-  })
+  }
 
-  const createWorld = (async (universeId: number | null = null) => {
+  async function createWorld(universeId: number | null = null) {
     await axios.post(`/multiverses/${props.multiverse.id}/${universeId}/worlds`)
-  })
+  }
 </script>
 
 <style lang="scss" scoped>

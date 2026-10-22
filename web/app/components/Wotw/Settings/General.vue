@@ -314,7 +314,7 @@
     document.removeEventListener("keydown", onKeyDown)
   })
 
-  const enableDeveloperTools = (() => {
+  function enableDeveloperTools() {
     settings.DeveloperMode.value = true
     debugStreak.value = 0
 
@@ -322,23 +322,23 @@
       behavior: "smooth",
       block: "nearest",
     })
-  })
+  }
 
-  const disableDeveloperTools = (async () => {
+  async function disableDeveloperTools() {
     settings.DeveloperMode.value = false
     settings.ServerHost.value = "wotw.orirando.com"
     settings.DebugControls.value = false
     settings.LogDebugMessagesToFile.value = false
     settings.ServerTLS.value = true
-  })
+  }
 
-  const onKeyUp = ((event: KeyboardEvent) => {
+  function onKeyUp(event: KeyboardEvent) {
     if (event.key === "Control") {
       ctrlPressed.value = false
     }
-  })
+  }
 
-  const onKeyDown = ((event: KeyboardEvent) => {
+  function onKeyDown(event: KeyboardEvent) {
     if (settingsStore.isInitialized && !settingsStore.DeveloperMode) {
       if (event.key === "Control") {
         if (!ctrlPressed.value) {
@@ -353,10 +353,10 @@
         enableDeveloperTools()
       }
     }
-  })
+  }
 
 
-  const resetLocalTrackerPosition = (async () => {
+  async function resetLocalTrackerPosition() {
     await electronApi?.localTracker.resetWindowRect.query()
 
     localTrackerPositionReset.value = true
@@ -364,7 +364,7 @@
     setTimeout(() => {
       localTrackerPositionReset.value = false
     }, 2000)
-  })
+  }
 
   async function createDesktopEntry() {
     if (!electronApi) {

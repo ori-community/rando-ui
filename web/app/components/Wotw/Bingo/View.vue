@@ -200,12 +200,12 @@
     ownWorld: WorldInfo | null,
   }>()
 
-  const centerBoard = (() => {
+  function centerBoard() {
     boardContainer.value?.scrollIntoView({
       behavior: "smooth",
       block: "start",
     })
-  })
+  }
 
   const sortedBingoUniverses = computed(() => {
     if (!props.multiverse) {
@@ -250,7 +250,7 @@
     return ownUniverse.value?.id ?? null
   })
 
-  const toggleUniverseVisibility = ((universeId: number, exclusive = false) => {
+  function toggleUniverseVisibility(universeId: number, exclusive = false) {
     if (exclusive) {
       if (
         hiddenUniverseIds.value.length === sortedBingoUniverses.value.length - 1 &&
@@ -265,9 +265,9 @@
     } else {
       hiddenUniverseIds.value.push(universeId)
     }
-  })
+  }
 
-  const createBingothonToken = (async () => {
+  async function createBingothonToken() {
     bingothonTokenLoading.value = true
 
     const token = await axios.post("/bingothon/token", {
@@ -282,9 +282,9 @@
     setTimeout(() => {
       bingothonTokenCopied.value = false
     }, 4000)
-  })
+  }
 
-  const createEmbedUrl = (async () => {
+  async function createEmbedUrl() {
     embedUrlLoading.value = true
 
     const token = await axios.post("/tokens/", {
@@ -311,9 +311,9 @@
     setTimeout(() => {
       embedUrlCopied.value = false
     }, 4000)
-  })
+  }
 
-  const spectate = (async () => {
+  async function spectate() {
     spectateLoading.value = true
 
     try {
@@ -328,16 +328,16 @@
       console.error(e)
     }
     spectateLoading.value = false
-  })
+  }
 
-  const enableBingoOverlay = (async () => {
+  async function enableBingoOverlay() {
     await electronApi.invoke("bingoBoardOverlay.prepare", props.multiverse.id)
     bingoOverlayEnabled.value = true
 
     setTimeout(() => {
       bingoOverlayEnabled.value = false
     }, 5000)
-  })
+  }
 
 </script>
 

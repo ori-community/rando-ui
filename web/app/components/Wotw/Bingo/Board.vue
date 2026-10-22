@@ -119,7 +119,7 @@
     return props.ownUniverseId
   })
 
-  const cardVisible = ((x: number, y: number) => {
+  function cardVisible(x: number, y: number) {
     if (!props.isSpectating) {
       return cardTable.value?.[x]?.[y] != null
     }
@@ -129,33 +129,33 @@
     }
 
     const square = cardTable.value?.[x]?.[y]
-    return square?.visibleFor?.some(universeId => (!props.hiddenUniverseIds.includes(universeId)))
+    return square?.visibleFor?.some(universeId => !props.hiddenUniverseIds.includes(universeId))
 
-  })
+  }
 
-  const getSquare = ((x: number, y: number) => {
+  function getSquare(x: number, y: number) {
     if (cardVisible(x, y)) {
       return cardTable.value?.[x]?.[y]
     } else {
       return null
     }
-  })
+  }
 
-  const isCardMarked = (x: number, y: number) => {
+  function isCardMarked(x: number, y: number) {
     const address = `${y}${alphabet.value[x - 1]}`
     return markedCards.value.includes(address)
   }
 
-  const getMarkedNeighborMask = ((x: number, y: number) => {
+  function getMarkedNeighborMask(x: number, y: number) {
     let mask = 0b0000
     mask += isCardMarked(x, y - 1) ? 0b1000 : 0
     mask += isCardMarked(x - 1, y) ? 0b0100 : 0
     mask += isCardMarked(x + 1, y) ? 0b0010 : 0
     mask += isCardMarked(x, y + 1) ? 0b0001 : 0
     return mask
-  })
+  }
 
-  const selectLine = ((x: number, y: number, dX: number, dY: number) => {
+  function selectLine(x: number, y: number, dX: number, dY: number) {
     const squares = []
     for (let a = x, b = y; a <= props.bingoBoard.size && b <= props.bingoBoard.size; a += dX, b += dY) {
       squares.push({x: a, y: b})
@@ -166,7 +166,7 @@
     //   multiverseId: this.multiverse.id,
     //   goals: squares,
     // })
-  })
+  }
 </script>
 
 <style lang="scss" scoped>

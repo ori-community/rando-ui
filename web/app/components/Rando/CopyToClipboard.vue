@@ -36,7 +36,7 @@
 
   const isTriggered = ref(false)
 
-  const copyToClipboard = (async () => {
+  async function copyToClipboard() {
     try {
       await navigator.clipboard.writeText(props.value)
     } catch (e) {
@@ -48,7 +48,7 @@
     setTimeout(() => {
       isTriggered.value = false
     }, props.timeout)
-  })
+  }
 
 </script>
 

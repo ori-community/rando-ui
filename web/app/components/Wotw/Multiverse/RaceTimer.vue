@@ -5,8 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-
-  import {formatTime} from "assets/utils/formatTime"
+  import {formatTime} from "@/assets/utils/formatTime"
 
   const props = withDefaults(defineProps<{
     startingAt: number | null,
@@ -30,7 +29,7 @@
   })
 
 
-  const updateTimerText = (() => {
+  function updateTimerText() {
     if (props.startingAt === null) {
       return null
     }
@@ -41,9 +40,9 @@
       ".",
       2,
     )
-    mainTimerText.value = parts[0]
+    mainTimerText.value = parts[0] ?? ""
     fractionTimerText.value = "." + parts[1]
-  })
+  }
 </script>
 
 <style lang="scss" scoped>

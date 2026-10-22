@@ -68,10 +68,10 @@
     return isLeek.value ? "Lauch" : "Launch"
   })
 
-  const onClick = (async (event: MouseEvent) => {
+  async function onClick(event: MouseEvent) {
     confettiScheduledForNextSuccessfulLaunch.value = true
     emit("click", event)
-  })
+  }
 
   watch(launchResult, (launchResult) => {
     if (launchResult === null) {
@@ -83,13 +83,13 @@
     }
   })
 
-  const shootConfetti = (() => {
+  function shootConfetti() {
     if (!buttonRef.value) {
       return
     }
 
     confettiFromElement(buttonRef.value.$el, {disableForReducedMotion: true})
-  })
+  }
 
   onMounted(() => {
     const today = new Date()

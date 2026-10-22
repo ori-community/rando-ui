@@ -139,7 +139,7 @@
   })
 
   // Render tokens as VNodes
-  const highlightedSpoilerTextVNodes = () => {
+  function highlightedSpoilerTextVNodes() {
     const vNodes: (VNode | string)[] = []
 
     let textIndex = 0

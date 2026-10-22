@@ -58,11 +58,11 @@
     },
   )
 
-  const copyToClipboard = (() => {
+  const copyToClipboard = () => {
     if (props.error.stack) {
       navigator.clipboard.writeText(props.error.stack)
     }
-  })
+  }
 </script>
 
 <style lang="scss" scoped>

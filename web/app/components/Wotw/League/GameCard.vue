@@ -116,7 +116,7 @@
       clearInterval(updateIntervalId.value)
     }
   })
-  const updateTimer = (() => {
+  function updateTimer() {
     if (!props.playableUntil) {
       countdownTimerTextOrSecondsLeft.value = null
       attentionActive.value = false
@@ -140,7 +140,7 @@
     }
 
     countdownTimerTextOrSecondsLeft.value = secondsLeft
-  })
+  }
 
 </script>
 

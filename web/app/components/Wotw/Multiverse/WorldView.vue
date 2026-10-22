@@ -112,9 +112,9 @@
     }
   })
 
-  const now = (() => {
+  function now() {
     return Date.now()
-  })
+  }
 </script>
 
 <style lang="scss" scoped>

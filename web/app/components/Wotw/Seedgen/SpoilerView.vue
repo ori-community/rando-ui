@@ -5,7 +5,7 @@
       <div class="toolbar-search d-flex align-center justify-center">
         <v-text-field
           ref="searchField"
-          v-model="search"
+          v-model="searchQuery"
           prepend-inner-icon="mdi-magnify"
           density="compact"
           hide-details="auto"
@@ -14,11 +14,11 @@
         >
           <template #append-inner>
             <span
-              v-if="search.trim()"
+              v-if="searchQuery.trim()"
               class="text-caption text-no-wrap"
             >
-              {{ matchCount > 0 ? currentMatch + 1 : 0 }}
-              / {{ matchCount }}
+              {{ highlightCount > 0 ? focusedHighlightIndex + 1 : 0 }}
+              / {{ highlightCount }}
             </span>
           </template>
         </v-text-field>
@@ -26,14 +26,14 @@
           <v-btn
             icon="mdi-chevron-up"
             size="small"
-            :disabled="matchCount === 0"
+            :disabled="highlightCount === 0"
             @click="previousMatch"
           />
 
           <v-btn
             icon="mdi-chevron-down"
             size="small"
-            :disabled="matchCount === 0"
+            :disabled="highlightCount === 0"
             @click="nextMatch"
           />
         </div>
@@ -50,13 +50,14 @@
         <v-icon>mdi-close</v-icon>
       </v-btn>
     </v-toolbar>
-
-    <div class="text-content pa-3" v-html="highlightedText"/>
+    <div class="text-content pa-3">
+      <component :is="highlightedSpoilerTextVNodes" />
+    </div>
   </v-sheet>
 </template>
 
 <script lang="ts" setup>
-  import type {UserInfo} from "@shared/types/http-api";
+  import type {UserInfo} from "@shared/types/http-api"
 
   const props = withDefaults(defineProps<{
     spoilerContent: string,
@@ -66,109 +67,158 @@
   })
 
   const emit = defineEmits(["close"])
-
   const searchField = ref<null | HTMLElement>(null)
-  const search = ref('')
-  const currentMatch = ref(0)
+  const searchQuery = ref("")
+  const focusedHighlightIndex = ref(0)
+  const focusedHighlightElement = shallowRef<HTMLElement | null>(null)
 
-  watch(search, async () => {
-    currentMatch.value = 0
+  type Token = {
+    length: number
+    type: "highlight" | "text"
+  }
 
-    await nextTick()
+  type Tokens = {
+    tokens: Token[]
+    highlights: number
+  }
 
-    if (matchCount.value > 0) {
-      await goToMatch(0)
+  // Tokenize spoiler text into "highlight" and "text" segments
+  const tokens = computed<Tokens>(() => {
+    const lowercaseSearchQuery = searchQuery.value.toLowerCase()
+
+    const tokens: Token[] = []
+    let highlights = 0
+
+    if (!lowercaseSearchQuery) {
+      tokens.push({
+        length: props.spoilerContent.length,
+        type: "text",
+      })
+    } else {
+      let nextTokenIndex = 0
+      while (nextTokenIndex < props.spoilerContent.length) {
+        const matchStartIndex = props.spoilerContent.toLowerCase().indexOf(lowercaseSearchQuery, nextTokenIndex)
+        if (matchStartIndex === -1) {
+          tokens.push({
+            length: props.spoilerContent.length - nextTokenIndex,
+            type: "text",
+          })
+          break
+        }
+
+        const lengthBeforeMatch = matchStartIndex - nextTokenIndex
+        if (lengthBeforeMatch > 0) {
+          tokens.push({
+            length: lengthBeforeMatch,
+            type: "text",
+          })
+        }
+
+        tokens.push({
+          length: lowercaseSearchQuery.length,
+          type: "highlight",
+        })
+        highlights++
+
+        nextTokenIndex = matchStartIndex + lowercaseSearchQuery.length
+      }
+    }
+
+    return {
+      tokens,
+      highlights,
     }
   })
 
-  const matchCount = computed(() => {
-    const term = search.value.trim()
-
-    if (!term) return 0
-
-    const regex = new RegExp(
-      escapeRegExp(term),
-      'gi'
-    )
-
-    return props.spoilerContent.match(regex)?.length ?? 0
+  const highlightCount = computed(() => {
+    return tokens.value.highlights
   })
 
-  const highlightedText = computed(() => {
-    const escapedText = props.spoilerContent
-    const term = search.value.trim()
-
-    if (!term) return escapedText
-
-    const regex = new RegExp(
-      `(${escapeRegExp(term)})`,
-      'gi'
-    )
-
-    let index = 0
-
-    return escapedText.replace(regex, (match) => {
-      const isActive = index === currentMatch.value
-      const matchIndex = index++
-
-      return `<mark
-      class="search-match${isActive ? ' search-match--active' : ''}"
-      data-match-index="${matchIndex}"
-      tabindex="-1"
-    >${match}</mark>`
-    })
+  watch([highlightCount, focusedHighlightIndex], () => {
+    focusedHighlightIndex.value = Math.min(focusedHighlightIndex.value, Math.max(0, highlightCount.value - 1))
   })
 
-  function escapeRegExp(value: string): string {
-    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  // Render tokens as VNodes
+  const highlightedSpoilerTextVNodes = () => {
+    const vNodes: (VNode | string)[] = []
+
+    let textIndex = 0
+    let highlightIndex = 0
+    for (const token of tokens.value.tokens) {
+      switch (token.type) {
+        case "highlight":
+          const isFocusedHighlight = highlightIndex === focusedHighlightIndex.value
+          vNodes.push(
+            h(
+              "mark",
+              {
+                "data-token-index": textIndex,
+                "class": [
+                  "search-match",
+                  {"search-match--active": isFocusedHighlight},
+                ],
+                ref: (el) => {
+                  if (isFocusedHighlight) {
+                    focusedHighlightElement.value = el as HTMLElement
+                    triggerRef(focusedHighlightElement)
+                  }
+                },
+              },
+              props.spoilerContent.substring(textIndex, textIndex + token.length)
+            ),
+          )
+          highlightIndex++
+          break
+        case "text":
+          vNodes.push(props.spoilerContent.substring(textIndex, textIndex + token.length))
+          break
+      }
+
+      textIndex += token.length
+    }
+
+    return h("div", [vNodes])
   }
 
   async function goToMatch(index: number) {
-    if (matchCount.value === 0) return
-
-    currentMatch.value =
-      (index + matchCount.value) % matchCount.value
-
-    await nextTick()
-
-    const element = document.querySelector<HTMLElement>(
-      `.search-match[data-match-index="${currentMatch.value}"]`
-    )
-
-    element?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center',
-    })
-
+    if (highlightCount.value === 0) {
+      return
+    }
+    focusedHighlightIndex.value = index % highlightCount.value
   }
 
+  watch(focusedHighlightElement, () => {
+    focusedHighlightElement.value?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    })
+  })
+
   function nextMatch() {
-    goToMatch(currentMatch.value + 1)
+    goToMatch(focusedHighlightIndex.value + 1)
   }
 
   function previousMatch() {
-    goToMatch(currentMatch.value - 1)
+    goToMatch(focusedHighlightIndex.value - 1)
   }
 
   function handleKeydown(event: KeyboardEvent) {
-    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'f') {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "f") {
       event.preventDefault()
       searchField.value?.focus()
     }
   }
 
   onMounted(() => {
-    window.addEventListener('keydown', handleKeydown)
+    window.addEventListener("keydown", handleKeydown)
   })
 
   onBeforeUnmount(() => {
-    window.removeEventListener('keydown', handleKeydown)
+    window.removeEventListener("keydown", handleKeydown)
   })
-
 </script>
 
 <style lang="scss" scoped>
-
   .toolbar-search {
     position: absolute;
     left: 50%;
@@ -189,6 +239,7 @@
     color: black;
     border-radius: 2px;
     padding: 0 2px;
+    margin: 0 -2px;
   }
 
   .text-content :deep(.search-match--active) {
@@ -196,5 +247,4 @@
     outline: 3px solid rgb(var(--v-theme-primary-darken-1));
     outline-offset: 1px;
   }
-
 </style>

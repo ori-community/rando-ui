@@ -17,7 +17,10 @@
                 <v-icon>mdi-map-marker-path</v-icon>
               </div>
               <div class="pa-3 flex-grow-1">
-                <h2>{{ plando.attributes.name ?? plandoId }}</h2>
+                <h2>
+                  {{ plando.attributes.name ?? plandoId }}
+                  <v-icon v-if="plando.origin.dir === 'UserData'" size="24">mdi-account-outline</v-icon>
+                </h2>
                 <p>{{ plando.attributes.description }}</p>
               </div>
               <div class="pa-2 d-flex align-self-stretch">
@@ -42,6 +45,11 @@
               </div>
             </v-card>
           </template>
+
+          <v-btn class="align-self-end" variant="text" @click="openPlandomizerFolder">
+            <v-icon start>mdi-folder-open-outline</v-icon>
+            Open Folder
+          </v-btn>
         </div>
       </template>
     </throttled-spinner>
@@ -57,6 +65,7 @@
 
   const seedgenAxios = useSeedgenAxios()
   const {launch, isLaunching} = useLauncherHelper()
+  const electronApi = useElectronApi()
 
   const plandos = ref<HashMapStringSchemaResultPlandoInfoString>({})
   const plandosLoaded = ref(false)
@@ -109,6 +118,14 @@
       console.error(e)
     }
     launchingPlandoId.value = null
+  }
+
+  async function openPlandomizerFolder() {
+    if (!electronApi) {
+      return
+    }
+
+    await electronApi.shell.showWellKnownPathInExplorer.query({wellKnownPath: "plandos"})
   }
 </script>
 

@@ -3,7 +3,7 @@ import {promises as fsPromises} from "node:fs"
 
 import {publicProcedure, router} from "@launcher/api/trpc"
 import {getMainWindow} from "@launcher/main"
-import {getSeedsUserDataPath, getUserDataPath} from "@launcher/paths"
+import {getSeedgenUserDataPath, getSeedsUserDataPath, getUserDataPath} from "@launcher/paths"
 import {dialog, shell as electronShell} from "electron"
 import log from "electron-log/main"
 import {z} from "zod"
@@ -39,7 +39,13 @@ export const shell = router({
       }),
     )
     .query(async ({input}): Promise<string | null> => {
-      const result = await dialog.showOpenDialog(getMainWindow(), {
+      const mainWindow = getMainWindow()
+
+      if (!mainWindow) {
+        return null
+      }
+
+      const result = await dialog.showOpenDialog(mainWindow, {
         defaultPath: input.defaultPath,
         properties: ["openFile"],
         filters: input.filters,
@@ -69,7 +75,7 @@ export const shell = router({
   showWellKnownPathInExplorer: publicProcedure
     .input(
       z.object({
-        wellKnownPath: z.enum(["user-data", "seeds"]),
+        wellKnownPath: z.enum(["user-data", "seeds", "plandos"]),
       }),
     )
     .query(async ({input}): Promise<void> => {
@@ -79,6 +85,9 @@ export const shell = router({
           break
         case "seeds":
           await openFileOrFolderInExplorer(getSeedsUserDataPath())
+          break
+        case "plandos":
+          await openFileOrFolderInExplorer(getSeedgenUserDataPath("plandos"))
           break
       }
     }),

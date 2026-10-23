@@ -139,10 +139,10 @@
           </template>
         </v-dialog>
 
-        <div v-if="platform === 'linux'" class="mt-2" @click="createDesktopEntry">
+        <div v-if="platform === 'linux'" class="mt-2" @click="integrateIntoLinuxDesktop">
           <v-btn color="accent" flat>
             <v-icon start>mdi-link-plus</v-icon>
-            Create Desktop Entry
+            Integrate into Desktop
           </v-btn>
         </div>
       </div>
@@ -366,14 +366,14 @@
     }, 2000)
   }
 
-  async function createDesktopEntry() {
+  async function integrateIntoLinuxDesktop() {
     if (!electronApi) {
       return
     }
 
-    await electronApi.fs.createDesktopEntry.query()
+    await electronApi.fs.integrateIntoLinuxDesktop.query()
     snackbarStore.add({
-      text: "Desktop entry created",
+      text: "Desktop integration succeeded.",
       timer: "bottom",
       timeout: 4000,
     })

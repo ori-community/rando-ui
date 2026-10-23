@@ -80,9 +80,9 @@
         />
         <rando-settings-checkbox
           v-if="platform === 'linux'"
-          v-model="createDesktopEntry"
-          label="Create Desktop Entry"
-          description="Makes it possible to find the randomizer in your applications list"
+          v-model="integrateIntoDesktop"
+          label="Integrate into Desktop"
+          description="Makes it possible to find the randomizer in your applications list and open seed files"
         />
       </div>
       <div class="d-flex align-center pa-5">
@@ -131,7 +131,7 @@
   const step = ref<"welcome" | "launch-setup" | "tracker" | "common-settings" | "done">("welcome")
   const oriHiRef = ref<null | HTMLElement>(null)
   const router = useRouter()
-  const createDesktopEntry = ref(true)
+  const integrateIntoDesktop = ref(true)
 
   const emit = defineEmits<{
     (e: "completed"): void
@@ -173,8 +173,8 @@
         step.value = "done"
         settings.InitialSetupCompleted = true
 
-        if (platform === "linux" && createDesktopEntry.value && electronApi) {
-          await electronApi.fs.createDesktopEntry.query()
+        if (platform === "linux" && integrateIntoDesktop.value && electronApi) {
+          await electronApi.fs.integrateIntoLinuxDesktop.query()
         }
 
         setTimeout(() => {

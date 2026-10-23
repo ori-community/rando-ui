@@ -1,12 +1,17 @@
 import nodeFs from "node:fs"
 import os from "node:os"
 import path from "node:path"
-
 import {publicProcedure, router} from "@launcher/api/trpc"
-import {getInstallDataPath, getSeedgenUserDataPath, getSeedsUserDataPath} from "@launcher/paths"
+import {
+  getInstallDataPath,
+  getSeedgenUserDataPath,
+  getSeedsUserDataPath,
+  getTemporaryUserDataPath,
+} from "@launcher/paths"
 import {SeedgenUiState} from "@shared/types/seedgen-extra"
 import {app} from "electron"
 import {z} from "zod"
+import {execa} from "execa"
 
 export const fs = router({
   /**
@@ -166,9 +171,9 @@ export const fs = router({
       await nodeFs.promises.rm(getSeedgenUserDataPath(`universe_presets/${input.id}.json`), {force: true})
     }),
   /**
-   * Creates a .desktop file on linux systems
+   * Integrates into Linux desktop environments using standard XDG tools
    */
-  createDesktopEntry: publicProcedure.query(async (): Promise<void> => {
+  integrateIntoLinuxDesktop: publicProcedure.query(async (): Promise<void> => {
     if (os.platform() !== "linux") {
       throw new Error("Unable to create a desktop entry on non-linux platforms")
     }
@@ -181,16 +186,42 @@ export const fs = router({
       "Categories=Game;",
       "Name=Ori and the Will of the Wisps Randomizer",
       "StartupWMClass=ori-and-the-will-of-the-wisps-randomizer",
-      `Exec="${app.getPath("exe")}" %F`,
-      `Path=${getInstallDataPath()}`,
-      `Icon=${getInstallDataPath("icon.png")}`,
       "SingleMainWindow=true",
+      "MimeType=application/x.ori-wotw-randomizer-seed;",
+      "Icon=com.orirando.wotw-randomizer",
     ]
 
-    await nodeFs.promises.writeFile(
-      path.join(app.getPath("home"), ".local/share/applications/ori-wotw-randomizer.desktop"),
-      `${desktopFileContents.join("\n")}\n`,
-    )
+    if (process.env.APPIMAGE) {
+      desktopFileContents.push(
+        `Exec="${process.env.APPIMAGE}" %F`,
+      )
+    } else {
+      desktopFileContents.push(
+        `Exec="${app.getPath("exe")}" %F`,
+        `Path=${getInstallDataPath()}`,
+      )
+    }
+
+    const temporaryDesktopFilePath = getTemporaryUserDataPath("com.orirando.wotw-randomizer.desktop")
+    await nodeFs.promises.writeFile(temporaryDesktopFilePath, `${desktopFileContents.join("\n")}\n`)
+
+    const mimeFileContents = [
+      `<?xml version="1.0"?>`,
+      `<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>`,
+      `    <mime-type type="application/x.ori-wotw-randomizer-seed">`,
+      `        <comment>Ori and the Will of the Wisps Randomizer Seed</comment>`,
+      `        <glob pattern="*.wotwr"/>`,
+      `        <icon name="com.orirando.wotw-randomizer"/>`,
+      `    </mime-type>`,
+      `</mime-info>`,
+    ]
+    const temporaryMimeFilePath = getTemporaryUserDataPath("com.orirando.wotw-seed.xml")
+    await nodeFs.promises.writeFile(temporaryMimeFilePath, `${mimeFileContents.join("\n")}\n`)
+
+    await execa("xdg-icon-resource", ["install", "--size", "256", getInstallDataPath("icon.png"), "com.orirando.wotw-randomizer"])
+    await execa("xdg-desktop-menu", ["install", temporaryDesktopFilePath])
+    await execa("xdg-mime", ["install", temporaryMimeFilePath])
+    await execa("xdg-mime", ["default", "com.orirando.wotw-randomizer.desktop", "application/x.ori-wotw-randomizer-seed"])
   }),
   /**
    * Returns a full path to the installation data directory, or a path within.

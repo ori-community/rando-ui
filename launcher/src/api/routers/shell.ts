@@ -3,7 +3,7 @@ import {promises as fsPromises} from "node:fs"
 
 import {publicProcedure, router} from "@launcher/api/trpc"
 import {getMainWindow} from "@launcher/main"
-import {getSeedgenUserDataPath, getSeedsUserDataPath, getUserDataPath} from "@launcher/paths"
+import {getPlandosUserDataPath, getSeedgenUserDataPath, getSeedsUserDataPath, getUserDataPath} from "@launcher/paths"
 import {dialog, shell as electronShell} from "electron"
 import log from "electron-log/main"
 import {z} from "zod"
@@ -87,7 +87,7 @@ export const shell = router({
           await openFileOrFolderInExplorer(getSeedsUserDataPath())
           break
         case "plandos":
-          await openFileOrFolderInExplorer(getSeedgenUserDataPath("plandos"))
+          await openFileOrFolderInExplorer(getPlandosUserDataPath())
           break
       }
     }),

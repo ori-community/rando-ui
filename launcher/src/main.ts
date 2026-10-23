@@ -8,7 +8,7 @@ import {
   getClientUserDataPath,
   getSeedsUserDataPath,
   getTemporaryUserDataPath,
-  getUserDataPath,
+  getUserDataPath, getPlandosUserDataPath,
 } from "@launcher/paths"
 import {LauncherService} from "@launcher/services/LauncherService"
 import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
@@ -72,6 +72,7 @@ if (!app.requestSingleInstanceLock()) {
     await fs.promises.mkdir(getLogsUserDataPath(), {recursive: true})
     await fs.promises.mkdir(getSeedsUserDataPath(), {recursive: true})
     await fs.promises.mkdir(getTemporaryUserDataPath(), {recursive: true})
+    await fs.promises.mkdir(getPlandosUserDataPath(), {recursive: true})
 
     const webBuildBasePath = path.normalize(path.join(__dirname, "../../web-build/"))
     protocol.handle("app", async (request) => {

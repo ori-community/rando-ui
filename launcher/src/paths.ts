@@ -9,6 +9,10 @@ function getBaseUserDataPath() {
     return path.join(userDataHome, "ori-wotw-randomizer")
   }
 
+  if (!process.env.APPDATA) {
+    throw new Error("APPDATA environment variable is not set")
+  }
+
   return path.join(process.env.APPDATA, "ori-wotw-randomizer")
 }
 
@@ -47,4 +51,8 @@ export function getSeedsUserDataPath(relativePath = ".") {
 
 export function getTemporaryUserDataPath(relativePath = ".") {
   return getUserDataPath(path.join("temp", relativePath))
+}
+
+export function getPlandosUserDataPath(relativePath = ".") {
+  return getSeedgenUserDataPath(path.join("plandos", relativePath))
 }

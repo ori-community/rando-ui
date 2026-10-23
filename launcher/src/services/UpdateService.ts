@@ -3,12 +3,10 @@ import {EventEmitter} from "events"
 import fs from "fs"
 import os from "node:os"
 import Stream from "node:stream"
-
 import {getInstallDataPath, getTemporaryUserDataPath} from "@launcher/paths"
 import {SeedgenServerService} from "@launcher/services/SeedgenServerService"
 import axios, {AxiosResponseHeaders} from "axios"
 import {app} from "electron"
-import {shell as electronShell} from "electron"
 import log from "electron-log/main"
 import {throttle} from "lodash"
 
@@ -52,7 +50,7 @@ export class UpdateService {
   }
 
   private static async downloadUpdate(url: string, targetFileName: string) {
-    const {data, headers}: {data: Stream; headers: AxiosResponseHeaders} = await axios.get(url, {
+    const {data, headers}: { data: Stream; headers: AxiosResponseHeaders } = await axios.get(url, {
       responseType: "stream",
     })
 
@@ -175,7 +173,7 @@ export class UpdateService {
             "  if [ $tries -gt 5 ]; then",
             "    exit 1;",
             "  fi",
-            `  rm -rf "${escapedInstallDataPath}" && mkdir "${escapedInstallDataPath}" && tar -xzf "${escapedTemporaryPath}" -C "${escapedInstallDataPath}" && break`,
+            `  find "${escapedInstallDataPath}" -mindepth 1 -delete && mkdir "${escapedInstallDataPath}" && tar -xzf "${escapedTemporaryPath}" -C "${escapedInstallDataPath}" && break`,
             "  tries=$(expr $tries + 1)",
             "  sleep 3",
             "done",

@@ -23,6 +23,10 @@ import log from "electron-log/main"
 // eslint-disable-next-line import/no-unresolved
 import {createIPCHandler} from "electron-trpc/main"
 
+if (process.env.WOTW_RANDOMIZER_APPIMAGE_ROOT) {
+  process.chdir(process.env.WOTW_RANDOMIZER_APPIMAGE_ROOT)
+}
+
 // Override session data path to have a clean app data directory.
 // Otherwise, Chromium will pollute it...
 app.setPath("sessionData", path.join(app.getPath("userData"), "launcher"))

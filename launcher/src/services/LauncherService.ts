@@ -10,7 +10,7 @@ import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
 import {RandoIPCService} from "@launcher/services/RandoIPCService"
 import {SeedgenServerService} from "@launcher/services/SeedgenServerService"
 import {SettingsService} from "@launcher/services/SettingsService"
-import {LaunchResult, LaunchSetupValidationError} from "@shared/types/launcher"
+import {LaunchResult, LaunchSetupValidationError, ProxyModloaderInstallationStatus} from "@shared/types/launcher"
 import {LauncherPlatform} from "@shared/types/platform"
 import {Settings} from "@shared/types/settings"
 import log from "electron-log/main"
@@ -149,7 +149,7 @@ export class LauncherService {
     if (
       settings.ModloaderMethod === "proxy" &&
       settings.ValidateProxyModloader &&
-      !(await LauncherService.isProxyModloaderUpToDate())
+      (await LauncherService.getProxyModloaderInstallationStatus() !== 'up-to-date')
     ) {
       errors.push("invalid-proxy-modloader-file")
     }
@@ -180,7 +180,7 @@ export class LauncherService {
    * Use `isProxyModloaderUpToDate` to check whether it exists and is up to date.
    */
   static async installOrUpdateProxyModloader() {
-    if (await LauncherService.isProxyModloaderUpToDate()) {
+    if ((await LauncherService.getProxyModloaderInstallationStatus()) === "up-to-date") {
       return
     }
 
@@ -228,6 +228,9 @@ export class LauncherService {
 
         break
     }
+
+    const sourceHash = await hashFile(sourceProxyFileName, {algorithm: "md5"})
+    await SettingsService.instance.setSetting("LastInstalledProxyHash", sourceHash)
   }
 
   /**
@@ -235,7 +238,7 @@ export class LauncherService {
    * It internally checks whether the checksum of the proxy modloader next to the game binary
    * and the one shipped with the launcher are equal.
    */
-  static async isProxyModloaderUpToDate() {
+  static async getProxyModloaderInstallationStatus(): Promise<ProxyModloaderInstallationStatus> {
     const settings = await SettingsService.instance.getSettings()
     const sourceProxyFileName = await fs.promises.realpath(getInstallDataPath("client/winhttp.dll"))
     const targetProxyFileName = path.join(
@@ -244,13 +247,21 @@ export class LauncherService {
     )
 
     if (!fs.existsSync(targetProxyFileName)) {
-      return false
+      return "needs-reinstall"
     }
 
     const sourceHash = await hashFile(sourceProxyFileName, {algorithm: "md5"})
     const targetHash = await hashFile(targetProxyFileName, {algorithm: "md5"})
 
-    return sourceHash === targetHash
+    if (sourceHash === targetHash) {
+      return "up-to-date"
+    }
+
+    if (targetHash === settings.LastInstalledProxyHash) {
+      return "needs-update-from-previous-version"
+    }
+
+    return "needs-reinstall"
   }
 
   /**
@@ -329,7 +340,19 @@ export class LauncherService {
       return {launchedSuccessfully: true}
     }
 
-    const setupValidationErrors = await this.validateSetup()
+    let setupValidationErrors = await this.validateSetup()
+
+    // If we are on Linux *and* the proxy modloader file doesn't match *but* it's the previously
+    // installed proxy modloader, we try to automatically update it.
+    if (
+      this.getPlatform() === "linux" &&
+      setupValidationErrors.includes("invalid-proxy-modloader-file") &&
+      await this.getProxyModloaderInstallationStatus() === "needs-update-from-previous-version"
+    ) {
+      log.info("Detected an out-of-date proxy modloader that was installed by a previous version of the launcher. Trying to update automatically...")
+      await this.installOrUpdateProxyModloader()
+      setupValidationErrors = await this.validateSetup()
+    }
 
     if (setupValidationErrors.length > 0) {
       return {
@@ -387,7 +410,9 @@ export class LauncherService {
         }
         break
       case "microsoft-store":
-        powershellExec("explorer.exe", ["shell:AppsFolder\\Microsoft.Patagonia_8wekyb3d8bbwe!App"]).nodeChildProcess.unref()
+        powershellExec("explorer.exe", [
+          "shell:AppsFolder\\Microsoft.Patagonia_8wekyb3d8bbwe!App",
+        ]).nodeChildProcess.unref()
         await waitForProcess("oriandthewillofthewisps-pc.exe")
         break
       case "standalone":

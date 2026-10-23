@@ -54,6 +54,7 @@ export const useSettingsStore = defineStore("settings", () => {
     ValidateProxyModloader: ref<boolean>(false),
     GameBinaryPath: ref<string>(""),
     SteamBinaryPath: ref<string>(""),
+    LastInstalledProxyHash: ref<string | null>(null),
     LastUsedVersion: ref<string>(""),
   }
 

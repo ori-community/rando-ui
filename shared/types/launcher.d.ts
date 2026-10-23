@@ -6,6 +6,11 @@ export type LaunchSetupValidationError =
   "modloader-method-not-available-on-current-platform" |
   "modloader-method-not-available-for-game-launch-method"
 
+export type ProxyModloaderInstallationStatus =
+  "up-to-date" |
+  "needs-reinstall" |
+  "needs-update-from-previous-version"
+
 export type LaunchResult = {
   launchedSuccessfully: true,
 } | (

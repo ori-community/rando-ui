@@ -41,6 +41,7 @@ export type Settings = {
   ValidateProxyModloader: boolean,
   GameBinaryPath: string,
   SteamBinaryPath: string,
+  LastInstalledProxyHash: string | null,
   LastUsedVersion: string,
 }
 

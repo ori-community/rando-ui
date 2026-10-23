@@ -101,6 +101,7 @@ export class SettingsService {
       ValidateProxyModloader: true,
       GameBinaryPath: SettingsService.getDefaultGameBinaryPath(),
       SteamBinaryPath: SettingsService.getDefaultSteamBinaryPath(),
+      LastInstalledProxyHash: null,
       LastUsedVersion: await UpdateService.getVersion(),
     }
   }

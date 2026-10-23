@@ -289,6 +289,7 @@
   const {includePrereleases} = useReleases()
   const platform = await usePlatform()
 
+  const snackbarStore = useSnackbarStore()
   const developerSettingsContainer = useTemplateRef("developerSettingsContainer")
   const debugStreak = ref(0)
   const ctrlPressed = ref(false)
@@ -355,7 +356,6 @@
       }
     }
   }
-
 
   async function resetLocalTrackerPosition() {
     await electronApi?.localTracker.resetWindowRect.query()

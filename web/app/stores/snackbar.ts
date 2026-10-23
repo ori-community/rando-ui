@@ -1,13 +1,20 @@
 import {defineStore} from "pinia"
-import type {SnackbarQueueMessage} from "vuetify"
 
-// @ts-expect-error TypeScript doesn't resolve recursive types
+type QueuedMessage = {
+  text: string,
+  title?: string,
+  prependIcon?: string,
+  contentClass?: string,
+  color?: string,
+  timer?: string,
+  timerColor?: string,
+  timeout?: number,
+}
+
 export const useSnackbarStore = defineStore("snackbar", () => {
-  // @ts-expect-error TypeScript doesn't resolve recursive types
-  const queue = ref<SnackbarQueueMessage[]>([])
+  const queue = ref<QueuedMessage[]>([])
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function add(message: any | SnackbarQueueMessage) {
+  function add(message: QueuedMessage) {
     queue.value.push(message)
   }
 

@@ -82,19 +82,29 @@ export const gameLaunchMethodsMetadata: {
 export const modloaderMethodsMetadata: {
   [key in Settings["ModloaderMethod"]]: {
     name: string,
-    descriptionComponent: JSX.Element
+    descriptionComponent: (platform?: Platform) => JSX.Element
   }
 } = {
   "proxy": {
     name: "Proxy",
-    descriptionComponent: <span>
-      <strong><em>Recommended if available.</em></strong> Places a small file into the game files.
-      This requires admin privileges on install and when that file needs an update.
-    </span>,
+    descriptionComponent: (platform) => {
+      switch (platform) {
+        case "windows":
+          return <span>
+            <strong><em>Recommended if available.</em></strong> Places a small file into the game files.
+            This requires admin privileges on install and when that file needs an update.
+          </span>
+        case "linux":
+        default:
+          return <span>
+            <strong><em>Recommended if available.</em></strong> Places a small file into the game files.
+          </span>
+      }
+    }
   },
   "inject": {
     name: "Injector",
-    descriptionComponent: <span>
+    descriptionComponent: () => <span>
       Uses an injector to inject the randomizer into the game when launching. Requires admin privileges every time.
     </span>,
   },

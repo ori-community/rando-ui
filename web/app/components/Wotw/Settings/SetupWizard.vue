@@ -54,7 +54,7 @@
                   <template v-if="!availableModloaderMethods.includes(id)">(unavailable)</template>
                 </v-card-title>
                 <v-card-text>
-                  <component :is="metadata.descriptionComponent" />
+                  <component :is="metadata.descriptionComponent(platform)" />
                 </v-card-text>
               </v-card>
             </v-item>

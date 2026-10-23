@@ -140,8 +140,8 @@
         </v-dialog>
 
         <div v-if="platform === 'linux'" class="mt-2" @click="integrateIntoLinuxDesktop">
-          <v-btn color="accent" flat>
-            <v-icon start>mdi-link-plus</v-icon>
+          <v-btn :loading="integrateIntoLinuxDesktopLoading" :color="integrateIntoLinuxDesktopDone ? '' : 'accent'" flat :disabled="integrateIntoLinuxDesktopDone">
+            <v-icon start>{{ integrateIntoLinuxDesktopDone ? "mdi-check" : "mdi-link-plus" }}</v-icon>
             Integrate into Desktop
           </v-btn>
         </div>
@@ -288,12 +288,13 @@
   const devtoolsStore = useDevtoolsStore()
   const {includePrereleases} = useReleases()
   const platform = await usePlatform()
-  const snackbarStore = useSnackbarStore()
 
   const developerSettingsContainer = useTemplateRef("developerSettingsContainer")
   const debugStreak = ref(0)
   const ctrlPressed = ref(false)
   const localTrackerPositionReset = ref(false)
+  const integrateIntoLinuxDesktopDone = ref(false)
+  const integrateIntoLinuxDesktopLoading = ref(false)
 
   const showPrereleaseVersionsCheckboxState = computed({
     get() {
@@ -371,12 +372,30 @@
       return
     }
 
-    await electronApi.fs.integrateIntoLinuxDesktop.query()
-    snackbarStore.add({
-      text: "Desktop integration succeeded.",
-      timer: "bottom",
-      timeout: 4000,
-    })
+    integrateIntoLinuxDesktopLoading.value = true
+
+    try {
+      await electronApi.fs.integrateIntoLinuxDesktop.query()
+      integrateIntoLinuxDesktopDone.value = true
+
+      setTimeout(() => {
+        integrateIntoLinuxDesktopDone.value = false
+      }, 5000)
+    } catch (e) {
+      console.error(e)
+
+      snackbarStore.add({
+        title: "Failed to integrate into desktop",
+        text: String(e),
+        prependIcon: "mdi-close-octagon-outline",
+        color: "error",
+        timer: "bottom",
+        timerColor: "error-darken-2",
+        timeout: 6000,
+      })
+    }
+
+    integrateIntoLinuxDesktopLoading.value = false
   }
 </script>
 

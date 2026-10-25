@@ -12,7 +12,7 @@ type ValidUniversePresets = {
 type ValidWorldPresets = {
   [key: string]: Extract<HashMapStringSchemaResultWorldPresetInfoString[string], { status: "Ok" }>["value"]
 }
-type ValidSnippetsInfos = {
+type ValidSnippetInfos = {
   [key: string]: Extract<HashMapStringSchemaResultSnippetInfoString[string], { status: "Ok" }>["value"]
 }
 type ValidPlandoInfos = {

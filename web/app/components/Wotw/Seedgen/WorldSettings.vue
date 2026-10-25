@@ -26,8 +26,10 @@
           prepend-inner-icon="mdi-routes"
         />
 
-        <v-card variant="tonal" class="justify-start activated-opacity-input-field" block size="xl"
-                @click="gameDifficultiesDialogOpen = true">
+        <v-card
+          variant="tonal" class="justify-start activated-opacity-input-field" block size="xl"
+          @click="gameDifficultiesDialogOpen = true"
+        >
           <div class="pa-3 d-flex align-center justify-start text-left ga-1">
             <v-icon class="flex-shrink-0 opacity-70">mdi-gauge</v-icon>
             <div class="pl-1 flex-grow-1">
@@ -42,8 +44,10 @@
             <v-icon class="opacity-70">mdi-chevron-right</v-icon>
           </div>
         </v-card>
-        <v-dialog v-model="gameDifficultiesDialogOpen" max-width="750"
-                  :persistent="selectedDifficultyNames.length === 0">
+        <v-dialog
+          v-model="gameDifficultiesDialogOpen" max-width="750"
+          :persistent="selectedDifficultyNames.length === 0"
+        >
           <v-card title="Game Difficulties">
             <v-card-text>
               Select at least one difficulty the generated seed should be playable on.
@@ -86,8 +90,10 @@
                 </template>
               </v-switch>
             </v-card-text>
-            <v-btn :disabled="selectedDifficultyNames.length === 0" class="close-button" icon variant="plain"
-                   @click="gameDifficultiesDialogOpen = false">
+            <v-btn
+              :disabled="selectedDifficultyNames.length === 0" class="close-button" icon variant="plain"
+              @click="gameDifficultiesDialogOpen = false"
+            >
               <v-icon>mdi-close</v-icon>
             </v-btn>
           </v-card>
@@ -133,6 +139,8 @@
             v-model:world-snippet-config="model.snippetConfig"
             :snippet-identifier="snippet.identifier"
             :snippet-info="snippet.snippetInfo"
+            :snippet-infos="validSnippetsInfo"
+            :included-by="snippetIncludedByBySnippet[snippet.identifier]"
           />
         </div>
       </div>
@@ -148,8 +156,11 @@
           Do you want to deselect these tricks?
         </v-card-text>
         <div class="ma-3 d-flex justify-end gap-4">
-          <v-btn prepend-icon="mdi-close" variant="tonal"
-                 @click="tricksInvalidBecauseOfDifficultyChangeDialogOpen = false">Cancel
+          <v-btn
+            prepend-icon="mdi-close" variant="tonal"
+            @click="tricksInvalidBecauseOfDifficultyChangeDialogOpen = false"
+          >
+            Cancel
           </v-btn>
           <v-btn prepend-icon="mdi-checkbox-blank-off-outline" color="error" flat @click="cleanInvalidTricks()">Deselect
             {{ invalidSelectedTricks.size }} Trick{{ invalidSelectedTricks.size === 1 ? "" : "s" }}
@@ -208,8 +219,10 @@
 
             <v-menu activator="parent" location="top end" :persistent="presetIdApplying !== null">
               <v-list>
-                <v-list-item v-for="presetId in Object.keys(nonBasePresets)" :key="presetId"
-                             :disabled="presetIdApplying !== null" @click="applyPreset(presetId)">
+                <v-list-item
+                  v-for="presetId in Object.keys(nonBasePresets)" :key="presetId"
+                  :disabled="presetIdApplying !== null" @click="applyPreset(presetId)"
+                >
                   <div class="d-flex align-center ga-3">
                     <v-icon>mdi-import</v-icon>
                     <div>
@@ -264,7 +277,7 @@
     TrickInfo, WorldPreset,
     WorldSettings,
   } from "@shared/types/seedgen"
-  import type {ValidSnippetsInfos, ValidWorldPresets} from "@shared/types/seedgen-extra"
+  import type {ValidSnippetInfos, ValidWorldPresets} from "@shared/types/seedgen-extra"
   import {useSeedgenAxios} from "~/composables/useSeedgenAxios"
   import {compressToBase64, decompressFromBase64} from "lz-string"
   import {WORLD_SETTINGS_CLIPBOARD_TAG} from "~/assets/constants"
@@ -314,7 +327,7 @@
     () => Object.fromEntries(
       Object.entries(props.snippetsInfo)
         .filter(([, e]) => e.status === "Ok")
-        .map(([k, v]) => [k, v.value])) as ValidSnippetsInfos,
+        .map(([k, v]) => [k, v.value])) as ValidSnippetInfos,
   )
   const visibleSnippetsInfo = computed(() => Object.fromEntries(Object.entries(validSnippetsInfo.value).filter(([, e]) => !e.metadata.hidden)))
   const categorizedSnippetsInfo = computed(() => {
@@ -361,6 +374,21 @@
     })
 
     return categories
+  })
+  const snippetIncludedByBySnippet = computed(() => {
+    const snippetIncludedByBySnippet: Record<string, Set<string>> = {}
+
+    for (const [snippetId, snippetInfo] of Object.entries(validSnippetsInfo.value)) {
+      for (const includedSnippetId of snippetInfo.metadata.includes) {
+        if (!Object.hasOwn(snippetIncludedByBySnippet, includedSnippetId)) {
+          snippetIncludedByBySnippet[includedSnippetId] = new Set<string>()
+        }
+
+        snippetIncludedByBySnippet[includedSnippetId]!.add(snippetId)
+      }
+    }
+
+    return snippetIncludedByBySnippet
   })
   const selectedDifficultyNames = computed(() => {
     const names = []

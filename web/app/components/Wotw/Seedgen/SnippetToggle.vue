@@ -1,22 +1,13 @@
 <template>
   <v-card variant="flat" color="surface-light" rounded>
     <v-btn
-      :color="snippetActive ? 'secondary' : 'surface-light'"
+      :color="color"
       variant="flat"
       class="snippet-toggle"
+      :disabled="snippetsActiveThatIncludeThisSnippet.length > 0"
       @click="toggleSnippet"
     >
       {{ snippetInfo.metadata.name ?? snippetIdentifier }}
-      <v-tooltip
-        v-if="!!snippetInfo.metadata.description"
-        content-class="bg-surface-light"
-        open-delay="500"
-        max-width="350"
-        activator="parent"
-        location="bottom"
-      >
-        {{ snippetInfo.metadata.description }}
-      </v-tooltip>
     </v-btn>
     <template v-if="snippetHasConfig">
       <v-btn variant="plain" size="x-small" class="mx-1" icon @click="enableSnippetIfNotEnabled">
@@ -36,30 +27,66 @@
           </v-card>
         </v-dialog>
       </v-btn>
-      <v-badge :model-value="snippetHasNonDefaultValues" floating color="bg-primary" offset-x="13" offset-y="-10"
-               bordered dot />
+      <v-badge
+        :model-value="snippetHasNonDefaultValues" floating color="bg-primary" offset-x="13" offset-y="-10"
+        bordered dot
+      />
     </template>
     <span v-if="snippetInfo.origin.dir === 'UserData'">
       <v-btn variant="plain" size="x-small" class="mx-1" icon readonly>
         <v-icon icon="mdi-account-outline" size="x-large" />
       </v-btn>
-      <v-tooltip activator="parent" location="bottom" open-delay="500" content-class="bg-surface-light">
-        Custom Snippet
-      </v-tooltip>
     </span>
+    <v-tooltip
+      content-class="bg-surface-light"
+      open-delay="500"
+      max-width="350"
+      activator="parent"
+      location="bottom"
+    >
+      <span>
+        <template v-if="!!snippetInfo.metadata.description">
+          {{ snippetInfo.metadata.description }}
+        </template>
+        <em v-else class="opacity-70">
+          No description
+        </em>
+      </span>
+      <template v-if="snippetsActiveThatIncludeThisSnippet.length > 0 || isCustom">
+        <v-divider class="my-2" />
+        <div v-if="snippetsActiveThatIncludeThisSnippet.length > 0" class="d-flex">
+          <v-icon start>mdi-import</v-icon>
+          <span>
+            Included in {{ snippetsActiveThatIncludeThisSnippet.length >= 2 ? "other snippets" : "another snippet" }}:
+            {{ snippetsActiveThatIncludeThisSnippet.map(snippetId => snippetInfos[snippetId]?.metadata?.name ?? snippetId).join(", ") }}
+          </span>
+        </div>
+        <div v-if="isCustom">
+          <v-icon start>mdi-account-outline</v-icon>
+          User preset
+        </div>
+      </template>
+    </v-tooltip>
   </v-card>
 </template>
 
 <script lang="ts" setup>
   import type {HashMapStringHashMapStringString, SnippetInfo} from "@shared/types/seedgen"
   import {useVModel} from "@vueuse/core"
+  import type {ValidSnippetInfos} from "@shared/types/seedgen-extra"
 
-  const props = defineProps<{
-    snippetIdentifier: string,
-    snippetInfo: SnippetInfo,
-    worldSnippets: string[],
-    worldSnippetConfig: HashMapStringHashMapStringString,
-  }>()
+  const props = withDefaults(
+    defineProps<{
+      snippetIdentifier: string,
+      snippetInfo: SnippetInfo,
+      snippetInfos: ValidSnippetInfos,
+      worldSnippets: string[],
+      worldSnippetConfig: HashMapStringHashMapStringString,
+      includedBy?: Set<string>,
+    }>(), {
+      includedBy: () => new Set<string>(),
+    },
+  )
 
   const emit = defineEmits<{
     "update:worldSnippets": [string[]],
@@ -71,7 +98,10 @@
   const worldSnippetsModel = useVModel(props, "worldSnippets", emit)
   const worldSnippetConfigModel = useVModel(props, "worldSnippetConfig", emit)
   const snippetHasConfig = computed(() => Object.keys(props.snippetInfo.metadata.config).length > 0)
-  const snippetActive = computed(() => worldSnippetsModel.value.includes(props.snippetIdentifier))
+  const snippetsActiveThatIncludeThisSnippet = computed(() => {
+    return worldSnippetsModel.value.filter(snippetId => props.includedBy.has(snippetId))
+  })
+  const snippetActive = computed(() => snippetsActiveThatIncludeThisSnippet.value.length > 0 || worldSnippetsModel.value.includes(props.snippetIdentifier))
   const snippetHasNonDefaultValues = computed(() =>
     Object.keys(props.snippetInfo.metadata.config).some(configKey => {
       const configValue = worldSnippetConfigModel.value[props.snippetIdentifier]?.[configKey]
@@ -83,6 +113,16 @@
       return configValue !== String(props.snippetInfo.metadata.config[configKey]?.value.default)
     }),
   )
+  const isCustom = computed(() => props.snippetInfo.origin.dir === 'UserData')
+  const color = computed(() => {
+    if (snippetActive.value) {
+      return snippetsActiveThatIncludeThisSnippet.value.length > 0
+        ? "primary"
+        : "secondary"
+    }
+
+    return "surface-light"
+  })
 
   function toggleSnippet() {
     const existingSnippetIndex = worldSnippetsModel.value.indexOf(props.snippetIdentifier)

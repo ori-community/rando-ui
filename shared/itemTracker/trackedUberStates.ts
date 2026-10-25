@@ -78,7 +78,7 @@ const trackedUberStates = [
   {uberId: {group: 24, state: 118}, trackingId: "skillFlap"},
   {uberId: {group: 24, state: 120}, trackingId: "skillAncestralLightGlades"},
   {uberId: {group: 24, state: 121}, trackingId: "skillAncestralLightMarsh"},
-  {uberId: {group: 6, state: 2000}, trackingId: "skillCleanWater"},
+  {uberId: {group: 16, state: 2000}, trackingId: "skillCleanWater"},
 
   {uberId: {group: 4, state: 70}, trackingId: "meltingBow"},
   {uberId: {group: 4, state: 71}, trackingId: "meltingBlaze"},

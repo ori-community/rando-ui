@@ -1,11 +1,6 @@
 <template>
   <div class="page-toolbar d-flex align-center my-4">
-    <v-scale-transition group tag="div" class="d-flex toolbar-gap align-center">
-      <!-- TODO stats -->
-      <!-- TODO mygames -->
-      <!-- TODO archipelago -->
-      <!-- TODO Map -->
-
+    <v-expand-x-transition group tag="div" :class="{'preparing': userStore.isLoggedIn === undefined}" class="page-toolbar-items d-flex toolbar-gap align-center">
       <!--   MAIN BUTTONS  -->
       <v-btn key="home" exact :to="`${isElectron ? `/electron` : `/`}`" size="x-large" variant="text">
         <v-icon>mdi-home-outline</v-icon>
@@ -115,7 +110,7 @@
           </v-list>
         </v-menu>
       </div>
-    </v-scale-transition>
+    </v-expand-x-transition>
     <v-spacer />
     <rando-throttled-spinner no-margin>
       <template v-if="userStore.user !== undefined" #content>
@@ -384,5 +379,23 @@
 
   .line-height-1 {
     line-height: 1;
+  }
+
+  .page-toolbar-items {
+    & > * {
+      transition: opacity 200ms ease-out;
+    }
+
+    @for $i from 1 through 10 {
+      & > *:nth-child(#{$i}) {
+        transition-delay: #{$i * 30}ms;
+      }
+    }
+
+    &.preparing {
+      & > * {
+        opacity: 0;
+      }
+    }
   }
 </style>

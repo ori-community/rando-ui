@@ -21,6 +21,10 @@ export function useTaggedStringFromClipboard(tag: string) {
   })
 
   async function updateContent() {
+    if (!document.hasFocus()) {
+      return
+    }
+
     const clipboardContent = await window.navigator.clipboard.readText()
     content.value = clipboardContent.startsWith(tagPrefix)
       ? clipboardContent.substring(tagPrefix.length)

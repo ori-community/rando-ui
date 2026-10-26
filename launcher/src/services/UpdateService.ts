@@ -173,7 +173,7 @@ export class UpdateService {
             "  if [ $tries -gt 5 ]; then",
             "    exit 1;",
             "  fi",
-            `  find "${escapedInstallDataPath}" -mindepth 1 -delete && mkdir "${escapedInstallDataPath}" && tar -xzf "${escapedTemporaryPath}" -C "${escapedInstallDataPath}" && break`,
+            `  find "${escapedInstallDataPath}" -mindepth 1 -delete && tar -xzf "${escapedTemporaryPath}" -C "${escapedInstallDataPath}" && break`,
             "  tries=$(expr $tries + 1)",
             "  sleep 3",
             "done",

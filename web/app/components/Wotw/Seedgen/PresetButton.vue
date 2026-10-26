@@ -43,7 +43,7 @@
       </span>
       <template v-if="includeChains.length > 0 || isCustom">
         <v-divider class="my-2" />
-        <div v-if="includeChains.length > 0" class="d-flex">
+        <div v-if="includeChains.length > 0" class="d-flex opacity-60">
           <v-icon start>mdi-import</v-icon>
           <div>
             <div v-for="chain in includeChains">
@@ -51,7 +51,7 @@
             </div>
           </div>
         </div>
-        <div v-if="isCustom">
+        <div v-if="isCustom" class="opacity-60">
           <v-icon start>mdi-account-outline</v-icon>
           User preset
         </div>

@@ -124,7 +124,13 @@ export const useSettingsStore = defineStore("settings", () => {
   }
 
   function waitForSettingsFlushed(): Promise<void> {
-    return new Promise(resolve => waitForSettingsFlushedResolveFns.push(resolve))
+    return new Promise(resolve => {
+      if (pendingSettingsSubmissions > 0) {
+        waitForSettingsFlushedResolveFns.push(resolve)
+      } else {
+        resolve()
+      }
+    })
   }
 
   return {

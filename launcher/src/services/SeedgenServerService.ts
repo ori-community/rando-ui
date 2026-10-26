@@ -15,21 +15,14 @@ type SeedgenExecaOptions = {
 
 export class SeedgenServerService {
   private static _process: ResultPromise<SeedgenExecaOptions> | null = null
+  private static _processIsRunning: boolean = false
   private static _currentStartupPromise: Promise<void> | null = null
-
-  /**
-   * Returns whether a seedgen process that has been started by this process is running
-   * @private
-   */
-  static #isSeedgenProcessRunning() {
-    return this._process !== null && this._process.nodeChildProcess.exitCode === null
-  }
 
   /**
    * Kills the seedgen process if it is running and was started by the launcher
    */
   static async kill() {
-    if (!this.#isSeedgenProcessRunning()) {
+    if (!this._processIsRunning) {
       return
     }
 
@@ -42,7 +35,7 @@ export class SeedgenServerService {
    * @param readyTimeoutMs Timeout in milliseconds to wait for the seedgen server to become ready.
    */
   static async ensureRunning(forceRestart = false, readyTimeoutMs = 10000) {
-    if (this.#isSeedgenProcessRunning()) {
+    if (this._processIsRunning) {
       if (!forceRestart) {
         await this._currentStartupPromise
         return
@@ -105,6 +98,11 @@ export class SeedgenServerService {
             this._process = seedgenExec(getInstallDataPath("seedgen/wotw-seedgen"), seedgenCliArguments)
             break
         }
+
+        this._processIsRunning = true
+        this._process.finally(() => {
+          this._processIsRunning = false
+        })
 
         this._process.catch((err: Error) => {
           // Seedgen HTTP server was started outside the launcher

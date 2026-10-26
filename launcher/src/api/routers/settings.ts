@@ -18,7 +18,7 @@ export const settings = router({
     .input(
       z.object({
         key: z.string(),
-        value: z.string().or(z.number()).or(z.boolean()),
+        value: z.string().or(z.number()).or(z.boolean()).nullable(),
       }),
     )
     .query(async ({input}) => {

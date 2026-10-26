@@ -224,6 +224,7 @@
       settings.ModloaderMethod.value = modloaderMethod.value
       settings.GameBinaryPath.value = gameBinaryPath.value
       settings.SteamBinaryPath.value = steamBinaryPath.value
+      await settingsStore.waitForSettingsFlushed()
 
       if (modloaderMethod.value === "proxy") {
         await electronApi.launcher.installOrUpdateProxyModloader.query()

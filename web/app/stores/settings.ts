@@ -10,6 +10,8 @@ export const useSettingsStore = defineStore("settings", () => {
   const electronApi = useElectronApi()
 
   const isInitialized = ref(false)
+  let pendingSettingsSubmissions = 0
+  let waitForSettingsFlushedResolveFns: (() => void)[] = []
 
   const settingsRefs: SettingsRefs = {
     ServerHost: ref<string>(""),
@@ -68,7 +70,7 @@ export const useSettingsStore = defineStore("settings", () => {
         settingsRefs[settingKey].value = currentSettings[settingKey]
         let pendingValue: undefined | Settings[SettingKey] = undefined
 
-        async function submitSetting(value: Settings[SettingKey]) {
+        async function submitSetting(value: Settings[SettingKey], isDebouncedSubmission = false) {
           if (!electronApi) {
             return
           }
@@ -78,12 +80,27 @@ export const useSettingsStore = defineStore("settings", () => {
             return
           }
 
-          submittingSettingsKeys.add(settingKey)
-          await electronApi.settings.setSetting.query({key, value})
-          submittingSettingsKeys.delete(settingKey)
+          pendingSettingsSubmissions++
 
-          if (pendingValue !== undefined) {
-            submitSetting(pendingValue)
+          try {
+            submittingSettingsKeys.add(settingKey)
+            await electronApi.settings.setSetting.query({key, value})
+            submittingSettingsKeys.delete(settingKey)
+
+            if (pendingValue !== undefined) {
+              await submitSetting(pendingValue, true)
+            }
+          } catch (e) {
+            console.error(e)
+          }
+
+          pendingSettingsSubmissions--
+
+          if (!isDebouncedSubmission && pendingSettingsSubmissions === 0) {
+            for (const waitForSettingsFlushedResolveFn of waitForSettingsFlushedResolveFns) {
+              waitForSettingsFlushedResolveFn()
+            }
+            waitForSettingsFlushedResolveFns = []
           }
         }
 
@@ -106,8 +123,13 @@ export const useSettingsStore = defineStore("settings", () => {
     console.error("Failed to initialize Settings store. Electron API was not available. Do not use the Settings store in non-launcher environments")
   }
 
+  function waitForSettingsFlushed(): Promise<void> {
+    return new Promise(resolve => waitForSettingsFlushedResolveFns.push(resolve))
+  }
+
   return {
     isInitialized,
+    waitForSettingsFlushed,
     ...settingsRefs,
   }
 })

@@ -46,8 +46,7 @@ async function fetchReleases() {
   const electronApi = useElectronApi()
   const currentVersionString = await electronApi?.updater.getVersion.query() ?? null
   currentVersion.value = currentVersionString === null ? null : semver.parse(currentVersionString)
-  // TODO: Remove "|| electronApi === null" here once v5 is stable
-  isDevelopVersion.value = currentVersionString === "develop" || electronApi === null
+  isDevelopVersion.value = currentVersionString === "develop" || import.meta.dev
 
   releases.value = githubReleases
     .map((release): Release | null => {

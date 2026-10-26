@@ -1,7 +1,6 @@
 import {EventEmitter} from "events"
 import fs from "fs"
 import os from "os"
-
 import {getClientUserDataPath, getUserDataPath} from "@launcher/paths"
 import {LauncherService} from "@launcher/services/LauncherService"
 import {LocalTrackerService} from "@launcher/services/LocalTrackerService"
@@ -58,8 +57,13 @@ export class SettingsService {
   public static async getDefaultSettings(): Promise<Settings> {
     const localTrackerInitialWindowRect = LocalTrackerService.getInitialWindowRect()
 
+    const version = await UpdateService.getVersion()
+    const isDevelopmentVersion = version === "develop" || (semver.prerelease(version)?.length ?? 0) > 0
+
     return {
-      ServerHost: "dev.wotw.orirando.com",
+      ServerHost: isDevelopmentVersion
+        ? "dev.wotw.orirando.com"
+        : "wotw.orirando.com",
       ServerTLS: true,
       DeveloperMode: false,
       DebugControls: false,
@@ -199,6 +203,14 @@ export class SettingsService {
 
     if (this.settingsFlushTimeoutId === null) {
       this.settingsFlushTimeoutId = setTimeout(() => this.flushSettings(), 2000)
+    }
+
+    if (key === "DeveloperMode" && value === false) {
+      const defaultSettings = await SettingsService.getDefaultSettings()
+      await this.setSetting("ServerHost", defaultSettings.ServerHost)
+      await this.setSetting("DebugControls", defaultSettings.DebugControls)
+      await this.setSetting("LogDebugMessagesToFile", defaultSettings.LogDebugMessagesToFile)
+      await this.setSetting("ServerTLS", defaultSettings.ServerTLS)
     }
   }
 

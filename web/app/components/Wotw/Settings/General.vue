@@ -328,10 +328,6 @@
 
   async function disableDeveloperTools() {
     settings.DeveloperMode.value = false
-    settings.ServerHost.value = "wotw.orirando.com"
-    settings.DebugControls.value = false
-    settings.LogDebugMessagesToFile.value = false
-    settings.ServerTLS.value = true
   }
 
   function onKeyUp(event: KeyboardEvent) {

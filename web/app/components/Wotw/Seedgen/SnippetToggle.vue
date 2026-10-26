@@ -4,7 +4,7 @@
       :color="color"
       variant="flat"
       class="snippet-toggle"
-      :disabled="snippetsActiveThatIncludeThisSnippet.length > 0"
+      :disabled="includeChains.length > 0"
       @click="toggleSnippet"
     >
       {{ snippetInfo.metadata.name ?? snippetIdentifier }}
@@ -52,14 +52,15 @@
           No description
         </em>
       </span>
-      <template v-if="snippetsActiveThatIncludeThisSnippet.length > 0 || isCustom">
+      <template v-if="includeChains.length > 0 || isCustom">
         <v-divider class="my-2" />
-        <div v-if="snippetsActiveThatIncludeThisSnippet.length > 0" class="d-flex">
+        <div v-if="includeChains.length > 0" class="d-flex">
           <v-icon start>mdi-import</v-icon>
-          <span>
-            Included in {{ snippetsActiveThatIncludeThisSnippet.length >= 2 ? "other snippets" : "another snippet" }}:
-            {{ snippetsActiveThatIncludeThisSnippet.map(snippetId => snippetInfos[snippetId]?.metadata?.name ?? snippetId).join(", ") }}
-          </span>
+          <div>
+            <div v-for="chain in includeChains">
+              Included in: {{ chain.map(element => `'${element.name ?? element.id}'`).join(" ⟶ ") }}
+            </div>
+          </div>
         </div>
         <div v-if="isCustom">
           <v-icon start>mdi-account-outline</v-icon>
@@ -73,7 +74,7 @@
 <script lang="ts" setup>
   import type {HashMapStringHashMapStringString, SnippetInfo} from "@shared/types/seedgen"
   import {useVModel} from "@vueuse/core"
-  import type {ValidSnippetInfos} from "@shared/types/seedgen-extra"
+  import type {IncludeChain, ValidSnippetInfos} from "@shared/types/seedgen-extra"
 
   const props = withDefaults(
     defineProps<{
@@ -82,9 +83,9 @@
       snippetInfos: ValidSnippetInfos,
       worldSnippets: string[],
       worldSnippetConfig: HashMapStringHashMapStringString,
-      includedBy?: Set<string>,
+      includeChains?: IncludeChain[],
     }>(), {
-      includedBy: () => new Set<string>(),
+      includeChains: () => [],
     },
   )
 
@@ -98,10 +99,7 @@
   const worldSnippetsModel = useVModel(props, "worldSnippets", emit)
   const worldSnippetConfigModel = useVModel(props, "worldSnippetConfig", emit)
   const snippetHasConfig = computed(() => Object.keys(props.snippetInfo.metadata.config).length > 0)
-  const snippetsActiveThatIncludeThisSnippet = computed(() => {
-    return worldSnippetsModel.value.filter(snippetId => props.includedBy.has(snippetId))
-  })
-  const snippetActive = computed(() => snippetsActiveThatIncludeThisSnippet.value.length > 0 || worldSnippetsModel.value.includes(props.snippetIdentifier))
+  const snippetActive = computed(() => props.includeChains.length > 0 || worldSnippetsModel.value.includes(props.snippetIdentifier))
   const snippetHasNonDefaultValues = computed(() =>
     Object.keys(props.snippetInfo.metadata.config).some(configKey => {
       const configValue = worldSnippetConfigModel.value[props.snippetIdentifier]?.[configKey]
@@ -116,7 +114,7 @@
   const isCustom = computed(() => props.snippetInfo.origin.dir === 'UserData')
   const color = computed(() => {
     if (snippetActive.value) {
-      return snippetsActiveThatIncludeThisSnippet.value.length > 0
+      return props.includeChains.length > 0
         ? "primary"
         : "secondary"
     }

@@ -49,7 +49,7 @@
             </div>
           </v-expand-x-transition>
         </v-tabs>
-        <v-btn v-if="worldSettings.length > 0" variant="text" @click="resetEverything()">
+        <v-btn v-if="worldSettings.length > 0" variant="flat" color="red" @click="resetEverything()">
           <v-icon start>mdi-restore</v-icon>
           Start over
         </v-btn>

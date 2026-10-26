@@ -140,7 +140,7 @@
             :snippet-identifier="snippet.identifier"
             :snippet-info="snippet.snippetInfo"
             :snippet-infos="validSnippetsInfo"
-            :included-by="snippetIncludedByBySnippet[snippet.identifier]"
+            :include-chains="includeChains[snippet.identifier]"
           />
         </div>
       </div>
@@ -277,7 +277,7 @@
     TrickInfo, WorldPreset,
     WorldSettings,
   } from "@shared/types/seedgen"
-  import type {ValidSnippetInfos, ValidWorldPresets} from "@shared/types/seedgen-extra"
+  import type {IncludeChain, ValidSnippetInfos, ValidWorldPresets} from "@shared/types/seedgen-extra"
   import {useSeedgenAxios} from "~/composables/useSeedgenAxios"
   import {compressToBase64, decompressFromBase64} from "lz-string"
   import {WORLD_SETTINGS_CLIPBOARD_TAG} from "~/assets/constants"
@@ -375,21 +375,6 @@
 
     return categories
   })
-  const snippetIncludedByBySnippet = computed(() => {
-    const snippetIncludedByBySnippet: Record<string, Set<string>> = {}
-
-    for (const [snippetId, snippetInfo] of Object.entries(validSnippetsInfo.value)) {
-      for (const includedSnippetId of snippetInfo.metadata.includes) {
-        if (!Object.hasOwn(snippetIncludedByBySnippet, includedSnippetId)) {
-          snippetIncludedByBySnippet[includedSnippetId] = new Set<string>()
-        }
-
-        snippetIncludedByBySnippet[includedSnippetId]!.add(snippetId)
-      }
-    }
-
-    return snippetIncludedByBySnippet
-  })
   const selectedDifficultyNames = computed(() => {
     const names = []
     if (model.value.gameDifficulties.easy) {
@@ -402,6 +387,34 @@
       names.push("Hard")
     }
     return names
+  })
+  const includeChains = computed<Record<string, IncludeChain[]>>(() => {
+    const includeChains: Record<string, IncludeChain[]> = {}
+
+    const collectChain = (snippetId: string, chain: IncludeChain = []) => {
+      const snippet = validSnippetsInfo.value?.[snippetId]
+      if (!snippet) {
+        return
+      }
+
+      if (chain.length > 0) {
+        const chains = includeChains[snippetId] ?? []
+        chains.push(chain)
+        includeChains[snippetId] = chains
+      }
+
+      for (const include of snippet.metadata.includes) {
+        if (!chain.some(element => element.id === include)) {
+          collectChain(include, [...chain, { id: snippetId, name: snippet.metadata.name ?? null }])
+        }
+      }
+    }
+
+    for (const snippetId of model.value.snippets) {
+      collectChain(snippetId)
+    }
+
+    return includeChains
   })
 
   const teleporterAnchorNames = computed(() => {

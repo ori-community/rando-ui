@@ -40,11 +40,11 @@
             <wotw-seedgen-preset-button
               v-for="ungroupedPresetId in Object.keys(presetsWithoutGroup)"
               :key="ungroupedPresetId"
-              :selected="selectedAdditionalPresets.has(ungroupedPresetId) || selectedBasePreset.preset.includes?.includes(ungroupedPresetId)"
+              :selected="selectedAdditionalPresets.has(ungroupedPresetId)"
               :preset-id="ungroupedPresetId"
               :preset-info="(worldPresets[ungroupedPresetId] as WorldPresetInfo).content.info"
               icon="mdi-plus"
-              :is-included-in="selectedBasePreset.preset.includes?.includes(ungroupedPresetId) ? (selectedBasePreset.preset.info?.name ?? selectedBasePreset.id) : null"
+              :include-chains="includeChains[ungroupedPresetId]"
               :is-custom="(worldPresets[ungroupedPresetId] as WorldPresetInfo).origin.dir === 'UserData'"
               @click="onAdditionalPresetSelected(ungroupedPresetId)"
               @contextmenu="(event: MouseEvent) => onPresetButtonContextMenu(ungroupedPresetId, event)"
@@ -122,7 +122,7 @@
   import type {GroupedPresetIds} from "~/assets/types/components/seedgen"
   import {clone} from "@shared/utils/clone"
   import {useSeedgenAxios} from "~/composables/useSeedgenAxios"
-  import type {ValidWorldPresets} from "@shared/types/seedgen-extra"
+  import type {IncludeChain, ValidWorldPresets} from "@shared/types/seedgen-extra"
   import {WORLD_SETTINGS_CLIPBOARD_TAG} from "~/assets/constants"
   import {decompressFromBase64} from "lz-string"
   import {useTaggedStringFromClipboard} from "~/composables/useTaggedStringFromClipboard"
@@ -168,6 +168,38 @@
   const presetsWithoutGroup = computed(() => Object.fromEntries(
     Object.entries(worldPresets).filter(p => !p[1].content.info || !p[1].content.info.group),
   ))
+
+  const includeChains = computed<Record<string, IncludeChain[]>>(() => {
+    const includeChains: Record<string, IncludeChain[]> = {}
+
+    const collectChain = (presetId: string, chain: IncludeChain = []) => {
+      const preset = worldPresets?.[presetId]
+      if (!preset) {
+        return
+      }
+
+      if (chain.length > 0) {
+        const chains = includeChains[presetId] ?? []
+        chains.push(chain)
+        includeChains[presetId] = chains
+      }
+
+      for (const include of preset.content.includes ?? []) {
+        if (!chain.some(element => element.id === include)) {
+          collectChain(include, [...chain, { id: presetId, name: preset.content.info?.name ?? null }])
+        }
+      }
+    }
+
+    if (selectedBasePreset.value) {
+      collectChain(selectedBasePreset.value.id)
+    }
+    for (const additionalPresetId of selectedAdditionalPresets.value) {
+      collectChain(additionalPresetId)
+    }
+
+    return includeChains
+  })
 
   function onBaseWorldPresetSelected(presetId: string) {
     if (loading) {

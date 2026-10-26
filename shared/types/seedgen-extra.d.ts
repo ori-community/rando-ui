@@ -27,3 +27,5 @@ type SeedgenUiState = {
   enableBingo: boolean,
   enableRaceMode: boolean,
 }
+
+type IncludeChain = {id: string, name: string | null}[]

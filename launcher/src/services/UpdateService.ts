@@ -141,7 +141,7 @@ export class UpdateService {
             "done",
             `chmod +x "${escapedAppImagePath}"`,
             `exec "${escapedAppImagePath}"`,
-          ].join("\n"), {encoding: "utf8"})
+          ].join("\n"), {encoding: "utf8", mode: 0o744})
 
           spawn("sh", [updateScriptPath], {
             detached: true,
@@ -178,7 +178,7 @@ export class UpdateService {
             "  sleep 3",
             "done",
             `exec "${escapedExecutablePath}"`,
-          ].join("\n"), {encoding: "utf8"})
+          ].join("\n"), {encoding: "utf8", mode: 0o744})
 
           spawn("sh", [updateScriptPath], {
             detached: true,

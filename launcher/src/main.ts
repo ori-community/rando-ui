@@ -54,7 +54,7 @@ if (!app.requestSingleInstanceLock()) {
     },
   ])
 
-  if (import.meta.env.DEV) {
+  if (!import.meta.env.DEV) {
     app.setAsDefaultProtocolClient(DEFAULT_PROTOCOL)
   }
 

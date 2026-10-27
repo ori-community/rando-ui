@@ -47,7 +47,7 @@
           <v-icon start>mdi-import</v-icon>
           <div>
             <div v-for="chain in includeChains">
-              Included in: {{ chain.map(element => `'${element.name ?? element.id}'`).join(" ⟶ ") }}
+              Included in: {{ chain.map(element => `'${element.name ?? element.id}'`).join(" 🡒 ") }}
             </div>
           </div>
         </div>

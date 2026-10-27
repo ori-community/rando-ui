@@ -5,7 +5,8 @@
       Plandomizers, or Plandos in short, are premade Seeds that can be played. Plandos are mostly used for
       special challenges or tools for Randomizer developers.
       The Randomizer comes with some bundled Plandos, which are listed here. For more Plandos made by other players
-      join the Ori Runs Discord server.
+      join the Ori Runs Discord server or check if we have any listed in the
+      <a href="https://wiki.orirando.com/plando#version-5x-plandomizers-beta">Plandomizer Wiki page</a>.
     </p>
 
     <throttled-spinner>

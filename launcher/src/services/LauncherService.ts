@@ -334,7 +334,7 @@ export class LauncherService {
       await RandoIPCService.emit("load_new_game_source")
 
       if (this.getPlatform() === "windows") {
-        ;(await import("focus-ori")).focusOri()
+        (await import("focus-ori")).focusOri()
       }
 
       return {launchedSuccessfully: true}

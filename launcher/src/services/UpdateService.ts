@@ -81,6 +81,13 @@ export class UpdateService {
     })
   }
 
+  private static quitAndKillServices() {
+    app.on("quit", async () => {
+      await SeedgenServerService.kill()
+    })
+    app.quit()
+  }
+
   public static async downloadAndInstallUpdate(urls: DownloadUrls) {
     if (this.isUpdating) {
       return
@@ -93,16 +100,16 @@ export class UpdateService {
       const installerPath = getTemporaryUserDataPath("randomizer_update.exe")
       await this.downloadUpdate(urls.windowsInstaller, installerPath)
 
-      app.on("quit", async () => {
-        await SeedgenServerService.kill()
-
-        log.info("UpdateService: Spawning process: ", installerPath)
-        spawn(installerPath, ["/SILENT"], {
-          detached: true,
-          stdio: "ignore",
-        }).unref()
+      log.info("UpdateService: Spawning process: ", installerPath)
+      const process = spawn(installerPath, ["/SILENT"], {
+        detached: true,
+        stdio: "ignore",
       })
-      app.quit()
+
+      process.on("spawn", () => {
+        process.unref()
+        UpdateService.quitAndKillServices()
+      })
     } else if (os.platform() === "linux") {
       const appImagePath = process.env.APPIMAGE
 
@@ -119,74 +126,72 @@ export class UpdateService {
 
         await this.downloadUpdate(urls.linuxAppimage, temporaryPath)
 
-        app.on("quit", async () => {
-          await SeedgenServerService.kill()
+        log.info(`UpdateService: Replacing AppImage at '${appImagePath}'`)
+        const updateScriptPath = getTemporaryUserDataPath("wotw-randomizer-update.sh")
 
-          log.info(`UpdateService: Replacing AppImage at '${appImagePath}'`)
-          const updateScriptPath = getTemporaryUserDataPath("wotw-randomizer-update.sh")
+        const escapedTemporaryPath = temporaryPath.replaceAll("\"", "\\\"")
+        const escapedAppImagePath = appImagePath.replaceAll("\"", "\\\"")
 
-          const escapedTemporaryPath = temporaryPath.replaceAll("\"", "\\\"")
-          const escapedAppImagePath = appImagePath.replaceAll("\"", "\\\"")
+        await fs.promises.writeFile(updateScriptPath, [
+          "#!/usr/bin/env sh",
+          "tries=0",
+          "while true; do",
+          "  if [ $tries -gt 5 ]; then",
+          "    exit 1;",
+          "  fi",
+          `  cp -f "${escapedTemporaryPath}" "${escapedAppImagePath}" && break`,
+          "  tries=$(expr $tries + 1)",
+          "  sleep 3",
+          "done",
+          `chmod +x "${escapedAppImagePath}"`,
+          `exec "${escapedAppImagePath}"`,
+        ].join("\n"), {encoding: "utf8", mode: 0o744})
 
-          await fs.promises.writeFile(updateScriptPath, [
-            "#!/usr/bin/env sh",
-            "tries=0",
-            "while true; do",
-            "  if [ $tries -gt 5 ]; then",
-            "    exit 1;",
-            "  fi",
-            `  cp -f "${escapedTemporaryPath}" "${escapedAppImagePath}" && break`,
-            "  tries=$(expr $tries + 1)",
-            "  sleep 3",
-            "done",
-            `chmod +x "${escapedAppImagePath}"`,
-            `exec "${escapedAppImagePath}"`,
-          ].join("\n"), {encoding: "utf8", mode: 0o744})
-
-          spawn("sh", [updateScriptPath], {
-            detached: true,
-            stdio: "ignore",
-          }).unref()
+        const process = spawn("sh", [updateScriptPath], {
+          detached: true,
+          stdio: "ignore",
         })
 
-        app.quit()
+        process.on("spawn", () => {
+          process.unref()
+          UpdateService.quitAndKillServices()
+        })
       } else {
         // Linux Portable
         const installDataPath = getInstallDataPath()
         const temporaryPath = getTemporaryUserDataPath("randomizer_update.tar.gz")
         await this.downloadUpdate(urls.linuxPortable, temporaryPath)
 
-        app.on("quit", async () => {
-          await SeedgenServerService.kill()
+        log.info(`UpdateService: Replacing portable installation at '${installDataPath}'`)
+        const updateScriptPath = getTemporaryUserDataPath("wotw-randomizer-update.sh")
 
-          log.info(`UpdateService: Replacing portable installation at '${installDataPath}'`)
-          const updateScriptPath = getTemporaryUserDataPath("wotw-randomizer-update.sh")
+        const escapedTemporaryPath = temporaryPath.replaceAll("\"", "\\\"")
+        const escapedInstallDataPath = installDataPath.replaceAll("\"", "\\\"")
+        const escapedExecutablePath = app.getPath("exe").replaceAll("\"", "\\\"")
 
-          const escapedTemporaryPath = temporaryPath.replaceAll("\"", "\\\"")
-          const escapedInstallDataPath = installDataPath.replaceAll("\"", "\\\"")
-          const escapedExecutablePath = app.getPath("exe").replaceAll("\"", "\\\"")
+        await fs.promises.writeFile(updateScriptPath, [
+          "#!/usr/bin/env sh",
+          "tries=0",
+          "while true; do",
+          "  if [ $tries -gt 5 ]; then",
+          "    exit 1;",
+          "  fi",
+          `  find "${escapedInstallDataPath}" -mindepth 1 -delete && tar -xzf "${escapedTemporaryPath}" -C "${escapedInstallDataPath}" && break`,
+          "  tries=$(expr $tries + 1)",
+          "  sleep 3",
+          "done",
+          `exec "${escapedExecutablePath}"`,
+        ].join("\n"), {encoding: "utf8", mode: 0o744})
 
-          await fs.promises.writeFile(updateScriptPath, [
-            "#!/usr/bin/env sh",
-            "tries=0",
-            "while true; do",
-            "  if [ $tries -gt 5 ]; then",
-            "    exit 1;",
-            "  fi",
-            `  find "${escapedInstallDataPath}" -mindepth 1 -delete && tar -xzf "${escapedTemporaryPath}" -C "${escapedInstallDataPath}" && break`,
-            "  tries=$(expr $tries + 1)",
-            "  sleep 3",
-            "done",
-            `exec "${escapedExecutablePath}"`,
-          ].join("\n"), {encoding: "utf8", mode: 0o744})
-
-          spawn("sh", [updateScriptPath], {
-            detached: true,
-            stdio: "ignore",
-          }).unref()
+        const process = spawn("sh", [updateScriptPath], {
+          detached: true,
+          stdio: "ignore",
         })
 
-        app.quit()
+        process.on("spawn", () => {
+          process.unref()
+          UpdateService.quitAndKillServices()
+        })
       }
     }
   }
